@@ -11,7 +11,7 @@ class StoreGroupRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,10 @@ class StoreGroupRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'kode' => ['required', 'string', 'max:20', 'unique:groups,kode'],
+            'nama' => ['required', 'string', 'max:100'],
+            'academic_term_id' => ['required', 'exists:academic_terms,id'],
+            'judul_proyek' => ['nullable', 'string', 'max:200'],
         ];
     }
 }
