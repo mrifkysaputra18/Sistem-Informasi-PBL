@@ -115,9 +115,11 @@
                                                 <tr class="hover:bg-gray-50 transition duration-200">
                                                     <td class="px-4 py-4 whitespace-nowrap sticky left-0 bg-white">
                                                         <div class="flex items-center">
-                                                            <div class="text-sm font-medium text-gray-900">{{ $group->kode }}</div>
+                                                            <div class="text-sm font-medium text-gray-900">{{ $group->name }}</div>
                                                         </div>
-                                                        <div class="text-sm text-gray-500">{{ Str::limit($group->nama, 20) }}</div>
+                                                        @if($group->classRoom)
+                                                        <div class="text-sm text-gray-500">{{ Str::limit($group->classRoom->name, 20) }}</div>
+                                                        @endif
                                                     </td>
                                                     @foreach($criteria as $criterion)
                                                         @php

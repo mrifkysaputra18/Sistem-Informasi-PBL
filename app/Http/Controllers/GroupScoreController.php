@@ -14,7 +14,7 @@ class GroupScoreController extends Controller
      */
     public function index()
     {
-        $groups = Group::with('term')->get();
+        $groups = Group::with(['classRoom', 'leader', 'members'])->get();
         $criteria = Criterion::where('segment', 'group')->get();
         $scores = GroupScore::all();
         
@@ -31,8 +31,8 @@ class GroupScoreController extends Controller
                     if ($group) {
                         $ranking[] = [
                             'group_id' => $groupId,
-                            'kode' => $group->kode,
-                            'nama' => $group->nama,
+                            'kode' => $group->name, // Use 'name' field instead of 'kode'
+                            'nama' => $group->name, // Use 'name' field instead of 'nama'
                             'total_skor' => $totalScore
                         ];
                     }
@@ -54,7 +54,7 @@ class GroupScoreController extends Controller
     public function create()
     {
         return view('scores.create', [
-            'groups' => Group::orderBy('nama')->get(),
+            'groups' => Group::with(['classRoom'])->orderBy('name')->get(),
             'criteria' => Criterion::where('segment', 'group')->orderBy('id')->get(),
         ]);
     }

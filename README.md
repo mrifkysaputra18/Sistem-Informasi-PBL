@@ -1,66 +1,254 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Informasi PBL (Project-Based Learning)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem informasi untuk mengelola proyek PBL di Politeknik Negeri Tanah Laut dengan fitur tracking progress, penilaian, dan ranking kelompok.
 
-## About Laravel
+## 🚀 Cara Install (Untuk Kelompok)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Prasyarat
+- PHP 8.2 atau lebih baru
+- Composer
+- Node.js & NPM (untuk frontend assets)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Setup Otomatis (Rekomendasi)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Windows:**
+```bash
+setup.bat
+```
 
-## Learning Laravel
+**Linux/Mac:**
+```bash
+chmod +x setup.sh
+./setup.sh
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Setup Manual
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Jika script otomatis tidak bekerja, ikuti langkah berikut:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+# 1. Copy file .env
+copy .env.example .env    # Windows
+cp .env.example .env      # Linux/Mac
 
-## Laravel Sponsors
+# 2. Generate application key
+php artisan key:generate
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# 3. Buat database SQLite
+type nul > database\database.sqlite    # Windows
+touch database/database.sqlite         # Linux/Mac
 
-### Premium Partners
+# 4. Jalankan migration
+php artisan migrate:fresh
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+# 5. Isi data awal
+php artisan db:seed
 
-## Contributing
+# 6. Clear cache
+php artisan config:clear
+php artisan cache:clear
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 🔐 Cara Login
 
-## Code of Conduct
+### Metode 1: Login dengan Google Politala (Recommended) 🔥
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Sistem ini mendukung **Google OAuth SSO**. Login hanya dengan 1 klik!
 
-## Security Vulnerabilities
+**Cara Login:**
+1. Buka halaman login
+2. Klik button **"Login dengan Google Politala"** (button dengan logo Google)
+3. Pilih akun Google kampus Anda (@politala.ac.id atau @mhs.politala.ac.id)
+4. Klik **"Allow"** untuk memberi izin
+5. ✅ **Otomatis login!** (auto-register jika user baru)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**Setup Google OAuth:**
+- Lihat panduan lengkap: [`SETUP_GOOGLE_SSO.md`](SETUP_GOOGLE_SSO.md)
+- Quick start: [`QUICK_START_GOOGLE_SSO.md`](QUICK_START_GOOGLE_SSO.md)
 
-## License
+### Metode 2: Login Manual (Alternative)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Jika belum setup Google OAuth, bisa login manual:
+
+**Login pertama kali:**
+1. Masukkan email Politala Anda:
+   - Mahasiswa: `nama.anda@mhs.politala.ac.id`
+   - Dosen: `nama.anda@politala.ac.id`
+2. Masukkan password (bebas, password yang Anda inginkan)
+3. Sistem akan otomatis membuat akun Anda dan login
+
+**Login berikutnya:**
+- Gunakan email dan password yang sama
+
+### Akun Demo (Sudah Ada di Database)
+
+Jika ingin mencoba dengan akun yang sudah ada:
+
+```
+Admin:
+Email: admin@politala.ac.id
+Password: password
+
+Koordinator:
+Email: koordinator@politala.ac.id
+Password: password
+
+Dosen:
+Email: dosen1@politala.ac.id
+Password: password
+
+Mahasiswa:
+Email: mahasiswa1@politala.ac.id
+Password: password
+```
+
+## 🏃 Menjalankan Aplikasi
+
+```bash
+# Jalankan server development
+php artisan serve
+
+# Buka browser
+http://localhost:8000
+```
+
+## 📦 Database
+
+Sistem ini menggunakan **MySQL** secara default.
+
+### Konfigurasi Database
+
+File `.env` sudah dikonfigurasi dengan:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=sistem_pbl
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+**Catatan:**
+- Database `sistem_pbl` akan dibuat otomatis oleh script setup
+- Jika menggunakan password MySQL, ubah `DB_PASSWORD` di file `.env`
+- Jika menggunakan XAMPP, pastikan Apache & MySQL sudah running
+
+### Membuat Database Manual (Jika Script Gagal)
+
+**Via Command Line:**
+```bash
+mysql -u root -e "CREATE DATABASE sistem_pbl CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+```
+
+**Via phpMyAdmin:**
+1. Buka phpMyAdmin (http://localhost/phpmyadmin)
+2. Klik tab "Databases"
+3. Buat database baru dengan nama: `sistem_pbl`
+4. Charset: `utf8mb4_unicode_ci`
+
+### Mengubah ke SQLite (Opsional)
+
+Jika ingin menggunakan SQLite, edit file `.env`:
+```env
+DB_CONNECTION=sqlite
+```
+
+Lalu buat file database:
+```bash
+touch database/database.sqlite   # Linux/Mac
+type nul > database\database.sqlite   # Windows
+```
+
+Dan jalankan migration:
+```bash
+php artisan migrate:fresh --seed
+```
+
+## 🌟 Fitur Utama
+
+### Untuk Mahasiswa
+- Dashboard progress kelompok
+- Submit weekly progress
+- Upload dokumen ke Google Drive
+- Lihat feedback dari dosen
+- Tracking ranking kelompok
+
+### Untuk Dosen
+- Review progress kelompok
+- Beri penilaian dan feedback
+- Kelola attendance
+- Export ranking kelompok
+- Monitor semua kelompok
+
+### Untuk Admin/Koordinator
+- Kelola users (mahasiswa, dosen)
+- Kelola projects dan groups
+- Atur kriteria penilaian
+- Kelola academic terms
+- Export data dan laporan
+
+## 📱 Tech Stack
+
+- **Backend**: Laravel 11
+- **Frontend**: Blade Templates + Tailwind CSS
+- **Database**: SQLite (default) / MySQL
+- **Cloud Storage**: Google Drive Integration
+- **Queue**: Database Queue
+- **Mail**: SMTP / Log
+
+## 🛠️ Troubleshooting
+
+### Masalah: "Could not find driver"
+Pastikan extension SQLite diaktifkan di `php.ini`:
+```ini
+extension=pdo_sqlite
+extension=sqlite3
+```
+
+### Masalah: "No application encryption key has been specified"
+Jalankan:
+```bash
+php artisan key:generate
+```
+
+### Masalah: "Database file not found"
+Buat file database:
+```bash
+type nul > database\database.sqlite    # Windows
+touch database/database.sqlite         # Linux/Mac
+```
+
+### Masalah: "Permission denied" di Linux/Mac
+Berikan permission:
+```bash
+chmod 755 database/
+chmod 664 database/database.sqlite
+```
+
+## 🤝 Kontribusi
+
+Untuk kelompok yang ingin kontribusi:
+
+1. Clone repository
+2. Buat branch baru: `git checkout -b feature/nama-fitur`
+3. Commit changes: `git commit -m 'Menambah fitur X'`
+4. Push ke branch: `git push origin feature/nama-fitur`
+5. Buat Pull Request
+
+## 📝 Catatan Penting
+
+- **Jangan commit file `.env`** - File ini berisi konfigurasi lokal dan rahasia
+- **File `database.sqlite` jangan di-commit** - Sudah ada di `.gitignore`
+- **Backup database secara berkala** jika berisi data penting
+- **Gunakan email Politala** untuk login otomatis
+
+## 📧 Kontak
+
+Jika ada masalah atau pertanyaan:
+- Buka issue di GitHub
+- Hubungi koordinator kelompok
+
+---
+
+**Politeknik Negeri Tanah Laut**  
+Project-Based Learning Management System

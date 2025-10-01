@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use App\Models\User;
+use App\Models\ClassRoom;
+use App\Http\Requests\StoreGroupRequest;
+use App\Http\Requests\UpdateGroupRequest;
 use Illuminate\Http\Request;
 
 class GroupController extends Controller
@@ -12,7 +16,7 @@ class GroupController extends Controller
      */
     public function index()
     {
-        $groups = Group::with('term')->latest()->paginate(10);
+        $groups = Group::with(['classRoom', 'leader', 'members'])->latest()->paginate(10);
         return view('groups.index', compact('groups'));
     }
 
@@ -21,40 +25,67 @@ class GroupController extends Controller
      */
     public function create()
     {
-        $terms = \App\Models\AcademicTerm::orderByDesc('id')->get();
-        return view('groups.create', compact('terms'));
+        $classRooms = ClassRoom::orderBy('name')->get();
+        return view('groups.create', compact('classRooms'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreGroupRequest $request)
     {
-        Group::create($request->validated());
-        return redirect()->route('groups.index')->with('ok', 'Kelompok dibuat.');
+        $group = Group::create($request->validated());
+        
+        return redirect()
+            ->route('groups.show', $group)
+            ->with('success', 'Kelompok berhasil dibuat! Silakan tambah anggota.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Group $group) {}
+    public function show(Group $group)
+    {
+        $group->load(['classRoom', 'leader', 'members.user']);
+        $availableStudents = User::where('role', 'mahasiswa')
+            ->whereDoesntHave('groupMembers', function($q) use ($group) {
+                $q->where('group_id', $group->id);
+            })
+            ->orderBy('name')
+            ->get();
+            
+        return view('groups.show', compact('group', 'availableStudents'));
+    }
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(Group $group)
     {
-        $terms = \App\Models\AcademicTerm::orderByDesc('id')->get();
-        return view('groups.edit', compact('group', 'terms'));
+        $group->load(['classRoom', 'leader', 'members.user']);
+        $classRooms = ClassRoom::orderBy('name')->get();
+        
+        // Get available students (not already in this group)
+        $availableStudents = User::where('role', 'mahasiswa')
+            ->whereDoesntHave('groupMembers', function($q) use ($group) {
+                $q->where('group_id', $group->id);
+            })
+            ->orderBy('name')
+            ->get();
+            
+        return view('groups.edit', compact('group', 'classRooms', 'availableStudents'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Group $group)
+    public function update(UpdateGroupRequest $request, Group $group)
     {
         $group->update($request->validated());
-        return redirect()->route('groups.index')->with('ok', 'Kelompok diupdate.');
+        
+        return redirect()
+            ->route('groups.index')
+            ->with('success', 'Kelompok berhasil diupdate.');
     }
 
     /**
@@ -63,6 +94,82 @@ class GroupController extends Controller
     public function destroy(Group $group)
     {
         $group->delete();
-        return back()->with('ok', 'Kelompok dihapus.');
+        return redirect()
+            ->route('groups.index')
+            ->with('success', 'Kelompok berhasil dihapus.');
+    }
+    
+    /**
+     * Add member to group
+     */
+    public function addMember(Request $request, Group $group)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'is_leader' => 'boolean'
+        ]);
+        
+        // Cek apakah sudah mencapai maksimal 5 anggota
+        if ($group->members()->count() >= 5) {
+            return back()->with('error', 'Kelompok sudah mencapai maksimal 5 anggota!');
+        }
+        
+        // Cek apakah user sudah menjadi anggota
+        if ($group->members()->where('user_id', $request->user_id)->exists()) {
+            return back()->with('error', 'Mahasiswa sudah menjadi anggota kelompok ini!');
+        }
+        
+        // Jika ini akan jadi ketua, update ketua lama
+        if ($request->is_leader) {
+            $group->members()->update(['is_leader' => false]);
+            $group->update(['leader_id' => $request->user_id]);
+        }
+        
+        // Tambah anggota
+        $group->members()->create([
+            'user_id' => $request->user_id,
+            'is_leader' => $request->is_leader ?? false,
+            'status' => 'active'
+        ]);
+        
+        return back()->with('success', 'Anggota berhasil ditambahkan!');
+    }
+    
+    /**
+     * Remove member from group
+     */
+    public function removeMember(Group $group, $memberId)
+    {
+        $member = $group->members()->findOrFail($memberId);
+        
+        // Jika yang dihapus adalah ketua, reset leader_id
+        if ($member->is_leader) {
+            $group->update(['leader_id' => null]);
+        }
+        
+        $member->delete();
+        
+        return back()->with('success', 'Anggota berhasil dihapus dari kelompok!');
+    }
+    
+    /**
+     * Set a member as group leader
+     */
+    public function setLeader(Request $request, Group $group)
+    {
+        $request->validate([
+            'member_id' => 'required|exists:group_members,id'
+        ]);
+        
+        $member = $group->members()->findOrFail($request->member_id);
+        
+        // Remove leader status from all members
+        $group->members()->update(['is_leader' => false]);
+        
+        // Set new leader
+        $member->update(['is_leader' => true]);
+        $group->update(['leader_id' => $member->user_id]);
+        
+        return back()->with('success', 'Ketua kelompok berhasil diubah!');
     }
 }

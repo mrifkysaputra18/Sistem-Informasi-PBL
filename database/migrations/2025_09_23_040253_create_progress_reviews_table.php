@@ -9,7 +9,7 @@ return new class extends Migration
     {
         Schema::create('progress_reviews', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('weekly_progress_id')->constrained()->onDelete('cascade');
+            $table->foreignId('weekly_progress_id')->constrained('weekly_progress')->onDelete('cascade');
             $table->foreignId('reviewer_id')->constrained('users');
             $table->decimal('score_progress_speed', 3, 1)->nullable(); // 0-10
             $table->decimal('score_quality', 3, 1)->nullable(); // 0-10

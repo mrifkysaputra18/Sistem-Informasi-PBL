@@ -38,7 +38,7 @@
                                 <option value="">Pilih Kelompok</option>
                                 @foreach($groups as $group)
                                     <option value="{{ $group->id }}" {{ old('group_id') == $group->id ? 'selected' : '' }}>
-                                        {{ $group->kode }} - {{ $group->nama }}
+                                        {{ $group->name }} @if($group->classRoom) - {{ $group->classRoom->name }} @endif
                                     </option>
                                 @endforeach
                             </select>

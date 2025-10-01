@@ -16,11 +16,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AcademicTermSeeder::class,
             CriterionSeeder::class,
-        ]);
-
-        User::factory()->create([
-            'name' => 'iyan',
-            'email' => 'iyancastello21@gmail.com',
+            UserSeeder::class,
+            ClassRoomSeeder::class,
         ]);
     }
 }

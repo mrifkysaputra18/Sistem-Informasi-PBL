@@ -52,11 +52,11 @@
                 <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-6 rounded-xl shadow-lg text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-purple-100 text-sm font-medium">Dengan Proyek</p>
-                            <p class="text-3xl font-bold">{{ $groups->whereNotNull('judul_proyek')->count() }}</p>
+                            <p class="text-purple-100 text-sm font-medium">Kelompok Penuh</p>
+                            <p class="text-3xl font-bold">{{ $groups->filter(fn($g) => $g->isFull())->count() }}</p>
                         </div>
                         <div class="bg-purple-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-project-diagram text-2xl"></i>
+                            <i class="fas fa-user-check text-2xl"></i>
                         </div>
                     </div>
                 </div>
@@ -83,16 +83,16 @@
                                             <i class="fas fa-hashtag mr-1"></i>No
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <i class="fas fa-code mr-1"></i>Kode
-                                        </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             <i class="fas fa-users mr-1"></i>Nama Kelompok
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <i class="fas fa-calendar-alt mr-1"></i>Tahun/Semester
+                                            <i class="fas fa-school mr-1"></i>Kelas
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <i class="fas fa-project-diagram mr-1"></i>Proyek
+                                            <i class="fas fa-user-tie mr-1"></i>Ketua
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <i class="fas fa-users-cog mr-1"></i>Anggota
                                         </th>
                                         <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             <i class="fas fa-cogs mr-1"></i>Aksi
@@ -106,31 +106,39 @@
                                                 {{ ($groups->currentPage() - 1) * $groups->perPage() + $index + 1 }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm font-medium text-gray-900">{{ $group->name }}</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                @if($group->classRoom)
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                    {{ $group->kode }}
+                                                    {{ $group->classRoom->name }}
                                                 </span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm font-medium text-gray-900">{{ $group->nama }}</div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm text-gray-900">{{ $group->term->tahun_akademik }}</div>
-                                                <div class="text-sm text-gray-500">Semester {{ $group->term->semester }}</div>
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                @if($group->judul_proyek)
-                                                    <div class="text-sm text-gray-900">{{ Str::limit($group->judul_proyek, 30) }}</div>
-                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                                                        <i class="fas fa-check mr-1"></i>Ada Proyek
-                                                    </span>
                                                 @else
-                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                                                        <i class="fas fa-minus mr-1"></i>Belum Ada
-                                                    </span>
+                                                <span class="text-gray-400">-</span>
                                                 @endif
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                @if($group->leader)
+                                                <div class="flex items-center">
+                                                    <span class="text-blue-600 mr-1">★</span>
+                                                    <div class="text-sm text-gray-900">{{ $group->leader->name }}</div>
+                                                </div>
+                                                @else
+                                                <span class="text-gray-400">Belum ada</span>
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $group->isFull() ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }}">
+                                                    <i class="fas fa-users mr-1"></i>{{ $group->members->count() }}/{{ $group->max_members }}
+                                                </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                                 <div class="flex items-center justify-center space-x-2">
+                                                    <a href="{{ route('groups.show', $group) }}" 
+                                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-green-600 bg-green-100 hover:bg-green-200 hover:text-green-900 rounded-lg transition duration-200 ease-in-out">
+                                                        <i class="fas fa-eye mr-1.5"></i>
+                                                        Detail
+                                                    </a>
                                                     <a href="{{ route('groups.edit', $group) }}" 
                                                        class="inline-flex items-center px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-100 hover:bg-indigo-200 hover:text-indigo-900 rounded-lg transition duration-200 ease-in-out">
                                                         <i class="fas fa-edit mr-1.5"></i>

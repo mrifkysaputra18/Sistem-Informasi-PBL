@@ -10,8 +10,8 @@ return new class extends Migration
         Schema::create('groups', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('project_id')->constrained()->onDelete('cascade');
-            $table->foreignId('leader_id')->constrained('users');
+            $table->foreignId('project_id')->nullable()->constrained('projects')->onDelete('cascade');
+            $table->foreignId('leader_id')->nullable()->constrained('users');
             $table->string('google_drive_folder_id')->nullable();
             $table->decimal('total_score', 5, 2)->default(0);
             $table->integer('ranking')->nullable();

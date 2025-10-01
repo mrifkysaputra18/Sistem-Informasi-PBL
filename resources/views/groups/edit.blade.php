@@ -12,99 +12,154 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                 <div class="p-8">
-                    <!-- Header -->
-                    <div class="mb-8 text-center">
-                        <div class="bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-edit text-indigo-600 text-2xl"></i>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Edit Kelompok</h3>
-                        <p class="text-gray-600">Perbarui informasi kelompok mahasiswa</p>
-                    </div>
-
-                    <form action="{{ route('groups.update', $group) }}" method="POST" class="space-y-6">
+                    <form action="{{ route('groups.update', $group) }}" method="POST">
                         @csrf
                         @method('PATCH')
 
-                        <!-- Kode Kelompok -->
-                        <div class="space-y-2">
-                            <label for="kode" class="block text-sm font-medium text-gray-700">
-                                <i class="fas fa-hashtag mr-2 text-gray-500"></i>Kode Kelompok
+                        <!-- Pilih Kelas -->
+                        <div class="mb-4">
+                            <label for="class_room_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                Kelas <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" 
-                                   id="kode" 
-                                   name="kode" 
-                                   value="{{ old('kode', $group->kode) }}"
-                                   placeholder="Contoh: PBL-01"
-                                   class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 @error('kode') border-red-500 @enderror">
-                            @error('kode')
-                                <p class="text-red-500 text-sm mt-1">
-                                    <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
-                                </p>
+                            <select name="class_room_id" id="class_room_id" required
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('class_room_id') border-red-500 @enderror">
+                                <option value="">-- Pilih Kelas --</option>
+                                @foreach($classRooms as $classRoom)
+                                <option value="{{ $classRoom->id }}" 
+                                    {{ old('class_room_id', $group->class_room_id) == $classRoom->id ? 'selected' : '' }}>
+                                    {{ $classRoom->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                            @error('class_room_id')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <!-- Nama Kelompok -->
-                        <div class="space-y-2">
-                            <label for="nama" class="block text-sm font-medium text-gray-700">
-                                <i class="fas fa-users mr-2 text-gray-500"></i>Nama Kelompok
+                        <div class="mb-4">
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                                Nama Kelompok <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" 
-                                   id="nama" 
-                                   name="nama" 
-                                   value="{{ old('nama', $group->nama) }}"
-                                   placeholder="Contoh: Tim Innovators"
-                                   class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 @error('nama') border-red-500 @enderror">
-                            @error('nama')
-                                <p class="text-red-500 text-sm mt-1">
-                                    <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
-                                </p>
+                            <input type="text" name="name" id="name" required
+                                value="{{ old('name', $group->name) }}"
+                                placeholder="Contoh: Kelompok 1, Tim A, dll"
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
+                            @error('name')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <!-- Tahun Akademik -->
-                        <div class="space-y-2">
-                            <label for="academic_term_id" class="block text-sm font-medium text-gray-700">
-                                <i class="fas fa-calendar-alt mr-2 text-gray-500"></i>Tahun Akademik / Semester
+                        <!-- Maksimal Anggota -->
+                        <div class="mb-6">
+                            <label for="max_members" class="block text-sm font-medium text-gray-700 mb-2">
+                                Maksimal Anggota
                             </label>
-                            <select id="academic_term_id" 
-                                    name="academic_term_id" 
-                                    class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 @error('academic_term_id') border-red-500 @enderror">
-                                <option value="">Pilih Tahun Akademik</option>
-                                @foreach($terms as $term)
-                                    <option value="{{ $term->id }}" {{ old('academic_term_id', $group->academic_term_id) == $term->id ? 'selected' : '' }}>
-                                        {{ $term->tahun_akademik }} - Semester {{ $term->semester }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('academic_term_id')
-                                <p class="text-red-500 text-sm mt-1">
-                                    <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
-                                </p>
+                            <input type="number" name="max_members" id="max_members" 
+                                value="{{ old('max_members', $group->max_members) }}"
+                                min="1" max="10"
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('max_members') border-red-500 @enderror">
+                            <p class="mt-1 text-xs text-gray-500">Maksimal anggota yang bisa bergabung</p>
+                            @error('max_members')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <!-- Judul Proyek -->
-                        <div class="space-y-2">
-                            <label for="judul_proyek" class="block text-sm font-medium text-gray-700">
-                                <i class="fas fa-project-diagram mr-2 text-gray-500"></i>Judul Proyek (Opsional)
-                            </label>
-                            <textarea id="judul_proyek" 
-                                      name="judul_proyek" 
-                                      rows="3"
-                                      placeholder="Contoh: Sistem Informasi Manajemen Perpustakaan"
-                                      class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 @error('judul_proyek') border-red-500 @enderror">{{ old('judul_proyek', $group->judul_proyek) }}</textarea>
-                            <p class="text-sm text-gray-600">
-                                <i class="fas fa-info-circle mr-1"></i>
-                                Deskripsi singkat tentang proyek yang akan dikerjakan kelompok ini
-                            </p>
-                            @error('judul_proyek')
-                                <p class="text-red-500 text-sm mt-1">
-                                    <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
-                                </p>
-                            @enderror
+                        <!-- Kelola Anggota -->
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Kelola Anggota Kelompok</h3>
+                            
+                            <!-- Daftar Anggota Saat Ini -->
+                            <div class="mb-4">
+                                <h4 class="text-sm font-medium text-gray-700 mb-2">Anggota Saat Ini ({{ $group->members->count() }}/{{ $group->max_members }})</h4>
+                                @if($group->members->count() > 0)
+                                <div class="space-y-2">
+                                    @foreach($group->members as $member)
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0">
+                                                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                                                    {{ substr($member->user->name, 0, 1) }}
+                                                </div>
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-gray-900">
+                                                    {{ $member->user->name }}
+                                                    @if($member->is_leader)
+                                                    <span class="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                        Ketua
+                                                    </span>
+                                                    @endif
+                                                </p>
+                                                <p class="text-xs text-gray-500">{{ $member->user->email }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            @if(!$member->is_leader)
+                                            <form action="{{ route('groups.set-leader', $group) }}" method="POST" class="inline">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="member_id" value="{{ $member->id }}">
+                                                <button type="submit" 
+                                                        class="text-xs bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded"
+                                                        onclick="return confirm('Jadikan {{ $member->user->name }} sebagai ketua?')">
+                                                    Jadikan Ketua
+                                                </button>
+                                            </form>
+                                            @endif
+                                            <form action="{{ route('groups.remove-member', [$group, $member->id]) }}" method="POST" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" 
+                                                        class="text-xs bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
+                                                        onclick="return confirm('Hapus {{ $member->user->name }} dari kelompok?')">
+                                                    Hapus
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                @else
+                                <div class="text-center py-4 text-gray-500">
+                                    <p class="text-sm">Belum ada anggota di kelompok ini.</p>
+                                </div>
+                                @endif
+                            </div>
+
+                            <!-- Tambah Anggota Baru -->
+                            @if($group->members->count() < $group->max_members)
+                            <div class="border-t pt-4">
+                                <h4 class="text-sm font-medium text-gray-700 mb-2">Tambah Anggota Baru</h4>
+                                <form action="{{ route('groups.add-member', $group) }}" method="POST" class="flex gap-2">
+                                    @csrf
+                                    <select name="user_id" required
+                                            class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <option value="">-- Pilih Mahasiswa --</option>
+                                        @foreach($availableStudents as $student)
+                                        <option value="{{ $student->id }}">{{ $student->name }} ({{ $student->email }})</option>
+                                        @endforeach
+                                    </select>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" name="is_leader" value="1" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <span class="ml-2 text-sm text-gray-700">Jadikan Ketua</span>
+                                    </label>
+                                    <button type="submit" 
+                                            class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-sm">
+                                        Tambah
+                                    </button>
+                                </form>
+                            </div>
+                            @else
+                            <div class="border-t pt-4">
+                                <div class="text-center py-4 text-gray-500">
+                                    <p class="text-sm">Kelompok sudah mencapai maksimal anggota.</p>
+                                </div>
+                            </div>
+                            @endif
                         </div>
 
                         <!-- Action Buttons -->

@@ -18,9 +18,14 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'politala_id',
         'name',
         'email',
         'password',
+        'role',
+        'phone',
+        'program_studi',
+        'is_active',
     ];
 
     /**
@@ -43,6 +48,63 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
+    }
+    
+    /**
+     * Get user's group memberships
+     */
+    public function groupMembers()
+    {
+        return $this->hasMany(GroupMember::class);
+    }
+    
+    /**
+     * Get user's groups
+     */
+    public function groups()
+    {
+        return $this->belongsToMany(Group::class, 'group_members')->withTimestamps();
+    }
+    
+    /**
+     * Get groups where user is leader
+     */
+    public function ledGroups()
+    {
+        return $this->hasMany(Group::class, 'leader_id');
+    }
+    
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+    
+    /**
+     * Check if user is coordinator
+     */
+    public function isKoordinator(): bool
+    {
+        return $this->role === 'koordinator';
+    }
+    
+    /**
+     * Check if user is lecturer
+     */
+    public function isDosen(): bool
+    {
+        return $this->role === 'dosen';
+    }
+    
+    /**
+     * Check if user is student
+     */
+    public function isMahasiswa(): bool
+    {
+        return $this->role === 'mahasiswa';
     }
 }

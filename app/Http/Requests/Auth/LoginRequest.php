@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -41,15 +43,122 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
+        // Auto-register untuk email Politala
+        $this->autoRegisterPolitalaUser();
+
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'email' => 'Email atau password salah.',
             ]);
         }
 
         RateLimiter::clear($this->throttleKey());
+    }
+    
+    /**
+     * Auto-register user jika menggunakan email Politala
+     */
+    protected function autoRegisterPolitalaUser(): void
+    {
+        try {
+            $email = $this->input('email');
+            
+            // Log untuk debugging
+            \Log::info('Auto-register attempt', ['email' => $email]);
+            
+            // Cek apakah email Politala
+            if (!$this->isPolitalaEmail($email)) {
+                \Log::info('Not a Politala email');
+                return;
+            }
+            
+            // Cek apakah user sudah ada
+            if (User::where('email', $email)->exists()) {
+                \Log::info('User already exists');
+                return;
+            }
+            
+            // Auto-register user baru
+            $role = $this->determineRole($email);
+            $name = $this->extractNameFromEmail($email);
+            $politalaId = $this->generatePolitalaId($email, $role);
+            
+            \Log::info('Creating new user', [
+                'email' => $email,
+                'name' => $name,
+                'role' => $role,
+                'politala_id' => $politalaId,
+            ]);
+            
+            $user = User::create([
+                'politala_id' => $politalaId,
+                'name' => $name,
+                'email' => $email,
+                'password' => Hash::make($this->input('password')),
+                'role' => $role,
+                'program_studi' => 'Sistem Informasi',
+                'is_active' => true,
+            ]);
+            
+            \Log::info('User created successfully', ['user_id' => $user->id]);
+        } catch (\Exception $e) {
+            \Log::error('Auto-register failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+        }
+    }
+    
+    /**
+     * Check jika email adalah email Politala
+     */
+    protected function isPolitalaEmail(string $email): bool
+    {
+        return Str::endsWith($email, ['@politala.ac.id', '@mhs.politala.ac.id']);
+    }
+    
+    /**
+     * Tentukan role berdasarkan email
+     */
+    protected function determineRole(string $email): string
+    {
+        if (Str::endsWith($email, '@mhs.politala.ac.id')) {
+            return 'mahasiswa';
+        }
+        
+        // Default untuk @politala.ac.id
+        return 'dosen';
+    }
+    
+    /**
+     * Extract nama dari email
+     */
+    protected function extractNameFromEmail(string $email): string
+    {
+        $username = Str::before($email, '@');
+        $name = Str::replace(['.', '_', '-'], ' ', $username);
+        return Str::title($name);
+    }
+    
+    /**
+     * Generate Politala ID
+     */
+    protected function generatePolitalaId(string $email, string $role): string
+    {
+        $prefix = match($role) {
+            'mahasiswa' => 'MHS',
+            'dosen' => 'DSN',
+            'koordinator' => 'KOORD',
+            'admin' => 'ADMIN',
+            default => 'USR',
+        };
+        
+        $username = Str::before($email, '@');
+        $randomNumber = rand(100, 999);
+        
+        return strtoupper($prefix . '_' . Str::slug($username) . '_' . $randomNumber);
     }
 
     /**

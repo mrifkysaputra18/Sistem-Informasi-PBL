@@ -1,23 +1,62 @@
-/.phpunit.cache
-/node_modules
-/public/build
-/public/hot
-/public/storage
-/storage/*.key
-/storage/pail
+# Laravel
 /vendor
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# Environment files
 .env
 .env.backup
 .env.production
-.phpactor.json
-.phpunit.result.cache
+
+# Database
+*.sqlite
+*.sqlite-journal
+database.sqlite
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Laravel specific
+/public/hot
+/public/storage
+/storage/*.key
+/storage/logs/*.log
 Homestead.json
 Homestead.yaml
-npm-debug.log
-yarn-error.log
-/auth.json
-/.fleet
-/.idea
-/.nova
-/.vscode
-/.zed
+auth.json
+
+# Build files
+/public/build
+/public/mix-manifest.json
+/public/hot
+
+# Cache
+bootstrap/cache/*
+!bootstrap/cache/.gitkeep
+storage/framework/cache/*
+!storage/framework/cache/.gitkeep
+storage/framework/sessions/*
+!storage/framework/sessions/.gitkeep
+storage/framework/views/*
+!storage/framework/views/.gitkeep
+storage/logs/*
+!storage/logs/.gitkeep
+
+# Testing
+.phpunit.result.cache
+.phpunit.cache
+
+# Backup files
+*.bak
+*.backup
+*.orig
+
+# OS files
+Thumbs.db
+.DS_Store
