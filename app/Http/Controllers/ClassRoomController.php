@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ClassRoom;
+use App\Models\{ClassRoom, Subject, AcademicYear, Semester};
 use Illuminate\Http\Request;
 
 class ClassRoomController extends Controller
@@ -10,13 +10,36 @@ class ClassRoomController extends Controller
     /**
      * Display a listing of class rooms
      */
-    public function index()
+    public function index(Request $request)
     {
-        $classRooms = ClassRoom::withCount('groups')
-            ->orderBy('name')
-            ->get();
+        $query = ClassRoom::with('subject')->withCount('groups');
+
+        // Filter by subject
+        if ($request->has('subject_id') && $request->subject_id != '') {
+            $query->where('subject_id', $request->subject_id);
+        }
+
+        // Filter by semester
+        if ($request->has('semester') && $request->semester != '') {
+            $query->where('semester', $request->semester);
+        }
+
+
+        // Search by name or code
+        if ($request->has('search') && $request->search != '') {
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('code', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $classRooms = $query->orderBy('name')->paginate(10);
+        
+        // Get filter options
+        $subjects = Subject::orderBy('name')->get(); // Semua mata kuliah aktif
+        $semesters = ClassRoom::distinct()->pluck('semester')->sort();
             
-        return view('classrooms.index', compact('classRooms'));
+        return view('classrooms.index', compact('classRooms', 'subjects', 'semesters'));
     }
 
     /**
@@ -34,7 +57,11 @@ class ClassRoomController extends Controller
      */
     public function create()
     {
-        return view('classrooms.create');
+        $subjects = Subject::where('is_active', true)->orderBy('name')->get();
+        $academicYears = AcademicYear::orderBy('start_date', 'desc')->get();
+        $semesters = Semester::with('academicYear')->orderBy('academic_year_id', 'desc')->orderBy('number', 'asc')->get();
+        
+        return view('classrooms.create', compact('subjects', 'academicYears', 'semesters'));
     }
 
     /**
@@ -45,7 +72,10 @@ class ClassRoomController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:100',
             'code' => 'required|string|max:20|unique:class_rooms,code',
-            'semester' => 'required|string',
+            'subject_id' => 'nullable|exists:subjects,id',
+            'academic_year_id' => 'nullable|exists:academic_years,id',
+            'semester_id' => 'nullable|exists:semesters,id',
+            'semester' => 'required|string', // Keep for backward compatibility
             'program_studi' => 'required|string',
             'max_groups' => 'required|integer|min:1|max:10',
         ]);
@@ -62,7 +92,11 @@ class ClassRoomController extends Controller
      */
     public function edit(ClassRoom $classRoom)
     {
-        return view('classrooms.edit', compact('classRoom'));
+        $subjects = Subject::where('is_active', true)->orderBy('name')->get();
+        $academicYears = AcademicYear::orderBy('start_date', 'desc')->get();
+        $semesters = Semester::with('academicYear')->orderBy('academic_year_id', 'desc')->orderBy('number', 'asc')->get();
+        
+        return view('classrooms.edit', compact('classRoom', 'subjects', 'academicYears', 'semesters'));
     }
 
     /**
@@ -73,7 +107,10 @@ class ClassRoomController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:100',
             'code' => 'required|string|max:20|unique:class_rooms,code,' . $classRoom->id,
-            'semester' => 'required|string',
+            'subject_id' => 'nullable|exists:subjects,id',
+            'academic_year_id' => 'nullable|exists:academic_years,id',
+            'semester_id' => 'nullable|exists:semesters,id',
+            'semester' => 'required|string', // Keep for backward compatibility
             'program_studi' => 'required|string',
             'max_groups' => 'required|integer|min:1|max:10',
             'is_active' => 'boolean',

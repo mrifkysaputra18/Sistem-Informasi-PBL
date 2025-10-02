@@ -14,7 +14,7 @@ class GroupScoreController extends Controller
      */
     public function index()
     {
-        $groups = Group::with(['classRoom', 'leader', 'members'])->get();
+        $groups = Group::with(['classRoom', 'leader', 'members', 'weeklyTargets'])->get();
         $criteria = Criterion::where('segment', 'group')->get();
         $scores = GroupScore::all();
         
@@ -31,9 +31,10 @@ class GroupScoreController extends Controller
                     if ($group) {
                         $ranking[] = [
                             'group_id' => $groupId,
-                            'kode' => $group->name, // Use 'name' field instead of 'kode'
-                            'nama' => $group->name, // Use 'name' field instead of 'nama'
-                            'total_skor' => $totalScore
+                            'kode' => $group->name,
+                            'nama' => $group->name,
+                            'total_skor' => $totalScore,
+                            'completion_rate' => $group->getTargetCompletionRate()
                         ];
                     }
                 }
@@ -45,7 +46,16 @@ class GroupScoreController extends Controller
         // Calculate average score
         $averageScore = $scores->count() > 0 ? $scores->avg('skor') : 0;
         
-        return view('scores.index', compact('groups', 'criteria', 'scores', 'ranking', 'averageScore'));
+        // Get progress speed scores
+        $progressSpeedScores = [];
+        try {
+            $rankingService = new RankingService();
+            $progressSpeedScores = $rankingService->getProgressSpeedScores();
+        } catch (\Exception $e) {
+            $progressSpeedScores = [];
+        }
+        
+        return view('scores.index', compact('groups', 'criteria', 'scores', 'ranking', 'averageScore', 'progressSpeedScores'));
     }
 
     /**
@@ -76,7 +86,7 @@ class GroupScoreController extends Controller
         $totals = $svc->computeGroupTotals();
         // untuk demo: kirim ke view sebagai ranking
         arsort($totals); // besar ke kecil
-        return view('scores.ranking', ['ranking'=>$totals, 'groups'=>Group::pluck('nama','id')]);
+        return view('scores.ranking', ['ranking'=>$totals, 'groups'=>Group::pluck('name','id')]);
     }
 
 

@@ -10,13 +10,13 @@ return new class extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->text('description');
-            $table->foreignId('dosen_id')->constrained('users');
-            $table->string('program_studi');
-            $table->date('start_date');
-            $table->date('end_date');
+            $table->text('description')->nullable();
+            $table->foreignId('dosen_id')->nullable()->constrained('users');
+            $table->string('program_studi')->nullable();
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
             $table->integer('max_members')->default(5);
-            $table->enum('status', ['draft', 'active', 'completed', 'cancelled'])->default('draft');
+            $table->enum('status', ['draft', 'active', 'completed', 'cancelled'])->default('active');
             $table->json('rubrik_penilaian')->nullable();
             $table->timestamps();
         });

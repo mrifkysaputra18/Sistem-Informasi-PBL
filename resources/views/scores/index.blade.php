@@ -4,10 +4,27 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Manajemen Nilai & Ranking') }}
             </h2>
-            <a href="{{ route('scores.create') }}" 
-               class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-                <i class="fas fa-plus mr-2"></i>Input Nilai
-            </a>
+            <div class="flex gap-2">
+                @if(auth()->user()->isAdmin())
+                    <!-- Admin Only: Recalculate Ranking -->
+                    <form action="{{ route('scores.recalc') }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" 
+                                onclick="return confirm('Hitung ulang ranking untuk semua kelompok?')"
+                                class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                            <i class="fas fa-calculator mr-2"></i>Hitung Ulang Ranking
+                        </button>
+                    </form>
+                @endif
+                
+                @if(auth()->user()->isDosen() || auth()->user()->isKoordinator())
+                    <!-- Dosen & Koordinator: Input Score -->
+                    <a href="{{ route('scores.create') }}" 
+                       class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                        <i class="fas fa-plus mr-2"></i>Input Nilai
+                    </a>
+                @endif
+            </div>
         </div>
     </x-slot>
 
@@ -210,9 +227,14 @@
                                                         </span>
                                                     @endif
                                                 </div>
-                                                <div>
+                                                <div class="flex-1">
                                                     <div class="text-sm font-medium text-gray-900">{{ $rank['kode'] }}</div>
                                                     <div class="text-xs text-gray-500">{{ Str::limit($rank['nama'], 15) }}</div>
+                                                    @if(isset($rank['completion_rate']))
+                                                    <div class="text-xs text-blue-600 mt-1">
+                                                        <i class="fas fa-tasks mr-1"></i>{{ round($rank['completion_rate'], 1) }}% progres
+                                                    </div>
+                                                    @endif
                                                 </div>
                                             </div>
                                             <div class="text-right">

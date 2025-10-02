@@ -14,10 +14,19 @@ class GroupController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $groups = Group::with(['classRoom', 'leader', 'members'])->latest()->paginate(10);
-        return view('groups.index', compact('groups'));
+        $query = Group::with(['classRoom', 'leader', 'members']);
+        
+        // Filter by classroom if provided
+        if ($request->has('classroom') && $request->classroom) {
+            $query->where('class_room_id', $request->classroom);
+        }
+        
+        $groups = $query->latest()->paginate(10);
+        $classRooms = ClassRoom::orderBy('name')->get();
+        
+        return view('groups.index', compact('groups', 'classRooms'));
     }
 
     /**
@@ -26,7 +35,8 @@ class GroupController extends Controller
     public function create()
     {
         $classRooms = ClassRoom::orderBy('name')->get();
-        return view('groups.create', compact('classRooms'));
+        $projects = \App\Models\Project::orderBy('title')->get();
+        return view('groups.create', compact('classRooms', 'projects'));
     }
 
     /**
@@ -34,11 +44,27 @@ class GroupController extends Controller
      */
     public function store(StoreGroupRequest $request)
     {
+        // Create group
         $group = Group::create($request->validated());
+        
+        // Add members if provided
+        if ($request->has('members') && is_array($request->members)) {
+            foreach ($request->members as $userId) {
+                $group->members()->create([
+                    'user_id' => $userId,
+                    'role' => 'member'
+                ]);
+            }
+        }
+        
+        // Set leader if provided
+        if ($request->has('leader_id') && $request->leader_id) {
+            $group->update(['leader_id' => $request->leader_id]);
+        }
         
         return redirect()
             ->route('groups.show', $group)
-            ->with('success', 'Kelompok berhasil dibuat! Silakan tambah anggota.');
+            ->with('success', 'Kelompok berhasil dibuat!');
     }
 
     /**
@@ -62,7 +88,7 @@ class GroupController extends Controller
      */
     public function edit(Group $group)
     {
-        $group->load(['classRoom', 'leader', 'members.user']);
+        $group->load(['classRoom', 'leader', 'members.user', 'weeklyTargets.completedByUser']);
         $classRooms = ClassRoom::orderBy('name')->get();
         
         // Get available students (not already in this group)

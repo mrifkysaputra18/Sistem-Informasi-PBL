@@ -1,115 +1,138 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Buat Progress Mingguan - Minggu {{ $weekNumber }}
-            </h2>
-            <a href="{{ route('weekly-progress.index', $group) }}" 
-               class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                Kembali
+        <div class="flex items-center">
+            <a href="{{ route('mahasiswa.dashboard') }}" 
+               class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
+                <i class="fas fa-arrow-left text-xl"></i>
             </a>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ __('Upload Progress Mingguan') }}
+            </h2>
         </div>
     </x-slot>
 
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white shadow-sm sm:rounded-lg">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-medium text-gray-900">{{ $group->name }} - {{ $group->project->title }}</h3>
-                <p class="mt-1 text-sm text-gray-500">Minggu {{ $weekNumber }}</p>
+    <div class="py-12">
+        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+                <div class="p-8">
+                    <form action="{{ route('weekly-progress.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        
+                        <input type="hidden" name="group_id" value="{{ request('group_id') }}">
+
+                        <!-- Minggu Ke -->
+                        <div class="mb-6">
+                            <label for="week_number" class="block text-sm font-medium text-gray-700 mb-2">
+                                Minggu Ke <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" 
+                                   name="week_number" 
+                                   id="week_number" 
+                                   value="{{ old('week_number') }}"
+                                   min="1"
+                                   required
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Judul Progress -->
+                        <div class="mb-6">
+                            <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+                                Judul Progress <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" 
+                                   name="title" 
+                                   id="title" 
+                                   value="{{ old('title') }}"
+                                   placeholder="Contoh: Implementasi Fitur Login"
+                                   required
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Deskripsi -->
+                        <div class="mb-6">
+                            <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                                Deskripsi
+                            </label>
+                            <textarea name="description" 
+                                      id="description" 
+                                      rows="4"
+                                      placeholder="Jelaskan progress yang telah dicapai..."
+                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ old('description') }}</textarea>
+                        </div>
+
+                        <!-- Upload Bukti atau Checkbox -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Bukti Progress
+                            </label>
+                            
+                            <div class="space-y-4">
+                                <!-- Checkbox: Hanya Centang (Tanpa Bukti) -->
+                                <div class="flex items-center">
+                                    <input type="checkbox" 
+                                           name="is_checked_only" 
+                                           id="is_checked_only" 
+                                           value="1"
+                                           {{ old('is_checked_only') ? 'checked' : '' }}
+                                           onchange="toggleEvidenceUpload()"
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="is_checked_only" class="ml-2 block text-sm text-gray-900">
+                                        Tandai selesai tanpa upload bukti (hanya centang)
+                                    </label>
+                                </div>
+
+                                <!-- Upload File -->
+                                <div id="evidence_upload" class="{{ old('is_checked_only') ? 'opacity-50 pointer-events-none' : '' }}">
+                                    <label for="evidence" class="block text-sm text-gray-600 mb-2">
+                                        Upload Bukti (Opsional jika tidak dicentang)
+                                    </label>
+                                    <input type="file" 
+                                           name="evidence[]" 
+                                           id="evidence" 
+                                           multiple
+                                           accept="image/*,.pdf,.doc,.docx"
+                                           class="w-full text-sm text-gray-500
+                                                  file:mr-4 file:py-2 file:px-4
+                                                  file:rounded-md file:border-0
+                                                  file:text-sm file:font-semibold
+                                                  file:bg-blue-50 file:text-blue-700
+                                                  hover:file:bg-blue-100">
+                                    <p class="mt-1 text-xs text-gray-500">
+                                        Format: JPG, PNG, PDF, DOC, DOCX (Max 5 file, masing-masing max 2MB)
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+                            <a href="{{ route('mahasiswa.dashboard') }}" 
+                               class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50">
+                                <i class="fas fa-times mr-2"></i>Batal
+                            </a>
+                            <button type="submit" 
+                                    class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-purple-600 hover:bg-purple-700">
+                                <i class="fas fa-upload mr-2"></i>Upload Progress
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <form action="{{ route('weekly-progress.store', $group) }}" method="POST" enctype="multipart/form-data" class="p-6">
-                @csrf
-                <input type="hidden" name="week_number" value="{{ $weekNumber }}">
-
-                <div class="space-y-6">
-                    <!-- Title -->
-                    <div>
-                        <label for="title" class="block text-sm font-medium text-gray-700">Judul Progress</label>
-                        <input type="text" name="title" id="title" 
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                               value="{{ old('title') }}" required>
-                        @error('title')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Description -->
-                    <div>
-                        <label for="description" class="block text-sm font-medium text-gray-700">Deskripsi</label>
-                        <textarea name="description" id="description" rows="3"
-                                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                  required>{{ old('description') }}</textarea>
-                        @error('description')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Activities -->
-                    <div>
-                        <label for="activities" class="block text-sm font-medium text-gray-700">Aktivitas yang Dilakukan</label>
-                        <textarea name="activities" id="activities" rows="4"
-                                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                  required>{{ old('activities') }}</textarea>
-                        @error('activities')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Achievements -->
-                    <div>
-                        <label for="achievements" class="block text-sm font-medium text-gray-700">Pencapaian</label>
-                        <textarea name="achievements" id="achievements" rows="3"
-                                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">{{ old('achievements') }}</textarea>
-                        @error('achievements')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Challenges -->
-                    <div>
-                        <label for="challenges" class="block text-sm font-medium text-gray-700">Tantangan/Kendala</label>
-                        <textarea name="challenges" id="challenges" rows="3"
-                                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">{{ old('challenges') }}</textarea>
-                        @error('challenges')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Next Week Plan -->
-                    <div>
-                        <label for="next_week_plan" class="block text-sm font-medium text-gray-700">Rencana Minggu Depan</label>
-                        <textarea name="next_week_plan" id="next_week_plan" rows="3"
-                                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">{{ old('next_week_plan') }}</textarea>
-                        @error('next_week_plan')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Documents Upload -->
-                    <div>
-                        <label for="documents" class="block text-sm font-medium text-gray-700">Dokumen Pendukung</label>
-                        <input type="file" name="documents[]" id="documents" multiple
-                               class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                               accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
-                        <p class="mt-1 text-sm text-gray-500">Upload dokumen pendukung (PDF, DOC, DOCX, JPG, PNG). Max 10MB per file.</p>
-                        @error('documents')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-
-                <div class="mt-6 flex items-center justify-end space-x-3">
-                    <a href="{{ route('weekly-progress.index', $group) }}" 
-                       class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
-                        Batal
-                    </a>
-                    <button type="submit" 
-                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        Simpan Progress
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
+
+    <script>
+        function toggleEvidenceUpload() {
+            const checkbox = document.getElementById('is_checked_only');
+            const uploadDiv = document.getElementById('evidence_upload');
+            const fileInput = document.getElementById('evidence');
+            
+            if (checkbox.checked) {
+                uploadDiv.classList.add('opacity-50', 'pointer-events-none');
+                fileInput.value = '';
+            } else {
+                uploadDiv.classList.remove('opacity-50', 'pointer-events-none');
+            }
+        }
+    </script>
 </x-app-layout>

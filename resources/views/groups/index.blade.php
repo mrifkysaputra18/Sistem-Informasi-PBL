@@ -4,10 +4,18 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Manajemen Kelompok') }}
             </h2>
-            <a href="{{ route('groups.create') }}" 
-               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-                <i class="fas fa-plus mr-2"></i>Tambah Kelompok
-            </a>
+            <div class="flex gap-2">
+                @if(auth()->user()->isAdmin())
+                <a href="{{ route('import.groups') }}" 
+                   class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                    <i class="fas fa-file-excel mr-2"></i>Import Excel
+                </a>
+                @endif
+                <a href="{{ route('groups.create') }}" 
+                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                    <i class="fas fa-plus mr-2"></i>Tambah Kelompok
+                </a>
+            </div>
         </div>
     </x-slot>
 
@@ -22,6 +30,33 @@
                     </div>
                 </div>
             @endif
+
+            <!-- Filter -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <form method="GET" action="{{ route('groups.index') }}" class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Filter by Kelas</label>
+                        <select name="classroom" class="w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                            <option value="">Semua Kelas</option>
+                            @foreach($classRooms as $classroom)
+                            <option value="{{ $classroom->id }}" {{ request('classroom') == $classroom->id ? 'selected' : '' }}>
+                                {{ $classroom->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <button type="submit" class="bg-purple-500 hover:bg-purple-600 text-white py-2 px-6 rounded-md">
+                            <i class="fas fa-filter mr-2"></i>Filter
+                        </button>
+                        @if(request('classroom'))
+                        <a href="{{ route('groups.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-6 rounded-md">
+                            <i class="fas fa-times mr-2"></i>Reset
+                        </a>
+                        @endif
+                    </div>
+                </form>
+            </div>
 
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

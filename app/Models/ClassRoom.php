@@ -4,13 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ClassRoom extends Model
 {
     protected $fillable = [
         'name',
         'code',
-        'semester',
+        'subject_id',
+        'academic_period_id',
+        'semester', // Keep for backward compatibility
         'program_studi',
         'max_groups',
         'is_active'
@@ -20,6 +23,22 @@ class ClassRoom extends Model
         'is_active' => 'boolean',
         'max_groups' => 'integer',
     ];
+
+    /**
+     * Get the subject that owns the class
+     */
+    public function subject(): BelongsTo
+    {
+        return $this->belongsTo(Subject::class);
+    }
+
+    /**
+     * Get the academic period that owns the class
+     */
+    public function academicPeriod(): BelongsTo
+    {
+        return $this->belongsTo(AcademicPeriod::class);
+    }
 
     /**
      * Get groups for this class

@@ -29,47 +29,52 @@ class WeeklyProgressController extends Controller
         return view('weekly-progress.index', compact('group', 'weeklyProgress'));
     }
 
-    public function create(Group $group, $weekNumber)
+    public function create(Request $request)
     {
-        $this->authorize('update', $group);
+        $groupId = $request->get('group_id');
         
-        // Check if progress for this week already exists
-        $existingProgress = WeeklyProgress::where('group_id', $group->id)
-            ->where('week_number', $weekNumber)
-            ->first();
-
-        if ($existingProgress) {
-            return redirect()->route('weekly-progress.edit', [$group, $existingProgress]);
+        if (!$groupId) {
+            return redirect()->route('mahasiswa.dashboard')->with('error', 'Group ID tidak ditemukan.');
+        }
+        
+        $group = Group::findOrFail($groupId);
+        
+        // Check if user is member of the group
+        $isMember = $group->members()->where('user_id', auth()->id())->exists();
+        
+        if (!$isMember && !auth()->user()->isAdmin() && !auth()->user()->isKoordinator()) {
+            abort(403, 'Anda bukan anggota kelompok ini.');
         }
 
-        return view('weekly-progress.create', compact('group', 'weekNumber'));
+        return view('weekly-progress.create', compact('group'));
     }
 
-    public function store(Request $request, Group $group)
+    public function store(Request $request)
     {
-        $this->authorize('update', $group);
+        $group = Group::findOrFail($request->group_id);
+        
+        // Check if user is member of the group
+        $isMember = $group->members()->where('user_id', auth()->id())->exists();
+        
+        if (!$isMember && !auth()->user()->isAdmin() && !auth()->user()->isKoordinator()) {
+            abort(403, 'Anda bukan anggota kelompok ini.');
+        }
         
         $validated = $request->validate([
+            'group_id' => 'required|exists:groups,id',
             'week_number' => 'required|integer|min:1',
             'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'activities' => 'required|string',
-            'achievements' => 'nullable|string',
-            'challenges' => 'nullable|string',
-            'next_week_plan' => 'nullable|string',
-            'documents' => 'nullable|array',
-            'documents.*' => 'file|max:10240', // 10MB max per file
+            'description' => 'nullable|string',
+            'is_checked_only' => 'nullable|boolean',
+            'evidence.*' => 'nullable|file|max:2048', // 2MB max per file
         ]);
 
-        // Handle document uploads to Google Drive
-        $documentIds = [];
-        if ($request->hasFile('documents')) {
-            foreach ($request->file('documents') as $file) {
-                $documentId = $this->googleDriveService->uploadFile(
-                    $file,
-                    $group->google_drive_folder_id
-                );
-                $documentIds[] = $documentId;
+        // Handle evidence uploads (simplified - save to storage/public)
+        $evidencePaths = [];
+        if ($request->hasFile('evidence') && !$request->is_checked_only) {
+            foreach ($request->file('evidence') as $file) {
+                $path = $file->store('evidence', 'public');
+                $evidencePaths[] = $path;
             }
         }
 
@@ -77,18 +82,15 @@ class WeeklyProgressController extends Controller
             'group_id' => $group->id,
             'week_number' => $validated['week_number'],
             'title' => $validated['title'],
-            'description' => $validated['description'],
-            'activities' => $validated['activities'],
-            'achievements' => $validated['achievements'],
-            'challenges' => $validated['challenges'],
-            'next_week_plan' => $validated['next_week_plan'],
-            'documents' => $documentIds,
-            'status' => 'draft',
-            'deadline' => $this->calculateDeadline($group, $validated['week_number']),
+            'description' => $validated['description'] ?? '',
+            'documents' => json_encode($evidencePaths),
+            'is_checked_only' => $request->is_checked_only ?? false,
+            'status' => 'submitted',
+            'submitted_at' => now(),
         ]);
 
-        return redirect()->route('weekly-progress.show', [$group, $weeklyProgress])
-            ->with('success', 'Progress mingguan berhasil disimpan.');
+        return redirect()->route('mahasiswa.dashboard')
+            ->with('success', 'Progress mingguan berhasil diupload!');
     }
 
     public function show(Group $group, WeeklyProgress $weeklyProgress)

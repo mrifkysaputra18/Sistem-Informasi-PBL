@@ -4,69 +4,66 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class ProgressReview extends Model
+class WeeklyProgress extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'weekly_progress_id',
-        'reviewer_id',
-        'score_progress_speed',
-        'score_quality',
-        'score_timeliness',
-        'score_collaboration',
-        'total_score',
-        'feedback',
-        'suggestions',
+        'group_id',
+        'week_number',
+        'title',
+        'description',
+        'activities',
+        'achievements',
+        'challenges',
+        'next_week_plan',
+        'documents',
         'status',
+        'submitted_at',
+        'deadline',
+        'is_locked',
+        'is_checked_only',
     ];
 
-    protected function casts(): array
+    protected $casts = [
+        'documents' => 'array',
+        'submitted_at' => 'datetime',
+        'deadline' => 'datetime',
+        'is_locked' => 'boolean',
+        'is_checked_only' => 'boolean',
+    ];
+
+    /**
+     * Get the group
+     */
+    public function group(): BelongsTo
     {
-        return [
-            'score_progress_speed' => 'decimal:1',
-            'score_quality' => 'decimal:1',
-            'score_timeliness' => 'decimal:1',
-            'score_collaboration' => 'decimal:1',
-            'total_score' => 'decimal:1',
-        ];
+        return $this->belongsTo(Group::class);
     }
 
-    // Relationships
-    public function weeklyProgress()
+    /**
+     * Check if submitted
+     */
+    public function isSubmitted(): bool
     {
-        return $this->belongsTo(WeeklyProgress::class);
+        return $this->status === 'submitted';
     }
 
-    public function reviewer()
+    /**
+     * Check if reviewed
+     */
+    public function isReviewed(): bool
     {
-        return $this->belongsTo(User::class, 'reviewer_id');
+        return $this->status === 'reviewed';
     }
 
-    // Helper methods
-    public function calculateTotalScore()
+    /**
+     * Check if draft
+     */
+    public function isDraft(): bool
     {
-        $this->total_score = ($this->score_progress_speed ?? 0) + 
-                           ($this->score_quality ?? 0) + 
-                           ($this->score_timeliness ?? 0) + 
-                           ($this->score_collaboration ?? 0);
-        
-        return $this->total_score;
-    }
-
-    public function isApproved()
-    {
-        return $this->status === 'approved';
-    }
-
-    public function needsRevision()
-    {
-        return $this->status === 'needs_revision';
-    }
-
-    public function isRejected()
-    {
-        return $this->status === 'rejected';
+        return $this->status === 'draft';
     }
 }

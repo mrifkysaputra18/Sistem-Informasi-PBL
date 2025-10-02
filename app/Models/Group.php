@@ -73,6 +73,14 @@ class Group extends Model
     }
 
     /**
+     * Get weekly targets
+     */
+    public function weeklyTargets(): HasMany
+    {
+        return $this->hasMany(WeeklyTarget::class);
+    }
+
+    /**
      * Check if group is full
      */
     public function isFull(): bool
@@ -86,5 +94,36 @@ class Group extends Model
     public function getMembersCountAttribute()
     {
         return $this->members()->count();
+    }
+
+    /**
+     * Get weekly target completion rate (for speed criteria)
+     * Returns percentage (0-100+)
+     * Can exceed 100% if completed more than planned
+     */
+    public function getTargetCompletionRate(): float
+    {
+        $totalTargets = $this->weeklyTargets()->count();
+        
+        if ($totalTargets === 0) {
+            return 0;
+        }
+
+        $completedTargets = $this->weeklyTargets()->where('is_completed', true)->count();
+        
+        return ($completedTargets / $totalTargets) * 100;
+    }
+
+    /**
+     * Get target completion score (normalized to 0-100)
+     * Used for ranking calculation
+     */
+    public function getTargetCompletionScore(): float
+    {
+        $rate = $this->getTargetCompletionRate();
+        
+        // If rate > 100%, cap at 100 for scoring
+        // Or allow bonus? Let's allow up to 120% for over-achievement
+        return min($rate, 120);
     }
 }
