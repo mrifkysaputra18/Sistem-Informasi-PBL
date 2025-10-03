@@ -53,6 +53,7 @@ php artisan cache:clear
 
 Ikuti langkah-langkah berikut untuk melakukan setup project setelah clone repository:
 
+```bash
 1. Clone Repository
 git clone https://github.com/mrifkysaputra18/Sistem-Informasi-PBL.git
 cd Sistem-Informasi-PBL
@@ -90,6 +91,7 @@ php artisan serve
 
 Aplikasi sekarang dapat diakses di:
 👉 http://localhost:8000
+```
 
 ## 🔐 Cara Login
 
