@@ -49,6 +49,48 @@ php artisan config:clear
 php artisan cache:clear
 ```
 
+### Cara Menjalankan Project
+
+Ikuti langkah-langkah berikut untuk melakukan setup project setelah clone repository:
+
+1. Clone Repository
+git clone https://github.com/mrifkysaputra18/Sistem-Informasi-PBL.git
+cd Sistem-Informasi-PBL
+
+2. Setup Environment
+git branch --show-current
+copy .env.example .env
+
+
+Jangan lupa sesuaikan konfigurasi database, mail, dan lainnya di file .env.
+
+3. Install Dependencies
+composer install
+npm install
+
+4. Konfigurasi Permission (Windows)
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+Get-ExecutionPolicy -List
+mkdir storage\framework\views
+icacls storage /grant Everyone:F /T
+
+5. Clear Cache & Generate Key
+php artisan config:clear
+php artisan cache:clear
+php artisan view:clear
+php artisan key:generate
+
+6. Migrasi & Seeder Database
+php artisan migrate
+php artisan db:seed
+
+7. Jalankan Aplikasi
+php artisan serve
+
+
+Aplikasi sekarang dapat diakses di:
+👉 http://localhost:8000
+
 ## 🔐 Cara Login
 
 ### Metode 1: Login dengan Google Politala (Recommended) 🔥
