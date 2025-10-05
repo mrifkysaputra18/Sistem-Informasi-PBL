@@ -1,11 +1,11 @@
 <nav x-data="{ open: false }" class="modern-navbar">
     <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-24">
-            <div class="flex">
+    <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-20">
+            <div class="flex items-center">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}" class="flex items-center space-x-4 group">
+                    <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 group">
                         @if(file_exists(public_path('images/logo/logo.png')))
                             <img src="{{ asset('images/logo/logo.png') }}" alt="Logo" class="app-logo">
                         @elseif(file_exists(public_path('images/logo/logo.jpg')))
@@ -17,7 +17,7 @@
                         @else
                             <x-application-logo class="block h-10 w-auto fill-current text-gray-800" />
                         @endif
-                        <div class="hidden lg:block border-l-2 border-gray-200 pl-4">
+                        <div class="hidden lg:block border-l-2 border-gray-300/50 pl-3 ml-1">
                             <div class="logo-text-main">Sistem Informasi PBL</div>
                             <div class="logo-text-sub">Politeknik Negeri Tanah Laut</div>
                         </div>
@@ -25,7 +25,7 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-1 sm:-my-px sm:ms-10 sm:flex">
+                <div class="hidden space-x-1 sm:ms-8 lg:flex items-center">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         <i class="fas fa-tachometer-alt mr-1"></i>{{ __('Dashboard') }}
                     </x-nav-link>
@@ -80,20 +80,20 @@
             </div>
 
             <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="hidden lg:flex lg:items-center lg:ms-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="user-profile-btn group">
-                            <div class="flex items-center space-x-3">
+                            <div class="flex items-center space-x-2.5">
                                 <div class="user-avatar">
                                     <span class="user-avatar-text">{{ strtoupper(substr(Auth::user()->name, 0, 2)) }}</span>
                                 </div>
-                                <div class="hidden md:block text-left">
+                                <div class="hidden xl:block text-left">
                                     <div class="user-name">{{ Auth::user()->name }}</div>
                                     <div class="user-role">{{ ucfirst(Auth::user()->role) }}</div>
                                 </div>
                             </div>
-                            <svg class="ml-2 h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <svg class="ml-2 h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                             </svg>
                         </button>
@@ -119,7 +119,7 @@
             </div>
 
             <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
+            <div class="-me-2 flex items-center lg:hidden">
                 <button @click="open = ! open" class="hamburger-btn">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -131,7 +131,7 @@
     </div>
 
     <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden mobile-menu">
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden lg:hidden mobile-menu">
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 <i class="fas fa-tachometer-alt mr-1"></i>{{ __('Dashboard') }}

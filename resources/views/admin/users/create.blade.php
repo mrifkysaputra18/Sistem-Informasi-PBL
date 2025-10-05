@@ -1,14 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    <i class="fas fa-user-plus mr-2"></i>{{ __('Tambah User Baru') }}
-                </h2>
-                <p class="text-sm text-gray-600 mt-1">Buat akun user baru untuk sistem</p>
-            </div>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ __('Tambah User Baru') }}
+            </h2>
             <a href="{{ route('admin.users.index') }}" 
-               class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
+               class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
                 <i class="fas fa-arrow-left mr-2"></i>Kembali
             </a>
         </div>

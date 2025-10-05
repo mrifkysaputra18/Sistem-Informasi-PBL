@@ -1,19 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    <i class="fas fa-user-edit mr-2"></i>{{ __('Edit User') }}
-                </h2>
-                <p class="text-sm text-gray-600 mt-1">Ubah informasi user: {{ $user->name }}</p>
-            </div>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ __('Edit User') }}: {{ $user->name }}
+            </h2>
             <div class="flex gap-2">
                 <a href="{{ route('admin.users.show', $user) }}" 
-                   class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
+                   class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
                     <i class="fas fa-eye mr-2"></i>Detail
                 </a>
                 <a href="{{ route('admin.users.index') }}" 
-                   class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
+                   class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
                     <i class="fas fa-arrow-left mr-2"></i>Kembali
                 </a>
             </div>
