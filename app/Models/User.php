@@ -25,6 +25,7 @@ class User extends Authenticatable
         'role',
         'phone',
         'program_studi',
+        'class_room_id',
         'is_active',
     ];
 
@@ -50,6 +51,14 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_active' => 'boolean',
         ];
+    }
+    
+    /**
+     * Get user's classroom
+     */
+    public function classRoom()
+    {
+        return $this->belongsTo(ClassRoom::class);
     }
     
     /**

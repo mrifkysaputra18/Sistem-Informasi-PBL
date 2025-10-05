@@ -35,6 +35,11 @@
                         <x-nav-link :href="route('academic-periods.index')" :active="request()->routeIs('academic-periods.*') || request()->routeIs('projects.*')">
                             <i class="fas fa-calendar-alt mr-1"></i>{{ __('Periode Akademik') }}
                         </x-nav-link>
+                        
+                        <!-- Admin Only - User Management -->
+                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                            <i class="fas fa-users-cog mr-1"></i>{{ __('Kelola User') }}
+                        </x-nav-link>
                     @endif
 
                     @if(auth()->user()->isKoordinator() || auth()->user()->isAdmin())
@@ -136,6 +141,11 @@
                 <!-- Admin Menu - Periode Akademik -->
                 <x-responsive-nav-link :href="route('academic-periods.index')" :active="request()->routeIs('academic-periods.*') || request()->routeIs('projects.*')">
                     <i class="fas fa-calendar-alt mr-1"></i>{{ __('Periode Akademik') }}
+                </x-responsive-nav-link>
+                
+                <!-- Admin Menu - User Management -->
+                <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                    <i class="fas fa-users-cog mr-1"></i>{{ __('Kelola User') }}
                 </x-responsive-nav-link>
             @endif
 

@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             CriterionSeeder::class,
             UserSeeder::class,
             ClassRoomSeeder::class,
+            CompletePBLDataSeeder::class,
         ]);
     }
 }

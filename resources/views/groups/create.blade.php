@@ -102,26 +102,13 @@
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 mb-3">
                                     
                                     <div class="border rounded-lg p-4 max-h-96 overflow-y-auto bg-gray-50">
-                                        @php
-                                            $students = \App\Models\User::where('role', 'mahasiswa')->orderBy('name')->get();
-                                        @endphp
-                                        @if($students->count() > 0)
-                                            <div id="studentsList">
-                                                @foreach($students as $student)
-                                                <label class="flex items-center p-2 hover:bg-white rounded cursor-pointer student-item" data-name="{{ strtolower($student->name) }}">
-                                                    <input type="checkbox" name="members[]" value="{{ $student->id }}" 
-                                                        {{ in_array($student->id, old('members', [])) ? 'checked' : '' }}
-                                                        class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 member-checkbox">
-                                                    <div class="ml-3">
-                                                        <span class="text-sm font-medium text-gray-700">{{ $student->name }}</span>
-                                                        <span class="text-xs text-gray-500 block">{{ $student->email }}</span>
-                                                    </div>
-                                                </label>
-                                                @endforeach
-                                            </div>
-                                        @else
-                                            <p class="text-gray-500 text-sm">Belum ada mahasiswa terdaftar</p>
-                                        @endif
+                                        <div id="studentsList">
+                                            <p class="text-gray-500 text-sm text-center py-8">
+                                                <i class="fas fa-info-circle text-blue-500 text-2xl mb-2"></i><br>
+                                                <strong>Pilih kelas terlebih dahulu</strong><br>
+                                                <small class="text-xs">Mahasiswa yang tersedia akan ditampilkan sesuai kelas yang dipilih</small>
+                                            </p>
+                                        </div>
                                     </div>
                                     
                                     <p class="text-xs text-gray-500 mt-2">
@@ -170,6 +157,66 @@
 
     @push('scripts')
     <script>
+        // Filter students by classroom
+        const classRoomSelect = document.getElementById('class_room_id');
+        const studentsList = document.getElementById('studentsList');
+        const searchMemberInput = document.getElementById('searchMember');
+        
+        classRoomSelect.addEventListener('change', function() {
+            const classRoomId = this.value;
+            
+            if (!classRoomId) {
+                studentsList.innerHTML = '<p class="text-gray-500 text-sm text-center py-4">Pilih kelas terlebih dahulu untuk melihat mahasiswa yang tersedia</p>';
+                return;
+            }
+            
+            // Show loading
+            studentsList.innerHTML = '<p class="text-gray-500 text-sm text-center py-4"><i class="fas fa-spinner fa-spin mr-2"></i>Memuat daftar mahasiswa...</p>';
+            
+            // Fetch available students for this classroom
+            fetch(`{{ route('groups.available-students') }}?class_room_id=${classRoomId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.students.length === 0) {
+                        studentsList.innerHTML = '<p class="text-gray-500 text-sm text-center py-4">Tidak ada mahasiswa yang tersedia untuk kelas ini.<br><small class="text-xs">Semua mahasiswa sudah tergabung dalam kelompok.</small></p>';
+                        return;
+                    }
+                    
+                    // Build students list HTML
+                    let html = '';
+                    data.students.forEach(student => {
+                        html += `
+                            <label class="flex items-center p-2 hover:bg-white rounded cursor-pointer student-item" data-name="${student.name.toLowerCase()}">
+                                <input type="checkbox" name="members[]" value="${student.id}" 
+                                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 member-checkbox">
+                                <div class="ml-3">
+                                    <span class="text-sm font-medium text-gray-700">${student.name}</span>
+                                    <span class="text-xs text-gray-500 block">${student.email}</span>
+                                </div>
+                            </label>
+                        `;
+                    });
+                    
+                    studentsList.innerHTML = html;
+                    
+                    // Re-attach event listeners for checkboxes
+                    attachCheckboxListeners();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    studentsList.innerHTML = '<p class="text-red-500 text-sm text-center py-4">Terjadi kesalahan saat memuat data mahasiswa</p>';
+                });
+        });
+        
+        // Function to attach checkbox event listeners
+        function attachCheckboxListeners() {
+            const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+            memberCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateLeaderOptions);
+            });
+            updateLeaderOptions();
+        }
+        
         // Search functionality
         document.getElementById('searchMember').addEventListener('keyup', function(e) {
             const searchTerm = e.target.value.toLowerCase();
@@ -212,12 +259,8 @@
             }
         }
 
-        memberCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', updateLeaderOptions);
-        });
-
-        // Initial check
-        updateLeaderOptions();
+        // Initial check - attach listeners for any pre-loaded students
+        attachCheckboxListeners();
     </script>
     @endpush
 </x-app-layout>

@@ -40,6 +40,34 @@ class GroupController extends Controller
     }
 
     /**
+     * Get available students for a specific classroom
+     */
+    public function getAvailableStudents(Request $request)
+    {
+        $classRoomId = $request->input('class_room_id');
+        
+        if (!$classRoomId) {
+            return response()->json(['students' => []]);
+        }
+        
+        // Get students who:
+        // 1. Are mahasiswa
+        // 2. Belong to the selected classroom (class_room_id)
+        // 3. Are NOT already in any group in this classroom
+        $students = User::where('role', 'mahasiswa')
+            ->where('class_room_id', $classRoomId) // Filter by classroom
+            ->whereDoesntHave('groupMembers', function($query) use ($classRoomId) {
+                $query->whereHas('group', function($q) use ($classRoomId) {
+                    $q->where('class_room_id', $classRoomId);
+                });
+            })
+            ->orderBy('name')
+            ->get(['id', 'name', 'email', 'politala_id']);
+        
+        return response()->json(['students' => $students]);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreGroupRequest $request)

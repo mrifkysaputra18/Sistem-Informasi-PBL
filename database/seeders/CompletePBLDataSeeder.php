@@ -146,6 +146,7 @@ class CompletePBLDataSeeder extends Seeder
                         'politala_id' => $politalaId,
                         'phone' => '08' . rand(1000000000, 9999999999),
                         'program_studi' => 'Teknik Informatika',
+                        'class_room_id' => $class->id, // Assign ke kelas
                         'is_active' => true,
                     ]);
 
@@ -227,18 +228,61 @@ class CompletePBLDataSeeder extends Seeder
         $totalProgress = WeeklyProgress::count();
         $totalScores = GroupScore::count();
 
+        // 11. Tambahkan beberapa mahasiswa yang belum masuk kelompok (untuk testing)
+        echo "\n📝 Membuat mahasiswa tambahan yang belum masuk kelompok...\n";
+        
+        foreach ($classes as $class) {
+            // Tambah 3 mahasiswa per kelas yang belum masuk kelompok
+            for ($i = 1; $i <= 3; $i++) {
+                $politalaId = sprintf('2341080%03d', $mahasiswaCounter);
+                
+                $depan = $namaDepan[array_rand($namaDepan)];
+                $belakang = $namaBelakang[array_rand($namaBelakang)];
+                $nama = $depan . ' ' . $belakang;
+                
+                $namaUnique = $nama;
+                $suffix = 1;
+                while (User::where('name', $namaUnique)->exists()) {
+                    $namaUnique = $nama . ' ' . chr(64 + $suffix);
+                    $suffix++;
+                }
+                
+                User::create([
+                    'name' => $namaUnique,
+                    'email' => sprintf('mhs%03d@mhs.politala.ac.id', $mahasiswaCounter),
+                    'password' => Hash::make('password'),
+                    'role' => 'mahasiswa',
+                    'politala_id' => $politalaId,
+                    'phone' => '08' . rand(1000000000, 9999999999),
+                    'program_studi' => 'Teknik Informatika',
+                    'class_room_id' => $class->id,
+                    'is_active' => true,
+                ]);
+                
+                $mahasiswaCounter++;
+            }
+            
+            echo "   ✓ {$class->name}: +3 mahasiswa (belum masuk kelompok)\n";
+        }
+        
+        $totalMahasiswaBelumGrup = 15; // 3 per kelas x 5 kelas
+        
         echo "\n" . str_repeat("=", 60) . "\n";
         echo "✅ SEEDER SELESAI!\n";
         echo str_repeat("=", 60) . "\n\n";
         echo "📊 SUMMARY DATA:\n";
         echo "   ├─ Kelas: 5 (TI-3A s/d TI-3E)\n";
         echo "   ├─ Kelompok: {$totalKelompok}\n";
-        echo "   ├─ Mahasiswa Baru: {$totalMahasiswa}\n";
+        echo "   ├─ Mahasiswa (dalam kelompok): {$totalMahasiswa}\n";
+        echo "   ├─ Mahasiswa (belum kelompok): {$totalMahasiswaBelumGrup}\n";
+        echo "   ├─ Total Mahasiswa: " . ($totalMahasiswa + $totalMahasiswaBelumGrup) . "\n";
         echo "   ├─ Weekly Targets: {$totalTargets}\n";
         echo "   ├─ Weekly Progress: {$totalProgress}\n";
         echo "   └─ Group Scores: {$totalScores}\n\n";
         echo "🎓 Email Format: mhs100@mhs.politala.ac.id - mhs" . ($mahasiswaCounter-1) . "@mhs.politala.ac.id\n";
         echo "🔑 Password: password (semua mahasiswa)\n\n";
+        echo "💡 Setiap mahasiswa sudah terdaftar di kelas masing-masing!\n";
+        echo "💡 Mahasiswa yang belum masuk kelompok bisa dipilih saat membuat kelompok baru.\n\n";
         echo "💡 Cara Lihat Data:\n";
         echo "   1. Login sebagai admin@politala.ac.id\n";
         echo "   2. Buka menu Scores/Penilaian Kelompok\n";

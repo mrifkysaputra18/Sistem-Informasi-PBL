@@ -59,6 +59,11 @@ Route::middleware(['auth'])->group(function () {
         // Subjects (Mata Kuliah) - accessible from academic-periods page
         Route::resource('projects', SubjectController::class);
         
+        // User Management (Admin only)
+        Route::get('admin/users/without-group', [\App\Http\Controllers\Admin\UserController::class, 'studentsWithoutGroup'])->name('admin.users.without-group');
+        Route::post('admin/users/{user}/toggle-active', [\App\Http\Controllers\Admin\UserController::class, 'toggleActive'])->name('admin.users.toggle-active');
+        Route::resource('admin/users', \App\Http\Controllers\Admin\UserController::class)->names('admin.users');
+        
         // Import Excel
         Route::get('import/groups', [ImportController::class, 'showGroupsImport'])->name('import.groups');
         Route::post('import/groups', [ImportController::class, 'importGroups'])->name('import.groups.store');
@@ -88,6 +93,7 @@ Route::middleware(['auth'])->group(function () {
         // Groups (CRUD) - IMPORTANT: groups/create must come before groups/{group}
         Route::get('groups', [GroupController::class, 'index'])->name('groups.index');
         Route::get('groups/create', [GroupController::class, 'create'])->name('groups.create');
+        Route::get('groups/available-students', [GroupController::class, 'getAvailableStudents'])->name('groups.available-students');
         Route::post('groups', [GroupController::class, 'store'])->name('groups.store');
         Route::get('groups/{group}', [GroupController::class, 'show'])->name('groups.show');
         Route::get('groups/{group}/edit', [GroupController::class, 'edit'])->name('groups.edit');

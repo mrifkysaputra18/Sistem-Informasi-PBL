@@ -49,6 +49,14 @@ class ClassRoom extends Model
     }
 
     /**
+     * Get students in this class
+     */
+    public function students(): HasMany
+    {
+        return $this->hasMany(User::class, 'class_room_id')->where('role', 'mahasiswa');
+    }
+
+    /**
      * Get active groups count
      */
     public function getActiveGroupsCountAttribute()
