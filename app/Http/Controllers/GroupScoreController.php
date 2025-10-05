@@ -214,27 +214,73 @@ class GroupScoreController extends Controller
     
     /**
      * Calculate individual student score
+     * Based on group performance and leadership
      */
     private function calculateIndividualStudentScore($student, $group)
     {
-        // Calculate based on attendance
-        $attendanceScore = \App\Models\Attendance::where('user_id', $student->id)
-            ->where('group_id', $group->id)
-            ->where('status', 'present')
-            ->count() * 5; // 5 points per attendance
-        
-        // Calculate based on weekly progress submissions
-        $progressScore = \App\Models\WeeklyProgress::where('group_id', $group->id)
-            ->where('user_id', $student->id)
-            ->count() * 3; // 3 points per progress submission
-        
-        // Calculate based on leadership (if student is group leader)
-        $leadershipScore = 0;
-        if ($group->leader_id === $student->id) {
-            $leadershipScore = 20; // Bonus points for being leader
+        try {
+            // 1. Calculate based on weekly targets completion (group effort)
+            $targetScore = 0;
+            $completedTargets = \App\Models\WeeklyTarget::where('group_id', $group->id)
+                ->where('is_completed', true)
+                ->count();
+            $totalTargets = \App\Models\WeeklyTarget::where('group_id', $group->id)->count();
+            
+            if ($totalTargets > 0) {
+                $completionRate = ($completedTargets / $totalTargets) * 100;
+                $targetScore = min(30, $completionRate * 0.3); // Max 30 points from targets
+            }
+            
+            // 2. Calculate based on group progress submissions
+            $progressScore = 0;
+            $reviewedProgress = \App\Models\WeeklyProgress::where('group_id', $group->id)
+                ->where('status', 'reviewed')
+                ->count();
+            $progressScore = min(20, $reviewedProgress * 2.5); // Max 20 points, 2.5 per progress
+            
+            // 3. Calculate based on leadership (if student is group leader)
+            $leadershipScore = 0;
+            if ($group->leader_id === $student->id) {
+                $leadershipScore = 15; // Bonus points for being leader
+            }
+            
+            // 4. Calculate based on group total score (main component)
+            $groupScoreComponent = 0;
+            if ($group->total_score && $group->total_score > 0) {
+                $groupScoreComponent = ($group->total_score / 100) * 35; // Max 35 points from group performance
+            }
+            
+            // 5. Base participation score (all members get this)
+            $baseScore = 0;
+            $isMember = \App\Models\GroupMember::where('group_id', $group->id)
+                ->where('user_id', $student->id)
+                ->exists();
+            
+            if ($isMember) {
+                $baseScore = 10; // Base 10 points for being active member
+            }
+            
+            // Calculate total
+            $totalScore = $baseScore + $targetScore + $progressScore + $leadershipScore + $groupScoreComponent;
+            
+            // Cap at 100
+            return min(100, max(0, round($totalScore, 2)));
+            
+        } catch (\Exception $e) {
+            // If any error occurs, return base score based on group performance
+            \Log::error('Error calculating individual student score: ' . $e->getMessage());
+            
+            // Fallback: return score based on group total_score
+            if ($group->total_score) {
+                $score = ($group->total_score / 100) * 60; // 60% of group score
+                if ($group->leader_id === $student->id) {
+                    $score += 10; // Leader bonus
+                }
+                return min(100, max(0, round($score, 2)));
+            }
+            
+            return 50; // Default fallback score
         }
-        
-        return min(100, $attendanceScore + $progressScore + $leadershipScore);
     }
     
     /**
