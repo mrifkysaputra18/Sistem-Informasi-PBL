@@ -5,8 +5,19 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                    <a href="{{ route('dashboard') }}" class="flex items-center space-x-3">
+                        @if(file_exists(public_path('images/logo/logo.png')))
+                            <img src="{{ asset('images/logo/logo.png') }}" alt="Logo" class="app-logo">
+                        @elseif(file_exists(public_path('images/logo/logo.jpg')))
+                            <img src="{{ asset('images/logo/logo.jpg') }}" alt="Logo" class="app-logo">
+                        @elseif(file_exists(public_path('images/logo/logo.svg')))
+                            <img src="{{ asset('images/logo/logo.svg') }}" alt="Logo" class="app-logo">
+                        @elseif(file_exists(public_path('images/logo/logo.webp')))
+                            <img src="{{ asset('images/logo/logo.webp') }}" alt="Logo" class="app-logo">
+                        @else
+                            <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                        @endif
+                        <span class="text-xl font-bold text-gray-800 hidden sm:block">Sistem PBL</span>
                     </a>
                 </div>
 
