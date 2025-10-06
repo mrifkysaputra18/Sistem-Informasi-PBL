@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Route;
+use App\Models\ClassRoom;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Explicit route model binding untuk ClassRoom
+        Route::bind('classroom', function ($value) {
+            return ClassRoom::findOrFail($value);
+        });
     }
 }

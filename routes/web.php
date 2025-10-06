@@ -84,6 +84,48 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ========================================
+    // DOSEN + KOORDINATOR + ADMIN ROUTES (Kelola Target Mingguan)
+    // ========================================
+    Route::middleware(['role:dosen,koordinator,admin'])->group(function () {
+        // Weekly Targets (CRUD untuk dosen)
+        Route::resource('targets', WeeklyTargetController::class);
+        Route::get('targets/{target}/review', [WeeklyTargetController::class, 'review'])->name('targets.review');
+        Route::post('targets/{target}/review', [WeeklyTargetController::class, 'storeReview'])->name('targets.review.store');
+    });
+
+    // ========================================
+    // MAHASISWA ROUTES (Submit Target Mingguan)
+    // ========================================
+    Route::middleware(['role:mahasiswa'])->group(function () {
+        // Weekly Target Submissions
+        Route::get('my-targets', [WeeklyTargetSubmissionController::class, 'index'])->name('targets.submissions.index');
+        Route::get('targets/{target}', [WeeklyTargetSubmissionController::class, 'show'])->name('targets.submissions.show');
+        Route::get('targets/{target}/submit', [WeeklyTargetSubmissionController::class, 'submitForm'])->name('targets.submissions.submit');
+        Route::post('targets/{target}/submit', [WeeklyTargetSubmissionController::class, 'storeSubmission'])->name('targets.submissions.store');
+        Route::get('targets/{target}/edit-submission', [WeeklyTargetSubmissionController::class, 'editSubmission'])->name('targets.submissions.edit');
+        Route::put('targets/{target}/submit', [WeeklyTargetSubmissionController::class, 'updateSubmission'])->name('targets.submissions.update');
+    });
+
+    // ========================================
+    // API ROUTES (AJAX)
+    // ========================================
+    Route::get('api/classrooms/{classroom}/groups', function($classroomId) {
+        $groups = \App\Models\Group::where('class_room_id', $classroomId)
+            ->with('classRoom')
+            ->get();
+        
+        return response()->json([
+            'groups' => $groups->map(function($group) {
+                return [
+                    'id' => $group->id,
+                    'name' => $group->name,
+                    'class_name' => $group->classRoom->name
+                ];
+            })
+        ]);
+    })->name('api.classrooms.groups');
+
+    // ========================================
     // KOORDINATOR + ADMIN ROUTES (Kelola Kelompok)
     // ========================================
     Route::middleware(['role:koordinator,admin'])->group(function () {

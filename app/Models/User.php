@@ -60,6 +60,21 @@ class User extends Authenticatable
     {
         return $this->belongsTo(ClassRoom::class);
     }
+
+    /**
+     * Get academic period through classroom
+     */
+    public function academicPeriod()
+    {
+        return $this->hasOneThrough(
+            AcademicPeriod::class,
+            ClassRoom::class,
+            'id',                  // FK di class_rooms
+            'id',                  // FK di academic_periods
+            'class_room_id',       // Local key di users
+            'academic_period_id'   // Local key di class_rooms
+        );
+    }
     
     /**
      * Get user's group memberships
@@ -83,6 +98,29 @@ class User extends Authenticatable
     public function ledGroups()
     {
         return $this->hasMany(Group::class, 'leader_id');
+    }
+
+    /**
+     * Get user's current group (first active group)
+     */
+    public function currentGroup()
+    {
+        return $this->groups()->first();
+    }
+
+    /**
+     * Check if user has group in current academic period
+     */
+    public function hasGroupInCurrentPeriod()
+    {
+        $currentPeriod = AcademicPeriod::getCurrent();
+        if (!$currentPeriod) return false;
+
+        return $this->groups()
+            ->whereHas('classRoom', function($query) use ($currentPeriod) {
+                $query->where('academic_period_id', $currentPeriod->id);
+            })
+            ->exists();
     }
     
     /**

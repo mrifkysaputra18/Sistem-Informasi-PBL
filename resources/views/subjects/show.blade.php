@@ -160,7 +160,7 @@
                                 <div class="text-sm text-gray-600 mb-3">
                                     <i class="fas fa-calendar mr-1"></i>Semester {{ $classRoom->semester }}
                                 </div>
-                                <a href="{{ route('classrooms.show', $classRoom) }}" 
+                                <a href="{{ url('/classrooms/' . $classRoom->id) }}" 
                                    class="text-blue-600 hover:text-blue-800 text-sm font-medium">
                                     Lihat Detail →
                                 </a>

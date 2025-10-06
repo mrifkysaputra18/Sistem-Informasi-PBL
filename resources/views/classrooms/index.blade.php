@@ -113,16 +113,10 @@
                                     <i class="fas fa-users mr-2"></i>Lihat Kelompok ({{ $classRoom->groups_count }})
                                 </a>
                                 
-                                <!-- Kelola Kelompok (Show Detail Kelas) -->
-                                <a href="{{ route('classrooms.show', $classRoom) }}" 
-                                   class="block w-full text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                    <i class="fas fa-cog mr-2"></i>Kelola Kelas
-                                </a>
-                                
                                 @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
-                                <div class="flex gap-2">
+                                <div class="flex gap-2 mt-2">
                                     <!-- Edit Button -->
-                                    <a href="{{ route('classrooms.edit', $classRoom) }}" 
+                                    <a href="{{ url('/classrooms/' . $classRoom->id . '/edit') }}" 
                                        class="flex-1 inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-yellow-600 bg-yellow-100 hover:bg-yellow-200 hover:text-yellow-900 rounded-lg transition duration-200 ease-in-out"
                                        title="Edit Kelas">
                                         <i class="fas fa-edit mr-1"></i>
@@ -130,19 +124,13 @@
                                     </a>
                                     
                                     <!-- Delete Button -->
-                                    <form action="{{ route('classrooms.destroy', $classRoom) }}" 
-                                          method="POST" 
-                                          class="flex-1"
-                                          onsubmit="return confirm('Yakin ingin menghapus kelas \'{{ $classRoom->name }}\'?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" 
-                                                class="w-full inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-red-600 bg-red-100 hover:bg-red-200 hover:text-red-900 rounded-lg transition duration-200 ease-in-out"
-                                                title="Hapus Kelas">
-                                            <i class="fas fa-trash mr-1"></i>
-                                            Hapus
-                                        </button>
-                                    </form>
+                                    <button type="button"
+                                            onclick="deleteClass({{ $classRoom->id }}, '{{ addslashes($classRoom->name) }}')"
+                                            class="flex-1 inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-red-600 bg-red-100 hover:bg-red-200 hover:text-red-900 rounded-lg transition duration-200 ease-in-out"
+                                            title="Hapus Kelas">
+                                        <i class="fas fa-trash mr-1"></i>
+                                        Hapus
+                                    </button>
                                 </div>
                                 @endif
                             </div>
@@ -164,4 +152,20 @@
             </div>
         </div>
     </div>
+
+    <!-- Hidden Delete Form -->
+    <form id="delete-form" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
+
+    <script>
+        function deleteClass(classId, className) {
+            if (confirm('Yakin ingin menghapus kelas "' + className + '"?')) {
+                const form = document.getElementById('delete-form');
+                form.action = '/classrooms/' + classId;
+                form.submit();
+            }
+        }
+    </script>
 </x-app-layout>

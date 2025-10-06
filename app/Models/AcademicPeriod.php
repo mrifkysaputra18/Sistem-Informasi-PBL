@@ -52,6 +52,71 @@ class AcademicPeriod extends Model
     }
 
     /**
+     * Get all students in this academic period (through classrooms)
+     */
+    public function students()
+    {
+        return $this->hasManyThrough(User::class, ClassRoom::class, 'academic_period_id', 'class_room_id')
+                    ->where('users.role', 'mahasiswa');
+    }
+
+    /**
+     * Get all group scores in this period
+     */
+    public function groupScores()
+    {
+        return $this->hasManyThrough(
+            GroupScore::class,
+            Group::class,
+            'class_room_id', // FK di groups ke class_rooms
+            'group_id',      // FK di group_scores ke groups
+            'id',            // PK di academic_periods
+            'id'             // PK di groups
+        )->whereHas('group.classRoom', function($query) {
+            $query->where('academic_period_id', $this->id);
+        });
+    }
+
+    /**
+     * Get all weekly progress in this period
+     */
+    public function weeklyProgress()
+    {
+        return $this->hasManyThrough(
+            WeeklyProgress::class,
+            Group::class,
+            'class_room_id',
+            'group_id'
+        )->whereHas('group.classRoom', function($query) {
+            $query->where('academic_period_id', $this->id);
+        });
+    }
+
+    /**
+     * Get total students count
+     */
+    public function getTotalStudentsAttribute()
+    {
+        return $this->students()->count();
+    }
+
+    /**
+     * Get total groups count
+     */
+    public function getTotalGroupsAttribute()
+    {
+        return $this->groups()->count();
+    }
+
+    /**
+     * Get total classes count
+     */
+    public function getTotalClassesAttribute()
+    {
+        return $this->classrooms()->count();
+    }
+
+    /**
      * Scope a query to only include active academic periods.
      */
     public function scopeActive($query)

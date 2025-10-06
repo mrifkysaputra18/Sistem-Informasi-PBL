@@ -33,6 +33,21 @@ class Group extends Model
     }
 
     /**
+     * Get academic period through classroom
+     */
+    public function academicPeriod()
+    {
+        return $this->hasOneThrough(
+            AcademicPeriod::class,
+            ClassRoom::class,
+            'id',                  // FK di class_rooms
+            'id',                  // FK di academic_periods  
+            'class_room_id',       // Local key di groups
+            'academic_period_id'   // Local key di class_rooms
+        );
+    }
+
+    /**
      * Get the project
      */
     public function project(): BelongsTo

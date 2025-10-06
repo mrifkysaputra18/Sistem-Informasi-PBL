@@ -2,233 +2,223 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{Group, WeeklyTarget};
-use App\Http\Requests\StoreWeeklyTargetRequest;
+use App\Models\{Group, WeeklyTarget, ClassRoom};
 use Illuminate\Http\Request;
 
+/**
+ * Controller untuk DOSEN kelola target mingguan
+ */
 class WeeklyTargetController extends Controller
 {
     /**
-     * Show the form for creating a new resource.
+     * Display list of targets (untuk dosen)
+     */
+    public function index(Request $request)
+    {
+        $query = WeeklyTarget::with(['group.classRoom', 'creator', 'completedByUser']);
+
+        // Filter by class
+        if ($request->has('class_room_id') && $request->class_room_id != '') {
+            $query->whereHas('group', function($q) use ($request) {
+                $q->where('class_room_id', $request->class_room_id);
+            });
+        }
+
+        // Filter by week
+        if ($request->has('week_number') && $request->week_number != '') {
+            $query->where('week_number', $request->week_number);
+        }
+
+        // Filter by status
+        if ($request->has('status') && $request->status != '') {
+            $query->where('submission_status', $request->status);
+        }
+
+        $targets = $query->orderBy('week_number')
+            ->orderBy('deadline')
+            ->paginate(20);
+
+        // Get filter options
+        $classRooms = ClassRoom::orderBy('name')->get();
+
+        return view('targets.index', compact('targets', 'classRooms'));
+    }
+
+    /**
+     * Show the form for creating a new target (DOSEN)
      */
     public function create(Request $request)
     {
+        $classRoomId = $request->get('class_room_id');
         $groupId = $request->get('group_id');
         
-        if (!$groupId) {
-            return redirect()->route('mahasiswa.dashboard')->with('error', 'Group ID tidak ditemukan.');
+        // Get class rooms untuk dropdown
+        $classRooms = ClassRoom::with('groups')->orderBy('name')->get();
+        
+        // Jika ada class_room_id, ambil groups nya
+        $groups = null;
+        if ($classRoomId) {
+            $groups = Group::where('class_room_id', $classRoomId)
+                ->orderBy('name')
+                ->get();
         }
         
-        $group = Group::findOrFail($groupId);
-        
-        // Check if user is member of the group
-        $isMember = $group->members()->where('user_id', auth()->id())->exists();
-        
-        if (!$isMember && !auth()->user()->isAdmin() && !auth()->user()->isKoordinator()) {
-            abort(403, 'Anda bukan anggota kelompok ini.');
+        // Jika ada group_id spesifik
+        $selectedGroup = null;
+        if ($groupId) {
+            $selectedGroup = Group::findOrFail($groupId);
         }
 
-        return view('targets.create', compact('group'));
+        return view('targets.create', compact('classRooms', 'groups', 'selectedGroup'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created target (DOSEN)
      */
     public function store(Request $request)
     {
-        // Log incoming request for debugging
-        \Log::info('WeeklyTarget Store Request', [
+        \Log::info('WeeklyTarget Store Request (Dosen)', [
+            'created_by' => auth()->id(),
+            'target_type' => $request->target_type,
+            'class_room_id' => $request->class_room_id,
             'group_id' => $request->group_id,
-            'week_number' => $request->week_number,
-            'title' => $request->title,
-            'is_checked_only' => $request->is_checked_only,
-            'has_files' => $request->hasFile('evidence'),
         ]);
 
         $validated = $request->validate([
-            'group_id' => 'required|exists:groups,id',
-            'week_number' => 'required|integer|min:1',
+            'target_type' => 'required|in:single,multiple,all_class', // single group, multiple groups, atau semua kelas
+            'class_room_id' => 'required_if:target_type,all_class|exists:class_rooms,id',
+            'group_id' => 'required_if:target_type,single|exists:groups,id',
+            'group_ids' => 'required_if:target_type,multiple|array',
+            'group_ids.*' => 'exists:groups,id',
+            'week_number' => 'required|integer|min:1|max:16',
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'is_checked_only' => 'nullable|boolean',
-            'evidence.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048', // 2MB max per file
+            'description' => 'required|string',
+            'deadline' => 'required|date|after:now',
         ]);
-        
-        $group = Group::findOrFail($request->group_id);
-        
-        // Check if user is member of the group
-        $isMember = $group->members()->where('user_id', auth()->id())->exists();
-        
-        if (!$isMember && !auth()->user()->isAdmin() && !auth()->user()->isKoordinator()) {
-            abort(403, 'Anda bukan anggota kelompok ini.');
+
+        $targetGroups = [];
+
+        // Tentukan target groups berdasarkan tipe
+        if ($request->target_type === 'single') {
+            $targetGroups = [$request->group_id];
+        } elseif ($request->target_type === 'multiple') {
+            $targetGroups = $request->group_ids;
+        } elseif ($request->target_type === 'all_class') {
+            // Semua groups di kelas ini
+            $targetGroups = Group::where('class_room_id', $request->class_room_id)
+                ->pluck('id')
+                ->toArray();
         }
-        
-        // Handle evidence uploads
-        $evidencePaths = [];
-        $isCheckedOnly = $request->has('is_checked_only') && $request->is_checked_only == '1';
-        
-        if ($request->hasFile('evidence')) {
-            \Log::info('Processing file uploads', [
-                'count' => count($request->file('evidence')),
-                'is_checked_only' => $isCheckedOnly,
+
+        if (empty($targetGroups)) {
+            return back()->with('error', 'Tidak ada kelompok yang dipilih.');
+        }
+
+        // Create target untuk setiap group
+        $createdCount = 0;
+        foreach ($targetGroups as $groupId) {
+            WeeklyTarget::create([
+                'group_id' => $groupId,
+                'created_by' => auth()->id(),
+                'week_number' => $request->week_number,
+                'title' => $request->title,
+                'description' => $request->description,
+                'deadline' => $request->deadline,
+                'submission_status' => 'pending',
+                'is_completed' => false,
+                'is_reviewed' => false,
             ]);
-            
-            foreach ($request->file('evidence') as $file) {
-                $path = $file->store('evidence', 'public');
-                $evidencePaths[] = $path;
-                \Log::info('File uploaded', ['path' => $path, 'size' => $file->getSize()]);
-            }
-            
-            // If user uploaded files, uncheck the "checked only" option
-            $isCheckedOnly = false;
+            $createdCount++;
         }
-        
-        $target = $group->weeklyTargets()->create([
-            'week_number' => $request->week_number,
-            'title' => $request->title,
-            'description' => $request->description,
-            'evidence_files' => $evidencePaths,
-            'is_checked_only' => $isCheckedOnly,
+
+        \Log::info('WeeklyTargets Created', [
+            'count' => $createdCount,
+            'created_by' => auth()->id(),
         ]);
 
-        \Log::info('WeeklyTarget Created', [
-            'target_id' => $target->id,
-            'evidence_count' => count($evidencePaths),
-        ]);
-
-        return redirect()
-            ->route('mahasiswa.dashboard')
-            ->with('success', 'Target mingguan berhasil ditambahkan!' . (count($evidencePaths) > 0 ? ' (' . count($evidencePaths) . ' file terupload)' : ''));
+        return redirect()->route('targets.index')
+            ->with('success', "Target berhasil dibuat untuk {$createdCount} kelompok!");
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Display the specified target
      */
-    public function edit(WeeklyTarget $weeklyTarget)
+    public function show(WeeklyTarget $target)
     {
-        $target = $weeklyTarget;
-        $group = $target->group;
-        
-        // Check if user is member of the group
-        $isMember = $group->members()->where('user_id', auth()->id())->exists();
-        
-        if (!$isMember && !auth()->user()->isAdmin() && !auth()->user()->isKoordinator()) {
-            abort(403, 'Anda bukan anggota kelompok ini.');
-        }
+        $target->load(['group.classRoom', 'group.members.user', 'creator', 'completedByUser', 'reviewer']);
 
-        // Check if target has been reviewed
-        if ($target->isReviewed()) {
-            return redirect()
-                ->back()
-                ->with('error', 'Target yang sudah dinilai dosen tidak dapat diedit!');
-        }
-
-        return view('targets.edit', compact('group', 'target'));
+        return view('targets.show', compact('target'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Show the form for editing the target (DOSEN)
      */
-    public function update(Request $request, WeeklyTarget $weeklyTarget)
+    public function edit(WeeklyTarget $target)
     {
-        $target = $weeklyTarget;
-        $group = $target->group;
-        
-        // Check if user is member of the group
-        $isMember = $group->members()->where('user_id', auth()->id())->exists();
-        
-        if (!$isMember && !auth()->user()->isAdmin() && !auth()->user()->isKoordinator()) {
-            abort(403, 'Anda bukan anggota kelompok ini.');
+        // Dosen hanya bisa edit target yang dia buat
+        if ($target->created_by !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Anda tidak memiliki akses untuk mengedit target ini.');
         }
 
-        // Check if target has been reviewed
-        if ($target->isReviewed()) {
-            return redirect()
-                ->back()
-                ->with('error', 'Target yang sudah dinilai dosen tidak dapat diubah!');
+        // Tidak bisa edit jika sudah ada submission
+        if ($target->isSubmitted()) {
+            return redirect()->back()
+                ->with('error', 'Target yang sudah ada submission tidak dapat diedit. Silakan buat target baru.');
         }
-        
-        \Log::info('WeeklyTarget Update Request', [
-            'target_id' => $target->id,
-            'week_number' => $request->week_number,
-            'title' => $request->title,
-            'is_checked_only' => $request->is_checked_only,
-            'has_files' => $request->hasFile('evidence'),
-        ]);
+
+        $group = $target->group;
+
+        return view('targets.edit', compact('target', 'group'));
+    }
+
+    /**
+     * Update the target (DOSEN)
+     */
+    public function update(Request $request, WeeklyTarget $target)
+    {
+        // Check permission
+        if ($target->created_by !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Anda tidak memiliki akses untuk mengedit target ini.');
+        }
+
+        // Check if already submitted
+        if ($target->isSubmitted()) {
+            return redirect()->back()
+                ->with('error', 'Target yang sudah ada submission tidak dapat diedit.');
+        }
 
         $validated = $request->validate([
-            'week_number' => 'required|integer|min:1',
+            'week_number' => 'required|integer|min:1|max:16',
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'is_checked_only' => 'nullable|boolean',
-            'evidence.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
+            'description' => 'required|string',
+            'deadline' => 'required|date',
         ]);
-        
-        // Handle evidence uploads
-        $evidencePaths = $target->evidence_files ?? [];
-        $isCheckedOnly = $request->has('is_checked_only') && $request->is_checked_only == '1';
-        
-        // If user uploaded new files
-        if ($request->hasFile('evidence')) {
-            \Log::info('Processing file uploads for update', [
-                'count' => count($request->file('evidence')),
-                'existing_count' => count($evidencePaths),
-            ]);
-            
-            foreach ($request->file('evidence') as $file) {
-                $path = $file->store('evidence', 'public');
-                $evidencePaths[] = $path;
-                \Log::info('File uploaded', ['path' => $path, 'size' => $file->getSize()]);
-            }
-            
-            // If user uploaded files, uncheck the "checked only" option
-            $isCheckedOnly = false;
-        }
-        
-        // If checkbox is checked (and no files uploaded), clear all evidence
-        if ($isCheckedOnly) {
-            $evidencePaths = [];
-            \Log::info('Clearing evidence files (checked only mode)');
-        }
-        
-        $target->update([
-            'week_number' => $request->week_number,
-            'title' => $request->title,
-            'description' => $request->description,
-            'evidence_files' => $evidencePaths,
-            'is_checked_only' => $isCheckedOnly,
-        ]);
+
+        $target->update($validated);
 
         \Log::info('WeeklyTarget Updated', [
             'target_id' => $target->id,
-            'evidence_count' => count($evidencePaths),
+            'updated_by' => auth()->id(),
         ]);
 
-        return redirect()
-            ->route('mahasiswa.dashboard')
-            ->with('success', 'Target mingguan berhasil diupdate!' . (count($evidencePaths) > 0 ? ' (' . count($evidencePaths) . ' file)' : ''));
+        return redirect()->route('targets.index')
+            ->with('success', 'Target berhasil diupdate!');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the target (DOSEN)
      */
-    public function destroy(WeeklyTarget $weeklyTarget)
+    public function destroy(WeeklyTarget $target)
     {
-        $target = $weeklyTarget;
-        $group = $target->group;
-        
-        // Check if user is member of the group
-        $isMember = $group->members()->where('user_id', auth()->id())->exists();
-        
-        if (!$isMember && !auth()->user()->isAdmin() && !auth()->user()->isKoordinator()) {
-            abort(403, 'Anda bukan anggota kelompok ini.');
+        // Check permission
+        if ($target->created_by !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Anda tidak memiliki akses untuk menghapus target ini.');
         }
 
-        // Check if target has been reviewed
-        if ($target->isReviewed()) {
-            return redirect()
-                ->back()
-                ->with('error', 'Target yang sudah dinilai dosen tidak dapat dihapus!');
+        // Check if already submitted
+        if ($target->isSubmitted()) {
+            return redirect()->back()
+                ->with('error', 'Target yang sudah ada submission tidak dapat dihapus.');
         }
 
         \Log::info('WeeklyTarget Deleted', [
@@ -239,56 +229,74 @@ class WeeklyTargetController extends Controller
 
         $target->delete();
 
-        return redirect()
-            ->route('mahasiswa.dashboard')
-            ->with('success', 'Target mingguan berhasil dihapus!');
+        return redirect()->route('targets.index')
+            ->with('success', 'Target berhasil dihapus!');
     }
 
     /**
-     * Mark target as complete
+     * Review submission (DOSEN)
      */
-    public function complete(WeeklyTarget $weeklyTarget)
+    public function review(WeeklyTarget $target)
     {
-        $target = $weeklyTarget;
-        $group = $target->group;
-        
-        // Check if user is member of the group
-        $isMember = $group->members()->where('user_id', auth()->id())->exists();
-        
-        if (!$isMember && !auth()->user()->isAdmin() && !auth()->user()->isKoordinator()) {
-            abort(403, 'Anda bukan anggota kelompok ini.');
+        // Check if target has been submitted
+        if (!$target->isSubmitted()) {
+            return redirect()->back()
+                ->with('error', 'Target ini belum disubmit oleh mahasiswa.');
         }
 
-        $target->update([
-            'is_completed' => true,
-            'completed_at' => now(),
-            'completed_by' => auth()->id(),
-        ]);
+        $target->load(['group.classRoom', 'group.members.user', 'creator', 'completedByUser']);
 
-        return redirect()->route('mahasiswa.dashboard')->with('success', 'Target berhasil ditandai selesai!');
+        return view('targets.review', compact('target'));
     }
 
     /**
-     * Mark target as incomplete
+     * Store review (DOSEN)
      */
-    public function uncomplete(WeeklyTarget $weeklyTarget)
+    public function storeReview(Request $request, WeeklyTarget $target)
     {
-        $target = $weeklyTarget;
-        $group = $target->group;
-        
-        // Check if user is member of the group
-        $isMember = $group->members()->where('user_id', auth()->id())->exists();
-        
-        if (!$isMember && !auth()->user()->isAdmin() && !auth()->user()->isKoordinator()) {
-            abort(403, 'Anda bukan anggota kelompok ini.');
+        // Check if target has been submitted
+        if (!$target->isSubmitted()) {
+            return redirect()->back()
+                ->with('error', 'Target ini belum disubmit oleh mahasiswa.');
         }
-        
-        $target->update([
-            'is_completed' => false,
-            'completed_at' => null,
-            'completed_by' => null,
+
+        // Check if already reviewed
+        if ($target->isReviewed()) {
+            return redirect()->back()
+                ->with('error', 'Target ini sudah direview.');
+        }
+
+        $validated = $request->validate([
+            'review_status' => 'required|in:approved,revision',
+            'review_notes' => 'required|string',
         ]);
 
-        return redirect()->route('mahasiswa.dashboard')->with('success', 'Target berhasil ditandai belum selesai!');
+        // Update target
+        $newStatus = $request->review_status === 'approved' ? 'approved' : 'revision';
+
+        $target->update([
+            'submission_status' => $newStatus,
+            'is_reviewed' => true,
+            'reviewed_at' => now(),
+            'reviewer_id' => auth()->id(),
+        ]);
+
+        // Create review record if model exists
+        if (class_exists('App\Models\WeeklyTargetReview')) {
+            $target->review()->create([
+                'reviewer_id' => auth()->id(),
+                'status' => $newStatus,
+                'notes' => $request->review_notes,
+            ]);
+        }
+
+        \Log::info('Target Reviewed', [
+            'target_id' => $target->id,
+            'reviewer_id' => auth()->id(),
+            'status' => $newStatus,
+        ]);
+
+        return redirect()->route('targets.index')
+            ->with('success', 'Review berhasil disimpan!');
     }
 }

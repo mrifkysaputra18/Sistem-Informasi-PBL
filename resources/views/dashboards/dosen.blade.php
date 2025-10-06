@@ -14,6 +14,9 @@
                 <a href="{{ route('scores.create') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                     <i class="fas fa-star mr-2"></i>Input Nilai
                 </a>
+                <a href="{{ route('targets.index') }}" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                    <i class="fas fa-bullseye mr-2"></i>Target Mingguan
+                </a>
             </div>
         </div>
     </x-slot>
@@ -109,7 +112,7 @@
                                             {{ $classRoom->groups_count }} Kelompok
                                         </span>
                                     </div>
-                                    <a href="{{ route('classrooms.show', $classRoom) }}" class="text-blue-600 hover:text-blue-800 text-sm">
+                                    <a href="{{ url('/classrooms/' . $classRoom->id) }}" class="text-blue-600 hover:text-blue-800 text-sm">
                                         Lihat Detail →
                                     </a>
                                 </div>

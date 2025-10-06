@@ -10,13 +10,17 @@ class WeeklyTarget extends Model
 {
     protected $fillable = [
         'group_id',
+        'created_by',           // NEW: Dosen yang membuat target
         'week_number',
         'title',
         'description',
+        'deadline',             // NEW: Deadline submit
+        'submission_notes',     // NEW: Catatan dari mahasiswa
+        'submission_status',    // NEW: Status submission
         'is_completed',
         'evidence_file',
-        'evidence_files', // New: JSON array for multiple files
-        'is_checked_only', // New: Checkbox option
+        'evidence_files',
+        'is_checked_only',
         'completed_at',
         'completed_by',
         'is_reviewed',
@@ -31,6 +35,7 @@ class WeeklyTarget extends Model
         'evidence_files' => 'array',
         'completed_at' => 'datetime',
         'reviewed_at' => 'datetime',
+        'deadline' => 'datetime',  // NEW
     ];
 
     /**
@@ -47,6 +52,14 @@ class WeeklyTarget extends Model
     public function completedByUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'completed_by');
+    }
+
+    /**
+     * Get the creator (dosen who created this target)
+     */
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     /**
@@ -80,5 +93,71 @@ class WeeklyTarget extends Model
     public function isReviewed(): bool
     {
         return $this->is_reviewed ?? false;
+    }
+
+    /**
+     * Check if target is pending (belum disubmit mahasiswa)
+     */
+    public function isPending(): bool
+    {
+        return $this->submission_status === 'pending';
+    }
+
+    /**
+     * Check if target has been submitted
+     */
+    public function isSubmitted(): bool
+    {
+        return in_array($this->submission_status, ['submitted', 'late', 'approved', 'revision']);
+    }
+
+    /**
+     * Check if submission is late
+     */
+    public function isLate(): bool
+    {
+        if (!$this->deadline) return false;
+        
+        return $this->completed_at && $this->completed_at->gt($this->deadline);
+    }
+
+    /**
+     * Check if deadline has passed
+     */
+    public function isOverdue(): bool
+    {
+        if (!$this->deadline) return false;
+        
+        return now()->gt($this->deadline) && !$this->isSubmitted();
+    }
+
+    /**
+     * Get status badge color
+     */
+    public function getStatusColor(): string
+    {
+        return match($this->submission_status) {
+            'pending' => 'gray',
+            'submitted' => 'blue',
+            'late' => 'orange',
+            'approved' => 'green',
+            'revision' => 'yellow',
+            default => 'gray',
+        };
+    }
+
+    /**
+     * Get status label in Indonesian
+     */
+    public function getStatusLabel(): string
+    {
+        return match($this->submission_status) {
+            'pending' => 'Belum Dikerjakan',
+            'submitted' => 'Sudah Submit',
+            'late' => 'Terlambat',
+            'approved' => 'Disetujui',
+            'revision' => 'Perlu Revisi',
+            default => 'Unknown',
+        };
     }
 }

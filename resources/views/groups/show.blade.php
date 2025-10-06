@@ -9,7 +9,7 @@
             </div>
             <div class="flex gap-2">
                 @if($group->classRoom)
-                <a href="{{ route('classrooms.show', $group->classRoom) }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                <a href="{{ url('/classrooms/' . $group->classRoom->id) }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
                     ← Kembali ke Kelas
                 </a>
                 @else

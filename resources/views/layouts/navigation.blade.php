@@ -59,6 +59,13 @@
                         </x-nav-link>
                     @endif
 
+                    @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
+                        <!-- Dosen, Koordinator, Admin - Kelola Target Mingguan -->
+                        <x-nav-link :href="route('targets.index')" :active="request()->routeIs('targets.*')">
+                            <i class="fas fa-bullseye mr-1"></i>{{ __('Target Mingguan') }}
+                        </x-nav-link>
+                    @endif
+
                     @if(auth()->user()->isDosen() || auth()->user()->isKoordinator())
                         <!-- Dosen, Koordinator - Review Target -->
                         <x-nav-link :href="route('target-reviews.index')" :active="request()->routeIs('target-reviews.*')">
@@ -74,7 +81,10 @@
                     @endif
 
                     @if(auth()->user()->isMahasiswa())
-                        <!-- Mahasiswa Menu - Dashboard Only -->
+                        <!-- Mahasiswa - Target Mingguan -->
+                        <x-nav-link :href="route('targets.submissions.index')" :active="request()->routeIs('targets.submissions.*')">
+                            <i class="fas fa-bullseye mr-1"></i>{{ __('Target Mingguan') }}
+                        </x-nav-link>
                     @endif
                 </div>
             </div>

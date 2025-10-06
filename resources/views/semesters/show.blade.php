@@ -157,7 +157,7 @@
                                             <p class="text-xs text-gray-500">{{ $classroom->code }}</p>
                                         </div>
                                     </div>
-                                    <a href="{{ route('classrooms.show', $classroom) }}" 
+                                    <a href="{{ url('/classrooms/' . $classroom->id) }}" 
                                        class="text-xs text-blue-600 hover:text-blue-800">
                                         <i class="fas fa-external-link-alt"></i>
                                     </a>
