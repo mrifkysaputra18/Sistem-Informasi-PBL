@@ -69,12 +69,33 @@ class WeeklyProgressController extends Controller
             'evidence.*' => 'nullable|file|max:2048', // 2MB max per file
         ]);
 
-        // Handle evidence uploads (simplified - save to storage/public)
+        // Handle evidence uploads - upload to Google Drive
         $evidencePaths = [];
         if ($request->hasFile('evidence') && !$request->is_checked_only) {
             foreach ($request->file('evidence') as $file) {
-                $path = $file->store('evidence', 'public');
-                $evidencePaths[] = $path;
+                try {
+                    // Upload ke Google Drive
+                    $fileId = $this->googleDriveService->uploadFile(
+                        $file,
+                        config('services.google_drive.folder_id')
+                    );
+                    
+                    // Simpan file ID dan URL
+                    $evidencePaths[] = [
+                        'file_id' => $fileId,
+                        'file_name' => $file->getClientOriginalName(),
+                        'file_url' => $this->googleDriveService->getFileUrl($fileId),
+                    ];
+                } catch (\Exception $e) {
+                    \Log::error('Google Drive upload error: ' . $e->getMessage());
+                    
+                    // Fallback: simpan ke local storage jika Google Drive gagal
+                    $path = $file->store('evidence', 'public');
+                    $evidencePaths[] = [
+                        'local_path' => $path,
+                        'file_name' => $file->getClientOriginalName(),
+                    ];
+                }
             }
         }
 

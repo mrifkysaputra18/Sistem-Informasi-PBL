@@ -158,19 +158,162 @@
                 </div>
             </div>
 
-            <!-- Main Content Card -->
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800">
-                            <i class="fas fa-table mr-2 text-gray-600"></i>Daftar User
-                        </h3>
-                        <div class="text-sm text-gray-600">
-                            Showing {{ $users->count() }} of {{ $users->total() }} entries
-                        </div>
-                    </div>
+            <!-- Tab Navigation -->
+            @if(!request()->hasAny(['role', 'class_room_id', 'is_active', 'search']))
+            <div class="bg-white rounded-t-lg shadow-md mb-0">
+                <div class="border-b border-gray-200">
+                    <nav class="flex -mb-px" aria-label="Tabs">
+                        <button onclick="showTab('admin')" id="tab-admin" class="role-tab active flex-1 py-4 px-6 text-center border-b-4 font-semibold text-sm transition-all">
+                            <i class="fas fa-user-shield mr-2"></i>
+                            Admin ({{ $usersByRole['admin']->count() }})
+                        </button>
+                        <button onclick="showTab('koordinator')" id="tab-koordinator" class="role-tab flex-1 py-4 px-6 text-center border-b-4 font-semibold text-sm transition-all">
+                            <i class="fas fa-user-tie mr-2"></i>
+                            Koordinator ({{ $usersByRole['koordinator']->count() }})
+                        </button>
+                        <button onclick="showTab('dosen')" id="tab-dosen" class="role-tab flex-1 py-4 px-6 text-center border-b-4 font-semibold text-sm transition-all">
+                            <i class="fas fa-chalkboard-teacher mr-2"></i>
+                            Dosen ({{ $usersByRole['dosen']->count() }})
+                        </button>
+                        <button onclick="showTab('mahasiswa')" id="tab-mahasiswa" class="role-tab flex-1 py-4 px-6 text-center border-b-4 font-semibold text-sm transition-all">
+                            <i class="fas fa-user-graduate mr-2"></i>
+                            Mahasiswa ({{ $usersByRole['mahasiswa']->count() }})
+                        </button>
+                    </nav>
+                </div>
+            </div>
+            @endif
 
-                    @if($users->count() > 0)
+            <!-- Main Content Card -->
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-b-lg {{ request()->hasAny(['role', 'class_room_id', 'is_active', 'search']) ? 'rounded-t-lg' : '' }}">
+                <div class="p-6 bg-white border-b border-gray-200">
+                    
+                    @if(!request()->hasAny(['role', 'class_room_id', 'is_active', 'search']))
+                        <!-- Tab Content untuk setiap role -->
+                        @foreach(['admin', 'koordinator', 'dosen', 'mahasiswa'] as $roleType)
+                        <div id="content-{{ $roleType }}" class="tab-content {{ $roleType === 'admin' ? '' : 'hidden' }}">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-800">
+                                    <i class="fas fa-users mr-2 text-gray-600"></i>Daftar {{ ucfirst($roleType) }}
+                                </h3>
+                                <div class="text-sm text-gray-600">
+                                    Total: {{ $usersByRole[$roleType]->count() }} {{ $roleType }}
+                                </div>
+                            </div>
+
+                            @if($usersByRole[$roleType]->count() > 0)
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+                                            <tr>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                                @if($roleType === 'mahasiswa')
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelas</th>
+                                                @endif
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            @foreach($usersByRole[$roleType] as $index => $user)
+                                                <tr class="hover:bg-blue-50 transition duration-200">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                        {{ $index + 1 }}
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap">
+                                                        <div class="flex items-center">
+                                                            <div class="flex-shrink-0 h-12 w-12">
+                                                                <div class="h-12 w-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg
+                                                                    {{ $roleType === 'admin' ? 'bg-gradient-to-br from-red-500 to-pink-600' : '' }}
+                                                                    {{ $roleType === 'koordinator' ? 'bg-gradient-to-br from-purple-500 to-indigo-600' : '' }}
+                                                                    {{ $roleType === 'dosen' ? 'bg-gradient-to-br from-blue-500 to-cyan-600' : '' }}
+                                                                    {{ $roleType === 'mahasiswa' ? 'bg-gradient-to-br from-green-500 to-emerald-600' : '' }}">
+                                                                    {{ strtoupper(substr($user->name, 0, 2)) }}
+                                                                </div>
+                                                            </div>
+                                                            <div class="ml-4">
+                                                                <div class="text-base font-bold text-gray-900">{{ $user->name }}</div>
+                                                                <div class="text-sm text-gray-600">{{ $user->email }}</div>
+                                                                @if($user->politala_id)
+                                                                    <div class="text-xs text-gray-400 mt-0.5">
+                                                                        <i class="fas fa-id-card mr-1"></i>{{ $user->politala_id }}
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    @if($roleType === 'mahasiswa')
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                                        @if($user->classRoom)
+                                                            <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-100 text-indigo-800">
+                                                                <i class="fas fa-school mr-1.5"></i>{{ $user->classRoom->name }}
+                                                            </span>
+                                                        @else
+                                                            <span class="text-gray-400 text-xs">Belum ada kelas</span>
+                                                        @endif
+                                                    </td>
+                                                    @endif
+                                                    <td class="px-6 py-4 whitespace-nowrap">
+                                                        <form action="{{ route('admin.users.toggle-active', $user) }}" method="POST">
+                                                            @csrf
+                                                            <button type="submit" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition-all {{ $user->is_active ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-red-100 text-red-800 hover:bg-red-200' }}">
+                                                                <i class="fas fa-circle text-xs mr-1.5"></i>
+                                                                {{ $user->is_active ? 'Aktif' : 'Nonaktif' }}
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                                        <div class="flex items-center justify-center space-x-2">
+                                                            <a href="{{ route('admin.users.show', $user) }}" 
+                                                               class="inline-flex items-center px-3 py-2 text-sm font-semibold text-green-700 bg-green-100 hover:bg-green-200 rounded-lg transition shadow-sm hover:shadow-md">
+                                                                <i class="fas fa-eye mr-1.5"></i>Detail
+                                                            </a>
+                                                            <a href="{{ route('admin.users.edit', $user) }}" 
+                                                               class="inline-flex items-center px-3 py-2 text-sm font-semibold text-indigo-700 bg-indigo-100 hover:bg-indigo-200 rounded-lg transition shadow-sm hover:shadow-md">
+                                                                <i class="fas fa-edit mr-1.5"></i>Edit
+                                                            </a>
+                                                            @if($user->id !== auth()->id())
+                                                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" 
+                                                                            onclick="return confirm('Yakin ingin menghapus user ini?')"
+                                                                            class="inline-flex items-center px-3 py-2 text-sm font-semibold text-red-700 bg-red-100 hover:bg-red-200 rounded-lg transition shadow-sm hover:shadow-md">
+                                                                        <i class="fas fa-trash mr-1.5"></i>Hapus
+                                                                    </button>
+                                                                </form>
+                                                            @endif
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <div class="text-center py-12">
+                                    <div class="text-gray-400 mb-4">
+                                        <i class="fas fa-user-slash text-6xl"></i>
+                                    </div>
+                                    <h3 class="text-lg font-medium text-gray-900 mb-2">Tidak ada {{ $roleType }}</h3>
+                                    <p class="text-gray-500">Belum ada user dengan role {{ $roleType }}.</p>
+                                </div>
+                            @endif
+                        </div>
+                        @endforeach
+                    @else
+                        <!-- Filtered Results -->
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800">
+                                <i class="fas fa-filter mr-2 text-gray-600"></i>Hasil Filter
+                            </h3>
+                            <div class="text-sm text-gray-600">
+                                Showing {{ $users->count() }} of {{ $users->total() }} entries
+                            </div>
+                        </div>
+
+                        @if($users->count() > 0)
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
@@ -266,17 +409,66 @@
                         <div class="mt-6">
                             {{ $users->appends(request()->except('page'))->links() }}
                         </div>
-                    @else
-                        <div class="text-center py-12">
-                            <div class="text-gray-400 mb-4">
-                                <i class="fas fa-users text-6xl"></i>
+                        @else
+                            <div class="text-center py-12">
+                                <div class="text-gray-400 mb-4">
+                                    <i class="fas fa-users text-6xl"></i>
+                                </div>
+                                <h3 class="text-lg font-medium text-gray-900 mb-2">Tidak ada user ditemukan</h3>
+                                <p class="text-gray-500 mb-4">Coba ubah filter atau tambahkan user baru.</p>
                             </div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">Tidak ada user ditemukan</h3>
-                            <p class="text-gray-500 mb-4">Coba ubah filter atau tambahkan user baru.</p>
-                        </div>
+                        @endif
                     @endif
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Tab Switching Script -->
+    <script>
+        function showTab(role) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.role-tab').forEach(tab => {
+                tab.classList.remove('active', 'border-blue-600', 'text-blue-600');
+                tab.classList.add('border-transparent', 'text-gray-600');
+            });
+            
+            // Show selected tab content
+            document.getElementById('content-' + role).classList.remove('hidden');
+            
+            // Add active class to selected tab
+            const activeTab = document.getElementById('tab-' + role);
+            activeTab.classList.add('active', 'border-blue-600', 'text-blue-600');
+            activeTab.classList.remove('border-transparent', 'text-gray-600');
+        }
+        
+        // Set initial state
+        document.addEventListener('DOMContentLoaded', function() {
+            showTab('admin');
+        });
+    </script>
+
+    <!-- Tab Styles -->
+    <style>
+        .role-tab {
+            border-color: transparent;
+            color: #6b7280;
+        }
+        
+        .role-tab:hover {
+            color: #3b82f6;
+            border-color: #93c5fd;
+        }
+        
+        .role-tab.active {
+            border-color: #3b82f6;
+            color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+    </style>
 </x-app-layout>

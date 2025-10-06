@@ -346,6 +346,24 @@ html {
 }
 
 /* ========================================
+   DROPDOWN MENU STYLES - FORCE VISIBILITY
+   ======================================== */
+
+/* Dropdown links - pastikan terlihat jelas! */
+.dropdown-content a,
+[x-show="open"] a,
+div[class*="rounded-md"] a {
+    color: #1f2937 !important; /* Gray-900 - hitam pekat! */
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+}
+
+div[class*="rounded-md"] a:hover {
+    background: linear-gradient(to right, #dbeafe, #e0e7ff) !important;
+    color: #1e40af !important; /* Blue-800 */
+}
+
+/* ========================================
    NAVIGATION LINKS WITH ACTIVE INDICATOR
    ======================================== */
 

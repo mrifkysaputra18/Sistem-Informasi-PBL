@@ -43,10 +43,25 @@ class UserController extends Controller
             });
         }
         
+        // Group by role untuk tampilan
+        $usersByRole = [
+            'admin' => User::where('role', 'admin')->with('classRoom')->latest()->get(),
+            'koordinator' => User::where('role', 'koordinator')->with('classRoom')->latest()->get(),
+            'dosen' => User::where('role', 'dosen')->with('classRoom')->latest()->get(),
+            'mahasiswa' => User::where('role', 'mahasiswa')->with('classRoom')->latest()->get(),
+        ];
+        
+        // Apply filters ke grouped data jika ada filter
+        if ($request->hasAny(['role', 'class_room_id', 'is_active', 'search'])) {
+            $users = $query->latest()->paginate(15);
+            $classRooms = ClassRoom::orderBy('name')->get();
+            return view('admin.users.index', compact('users', 'classRooms', 'usersByRole'));
+        }
+        
         $users = $query->latest()->paginate(15);
         $classRooms = ClassRoom::orderBy('name')->get();
         
-        return view('admin.users.index', compact('users', 'classRooms'));
+        return view('admin.users.index', compact('users', 'classRooms', 'usersByRole'));
     }
 
     /**

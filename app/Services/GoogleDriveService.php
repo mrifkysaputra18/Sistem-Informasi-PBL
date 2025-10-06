@@ -14,15 +14,18 @@ class GoogleDriveService
     public function __construct()
     {
         $this->client = new Client();
-        $this->client->setClientId(config('services.google.client_id'));
-        $this->client->setClientSecret(config('services.google.client_secret'));
-        $this->client->setRedirectUri(config('services.google.redirect'));
-        $this->client->setScopes(['https://www.googleapis.com/auth/drive']);
         
-        // Set access token if available
-        if (session('google_access_token')) {
-            $this->client->setAccessToken(session('google_access_token'));
+        // Gunakan Service Account untuk authentication
+        $serviceAccountPath = config('services.google_drive.service_account_path');
+        
+        if (file_exists($serviceAccountPath)) {
+            $this->client->setAuthConfig($serviceAccountPath);
+        } else {
+            throw new \Exception("Google Drive service account file not found at: {$serviceAccountPath}");
         }
+        
+        $this->client->setScopes([Drive::DRIVE_FILE]);
+        $this->client->setSubject(null); // Tidak perlu subject untuk service account
         
         $this->drive = new Drive($this->client);
     }

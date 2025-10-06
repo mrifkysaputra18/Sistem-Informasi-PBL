@@ -41,4 +41,9 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI', env('APP_URL').'/auth/google/callback'),
     ],
 
+    'google_drive' => [
+        'folder_id' => env('GOOGLE_DRIVE_FOLDER_ID'),
+        'service_account_path' => env('GOOGLE_DRIVE_SERVICE_ACCOUNT', storage_path('app/google-drive-service-account.json')),
+    ],
+
 ];
