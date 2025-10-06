@@ -18,42 +18,15 @@ class GroupScoreController extends Controller
         $criteria = Criterion::where('segment', 'group')->get();
         $scores = GroupScore::all();
         
-        // Calculate ranking using RankingService
-        $ranking = [];
-        if ($groups->count() > 0 && $criteria->count() > 0) {
-            try {
-                $rankingService = new RankingService();
-                $totals = $rankingService->computeGroupTotals();
-                arsort($totals); // Sort descending
-                
-                foreach ($totals as $groupId => $totalScore) {
-                    $group = $groups->find($groupId);
-                    if ($group) {
-                        $ranking[] = [
-                            'group_id' => $groupId,
-                            'kode' => $group->name,
-                            'nama' => $group->name,
-                            'total_skor' => $totalScore,
-                            'completion_rate' => $group->getTargetCompletionRate()
-                        ];
-                    }
-                }
-            } catch (\Exception $e) {
-                $ranking = [];
-            }
-        }
+        // Calculate ranking using RankingService dengan metode SAW
+        $rankingService = new RankingService();
+        $ranking = $rankingService->getGroupRankingWithDetails();
         
         // Calculate average score
         $averageScore = $scores->count() > 0 ? $scores->avg('skor') : 0;
         
         // Get progress speed scores
-        $progressSpeedScores = [];
-        try {
-            $rankingService = new RankingService();
-            $progressSpeedScores = $rankingService->getProgressSpeedScores();
-        } catch (\Exception $e) {
-            $progressSpeedScores = [];
-        }
+        $progressSpeedScores = $rankingService->getProgressSpeedScores();
         
         // Get best students per class
         $bestStudentsPerClass = $this->getBestStudentsPerClass();
@@ -87,12 +60,18 @@ class GroupScoreController extends Controller
         return redirect()->route('scores.index')->with('ok', 'Nilai berhasil disimpan.');
     }
     
-    public function recalc(RankingService $svc)
+    public function recalc()
     {
-        $totals = $svc->computeGroupTotals();
-        // untuk demo: kirim ke view sebagai ranking
-        arsort($totals); // besar ke kecil
-        return view('scores.ranking', ['ranking'=>$totals, 'groups'=>Group::pluck('name','id')]);
+        $rankingService = new RankingService();
+        
+        // Update total scores dan rankings menggunakan metode SAW
+        $rankingService->updateGroupRankings();
+        
+        // Get ranking with details
+        $ranking = $rankingService->getGroupRankingWithDetails();
+        
+        return redirect()->route('scores.index')
+            ->with('ok', 'Ranking kelompok berhasil dihitung ulang menggunakan metode SAW!');
     }
 
 
@@ -284,21 +263,13 @@ class GroupScoreController extends Controller
     }
     
     /**
-     * Calculate group total score
+     * Calculate group total score menggunakan metode SAW
      */
     private function calculateGroupTotalScore($group)
     {
-        $scores = \App\Models\GroupScore::where('group_id', $group->id)->get();
-        $criteria = \App\Models\Criterion::where('segment', 'group')->get();
+        $rankingService = new RankingService();
+        $totals = $rankingService->computeGroupTotals();
         
-        $totalScore = 0;
-        foreach ($scores as $score) {
-            $criterion = $criteria->find($score->criterion_id);
-            if ($criterion) {
-                $totalScore += $score->skor * $criterion->bobot;
-            }
-        }
-        
-        return $totalScore;
+        return $totals[$group->id] ?? 0;
     }
 }

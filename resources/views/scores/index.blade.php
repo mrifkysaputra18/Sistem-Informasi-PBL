@@ -363,30 +363,32 @@
 
                             @if($ranking && count($ranking) > 0)
                                 <div class="space-y-3">
-                                    @foreach($ranking as $index => $rank)
+                                    @foreach($ranking as $rank)
                                         <div class="flex items-center justify-between p-3 rounded-lg 
-                                            @if($index == 0) bg-yellow-50 border border-yellow-200
-                                            @elseif($index == 1) bg-gray-50 border border-gray-200
-                                            @elseif($index == 2) bg-orange-50 border border-orange-200
+                                            @if($rank['rank'] == 1) bg-yellow-50 border border-yellow-200
+                                            @elseif($rank['rank'] == 2) bg-gray-50 border border-gray-200
+                                            @elseif($rank['rank'] == 3) bg-orange-50 border border-orange-200
                                             @else bg-blue-50 border border-blue-200
                                             @endif">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0 mr-3">
-                                                    @if($index == 0)
+                                                    @if($rank['rank'] == 1)
                                                         <i class="fas fa-trophy text-yellow-500 text-xl"></i>
-                                                    @elseif($index == 1)
+                                                    @elseif($rank['rank'] == 2)
                                                         <i class="fas fa-medal text-gray-500 text-xl"></i>
-                                                    @elseif($index == 2)
+                                                    @elseif($rank['rank'] == 3)
                                                         <i class="fas fa-medal text-orange-500 text-xl"></i>
                                                     @else
                                                         <span class="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-600 rounded-full text-sm font-bold">
-                                                            {{ $index + 1 }}
+                                                            {{ $rank['rank'] }}
                                                         </span>
                                                     @endif
                                                 </div>
                                                 <div class="flex-1">
-                                                    <div class="text-sm font-medium text-gray-900">{{ $rank['kode'] }}</div>
-                                                    <div class="text-xs text-gray-500">{{ Str::limit($rank['nama'], 15) }}</div>
+                                                    <div class="text-sm font-medium text-gray-900">{{ $rank['group']->name }}</div>
+                                                    @if($rank['group']->classRoom)
+                                                        <div class="text-xs text-gray-500">{{ Str::limit($rank['group']->classRoom->name, 15) }}</div>
+                                                    @endif
                                                     @if(isset($rank['completion_rate']))
                                                     <div class="text-xs text-blue-600 mt-1">
                                                         <i class="fas fa-tasks mr-1"></i>{{ round($rank['completion_rate'], 1) }}% progres
@@ -396,14 +398,14 @@
                                             </div>
                                             <div class="text-right">
                                                 <div class="text-lg font-bold 
-                                                    @if($rank['total_skor'] >= 80) text-green-600
-                                                    @elseif($rank['total_skor'] >= 70) text-blue-600
-                                                    @elseif($rank['total_skor'] >= 60) text-yellow-600
+                                                    @if($rank['total_score'] >= 80) text-green-600
+                                                    @elseif($rank['total_score'] >= 70) text-blue-600
+                                                    @elseif($rank['total_score'] >= 60) text-yellow-600
                                                     @else text-red-600
                                                     @endif">
-                                                    {{ number_format($rank['total_skor'], 1) }}
+                                                    {{ number_format($rank['total_score'], 1) }}
                                                 </div>
-                                                <div class="text-xs text-gray-500">poin</div>
+                                                <div class="text-xs text-gray-500">SAW</div>
                                             </div>
                                         </div>
                                     @endforeach

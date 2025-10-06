@@ -10,6 +10,7 @@ use App\Http\Controllers\{
     ClassRoomController,
     CriterionController,
     GroupScoreController,
+    StudentScoreController,
     SubjectController,
     WeeklyTargetController,
     WeeklyTargetSubmissionController,
@@ -154,9 +155,13 @@ Route::middleware(['auth'])->group(function () {
     // DOSEN + KOORDINATOR ROUTES (Input Nilai)
     // ========================================
     Route::middleware(['role:dosen,koordinator'])->group(function () {
-        // Scores (Input Nilai - Dosen only)
+        // Group Scores (Input Nilai Kelompok)
         Route::get('scores/create', [GroupScoreController::class, 'create'])->name('scores.create');
         Route::post('scores', [GroupScoreController::class, 'store'])->name('scores.store');
+        
+        // Student Scores (Input Nilai Mahasiswa)
+        Route::get('student-scores/create', [StudentScoreController::class, 'create'])->name('student-scores.create');
+        Route::post('student-scores', [StudentScoreController::class, 'store'])->name('student-scores.store');
         
         // Weekly Target Reviews
         Route::get('target-reviews', [WeeklyTargetReviewController::class, 'index'])->name('target-reviews.index');
@@ -170,8 +175,12 @@ Route::middleware(['auth'])->group(function () {
     // DOSEN + KOORDINATOR + ADMIN ROUTES (Lihat Ranking)
     // ========================================
     Route::middleware(['role:dosen,koordinator,admin'])->group(function () {
-        // Rankings (View only)
+        // Group Rankings (View only)
         Route::get('scores', [GroupScoreController::class, 'index'])->name('scores.index');
+        
+        // Student Rankings (View only)
+        Route::get('student-scores', [StudentScoreController::class, 'index'])->name('student-scores.index');
+        Route::post('student-scores/recalc', [StudentScoreController::class, 'recalc'])->name('student-scores.recalc');
     });
 
     // ========================================

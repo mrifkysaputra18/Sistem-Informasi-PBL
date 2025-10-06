@@ -154,4 +154,12 @@ class User extends Authenticatable
     {
         return $this->role === 'mahasiswa';
     }
+    
+    /**
+     * Get student scores
+     */
+    public function studentScores()
+    {
+        return $this->hasMany(StudentScore::class);
+    }
 }
