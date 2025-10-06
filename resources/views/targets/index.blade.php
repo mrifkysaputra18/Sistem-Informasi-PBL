@@ -137,47 +137,55 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <div class="flex space-x-2">
+                                        <div class="flex items-center gap-2">
                                             <!-- View Detail -->
                                             <a href="{{ route('targets.show', $target->id) }}" 
-                                               class="text-blue-600 hover:text-blue-900"
+                                               class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded transition duration-200"
                                                title="Lihat Detail">
-                                                <i class="fas fa-eye"></i>
+                                                <i class="fas fa-eye mr-1"></i>
+                                                <span class="hidden sm:inline">Detail</span>
                                             </a>
                                             
                                             @if($target->created_by === auth()->id() || auth()->user()->isAdmin())
-                                            <!-- Edit -->
-                                            @if($target->isPending())
-                                            <a href="{{ route('targets.edit', $target->id) }}" 
-                                               class="text-yellow-600 hover:text-yellow-900"
-                                               title="Edit Target">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            @endif
-                                            
-                                            <!-- Delete -->
-                                            @if($target->isPending())
-                                            <form action="{{ route('targets.destroy', $target->id) }}" 
-                                                  method="POST" 
-                                                  class="inline"
-                                                  onsubmit="return confirm('Yakin ingin menghapus target ini?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" 
-                                                        class="text-red-600 hover:text-red-900"
-                                                        title="Hapus Target">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                            @endif
+                                                @if($target->canBeModified())
+                                                    <!-- Edit -->
+                                                    <a href="{{ route('targets.edit', $target->id) }}" 
+                                                       class="inline-flex items-center px-3 py-1.5 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 rounded transition duration-200"
+                                                       title="Edit Target">
+                                                        <i class="fas fa-edit mr-1"></i>
+                                                        <span class="hidden sm:inline">Edit</span>
+                                                    </a>
+                                                    
+                                                    <!-- Delete -->
+                                                    <form action="{{ route('targets.destroy', $target->id) }}" 
+                                                          method="POST" 
+                                                          class="inline"
+                                                          onsubmit="return confirm('Yakin ingin menghapus target ini?\n\nTarget: {{ $target->title }}\nKelompok: {{ $target->group->name }}')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" 
+                                                                class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 rounded transition duration-200"
+                                                                title="Hapus Target">
+                                                            <i class="fas fa-trash mr-1"></i>
+                                                            <span class="hidden sm:inline">Hapus</span>
+                                                        </button>
+                                                    </form>
+                                                @else
+                                                    <!-- Locked indicator -->
+                                                    <span class="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-500 rounded text-xs" title="Target sudah direview/disubmit, tidak bisa diedit">
+                                                        <i class="fas fa-lock mr-1"></i>
+                                                        <span class="hidden sm:inline">Terkunci</span>
+                                                    </span>
+                                                @endif
                                             @endif
                                             
                                             <!-- Review -->
                                             @if($target->isSubmitted() && !$target->isReviewed())
                                             <a href="{{ route('targets.review', $target->id) }}" 
-                                               class="text-green-600 hover:text-green-900"
+                                               class="inline-flex items-center px-3 py-1.5 bg-green-100 text-green-700 hover:bg-green-200 rounded transition duration-200"
                                                title="Review Submission">
-                                                <i class="fas fa-check-circle"></i>
+                                                <i class="fas fa-check-circle mr-1"></i>
+                                                <span class="hidden sm:inline">Review</span>
                                             </a>
                                             @endif
                                         </div>

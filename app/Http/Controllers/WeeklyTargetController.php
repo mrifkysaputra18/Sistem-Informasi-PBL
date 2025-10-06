@@ -82,19 +82,42 @@ class WeeklyTargetController extends Controller
             'target_type' => $request->target_type,
             'class_room_id' => $request->class_room_id,
             'group_id' => $request->group_id,
+            'group_ids' => $request->group_ids,
+            'deadline' => $request->deadline,
+            'all_request' => $request->all(),
         ]);
 
-        $validated = $request->validate([
+        try {
+            $validated = $request->validate([
             'target_type' => 'required|in:single,multiple,all_class', // single group, multiple groups, atau semua kelas
-            'class_room_id' => 'required_if:target_type,all_class|exists:class_rooms,id',
-            'group_id' => 'required_if:target_type,single|exists:groups,id',
-            'group_ids' => 'required_if:target_type,multiple|array',
+            'class_room_id' => 'required_if:target_type,all_class|nullable|exists:class_rooms,id',
+            'group_id' => 'required_if:target_type,single|nullable|exists:groups,id',
+            'group_ids' => 'required_if:target_type,multiple|nullable|array',
             'group_ids.*' => 'exists:groups,id',
             'week_number' => 'required|integer|min:1|max:16',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'deadline' => 'required|date|after:now',
+            'deadline' => 'required|date|after:today',
+        ], [
+            'target_type.required' => 'Tipe target harus dipilih.',
+            'class_room_id.required_if' => 'Kelas harus dipilih untuk target semua kelas.',
+            'class_room_id.exists' => 'Kelas yang dipilih tidak valid.',
+            'group_id.required_if' => 'Kelompok harus dipilih untuk target single.',
+            'group_id.exists' => 'Kelompok yang dipilih tidak valid.',
+            'group_ids.required_if' => 'Minimal satu kelompok harus dipilih.',
+            'week_number.required' => 'Minggu harus dipilih.',
+            'title.required' => 'Judul target harus diisi.',
+            'description.required' => 'Deskripsi target harus diisi.',
+            'deadline.required' => 'Deadline harus diisi.',
+            'deadline.after' => 'Deadline harus setelah hari ini.',
         ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation Failed', [
+                'errors' => $e->errors(),
+                'request' => $request->all(),
+            ]);
+            throw $e;
+        }
 
         $targetGroups = [];
 

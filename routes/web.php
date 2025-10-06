@@ -12,6 +12,7 @@ use App\Http\Controllers\{
     GroupScoreController,
     SubjectController,
     WeeklyTargetController,
+    WeeklyTargetSubmissionController,
     WeeklyProgressController,
     WeeklyTargetReviewController,
     ImportController,
@@ -88,7 +89,13 @@ Route::middleware(['auth'])->group(function () {
     // ========================================
     Route::middleware(['role:dosen,koordinator,admin'])->group(function () {
         // Weekly Targets (CRUD untuk dosen)
-        Route::resource('targets', WeeklyTargetController::class);
+        Route::get('targets', [WeeklyTargetController::class, 'index'])->name('targets.index');
+        Route::get('targets/create', [WeeklyTargetController::class, 'create'])->name('targets.create');
+        Route::post('targets', [WeeklyTargetController::class, 'store'])->name('targets.store');
+        Route::get('targets/{target}/show', [WeeklyTargetController::class, 'show'])->name('targets.show');
+        Route::get('targets/{target}/edit', [WeeklyTargetController::class, 'edit'])->name('targets.edit');
+        Route::put('targets/{target}', [WeeklyTargetController::class, 'update'])->name('targets.update');
+        Route::delete('targets/{target}', [WeeklyTargetController::class, 'destroy'])->name('targets.destroy');
         Route::get('targets/{target}/review', [WeeklyTargetController::class, 'review'])->name('targets.review');
         Route::post('targets/{target}/review', [WeeklyTargetController::class, 'storeReview'])->name('targets.review.store');
     });
