@@ -293,7 +293,7 @@
 /* Scroll Effect - Make navbar more opaque when scrolled */
 @media (min-width: 640px) {
     .modern-navbar {
-        background: rgba(255, 255, 255, 0.90);
+        background: rgba(79, 54, 222, 0.9);
     }
 }
 
