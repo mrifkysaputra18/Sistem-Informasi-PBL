@@ -145,19 +145,17 @@ class StudentScoreController extends Controller
         $bestStudents = [];
         $rankingService = new RankingService();
         
-        // Get all classes
-        $classRooms = ClassRoom::with(['users' => function($q) {
-            $q->where('role', 'mahasiswa');
-        }])->get();
+        // Get all classes with their students
+        $classRooms = ClassRoom::with(['students'])->get();
         
         foreach ($classRooms as $classRoom) {
-            if ($classRoom->users->count() > 0) {
+            if ($classRoom->students->count() > 0) {
                 // Get ranking for this class
                 $totals = $rankingService->computeStudentTotals();
                 
                 // Filter students from this class and sort
                 $classStudents = [];
-                foreach ($classRoom->users as $student) {
+                foreach ($classRoom->students as $student) {
                     if (isset($totals[$student->id])) {
                         $classStudents[] = [
                             'student' => $student,

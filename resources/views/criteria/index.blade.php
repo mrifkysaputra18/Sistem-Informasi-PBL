@@ -4,10 +4,16 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Manajemen Kriteria Penilaian') }}
             </h2>
-            <a href="{{ route('criteria.create') }}" 
-               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-                <i class="fas fa-plus mr-2"></i>Tambah Kriteria
-            </a>
+            <div class="flex gap-2">
+                <a href="{{ route('ahp.index') }}" 
+                   class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                    <i class="fas fa-calculator mr-2"></i>Hitung Bobot AHP
+                </a>
+                <a href="{{ route('criteria.create') }}" 
+                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                    <i class="fas fa-plus mr-2"></i>Tambah Kriteria
+                </a>
+            </div>
         </div>
     </x-slot>
 

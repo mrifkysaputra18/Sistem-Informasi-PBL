@@ -189,6 +189,14 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:admin'])->group(function () {
         // Criteria (Admin only)
         Route::resource('criteria', CriterionController::class)->except(['show']);
+        
+        // AHP - Analytical Hierarchy Process
+        Route::get('ahp', [\App\Http\Controllers\AhpController::class, 'index'])->name('ahp.index');
+        Route::post('ahp/save', [\App\Http\Controllers\AhpController::class, 'saveComparison'])->name('ahp.save');
+        Route::get('ahp/calculate', [\App\Http\Controllers\AhpController::class, 'calculate'])->name('ahp.calculate');
+        Route::post('ahp/apply', [\App\Http\Controllers\AhpController::class, 'applyWeights'])->name('ahp.apply');
+        Route::post('ahp/reset', [\App\Http\Controllers\AhpController::class, 'reset'])->name('ahp.reset');
+        Route::get('ahp/help', [\App\Http\Controllers\AhpController::class, 'help'])->name('ahp.help');
     });
 
     // ========================================

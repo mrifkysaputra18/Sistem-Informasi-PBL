@@ -74,9 +74,14 @@
                     @endif
 
                     @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
-                        <!-- Dosen, Koordinator, Admin - Scores (NO MAHASISWA!) -->
-                        <x-nav-link :href="route('scores.index')" :active="request()->routeIs('scores.*')">
-                            <i class="fas fa-trophy mr-1"></i>{{ __('Nilai & Ranking') }}
+                        <!-- Dosen, Koordinator, Admin - Group Scores -->
+                        <x-nav-link :href="route('scores.index')" :active="request()->routeIs('scores.*') && !request()->routeIs('student-scores.*')">
+                            <i class="fas fa-users-rectangle mr-1"></i>{{ __('Nilai Kelompok') }}
+                        </x-nav-link>
+                        
+                        <!-- Dosen, Koordinator, Admin - Student Scores -->
+                        <x-nav-link :href="route('student-scores.index')" :active="request()->routeIs('student-scores.*')">
+                            <i class="fas fa-user-graduate mr-1"></i>{{ __('Nilai Mahasiswa') }}
                         </x-nav-link>
                     @endif
 
@@ -177,9 +182,28 @@
             @endif
 
             @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
-                <!-- Dosen, Koordinator, Admin - Scores (NO MAHASISWA!) -->
-                <x-responsive-nav-link :href="route('scores.index')" :active="request()->routeIs('scores.*')">
-                    <i class="fas fa-trophy mr-1"></i>{{ __('Nilai & Ranking') }}
+                <!-- Dosen, Koordinator, Admin - Target Mingguan -->
+                <x-responsive-nav-link :href="route('targets.index')" :active="request()->routeIs('targets.*')">
+                    <i class="fas fa-bullseye mr-1"></i>{{ __('Target Mingguan') }}
+                </x-responsive-nav-link>
+            @endif
+
+            @if(auth()->user()->isDosen() || auth()->user()->isKoordinator())
+                <!-- Dosen, Koordinator - Review Target -->
+                <x-responsive-nav-link :href="route('target-reviews.index')" :active="request()->routeIs('target-reviews.*')">
+                    <i class="fas fa-clipboard-check mr-1"></i>{{ __('Review Target') }}
+                </x-responsive-nav-link>
+            @endif
+
+            @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
+                <!-- Dosen, Koordinator, Admin - Group Scores -->
+                <x-responsive-nav-link :href="route('scores.index')" :active="request()->routeIs('scores.*') && !request()->routeIs('student-scores.*')">
+                    <i class="fas fa-users-rectangle mr-1"></i>{{ __('Nilai Kelompok') }}
+                </x-responsive-nav-link>
+                
+                <!-- Dosen, Koordinator, Admin - Student Scores -->
+                <x-responsive-nav-link :href="route('student-scores.index')" :active="request()->routeIs('student-scores.*')">
+                    <i class="fas fa-user-graduate mr-1"></i>{{ __('Nilai Mahasiswa') }}
                 </x-responsive-nav-link>
             @endif
 
