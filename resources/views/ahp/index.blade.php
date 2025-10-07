@@ -152,89 +152,166 @@
                         <div class="space-y-6">
                             @foreach($comparisons as $index => $comparison)
                                 <div class="border-2 border-gray-200 rounded-lg p-6 hover:bg-gray-50 transition duration-200">
-                                    <!-- Kriteria yang dibandingkan -->
-                                    <div class="flex items-center justify-center gap-6 mb-4">
-                                        <div class="flex-1 text-center">
-                                            <div class="bg-blue-100 rounded-lg p-4">
+                                    <!-- Header Kriteria -->
+                                    <div class="grid grid-cols-2 gap-4 mb-6">
+                                        <div class="text-center">
+                                            <div class="bg-blue-100 rounded-lg p-4 shadow-md">
                                                 <div class="font-bold text-blue-900 text-lg">{{ $comparison['criterion_a']->nama }}</div>
-                                                <div class="text-xs text-blue-600 mt-1">(Kriteria A)</div>
+                                                <div class="text-xs text-blue-600 mt-1">← Pilih di Kiri jika ini lebih penting</div>
                                             </div>
                                         </div>
-                                        <div class="text-3xl text-gray-400 font-bold">VS</div>
-                                        <div class="flex-1 text-center">
-                                            <div class="bg-green-100 rounded-lg p-4">
+                                        <div class="text-center">
+                                            <div class="bg-green-100 rounded-lg p-4 shadow-md">
                                                 <div class="font-bold text-green-900 text-lg">{{ $comparison['criterion_b']->nama }}</div>
-                                                <div class="text-xs text-green-600 mt-1">(Kriteria B)</div>
+                                                <div class="text-xs text-green-600 mt-1">Pilih di Kanan jika ini lebih penting →</div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Petunjuk -->
-                                    <div class="text-center mb-3">
-                                        <p class="text-sm text-gray-600">
-                                            <i class="fas fa-question-circle mr-1"></i>
-                                            Seberapa penting <strong>{{ $comparison['criterion_a']->nama }}</strong> dibanding <strong>{{ $comparison['criterion_b']->nama }}</strong>?
-                                        </p>
-                                    </div>
+                                    <!-- Dual-Side Value Selection -->
+                                    <div class="bg-gradient-to-r from-blue-50 via-gray-50 to-green-50 rounded-xl p-6">
+                                        <div class="grid grid-cols-2 gap-1">
+                                            <!-- LEFT SIDE: Kriteria A lebih penting -->
+                                            <div class="space-y-2">
+                                                <div class="text-center text-xs font-bold text-blue-700 mb-3">
+                                                    ← {{ $comparison['criterion_a']->nama }} Lebih Penting
+                                                </div>
+                                                <button type="button"
+                                                        class="ahp-value-btn-left {{ $comparison['value'] == 9 ? 'active' : '' }}"
+                                                        data-value="9"
+                                                        data-a-id="{{ $comparison['criterion_a']->id }}"
+                                                        data-b-id="{{ $comparison['criterion_b']->id }}"
+                                                        data-segment="{{ $segment }}"
+                                                        onclick="selectValue(this)">
+                                                    <div class="text-xl font-bold">9</div>
+                                                    <div class="text-xs">Mutlak Lebih Penting</div>
+                                                </button>
+                                                <button type="button"
+                                                        class="ahp-value-btn-left {{ $comparison['value'] == 7 ? 'active' : '' }}"
+                                                        data-value="7"
+                                                        data-a-id="{{ $comparison['criterion_a']->id }}"
+                                                        data-b-id="{{ $comparison['criterion_b']->id }}"
+                                                        data-segment="{{ $segment }}"
+                                                        onclick="selectValue(this)">
+                                                    <div class="text-xl font-bold">7</div>
+                                                    <div class="text-xs">Jauh Lebih Penting</div>
+                                                </button>
+                                                <button type="button"
+                                                        class="ahp-value-btn-left {{ $comparison['value'] == 5 ? 'active' : '' }}"
+                                                        data-value="5"
+                                                        data-a-id="{{ $comparison['criterion_a']->id }}"
+                                                        data-b-id="{{ $comparison['criterion_b']->id }}"
+                                                        data-segment="{{ $segment }}"
+                                                        onclick="selectValue(this)">
+                                                    <div class="text-xl font-bold">5</div>
+                                                    <div class="text-xs">Sangat Penting</div>
+                                                </button>
+                                                <button type="button"
+                                                        class="ahp-value-btn-left {{ $comparison['value'] == 3 ? 'active' : '' }}"
+                                                        data-value="3"
+                                                        data-a-id="{{ $comparison['criterion_a']->id }}"
+                                                        data-b-id="{{ $comparison['criterion_b']->id }}"
+                                                        data-segment="{{ $segment }}"
+                                                        onclick="selectValue(this)">
+                                                    <div class="text-xl font-bold">3</div>
+                                                    <div class="text-xs">Cukup Penting</div>
+                                                </button>
+                                                <button type="button"
+                                                        class="ahp-value-btn-left {{ $comparison['value'] == 2 ? 'active' : '' }}"
+                                                        data-value="2"
+                                                        data-a-id="{{ $comparison['criterion_a']->id }}"
+                                                        data-b-id="{{ $comparison['criterion_b']->id }}"
+                                                        data-segment="{{ $segment }}"
+                                                        onclick="selectValue(this)">
+                                                    <div class="text-xl font-bold">2</div>
+                                                    <div class="text-xs">Sedikit Lebih Penting</div>
+                                                </button>
+                                            </div>
 
-                                    <!-- Tombol Pilihan Nilai -->
-                                    <div class="space-y-3">
-                                        <!-- Nilai 1-5 -->
-                                        <div class="grid grid-cols-5 gap-2">
+                                            <!-- RIGHT SIDE: Kriteria B lebih penting -->
+                                            <div class="space-y-2">
+                                                <div class="text-center text-xs font-bold text-green-700 mb-3">
+                                                    {{ $comparison['criterion_b']->nama }} Lebih Penting →
+                                                </div>
+                                                <button type="button"
+                                                        class="ahp-value-btn-right {{ abs($comparison['value'] - 0.111) < 0.01 ? 'active' : '' }}"
+                                                        data-value="0.111"
+                                                        data-a-id="{{ $comparison['criterion_a']->id }}"
+                                                        data-b-id="{{ $comparison['criterion_b']->id }}"
+                                                        data-segment="{{ $segment }}"
+                                                        onclick="selectValue(this)">
+                                                    <div class="text-xl font-bold">9</div>
+                                                    <div class="text-xs">Mutlak Lebih Penting</div>
+                                                </button>
+                                                <button type="button"
+                                                        class="ahp-value-btn-right {{ abs($comparison['value'] - 0.143) < 0.01 ? 'active' : '' }}"
+                                                        data-value="0.143"
+                                                        data-a-id="{{ $comparison['criterion_a']->id }}"
+                                                        data-b-id="{{ $comparison['criterion_b']->id }}"
+                                                        data-segment="{{ $segment }}"
+                                                        onclick="selectValue(this)">
+                                                    <div class="text-xl font-bold">7</div>
+                                                    <div class="text-xs">Jauh Lebih Penting</div>
+                                                </button>
+                                                <button type="button"
+                                                        class="ahp-value-btn-right {{ abs($comparison['value'] - 0.2) < 0.01 ? 'active' : '' }}"
+                                                        data-value="0.2"
+                                                        data-a-id="{{ $comparison['criterion_a']->id }}"
+                                                        data-b-id="{{ $comparison['criterion_b']->id }}"
+                                                        data-segment="{{ $segment }}"
+                                                        onclick="selectValue(this)">
+                                                    <div class="text-xl font-bold">5</div>
+                                                    <div class="text-xs">Sangat Penting</div>
+                                                </button>
+                                                <button type="button"
+                                                        class="ahp-value-btn-right {{ abs($comparison['value'] - 0.333) < 0.01 ? 'active' : '' }}"
+                                                        data-value="0.333"
+                                                        data-a-id="{{ $comparison['criterion_a']->id }}"
+                                                        data-b-id="{{ $comparison['criterion_b']->id }}"
+                                                        data-segment="{{ $segment }}"
+                                                        onclick="selectValue(this)">
+                                                    <div class="text-xl font-bold">3</div>
+                                                    <div class="text-xs">Cukup Penting</div>
+                                                </button>
+                                                <button type="button"
+                                                        class="ahp-value-btn-right {{ abs($comparison['value'] - 0.5) < 0.01 ? 'active' : '' }}"
+                                                        data-value="0.5"
+                                                        data-a-id="{{ $comparison['criterion_a']->id }}"
+                                                        data-b-id="{{ $comparison['criterion_b']->id }}"
+                                                        data-segment="{{ $segment }}"
+                                                        onclick="selectValue(this)">
+                                                    <div class="text-xl font-bold">2</div>
+                                                    <div class="text-xs">Sedikit Lebih Penting</div>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- CENTER: Sama Penting -->
+                                        <div class="mt-4">
                                             <button type="button"
-                                                    class="ahp-value-btn {{ $comparison['value'] == 1 ? 'active' : '' }}"
+                                                    class="ahp-value-btn-center {{ $comparison['value'] == 1 ? 'active' : '' }}"
                                                     data-value="1"
                                                     data-a-id="{{ $comparison['criterion_a']->id }}"
                                                     data-b-id="{{ $comparison['criterion_b']->id }}"
                                                     data-segment="{{ $segment }}"
                                                     onclick="selectValue(this)">
-                                                <div class="text-2xl font-bold">1</div>
-                                                <div class="text-xs mt-1">Sama Penting</div>
-                                            </button>
-                                            <button type="button"
-                                                    class="ahp-value-btn {{ $comparison['value'] == 2 ? 'active' : '' }}"
-                                                    data-value="2"
-                                                    data-a-id="{{ $comparison['criterion_a']->id }}"
-                                                    data-b-id="{{ $comparison['criterion_b']->id }}"
-                                                    data-segment="{{ $segment }}"
-                                                    onclick="selectValue(this)">
-                                                <div class="text-2xl font-bold">2</div>
-                                                <div class="text-xs mt-1">Sedikit</div>
-                                            </button>
-                                            <button type="button"
-                                                    class="ahp-value-btn {{ $comparison['value'] == 3 ? 'active' : '' }}"
-                                                    data-value="3"
-                                                    data-a-id="{{ $comparison['criterion_a']->id }}"
-                                                    data-b-id="{{ $comparison['criterion_b']->id }}"
-                                                    data-segment="{{ $segment }}"
-                                                    onclick="selectValue(this)">
-                                                <div class="text-2xl font-bold">3</div>
-                                                <div class="text-xs mt-1">Cukup Penting</div>
-                                            </button>
-                                            <button type="button"
-                                                    class="ahp-value-btn {{ $comparison['value'] == 4 ? 'active' : '' }}"
-                                                    data-value="4"
-                                                    data-a-id="{{ $comparison['criterion_a']->id }}"
-                                                    data-b-id="{{ $comparison['criterion_b']->id }}"
-                                                    data-segment="{{ $segment }}"
-                                                    onclick="selectValue(this)">
-                                                <div class="text-2xl font-bold">4</div>
-                                                <div class="text-xs mt-1">Lebih</div>
-                                            </button>
-                                            <button type="button"
-                                                    class="ahp-value-btn {{ $comparison['value'] == 5 ? 'active' : '' }}"
-                                                    data-value="5"
-                                                    data-a-id="{{ $comparison['criterion_a']->id }}"
-                                                    data-b-id="{{ $comparison['criterion_b']->id }}"
-                                                    data-segment="{{ $segment }}"
-                                                    onclick="selectValue(this)">
-                                                <div class="text-2xl font-bold">5</div>
-                                                <div class="text-xs mt-1">Sangat Penting</div>
+                                                <div class="text-xl font-bold">1</div>
+                                                <div class="text-xs">Sama Penting</div>
                                             </button>
                                         </div>
+                                    </div>
 
-                                        <!-- Nilai 6-9 -->
-                                        <div class="grid grid-cols-4 gap-2">
+                                    <!-- Current Selection Display -->
+                                    <div class="mt-4 text-center">
+                                        <div class="inline-block bg-purple-100 px-4 py-2 rounded-lg">
+                                            <span class="text-sm font-semibold text-purple-900">
+                                                Nilai Terpilih: <span class="text-lg">{{ $comparison['value'] }}</span>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Hidden: Old buttons layout (removed) -->
+                                    <div class="hidden">
                                             <button type="button"
                                                     class="ahp-value-btn {{ $comparison['value'] == 6 ? 'active' : '' }}"
                                                     data-value="6"
@@ -416,6 +493,91 @@
     </div>
 
     <style>
+        /* Left buttons (Kriteria A lebih penting) */
+        .ahp-value-btn-left {
+            width: 100% !important;
+            padding: 0.75rem !important;
+            border: 2px solid #dbeafe !important;
+            border-radius: 0.5rem !important;
+            background: linear-gradient(to right, #eff6ff, #ffffff) !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            text-align: center !important;
+            pointer-events: auto !important;
+        }
+        
+        .ahp-value-btn-left:hover {
+            background: linear-gradient(to right, #bfdbfe, #dbeafe) !important;
+            border-color: #3b82f6 !important;
+            transform: translateX(-2px) !important;
+            box-shadow: -4px 4px 12px rgba(59, 130, 246, 0.3) !important;
+        }
+        
+        .ahp-value-btn-left.active {
+            background: linear-gradient(to right, #3b82f6, #60a5fa) !important;
+            color: white !important;
+            border-color: #2563eb !important;
+            box-shadow: -4px 4px 16px rgba(59, 130, 246, 0.5) !important;
+            transform: translateX(-4px) !important;
+        }
+        
+        /* Right buttons (Kriteria B lebih penting) */
+        .ahp-value-btn-right {
+            width: 100% !important;
+            padding: 0.75rem !important;
+            border: 2px solid #d1fae5 !important;
+            border-radius: 0.5rem !important;
+            background: linear-gradient(to left, #ecfdf5, #ffffff) !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            text-align: center !important;
+            pointer-events: auto !important;
+        }
+        
+        .ahp-value-btn-right:hover {
+            background: linear-gradient(to left, #a7f3d0, #d1fae5) !important;
+            border-color: #10b981 !important;
+            transform: translateX(2px) !important;
+            box-shadow: 4px 4px 12px rgba(16, 185, 129, 0.3) !important;
+        }
+        
+        .ahp-value-btn-right.active {
+            background: linear-gradient(to left, #10b981, #34d399) !important;
+            color: white !important;
+            border-color: #059669 !important;
+            box-shadow: 4px 4px 16px rgba(16, 185, 129, 0.5) !important;
+            transform: translateX(4px) !important;
+        }
+        
+        /* Center button (Sama penting) */
+        .ahp-value-btn-center {
+            width: 100% !important;
+            padding: 1rem !important;
+            border: 2px solid #e9d5ff !important;
+            border-radius: 0.75rem !important;
+            background: linear-gradient(to right, #faf5ff, #ffffff, #faf5ff) !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            text-align: center !important;
+            pointer-events: auto !important;
+        }
+        
+        .ahp-value-btn-center:hover {
+            background: linear-gradient(to right, #e9d5ff, #f3e8ff, #e9d5ff) !important;
+            border-color: #a855f7 !important;
+            transform: scale(1.02) !important;
+            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3) !important;
+        }
+        
+        .ahp-value-btn-center.active {
+            background: linear-gradient(to right, #a855f7, #c084fc, #a855f7) !important;
+            color: white !important;
+            border-color: #9333ea !important;
+            box-shadow: 0 4px 16px rgba(168, 85, 247, 0.5) !important;
+            transform: scale(1.05) !important;
+        }
+        
+        /* Old button style (for backward compatibility) */
         .ahp-value-btn {
             padding: 1rem !important;
             border: 2px solid #e5e7eb !important;
@@ -462,6 +624,24 @@
         .ahp-value-btn:active {
             background-color: #c084fc !important;
         }
+        
+        /* Prevent child elements from blocking clicks */
+        .ahp-value-btn-left .text-xl,
+        .ahp-value-btn-left .text-xs,
+        .ahp-value-btn-right .text-xl,
+        .ahp-value-btn-right .text-xs,
+        .ahp-value-btn-center .text-xl,
+        .ahp-value-btn-center .text-xs {
+            pointer-events: none !important;
+            line-height: 1.2 !important;
+        }
+        
+        .ahp-value-btn-left.active .text-xs,
+        .ahp-value-btn-right.active .text-xs,
+        .ahp-value-btn-center.active .text-xs {
+            opacity: 1 !important;
+            font-weight: 600 !important;
+        }
     </style>
     
     <script>
@@ -472,8 +652,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM loaded, attaching event listeners...');
             
-            // Attach click event to all AHP buttons
-            const buttons = document.querySelectorAll('.ahp-value-btn');
+            // Attach click event to all AHP buttons (new and old styles)
+            const buttons = document.querySelectorAll('.ahp-value-btn, .ahp-value-btn-left, .ahp-value-btn-right, .ahp-value-btn-center');
             console.log('Found ' + buttons.length + ' buttons');
             
             buttons.forEach(function(button) {
@@ -495,36 +675,27 @@
             
             // Remove active class from all buttons in this comparison
             const parentDiv = button.closest('.border-2');
-            const allButtons = parentDiv.querySelectorAll('.ahp-value-btn');
+            const allButtons = parentDiv.querySelectorAll('.ahp-value-btn, .ahp-value-btn-left, .ahp-value-btn-right, .ahp-value-btn-center');
             allButtons.forEach(btn => btn.classList.remove('active'));
             
             // Add active class to clicked button
             button.classList.add('active');
             
-            // Update displayed value
-            const resultDiv = parentDiv.querySelector('[class*="comparison-result-"]');
-            const selectedValueSpan = resultDiv.querySelector('.selected-value');
-            const selectedDescSpan = resultDiv.querySelector('.selected-description');
+            // Update displayed value in the new UI
+            const displayDiv = parentDiv.querySelector('.bg-purple-100');
+            if (displayDiv) {
+                const valueSpan = displayDiv.querySelector('.text-lg');
+                if (valueSpan) {
+                    valueSpan.textContent = value;
+                }
+            }
             
-            selectedValueSpan.textContent = value;
-            
-            // Update description
-            const descriptions = {
-                '1': 'Sama penting',
-                '2': 'Sedikit lebih penting',
-                '3': 'Cukup penting',
-                '4': 'Lebih penting',
-                '5': 'Sangat penting',
-                '6': 'Sangat lebih penting',
-                '7': 'Jauh lebih penting',
-                '8': 'Sangat jauh lebih penting',
-                '9': 'Mutlak lebih penting'
-            };
-            
-            selectedDescSpan.textContent = descriptions[value] || 'Nilai antara';
+            // Get original button label
+            const originalLabel = button.querySelector('.text-xs') ? button.querySelector('.text-xs').textContent : '';
+            const originalValue = button.querySelector('.text-xl') ? button.querySelector('.text-xl').textContent : value;
             
             // Show loading feedback
-            button.innerHTML = '<div class="text-2xl">⏳</div><div class="text-xs mt-1">Menyimpan...</div>';
+            button.innerHTML = '<div class="text-xl">⏳</div><div class="text-xs mt-1">Menyimpan...</div>';
             
             // Save to database via AJAX
             const data = {
@@ -547,14 +718,15 @@
             .then(data => {
                 if (data.success) {
                     // Restore button content
-                    button.innerHTML = '<div class="text-2xl font-bold">' + value + '</div><div class="text-xs mt-1">' + descriptions[value].replace('Mutlak lebih penting', 'Mutlak Lebih Penting').replace('Sangat jauh lebih penting', 'Sangat Jauh').replace('Jauh lebih penting', 'Jauh Lebih Penting').replace('Sangat lebih penting', 'Sangat Lebih').replace('Sangat penting', 'Sangat Penting').replace('Lebih penting', 'Lebih').replace('Cukup penting', 'Cukup Penting').replace('Sedikit lebih penting', 'Sedikit').replace('Sama penting', 'Sama Penting') + '</div>';
+                    button.innerHTML = '<div class="text-xl font-bold">' + originalValue + '</div><div class="text-xs">' + originalLabel + '</div>';
                     
                     // Show success feedback
-                    resultDiv.classList.add('bg-green-50', 'border-green-200');
-                    setTimeout(() => {
-                        resultDiv.classList.remove('bg-green-50', 'border-green-200');
-                        resultDiv.classList.add('bg-purple-50', 'border-purple-200');
-                    }, 500);
+                    if (displayDiv) {
+                        displayDiv.classList.add('bg-green-100');
+                        setTimeout(() => {
+                            displayDiv.classList.remove('bg-green-100');
+                        }, 1000);
+                    }
                 }
             })
             .catch(error => {
