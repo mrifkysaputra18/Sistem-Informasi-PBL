@@ -26,6 +26,89 @@
             </div>
             @endif
 
+            <!-- Submission Statistics -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+                <!-- Total Target -->
+                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-gray-400">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Total Target</p>
+                            <p class="text-2xl font-bold text-gray-800">{{ $stats['total'] }}</p>
+                        </div>
+                        <div class="bg-gray-100 rounded-full p-3">
+                            <i class="fas fa-clipboard-list text-2xl text-gray-600"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sudah Submit -->
+                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-blue-400">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Sudah Submit</p>
+                            <p class="text-2xl font-bold text-blue-800">{{ $stats['submitted'] }}</p>
+                        </div>
+                        <div class="bg-blue-100 rounded-full p-3">
+                            <i class="fas fa-check-circle text-2xl text-blue-600"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Disetujui -->
+                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-green-400">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Disetujui</p>
+                            <p class="text-2xl font-bold text-green-800">{{ $stats['approved'] }}</p>
+                        </div>
+                        <div class="bg-green-100 rounded-full p-3">
+                            <i class="fas fa-check-double text-2xl text-green-600"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Perlu Revisi -->
+                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-yellow-400">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Perlu Revisi</p>
+                            <p class="text-2xl font-bold text-yellow-800">{{ $stats['revision'] }}</p>
+                        </div>
+                        <div class="bg-yellow-100 rounded-full p-3">
+                            <i class="fas fa-edit text-2xl text-yellow-600"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Belum Submit -->
+                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-red-400">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Belum Submit</p>
+                            <p class="text-2xl font-bold text-red-800">{{ $stats['pending'] + $stats['late'] }}</p>
+                        </div>
+                        <div class="bg-red-100 rounded-full p-3">
+                            <i class="fas fa-hourglass-half text-2xl text-red-600"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-sm font-semibold text-gray-700">Progress Submission</h3>
+                    <span class="text-sm font-bold text-gray-700">{{ $stats['submitted_percentage'] }}%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-4">
+                    <div class="bg-gradient-to-r from-blue-500 to-green-500 h-4 rounded-full transition-all duration-500" 
+                         style="width: {{ $stats['submitted_percentage'] }}%"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">
+                    {{ $stats['submitted'] + $stats['approved'] + $stats['revision'] }} dari {{ $stats['total'] }} kelompok sudah submit target
+                </p>
+            </div>
+
             <!-- Filters -->
             <div class="bg-white rounded-lg shadow-md p-6 mb-6">
                 <form method="GET" action="{{ route('targets.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -97,16 +180,42 @@
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach($targets as $target)
-                                <tr class="hover:bg-gray-50">
+                                @php
+                                    // Highlight row untuk yang sudah submit
+                                    $rowClass = match($target->submission_status) {
+                                        'submitted' => 'bg-blue-50 hover:bg-blue-100 border-l-4 border-blue-500',
+                                        'approved' => 'bg-green-50 hover:bg-green-100 border-l-4 border-green-500',
+                                        'revision' => 'bg-yellow-50 hover:bg-yellow-100 border-l-4 border-yellow-500',
+                                        'late' => 'bg-orange-50 hover:bg-orange-100 border-l-4 border-orange-500',
+                                        default => 'hover:bg-gray-50',
+                                    };
+                                @endphp
+                                <tr class="{{ $rowClass }}">
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div>
-                                            <div class="text-sm font-medium text-gray-900">{{ $target->title }}</div>
-                                            <div class="text-sm text-gray-500">{{ Str::limit($target->description, 50) }}</div>
+                                        <div class="flex items-center">
+                                            @if(in_array($target->submission_status, ['submitted', 'approved', 'revision']))
+                                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                            @elseif($target->submission_status === 'late')
+                                                <i class="fas fa-exclamation-triangle text-orange-500 mr-2"></i>
+                                            @else
+                                                <i class="fas fa-clock text-gray-400 mr-2"></i>
+                                            @endif
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">{{ $target->title }}</div>
+                                                <div class="text-sm text-gray-500">{{ Str::limit($target->description, 50) }}</div>
+                                            </div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900">{{ $target->group->name }}</div>
-                                        <div class="text-sm text-gray-500">{{ $target->group->classRoom->name }}</div>
+                                        <div>
+                                            <div class="text-sm font-semibold text-gray-900">{{ $target->group->name }}</div>
+                                            <div class="text-sm text-gray-500">{{ $target->group->classRoom->name }}</div>
+                                            @if($target->completedByUser)
+                                                <div class="text-xs text-blue-600 mt-1">
+                                                    <i class="fas fa-user text-xs"></i> Submit oleh: {{ $target->completedByUser->name }}
+                                                </div>
+                                            @endif
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         Minggu {{ $target->week_number }}
@@ -134,9 +243,19 @@
                                                 default => 'bg-gray-100 text-gray-800',
                                             };
                                         @endphp
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $color }}">
-                                            {{ $target->getStatusLabel() }}
-                                        </span>
+                                        <div>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $color }}">
+                                                {{ $target->getStatusLabel() }}
+                                            </span>
+                                            @if($target->completed_at && in_array($target->submission_status, ['submitted', 'approved', 'revision']))
+                                                <div class="text-xs text-gray-500 mt-1">
+                                                    <i class="fas fa-clock text-xs"></i> {{ $target->completed_at->format('d/m/Y H:i') }}
+                                                </div>
+                                                <div class="text-xs text-gray-400">
+                                                    {{ $target->completed_at->diffForHumans() }}
+                                                </div>
+                                            @endif
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex items-center gap-2">

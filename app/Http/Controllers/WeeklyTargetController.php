@@ -17,9 +17,15 @@ class WeeklyTargetController extends Controller
     {
         $query = WeeklyTarget::with(['group.classRoom', 'creator', 'completedByUser']);
 
+        // Base query untuk statistik (sebelum pagination)
+        $statsQuery = clone $query;
+
         // Filter by class
         if ($request->has('class_room_id') && $request->class_room_id != '') {
             $query->whereHas('group', function($q) use ($request) {
+                $q->where('class_room_id', $request->class_room_id);
+            });
+            $statsQuery->whereHas('group', function($q) use ($request) {
                 $q->where('class_room_id', $request->class_room_id);
             });
         }
@@ -27,12 +33,28 @@ class WeeklyTargetController extends Controller
         // Filter by week
         if ($request->has('week_number') && $request->week_number != '') {
             $query->where('week_number', $request->week_number);
+            $statsQuery->where('week_number', $request->week_number);
         }
 
         // Filter by status
         if ($request->has('status') && $request->status != '') {
             $query->where('submission_status', $request->status);
         }
+
+        // Calculate statistics
+        $stats = [
+            'total' => $statsQuery->count(),
+            'submitted' => $statsQuery->where('submission_status', 'submitted')->count(),
+            'approved' => $statsQuery->where('submission_status', 'approved')->count(),
+            'revision' => $statsQuery->where('submission_status', 'revision')->count(),
+            'pending' => $statsQuery->where('submission_status', 'pending')->count(),
+            'late' => $statsQuery->where('submission_status', 'late')->count(),
+        ];
+
+        // Calculate percentage
+        $stats['submitted_percentage'] = $stats['total'] > 0 
+            ? round(($stats['submitted'] + $stats['approved'] + $stats['revision']) / $stats['total'] * 100) 
+            : 0;
 
         $targets = $query->orderBy('week_number')
             ->orderBy('deadline')
@@ -41,7 +63,7 @@ class WeeklyTargetController extends Controller
         // Get filter options
         $classRooms = ClassRoom::orderBy('name')->get();
 
-        return view('targets.index', compact('targets', 'classRooms'));
+        return view('targets.index', compact('targets', 'classRooms', 'stats'));
     }
 
     /**
@@ -290,12 +312,20 @@ class WeeklyTargetController extends Controller
         }
 
         $validated = $request->validate([
-            'review_status' => 'required|in:approved,revision',
-            'review_notes' => 'required|string',
+            'score' => 'required|numeric|min:0|max:100',
+            'status' => 'required|in:approved,needs_revision,rejected',
+            'feedback' => 'required|string',
+            'suggestions' => 'nullable|string',
         ]);
 
-        // Update target
-        $newStatus = $request->review_status === 'approved' ? 'approved' : 'revision';
+        // Map status to submission_status
+        $statusMap = [
+            'approved' => 'approved',
+            'needs_revision' => 'revision',
+            'rejected' => 'rejected'
+        ];
+        
+        $newStatus = $statusMap[$request->status];
 
         $target->update([
             'submission_status' => $newStatus,
@@ -306,20 +336,26 @@ class WeeklyTargetController extends Controller
 
         // Create review record if model exists
         if (class_exists('App\Models\WeeklyTargetReview')) {
-            $target->review()->create([
+            $reviewData = [
                 'reviewer_id' => auth()->id(),
                 'status' => $newStatus,
-                'notes' => $request->review_notes,
-            ]);
+                'score' => $request->score,
+                'feedback' => $request->feedback,
+                'suggestions' => $request->suggestions,
+                'notes' => $request->feedback, // Untuk backward compatibility
+            ];
+            
+            $target->review()->create($reviewData);
         }
 
         \Log::info('Target Reviewed', [
             'target_id' => $target->id,
             'reviewer_id' => auth()->id(),
             'status' => $newStatus,
+            'score' => $request->score,
         ]);
 
         return redirect()->route('targets.index')
-            ->with('success', 'Review berhasil disimpan!');
+            ->with('success', 'Review berhasil disimpan dengan nilai ' . $request->score . '!');
     }
 }
