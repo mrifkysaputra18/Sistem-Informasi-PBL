@@ -86,17 +86,26 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ========================================
-    // DOSEN + KOORDINATOR + ADMIN ROUTES (Kelola Target Mingguan)
+    // DOSEN + ADMIN ROUTES (Kelola Target Mingguan - CREATE/EDIT/DELETE)
     // ========================================
-    Route::middleware(['role:dosen,koordinator,admin'])->group(function () {
-        // Weekly Targets (CRUD untuk dosen)
-        Route::get('targets', [WeeklyTargetController::class, 'index'])->name('targets.index');
+    Route::middleware(['role:dosen,admin'])->group(function () {
+        // Weekly Targets (CRUD - hanya dosen & admin)
         Route::get('targets/create', [WeeklyTargetController::class, 'create'])->name('targets.create');
         Route::post('targets', [WeeklyTargetController::class, 'store'])->name('targets.store');
-        Route::get('targets/{target}/show', [WeeklyTargetController::class, 'show'])->name('targets.show');
         Route::get('targets/{target}/edit', [WeeklyTargetController::class, 'edit'])->name('targets.edit');
         Route::put('targets/{target}', [WeeklyTargetController::class, 'update'])->name('targets.update');
         Route::delete('targets/{target}', [WeeklyTargetController::class, 'destroy'])->name('targets.destroy');
+    });
+
+    // ========================================
+    // DOSEN + KOORDINATOR + ADMIN ROUTES (Lihat & Review Target Mingguan)
+    // ========================================
+    Route::middleware(['role:dosen,koordinator,admin'])->group(function () {
+        // View targets (semua bisa lihat untuk monitoring)
+        Route::get('targets', [WeeklyTargetController::class, 'index'])->name('targets.index');
+        Route::get('targets/{target}/show', [WeeklyTargetController::class, 'show'])->name('targets.show');
+        
+        // Review targets (dosen & koordinator bisa review)
         Route::get('targets/{target}/review', [WeeklyTargetController::class, 'review'])->name('targets.review');
         Route::post('targets/{target}/review', [WeeklyTargetController::class, 'storeReview'])->name('targets.review.store');
     });

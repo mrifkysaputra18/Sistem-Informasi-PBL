@@ -4,9 +4,11 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Kelola Target Mingguan') }}
             </h2>
+            @if(in_array(auth()->user()->role, ['dosen', 'admin']))
             <a href="{{ route('targets.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 <i class="fas fa-plus mr-2"></i>Buat Target Baru
             </a>
+            @endif
         </div>
     </x-slot>
 
@@ -146,8 +148,8 @@
                                                 <span class="hidden sm:inline">Detail</span>
                                             </a>
                                             
-                                            @if($target->created_by === auth()->id() || auth()->user()->isAdmin())
-                                                @if($target->canBeModified())
+                                            @if(in_array(auth()->user()->role, ['dosen', 'admin']))
+                                                @if(($target->created_by === auth()->id() || auth()->user()->isAdmin()) && $target->canBeModified())
                                                     <!-- Edit -->
                                                     <a href="{{ route('targets.edit', $target->id) }}" 
                                                        class="inline-flex items-center px-3 py-1.5 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 rounded transition duration-200"
@@ -170,8 +172,8 @@
                                                             <span class="hidden sm:inline">Hapus</span>
                                                         </button>
                                                     </form>
-                                                @else
-                                                    <!-- Locked indicator -->
+                                                @elseif(($target->created_by === auth()->id() || auth()->user()->isAdmin()) && !$target->canBeModified())
+                                                    <!-- Locked indicator (only show to creator/admin) -->
                                                     <span class="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-500 rounded text-xs" title="Target sudah direview/disubmit, tidak bisa diedit">
                                                         <i class="fas fa-lock mr-1"></i>
                                                         <span class="hidden sm:inline">Terkunci</span>
@@ -206,10 +208,14 @@
                     <div class="text-center py-8 text-gray-500">
                         <i class="fas fa-clipboard-list text-4xl mb-4"></i>
                         <p class="text-lg mb-2">Belum ada target mingguan</p>
-                        <p class="text-sm mb-4">Silakan buat target mingguan untuk kelompok</p>
-                        <a href="{{ route('targets.create') }}" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded">
-                            <i class="fas fa-plus mr-2"></i>Buat Target Pertama
-                        </a>
+                        @if(in_array(auth()->user()->role, ['dosen', 'admin']))
+                            <p class="text-sm mb-4">Silakan buat target mingguan untuk kelompok</p>
+                            <a href="{{ route('targets.create') }}" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded">
+                                <i class="fas fa-plus mr-2"></i>Buat Target Pertama
+                            </a>
+                        @else
+                            <p class="text-sm">Target mingguan akan dibuat oleh dosen</p>
+                        @endif
                     </div>
                     @endif
                 </div>
