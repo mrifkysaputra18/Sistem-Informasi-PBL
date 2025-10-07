@@ -111,6 +111,13 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ========================================
+    // DOWNLOAD ROUTES (All authenticated users with access control in controller)
+    // ========================================
+    Route::get('targets/{target}/download/{file}', [WeeklyTargetController::class, 'download'])
+        ->name('targets.download')
+        ->where('file', '.*'); // Allow slashes in file path
+
+    // ========================================
     // MAHASISWA ROUTES (Submit Target Mingguan)
     // ========================================
     Route::middleware(['role:mahasiswa'])->group(function () {

@@ -64,10 +64,10 @@
                                 <label class="block text-xs font-medium text-gray-500 mb-1">Bukti ({{ count($target->evidence_files) }} file)</label>
                                 <div class="space-y-1">
                                     @foreach($target->evidence_files as $file)
-                                    <a href="{{ asset('storage/' . $file) }}" 
+                                    <a href="{{ asset('storage/' . $file['local_path']) }}" 
                                        target="_blank"
                                        class="text-xs text-blue-600 hover:underline block">
-                                        <i class="fas fa-file mr-1"></i>{{ basename($file) }}
+                                        <i class="fas fa-file mr-1"></i>{{ $file['file_name'] }}
                                     </a>
                                     @endforeach
                                 </div>

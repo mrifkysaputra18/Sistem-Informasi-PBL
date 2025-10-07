@@ -358,4 +358,49 @@ class WeeklyTargetController extends Controller
         return redirect()->route('targets.index')
             ->with('success', 'Review berhasil disimpan dengan nilai ' . $request->score . '!');
     }
+
+    /**
+     * Download evidence file
+     */
+    public function download(WeeklyTarget $target, $filePath)
+    {
+        // Verify user has access to this target
+        $user = auth()->user();
+        $hasAccess = false;
+
+        // Check if user is admin, dosen, koordinator, or member of the group
+        if ($user->isAdmin() || $user->isDosen() || $user->isKoordinator()) {
+            $hasAccess = true;
+        } elseif ($user->isMahasiswa()) {
+            $hasAccess = $target->group->members()->where('user_id', $user->id)->exists();
+        }
+
+        if (!$hasAccess) {
+            abort(403, 'Anda tidak memiliki akses untuk mengunduh file ini.');
+        }
+
+        // Find the file in evidence_files
+        $evidenceFiles = $target->evidence_files ?? [];
+        $fileData = null;
+
+        foreach ($evidenceFiles as $file) {
+            if (isset($file['local_path']) && $file['local_path'] === $filePath) {
+                $fileData = $file;
+                break;
+            }
+        }
+
+        if (!$fileData) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        // Download from local storage
+        $fullPath = storage_path('app/public/' . $filePath);
+        
+        if (!file_exists($fullPath)) {
+            abort(404, 'File tidak ditemukan di storage.');
+        }
+
+        return response()->download($fullPath, $fileData['file_name'] ?? basename($filePath));
+    }
 }

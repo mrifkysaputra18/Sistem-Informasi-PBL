@@ -102,9 +102,9 @@
                             <div class="flex items-center justify-between bg-gray-50 p-3 rounded">
                                 <div class="flex items-center">
                                     <i class="fas fa-file mr-2 text-gray-500"></i>
-                                    <span class="text-sm text-gray-700">{{ $file }}</span>
+                                    <span class="text-sm text-gray-700">{{ $file['file_name'] }}</span>
                                 </div>
-                                <a href="{{ route('targets.download', ['target' => $target->id, 'file' => $file]) }}" 
+                                <a href="{{ route('targets.download', ['target' => $target->id, 'file' => $file['local_path'] }) }}" 
                                    class="text-blue-600 hover:text-blue-800 text-sm">
                                     <i class="fas fa-download mr-1"></i>Download
                                 </a>
