@@ -403,4 +403,97 @@ class WeeklyTargetController extends Controller
 
         return response()->download($fullPath, $fileData['file_name'] ?? basename($filePath));
     }
+
+    /**
+     * Reopen target (membuka kembali target yang sudah ditutup)
+     * Hanya dosen yang bisa melakukan ini
+     */
+    public function reopen(WeeklyTarget $target)
+    {
+        // Only dosen/admin can reopen targets
+        $user = auth()->user();
+        if (!$user->isDosen() && !$user->isAdmin() && !$user->isKoordinator()) {
+            abort(403, 'Hanya dosen yang dapat membuka kembali target.');
+        }
+
+        // Cannot reopen if already reviewed
+        if ($target->is_reviewed) {
+            return redirect()->back()
+                ->with('error', 'Target yang sudah direview tidak dapat dibuka kembali.');
+        }
+
+        // Reopen the target
+        $target->reopenTarget(auth()->id());
+
+        \Log::info('Target Reopened', [
+            'target_id' => $target->id,
+            'reopened_by' => auth()->id(),
+            'group_id' => $target->group_id,
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'Target berhasil dibuka kembali. Mahasiswa sekarang dapat mensubmit target ini.');
+    }
+
+    /**
+     * Close target (menutup target secara manual)
+     * Hanya dosen yang bisa melakukan ini
+     */
+    public function close(WeeklyTarget $target)
+    {
+        // Only dosen/admin can close targets
+        $user = auth()->user();
+        if (!$user->isDosen() && !$user->isAdmin() && !$user->isKoordinator()) {
+            abort(403, 'Hanya dosen yang dapat menutup target.');
+        }
+
+        // Close the target
+        $target->closeTarget();
+
+        \Log::info('Target Closed', [
+            'target_id' => $target->id,
+            'closed_by' => auth()->id(),
+            'group_id' => $target->group_id,
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'Target berhasil ditutup. Mahasiswa tidak dapat lagi mensubmit target ini.');
+    }
+
+    /**
+     * Auto-close targets that have passed their deadline
+     * This can be called by a scheduled task or manually by admin
+     */
+    public function autoCloseOverdueTargets()
+    {
+        // Only admin can trigger this
+        $user = auth()->user();
+        if (!$user->isAdmin() && !$user->isDosen() && !$user->isKoordinator()) {
+            abort(403, 'Unauthorized.');
+        }
+
+        // Get all targets that should be closed
+        // Termasuk yang sudah disubmit tapi belum direview
+        $targets = WeeklyTarget::where('is_open', true)
+            ->where('is_reviewed', false)
+            ->whereNotNull('deadline')
+            ->where('deadline', '<', now())
+            ->get();
+
+        $closedCount = 0;
+        foreach ($targets as $target) {
+            if ($target->shouldBeClosed()) {
+                $target->closeTarget();
+                $closedCount++;
+            }
+        }
+
+        \Log::info('Auto-closed overdue targets', [
+            'count' => $closedCount,
+            'triggered_by' => auth()->id(),
+        ]);
+
+        return redirect()->back()
+            ->with('success', "Berhasil menutup {$closedCount} target yang melewati deadline.");
+    }
 }

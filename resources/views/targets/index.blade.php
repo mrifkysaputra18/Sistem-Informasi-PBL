@@ -228,6 +228,19 @@
                                         <div class="text-sm text-gray-500">
                                             {{ $target->deadline->format('H:i') }}
                                         </div>
+                                        @if($target->isClosed())
+                                        <div class="mt-1">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                                                <i class="fas fa-lock mr-1"></i>Tertutup
+                                            </span>
+                                        </div>
+                                        @elseif($target->isOverdue() && !$target->isSubmitted())
+                                        <div class="mt-1">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">
+                                                <i class="fas fa-exclamation-triangle mr-1"></i>Lewat Deadline
+                                            </span>
+                                        </div>
+                                        @endif
                                         @else
                                         <span class="text-sm text-gray-400">-</span>
                                         @endif
@@ -308,6 +321,39 @@
                                                 <i class="fas fa-check-circle mr-1"></i>
                                                 <span class="hidden sm:inline">Review</span>
                                             </a>
+                                            @endif
+                                            
+                                            <!-- Reopen/Close Target (Only for dosen/admin and not reviewed yet) -->
+                                            @if(in_array(auth()->user()->role, ['dosen', 'admin', 'koordinator']) && !$target->isReviewed())
+                                                @if($target->isClosed())
+                                                    <!-- Reopen Button -->
+                                                    <form action="{{ route('targets.reopen', $target->id) }}" 
+                                                          method="POST" 
+                                                          class="inline"
+                                                          onsubmit="return confirm('Yakin ingin membuka kembali target ini?\n\nMahasiswa akan dapat mensubmit target yang sudah tertutup.')">
+                                                        @csrf
+                                                        <button type="submit" 
+                                                                class="inline-flex items-center px-3 py-1.5 bg-purple-100 text-purple-700 hover:bg-purple-200 rounded transition duration-200"
+                                                                title="Buka Kembali Target">
+                                                            <i class="fas fa-unlock mr-1"></i>
+                                                            <span class="hidden sm:inline">Buka</span>
+                                                        </button>
+                                                    </form>
+                                                @else
+                                                    <!-- Close Button -->
+                                                    <form action="{{ route('targets.close', $target->id) }}" 
+                                                          method="POST" 
+                                                          class="inline"
+                                                          onsubmit="return confirm('Yakin ingin menutup target ini?\n\nMahasiswa tidak akan dapat mensubmit target ini.')">
+                                                        @csrf
+                                                        <button type="submit" 
+                                                                class="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded transition duration-200"
+                                                                title="Tutup Target">
+                                                            <i class="fas fa-lock mr-1"></i>
+                                                            <span class="hidden sm:inline">Tutup</span>
+                                                        </button>
+                                                    </form>
+                                                @endif
                                             @endif
                                         </div>
                                     </td>

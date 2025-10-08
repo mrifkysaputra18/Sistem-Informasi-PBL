@@ -46,6 +46,26 @@
                                 <span class="text-gray-400">Tidak ada deadline</span>
                             @endif
                         </div>
+                        @if($target->isClosed())
+                        <div class="mt-2">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                <i class="fas fa-lock mr-1"></i>Target Tertutup
+                            </span>
+                            <p class="text-xs text-gray-500 mt-1">{{ $target->getClosureReason() }}</p>
+                            @if($target->reopened_at)
+                            <p class="text-xs text-blue-600 mt-1">
+                                <i class="fas fa-history mr-1"></i>
+                                Pernah dibuka kembali oleh {{ $target->reopener->name ?? 'Dosen' }} pada {{ $target->reopened_at->format('d/m/Y H:i') }}
+                            </p>
+                            @endif
+                        </div>
+                        @else
+                        <div class="mt-2">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <i class="fas fa-unlock mr-1"></i>Target Terbuka
+                            </span>
+                        </div>
+                        @endif
                     </div>
                     <div>
                         <div class="text-sm text-gray-600">Status</div>
@@ -86,7 +106,7 @@
                     </div>
                     <div>
                         <div class="text-sm text-gray-600">Submit oleh</div>
-                        <div class="font-medium text-gray-900">{{ $target->completedBy->name ?? 'Mahasiswa' }}</div>
+                        <div class="font-medium text-gray-900">{{ $target->completedByUser->name ?? 'Mahasiswa' }}</div>
                     </div>
                     @if($target->submission_notes)
                     <div class="md:col-span-2">
@@ -102,12 +122,20 @@
                             <div class="flex items-center justify-between bg-gray-50 p-3 rounded">
                                 <div class="flex items-center">
                                     <i class="fas fa-file mr-2 text-gray-500"></i>
-                                    <span class="text-sm text-gray-700">{{ $file['file_name'] }}</span>
+                                    <span class="text-sm text-gray-700">{{ $file['file_name'] ?? 'File' }}</span>
                                 </div>
-                                <a href="{{ route('targets.download', ['target' => $target->id, 'file' => $file['local_path'] }) }}" 
+                                @if(isset($file['local_path']))
+                                <a href="{{ route('targets.download', [$target->id, $file['local_path']]) }}" 
                                    class="text-blue-600 hover:text-blue-800 text-sm">
                                     <i class="fas fa-download mr-1"></i>Download
                                 </a>
+                                @elseif(isset($file['file_url']))
+                                <a href="{{ $file['file_url'] }}" 
+                                   target="_blank"
+                                   class="text-blue-600 hover:text-blue-800 text-sm">
+                                    <i class="fas fa-external-link-alt mr-1"></i>Buka
+                                </a>
+                                @endif
                             </div>
                             @endforeach
                         </div>
@@ -171,6 +199,35 @@
                            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-6 rounded">
                             <i class="fas fa-check-circle mr-2"></i>Review Submission
                         </a>
+                        @endif
+                        
+                        <!-- Reopen/Close Target Buttons (Only for dosen/admin and not reviewed yet) -->
+                        @if(in_array(auth()->user()->role, ['dosen', 'admin', 'koordinator']) && !$target->isReviewed())
+                            @if($target->isClosed())
+                                <!-- Reopen Button -->
+                                <form action="{{ route('targets.reopen', $target->id) }}" 
+                                      method="POST" 
+                                      class="inline"
+                                      onsubmit="return confirm('Yakin ingin membuka kembali target ini?\n\nMahasiswa akan dapat mensubmit target yang sudah tertutup.')">
+                                    @csrf
+                                    <button type="submit" 
+                                            class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded">
+                                        <i class="fas fa-unlock mr-2"></i>Buka Kembali Target
+                                    </button>
+                                </form>
+                            @else
+                                <!-- Close Button -->
+                                <form action="{{ route('targets.close', $target->id) }}" 
+                                      method="POST" 
+                                      class="inline"
+                                      onsubmit="return confirm('Yakin ingin menutup target ini?\n\nMahasiswa tidak akan dapat mensubmit target ini.')">
+                                    @csrf
+                                    <button type="submit" 
+                                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded">
+                                        <i class="fas fa-lock mr-2"></i>Tutup Target
+                                    </button>
+                                </form>
+                            @endif
                         @endif
                     </div>
                 </div>

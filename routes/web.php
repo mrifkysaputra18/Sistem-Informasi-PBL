@@ -108,6 +108,13 @@ Route::middleware(['auth'])->group(function () {
         // Review targets (dosen & koordinator bisa review)
         Route::get('targets/{target}/review', [WeeklyTargetController::class, 'review'])->name('targets.review');
         Route::post('targets/{target}/review', [WeeklyTargetController::class, 'storeReview'])->name('targets.review.store');
+        
+        // Reopen/Close targets (dosen bisa membuka/menutup target)
+        Route::post('targets/{target}/reopen', [WeeklyTargetController::class, 'reopen'])->name('targets.reopen');
+        Route::post('targets/{target}/close', [WeeklyTargetController::class, 'close'])->name('targets.close');
+        
+        // Auto-close overdue targets (manual trigger)
+        Route::post('targets/auto-close-overdue', [WeeklyTargetController::class, 'autoCloseOverdueTargets'])->name('targets.auto-close-overdue');
     });
 
     // ========================================

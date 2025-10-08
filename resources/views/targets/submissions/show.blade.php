@@ -41,6 +41,14 @@
                                 <span class="text-gray-400">Tidak ada deadline</span>
                             @endif
                         </div>
+                        @if($target->isClosed())
+                        <div class="mt-2">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                <i class="fas fa-lock mr-1"></i>Target Tertutup
+                            </span>
+                            <p class="text-xs text-gray-500 mt-1">{{ $target->getClosureReason() }}</p>
+                        </div>
+                        @endif
                     </div>
                     <div>
                         <div class="text-sm text-gray-600">Status</div>
@@ -93,12 +101,20 @@
                             <div class="flex items-center justify-between bg-gray-50 p-3 rounded">
                                 <div class="flex items-center">
                                     <i class="fas fa-file mr-2 text-gray-500"></i>
-                                    <span class="text-sm text-gray-700">{{ $file['file_name'] }}</span>
+                                    <span class="text-sm text-gray-700">{{ $file['file_name'] ?? 'File' }}</span>
                                 </div>
-                                <a href="{{ route('targets.download', ['target' => $target->id, 'file' => $file['local_path']]) }}" 
+                                @if(isset($file['local_path']))
+                                <a href="{{ route('targets.download', [$target->id, $file['local_path']]) }}" 
                                    class="text-blue-600 hover:text-blue-800 text-sm">
                                     <i class="fas fa-download mr-1"></i>Download
                                 </a>
+                                @elseif(isset($file['file_url']))
+                                <a href="{{ $file['file_url'] }}" 
+                                   target="_blank"
+                                   class="text-blue-600 hover:text-blue-800 text-sm">
+                                    <i class="fas fa-external-link-alt mr-1"></i>Buka
+                                </a>
+                                @endif
                             </div>
                             @endforeach
                         </div>
@@ -148,21 +164,33 @@
                     </a>
                     
                     <div class="flex space-x-2">
-                        @if($target->isPending())
-                        <a href="{{ route('targets.submissions.submit', $target->id) }}" 
-                           class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-6 rounded">
-                            <i class="fas fa-upload mr-2"></i>Submit Target
-                        </a>
-                        @elseif($target->submission_status === 'revision')
-                        <a href="{{ route('targets.submissions.edit', $target->id) }}" 
-                           class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-6 rounded">
-                            <i class="fas fa-edit mr-2"></i>Revisi
-                        </a>
-                        @elseif($target->isSubmitted() && !$target->isReviewed())
-                        <a href="{{ route('targets.submissions.edit', $target->id) }}" 
-                           class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded">
-                            <i class="fas fa-edit mr-2"></i>Edit Submission
-                        </a>
+                        @if($target->canAcceptSubmission())
+                            @if($target->isPending())
+                            <a href="{{ route('targets.submissions.submit', $target->id) }}" 
+                               class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-6 rounded">
+                                <i class="fas fa-upload mr-2"></i>Submit Target
+                            </a>
+                            @elseif($target->submission_status === 'revision')
+                            <a href="{{ route('targets.submissions.edit', $target->id) }}" 
+                               class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-6 rounded">
+                                <i class="fas fa-edit mr-2"></i>Revisi
+                            </a>
+                            @elseif($target->isSubmitted() && !$target->isReviewed())
+                            <a href="{{ route('targets.submissions.edit', $target->id) }}" 
+                               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded">
+                                <i class="fas fa-edit mr-2"></i>Edit Submission
+                            </a>
+                            @endif
+                        @else
+                            @if($target->isClosed())
+                            <div class="text-red-600 text-sm bg-red-50 px-4 py-2 rounded border border-red-200">
+                                <i class="fas fa-lock mr-2"></i>Target sudah tertutup. Tidak dapat mensubmit lagi.
+                            </div>
+                            @elseif($target->isReviewed())
+                            <div class="text-gray-600 text-sm bg-gray-50 px-4 py-2 rounded border border-gray-200">
+                                <i class="fas fa-check-circle mr-2"></i>Target sudah direview dosen.
+                            </div>
+                            @endif
                         @endif
                     </div>
                 </div>

@@ -203,8 +203,12 @@
                                                 @if($target->deadline)
                                                 <p class="text-sm text-gray-900">{{ $target->deadline->format('d/m/Y') }}</p>
                                                 <p class="text-xs text-gray-500">{{ $target->deadline->format('H:i') }}</p>
-                                                @if($target->isOverdue())
+                                                @if($target->isClosed())
                                                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 mt-1">
+                                                    <i class="fas fa-lock mr-1"></i>Tertutup
+                                                </span>
+                                                @elseif($target->isOverdue() && !$target->isSubmitted())
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800 mt-1">
                                                     <i class="fas fa-exclamation-circle mr-1"></i>Terlambat
                                                 </span>
                                                 @endif

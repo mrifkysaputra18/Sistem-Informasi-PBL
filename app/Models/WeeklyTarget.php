@@ -15,6 +15,9 @@ class WeeklyTarget extends Model
         'title',
         'description',
         'deadline',             // NEW: Deadline submit
+        'is_open',              // NEW: Apakah target masih bisa disubmit
+        'reopened_by',          // NEW: Dosen yang membuka kembali target
+        'reopened_at',          // NEW: Waktu dibuka kembali
         'submission_notes',     // NEW: Catatan dari mahasiswa
         'submission_status',    // NEW: Status submission
         'is_completed',
@@ -32,10 +35,12 @@ class WeeklyTarget extends Model
         'is_completed' => 'boolean',
         'is_checked_only' => 'boolean',
         'is_reviewed' => 'boolean',
+        'is_open' => 'boolean',    // NEW
         'evidence_files' => 'array',
         'completed_at' => 'datetime',
         'reviewed_at' => 'datetime',
         'deadline' => 'datetime',  // NEW
+        'reopened_at' => 'datetime', // NEW
     ];
 
     /**
@@ -68,6 +73,14 @@ class WeeklyTarget extends Model
     public function reviewer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewer_id');
+    }
+
+    /**
+     * Get the user who reopened this target
+     */
+    public function reopener(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reopened_by');
     }
 
     /**
@@ -159,5 +172,88 @@ class WeeklyTarget extends Model
             'revision' => 'Perlu Revisi',
             default => 'Unknown',
         };
+    }
+
+    /**
+     * Check if target can accept submission (masih terbuka)
+     * Target tertutup jika:
+     * 1. is_open = false (ditutup manual atau otomatis karena deadline)
+     * 2. Sudah direview dosen
+     */
+    public function canAcceptSubmission(): bool
+    {
+        // Jika sudah direview, tidak bisa submit lagi
+        if ($this->is_reviewed) {
+            return false;
+        }
+
+        // Jika is_open = false, tidak bisa submit
+        if (!$this->is_open) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if target is closed (tertutup)
+     */
+    public function isClosed(): bool
+    {
+        return !$this->is_open;
+    }
+
+    /**
+     * Check if deadline has passed and target should be closed
+     * Ini untuk auto-close target yang melewati deadline
+     */
+    public function shouldBeClosed(): bool
+    {
+        if (!$this->deadline) return false;
+        
+        // Jika sudah direview dosen, tidak perlu ditutup (sudah final)
+        if ($this->is_reviewed) {
+            return false;
+        }
+
+        // Jika masih open tapi deadline sudah lewat
+        // Berlaku untuk semua target (baik yang sudah submit maupun belum)
+        return $this->is_open && now()->gt($this->deadline);
+    }
+
+    /**
+     * Close target (untuk auto-close atau manual close oleh dosen)
+     */
+    public function closeTarget(): void
+    {
+        $this->update(['is_open' => false]);
+    }
+
+    /**
+     * Reopen target (oleh dosen)
+     */
+    public function reopenTarget($dosenId): void
+    {
+        $this->update([
+            'is_open' => true,
+            'reopened_by' => $dosenId,
+            'reopened_at' => now(),
+        ]);
+    }
+
+    /**
+     * Get closure reason message
+     */
+    public function getClosureReason(): string
+    {
+        if (!$this->isClosed()) {
+            return '';
+        }
+
+        if ($this->deadline && now()->gt($this->deadline) && !$this->isSubmitted()) {
+            return 'Target ditutup karena melewati deadline';
+        }
+
+        return 'Target ditutup oleh dosen';
     }
 }

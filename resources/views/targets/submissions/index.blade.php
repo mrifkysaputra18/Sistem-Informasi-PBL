@@ -145,31 +145,42 @@
                                         <i class="fas fa-eye mr-1"></i>Lihat Detail
                                     </a>
 
-                                    @if($target->isPending())
-                                    <!-- Submit -->
-                                    <a href="{{ route('targets.submissions.submit', $target->id) }}" 
-                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition duration-200">
-                                        <i class="fas fa-upload mr-1"></i>Submit Target
-                                    </a>
-                                    @elseif($target->submission_status === 'revision')
-                                    <!-- Re-submit -->
-                                    <a href="{{ route('targets.submissions.edit', $target->id) }}" 
-                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 rounded-lg transition duration-200">
-                                        <i class="fas fa-edit mr-1"></i>Revisi
-                                    </a>
-                                    @elseif($target->isSubmitted() && !$target->isReviewed())
-                                    <!-- Edit Submission -->
-                                    <a href="{{ route('targets.submissions.edit', $target->id) }}" 
-                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition duration-200">
-                                        <i class="fas fa-edit mr-1"></i>Edit Submission
-                                    </a>
+                                    @if($target->canAcceptSubmission())
+                                        @if($target->isPending())
+                                        <!-- Submit -->
+                                        <a href="{{ route('targets.submissions.submit', $target->id) }}" 
+                                           class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition duration-200">
+                                            <i class="fas fa-upload mr-1"></i>Submit Target
+                                        </a>
+                                        @elseif($target->submission_status === 'revision')
+                                        <!-- Re-submit -->
+                                        <a href="{{ route('targets.submissions.edit', $target->id) }}" 
+                                           class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 rounded-lg transition duration-200">
+                                            <i class="fas fa-edit mr-1"></i>Revisi
+                                        </a>
+                                        @elseif($target->isSubmitted() && !$target->isReviewed())
+                                        <!-- Edit Submission -->
+                                        <a href="{{ route('targets.submissions.edit', $target->id) }}" 
+                                           class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition duration-200">
+                                            <i class="fas fa-edit mr-1"></i>Edit Submission
+                                        </a>
+                                        @endif
+                                    @else
+                                        <!-- Target Tertutup -->
+                                        <div class="inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg">
+                                            <i class="fas fa-lock mr-1"></i>Target Tertutup
+                                        </div>
                                     @endif
                                 </div>
 
                                 <!-- Deadline Warning -->
                                 @if($target->deadline && $target->isPending())
                                 <div class="text-right">
-                                    @if($target->isOverdue())
+                                    @if($target->isClosed())
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        <i class="fas fa-lock mr-1"></i>Tertutup
+                                    </span>
+                                    @elseif($target->isOverdue())
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Terlambat
                                     </span>

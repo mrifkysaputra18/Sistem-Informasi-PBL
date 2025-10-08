@@ -73,10 +73,11 @@ class WeeklyTargetSubmissionController extends Controller
             abort(403, 'Anda bukan anggota kelompok ini.');
         }
 
-        // Check if already reviewed
-        if ($target->isReviewed()) {
+        // Check if target is still open for submission
+        if (!$target->canAcceptSubmission()) {
+            $reason = $target->isClosed() ? $target->getClosureReason() : 'Target ini sudah direview dosen';
             return redirect()->back()
-                ->with('error', 'Target ini sudah direview dosen, tidak dapat diubah lagi.');
+                ->with('error', $reason . '. Target tidak dapat disubmit lagi.');
         }
 
         return view('targets.submissions.submit', compact('target'));
@@ -95,10 +96,11 @@ class WeeklyTargetSubmissionController extends Controller
             abort(403, 'Anda bukan anggota kelompok ini.');
         }
 
-        // Check if already reviewed
-        if ($target->isReviewed()) {
+        // Check if target is still open for submission
+        if (!$target->canAcceptSubmission()) {
+            $reason = $target->isClosed() ? $target->getClosureReason() : 'Target ini sudah direview dosen';
             return redirect()->back()
-                ->with('error', 'Target ini sudah direview dosen, tidak dapat diubah lagi.');
+                ->with('error', $reason . '. Target tidak dapat disubmit lagi.');
         }
 
         \Log::info('WeeklyTarget Submission', [
@@ -197,10 +199,11 @@ class WeeklyTargetSubmissionController extends Controller
             abort(403, 'Anda bukan anggota kelompok ini.');
         }
 
-        // Check if already reviewed
-        if ($target->isReviewed()) {
+        // Check if target is still open for submission
+        if (!$target->canAcceptSubmission()) {
+            $reason = $target->isClosed() ? $target->getClosureReason() : 'Target ini sudah direview dosen';
             return redirect()->back()
-                ->with('error', 'Target ini sudah direview dosen, tidak dapat diubah lagi.');
+                ->with('error', $reason . '. Target tidak dapat diubah lagi.');
         }
 
         // Check if has been submitted
@@ -225,10 +228,11 @@ class WeeklyTargetSubmissionController extends Controller
             abort(403, 'Anda bukan anggota kelompok ini.');
         }
 
-        // Check if already reviewed
-        if ($target->isReviewed()) {
+        // Check if target is still open for submission
+        if (!$target->canAcceptSubmission()) {
+            $reason = $target->isClosed() ? $target->getClosureReason() : 'Target ini sudah direview dosen';
             return redirect()->back()
-                ->with('error', 'Target ini sudah direview dosen, tidak dapat diubah lagi.');
+                ->with('error', $reason . '. Target tidak dapat diubah lagi.');
         }
 
         $validated = $request->validate([
