@@ -100,8 +100,10 @@
                     <x-slot name="trigger">
                         <button class="user-profile-btn group">
                             <div class="flex items-center space-x-2.5">
-                                <div class="user-avatar">
-                                    <span class="user-avatar-text">{{ strtoupper(substr(Auth::user()->name, 0, 2)) }}</span>
+                                <div class="relative w-10 h-10 rounded-full overflow-hidden border-2 border-white/30 group-hover:border-white/60 transition-all duration-200 shadow-md">
+                                    <img src="{{ Auth::user()->profile_photo_url }}" 
+                                         alt="{{ Auth::user()->name }}" 
+                                         class="w-full h-full object-cover">
                                 </div>
                                 <div class="hidden xl:block text-left">
                                     <div class="user-name">{{ Auth::user()->name }}</div>
@@ -216,8 +218,10 @@
         <div class="pt-4 pb-1 border-t border-gray-200/30">
             <div class="px-4">
                 <div class="flex items-center space-x-3 mb-2">
-                    <div class="user-avatar user-avatar-sm">
-                        <span class="user-avatar-text text-xs">{{ strtoupper(substr(Auth::user()->name, 0, 2)) }}</span>
+                    <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-primary-200 shadow-sm">
+                        <img src="{{ Auth::user()->profile_photo_url }}" 
+                             alt="{{ Auth::user()->name }}" 
+                             class="w-full h-full object-cover">
                     </div>
                     <div class="flex-1">
                         <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>

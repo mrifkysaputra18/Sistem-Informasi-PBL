@@ -28,6 +28,7 @@ class User extends Authenticatable
         'program_studi',
         'class_room_id',
         'is_active',
+        'profile_photo_path',
     ];
 
     /**
@@ -162,5 +163,25 @@ class User extends Authenticatable
     public function studentScores()
     {
         return $this->hasMany(StudentScore::class);
+    }
+
+    /**
+     * Get profile photo URL
+     */
+    public function getProfilePhotoUrlAttribute(): string
+    {
+        return $this->profile_photo_path 
+            ? asset('storage/' . $this->profile_photo_path)
+            : $this->getDefaultProfilePhotoUrl();
+    }
+
+    /**
+     * Get default profile photo URL based on role
+     */
+    public function getDefaultProfilePhotoUrl(): string
+    {
+        // Return default avatar based on role or user's initial
+        $initial = strtoupper(substr($this->name, 0, 1));
+        return "https://ui-avatars.com/api/?name=" . urlencode($this->name) . "&color=0056b3&background=e6f0ff&size=200&bold=true";
     }
 }
