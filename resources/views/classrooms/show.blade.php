@@ -91,6 +91,9 @@
                                     @foreach($group->members->take(3) as $member)
                                     <span class="px-2 py-1 bg-gray-100 text-xs rounded">
                                         {{ $member->user->name }}
+                                        @if($member->user->nim)
+                                        <span class="text-blue-600 font-medium"> ({{ $member->user->nim }})</span>
+                                        @endif
                                         @if($member->is_leader)
                                         <span class="text-primary-600">★</span>
                                         @endif

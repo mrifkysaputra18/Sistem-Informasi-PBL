@@ -15,7 +15,7 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => [
                 'required',
@@ -26,5 +26,17 @@ class ProfileUpdateRequest extends FormRequest
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
         ];
+
+        // Add NIM validation only for mahasiswa users
+        if ($this->user()->role === 'mahasiswa') {
+            $rules['nim'] = [
+                'nullable',
+                'string',
+                'max:20',
+                Rule::unique(User::class)->ignore($this->user()->id),
+            ];
+        }
+
+        return $rules;
     }
 }

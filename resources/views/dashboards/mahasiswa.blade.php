@@ -139,6 +139,11 @@
                                             @endif
                                         </p>
                                         <p class="text-xs text-gray-600">{{ $member->user->email }}</p>
+                                        @if($member->user->nim)
+                                        <p class="text-xs text-blue-600 font-medium">
+                                            <i class="fas fa-graduation-cap mr-1"></i>NIM: {{ $member->user->nim }}
+                                        </p>
+                                        @endif
                                     </div>
                                     @if($member->is_leader)
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">

@@ -29,17 +29,33 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        $validationRules = [
             'name' => ['required', 'string', 'max:255'],
+            'role' => ['required', 'in:mahasiswa,dosen'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        ];
 
-        $user = User::create([
+        // Add NIM validation only for mahasiswa
+        if ($request->role === 'mahasiswa') {
+            $validationRules['nim'] = ['required', 'string', 'max:20', 'unique:'.User::class];
+        }
+
+        $request->validate($validationRules);
+
+        $userData = [
             'name' => $request->name,
+            'role' => $request->role,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-        ]);
+        ];
+
+        // Add NIM only for mahasiswa
+        if ($request->role === 'mahasiswa') {
+            $userData['nim'] = $request->nim;
+        }
+
+        $user = User::create($userData);
 
         event(new Registered($user));
 

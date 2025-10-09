@@ -5,7 +5,7 @@
                 {{ __('Manajemen Nilai Mahasiswa & Ranking (SAW)') }}
             </h2>
             <div class="flex gap-2">
-                @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
+                @if(auth()->user()->isDosen() || auth()->user()->isAdmin())
                     <!-- Input Score -->
                     <a href="{{ route('student-scores.create') }}" 
                        class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
@@ -175,6 +175,9 @@
                                                             <div>
                                                                 <div class="text-sm font-medium text-gray-900">{{ $student->name }}</div>
                                                                 <div class="text-sm text-gray-500">{{ $student->politala_id }}</div>
+                                                                @if($student->nim)
+                                                                    <div class="text-xs text-blue-600 font-medium">NIM: {{ $student->nim }}</div>
+                                                                @endif
                                                                 @if($student->classRoom)
                                                                     <div class="text-xs text-primary-600">{{ $student->classRoom->name }}</div>
                                                                 @endif
@@ -269,6 +272,9 @@
                                                         {{ $rank['student']->name }}
                                                     </div>
                                                     <div class="text-xs text-gray-500">{{ $rank['student']->politala_id }}</div>
+                                                    @if($rank['student']->nim)
+                                                        <div class="text-xs text-blue-600 font-medium">NIM: {{ $rank['student']->nim }}</div>
+                                                    @endif
                                                     @if($rank['group'])
                                                         <div class="text-xs text-primary-600 mt-1">
                                                             <i class="fas fa-users mr-1"></i>{{ $rank['group']->name }}
@@ -342,6 +348,9 @@
                                                                 {{ $studentData['student']->name }}
                                                             </div>
                                                             <div class="text-xs text-gray-500">{{ $studentData['student']->politala_id }}</div>
+                                                            @if($studentData['student']->nim)
+                                                                <div class="text-xs text-blue-600 font-medium">NIM: {{ $studentData['student']->nim }}</div>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                     <div class="text-right ml-2">

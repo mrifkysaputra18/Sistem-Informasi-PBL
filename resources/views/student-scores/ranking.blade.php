@@ -81,6 +81,11 @@
                                                     <p class="text-sm text-gray-600">
                                                         <i class="fas fa-id-card mr-1"></i>{{ $rank['student']->politala_id }}
                                                     </p>
+                                                    @if($rank['student']->nim)
+                                                    <p class="text-sm text-blue-600 font-medium">
+                                                        <i class="fas fa-graduation-cap mr-1"></i>NIM: {{ $rank['student']->nim }}
+                                                    </p>
+                                                    @endif
                                                 </div>
                                                 <div class="text-right">
                                                     <div class="text-3xl font-bold 

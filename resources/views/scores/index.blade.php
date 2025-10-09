@@ -17,8 +17,8 @@
                     </form>
                 @endif
                 
-                @if(auth()->user()->isDosen() || auth()->user()->isKoordinator())
-                    <!-- Dosen & Koordinator: Input Score -->
+                @if(auth()->user()->isDosen())
+                    <!-- Dosen Only: Input Score -->
                     <a href="{{ route('scores.create') }}" 
                        class="bg-secondary-500 hover:bg-secondary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
                         <i class="fas fa-plus mr-2"></i>Input Nilai

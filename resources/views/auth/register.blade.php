@@ -22,6 +22,24 @@
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
+        <!-- Role -->
+        <div class="mt-4">
+            <x-input-label for="role" :value="__('Role')" />
+            <select id="role" name="role" class="block mt-1 w-full border-gray-300 focus:border-primary-500 focus:ring-primary-500 rounded-md shadow-sm" required onchange="toggleNimField()">
+                <option value="">Pilih Role</option>
+                <option value="mahasiswa" {{ old('role') == 'mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
+                <option value="dosen" {{ old('role') == 'dosen' ? 'selected' : '' }}>Dosen</option>
+            </select>
+            <x-input-error :messages="$errors->get('role')" class="mt-2" />
+        </div>
+
+        <!-- NIM (only for mahasiswa) -->
+        <div class="mt-4" id="nim-field" style="display: none;">
+            <x-input-label for="nim" :value="__('NIM')" />
+            <x-text-input id="nim" class="block mt-1 w-full" type="text" name="nim" :value="old('nim')" autocomplete="nim" />
+            <x-input-error :messages="$errors->get('nim')" class="mt-2" />
+        </div>
+
         <!-- Email Address -->
         <div class="mt-4">
             <x-input-label for="email" :value="__('Email')" />
@@ -62,4 +80,26 @@
             </x-primary-button>
         </div>
     </form>
+
+    <script>
+        function toggleNimField() {
+            const roleSelect = document.getElementById('role');
+            const nimField = document.getElementById('nim-field');
+            const nimInput = document.getElementById('nim');
+            
+            if (roleSelect.value === 'mahasiswa') {
+                nimField.style.display = 'block';
+                nimInput.required = true;
+            } else {
+                nimField.style.display = 'none';
+                nimInput.required = false;
+                nimInput.value = '';
+            }
+        }
+
+        // Check on page load if role is already selected
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleNimField();
+        });
+    </script>
 </x-guest-layout>

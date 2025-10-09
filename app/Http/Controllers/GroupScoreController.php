@@ -42,6 +42,11 @@ class GroupScoreController extends Controller
      */
     public function create()
     {
+        // Only admin and dosen can create scores
+        if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
+            abort(403, 'Unauthorized action. Hanya admin dan dosen yang dapat menginput nilai kelompok.');
+        }
+
         return view('scores.create', [
             'groups' => Group::with(['classRoom'])->orderBy('name')->get(),
             'criteria' => Criterion::where('segment', 'group')->orderBy('id')->get(),
@@ -53,6 +58,11 @@ class GroupScoreController extends Controller
      */
     public function store(StoreGroupScoreRequest $request)
     {
+        // Only admin and dosen can store scores
+        if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
+            abort(403, 'Unauthorized action. Hanya admin dan dosen yang dapat menginput nilai kelompok.');
+        }
+
         GroupScore::updateOrCreate(
             ['group_id' => $request->group_id, 'criterion_id' => $request->criterion_id],
             ['skor' => $request->skor]
@@ -62,6 +72,11 @@ class GroupScoreController extends Controller
     
     public function recalc()
     {
+        // Only admin can recalculate ranking
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action. Hanya admin yang dapat menghitung ulang ranking kelompok.');
+        }
+
         $rankingService = new RankingService();
         
         // Update total scores dan rankings menggunakan metode SAW

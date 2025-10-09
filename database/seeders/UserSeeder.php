@@ -47,6 +47,7 @@ class UserSeeder extends Seeder
         for ($i = 1; $i <= 10; $i++) {
             User::create([
                 'politala_id' => 'MHS' . str_pad($i, 3, '0', STR_PAD_LEFT),
+                'nim' => '2024' . str_pad($i, 6, '0', STR_PAD_LEFT),
                 'name' => 'Mahasiswa ' . $i,
                 'email' => 'mahasiswa' . $i . '@politala.ac.id',
                 'password' => Hash::make('password'),

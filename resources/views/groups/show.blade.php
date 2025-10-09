@@ -121,6 +121,11 @@
                                                 @endif
                                             </div>
                                             <div class="text-sm text-gray-600">{{ $member->user->email }}</div>
+                                            @if($member->user->nim)
+                                            <div class="text-xs text-blue-600 font-medium">
+                                                <i class="fas fa-graduation-cap mr-1"></i>NIM: {{ $member->user->nim }}
+                                            </div>
+                                            @endif
                                         </div>
                                     </div>
                                     
@@ -163,7 +168,7 @@
                                         <option value="">-- Pilih Mahasiswa --</option>
                                         @foreach($availableStudents as $student)
                                         <option value="{{ $student->id }}">
-                                            {{ $student->name }} ({{ $student->email }})
+                                            {{ $student->name }} @if($student->nim) - NIM: {{ $student->nim }} @endif ({{ $student->email }})
                                         </option>
                                         @endforeach
                                     </select>

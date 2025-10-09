@@ -46,6 +46,11 @@ class StudentScoreController extends Controller
      */
     public function create()
     {
+        // Only admin and dosen can create scores
+        if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
+            abort(403, 'Unauthorized action. Hanya admin dan dosen yang dapat menginput nilai mahasiswa.');
+        }
+
         $students = User::where('role', 'mahasiswa')
             ->with(['classRoom', 'groups'])
             ->orderBy('name')
@@ -61,6 +66,11 @@ class StudentScoreController extends Controller
      */
     public function store(Request $request)
     {
+        // Only admin and dosen can store scores
+        if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
+            abort(403, 'Unauthorized action. Hanya admin dan dosen yang dapat menginput nilai mahasiswa.');
+        }
+
         $validator = Validator::make($request->all(), [
             'user_id' => 'required|exists:users,id',
             'criterion_id' => 'required|exists:criteria,id',
@@ -131,6 +141,11 @@ class StudentScoreController extends Controller
      */
     public function recalc()
     {
+        // Only admin and dosen can recalculate ranking
+        if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
+            abort(403, 'Unauthorized action. Hanya admin dan dosen yang dapat menghitung ulang ranking.');
+        }
+
         $rankingService = new RankingService();
         $ranking = $rankingService->getStudentRankingWithDetails();
         

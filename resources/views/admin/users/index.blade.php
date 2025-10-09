@@ -240,6 +240,11 @@
                                                                         <i class="fas fa-id-card mr-1"></i>{{ $user->politala_id }}
                                                                     </div>
                                                                 @endif
+                                                                @if($roleType === 'mahasiswa' && $user->nim)
+                                                                    <div class="text-xs text-blue-600 mt-0.5 font-medium">
+                                                                        <i class="fas fa-graduation-cap mr-1"></i>NIM: {{ $user->nim }}
+                                                                    </div>
+                                                                @endif
                                                             </div>
                                                         </div>
                                                     </td>
@@ -344,6 +349,11 @@
                                                         <div class="text-sm text-gray-500">{{ $user->email }}</div>
                                                         @if($user->politala_id)
                                                             <div class="text-xs text-gray-400">ID: {{ $user->politala_id }}</div>
+                                                        @endif
+                                                        @if($user->role === 'mahasiswa' && $user->nim)
+                                                            <div class="text-xs text-blue-600 font-medium">
+                                                                <i class="fas fa-graduation-cap mr-1"></i>NIM: {{ $user->nim }}
+                                                            </div>
                                                         @endif
                                                     </div>
                                                 </div>

@@ -71,6 +71,11 @@ class WeeklyTargetController extends Controller
      */
     public function create(Request $request)
     {
+        // Only admin and dosen can create targets
+        if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
+            abort(403, 'Unauthorized action. Hanya admin dan dosen yang dapat membuat target mingguan.');
+        }
+
         $classRoomId = $request->get('class_room_id');
         $groupId = $request->get('group_id');
         
@@ -99,6 +104,11 @@ class WeeklyTargetController extends Controller
      */
     public function store(Request $request)
     {
+        // Only admin and dosen can store targets
+        if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
+            abort(403, 'Unauthorized action. Hanya admin dan dosen yang dapat membuat target mingguan.');
+        }
+
         \Log::info('WeeklyTarget Store Request (Dosen)', [
             'created_by' => auth()->id(),
             'target_type' => $request->target_type,
