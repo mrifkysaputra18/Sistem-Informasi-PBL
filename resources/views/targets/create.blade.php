@@ -5,7 +5,7 @@
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Buat Target Mingguan Baru') }}
             </h2>
         </div>
@@ -43,7 +43,7 @@
                                            class="sr-only peer" 
                                            onchange="toggleTargetType('single')"
                                            {{ old('target_type') == 'single' ? 'checked' : '' }}>
-                                    <div class="p-4 border-2 border-gray-200 rounded-lg cursor-pointer peer-checked:border-blue-500 peer-checked:bg-blue-50">
+                                    <div class="p-4 border-2 border-gray-200 rounded-lg cursor-pointer peer-checked:border-primary-500 peer-checked:bg-primary-50">
                                         <div class="text-center">
                                             <i class="fas fa-users text-2xl mb-2 text-gray-400"></i>
                                             <div class="font-medium text-gray-900">Satu Kelompok</div>
@@ -57,7 +57,7 @@
                                            class="sr-only peer"
                                            onchange="toggleTargetType('multiple')"
                                            {{ old('target_type') == 'multiple' ? 'checked' : '' }}>
-                                    <div class="p-4 border-2 border-gray-200 rounded-lg cursor-pointer peer-checked:border-blue-500 peer-checked:bg-blue-50">
+                                    <div class="p-4 border-2 border-gray-200 rounded-lg cursor-pointer peer-checked:border-primary-500 peer-checked:bg-primary-50">
                                         <div class="text-center">
                                             <i class="fas fa-layer-group text-2xl mb-2 text-gray-400"></i>
                                             <div class="font-medium text-gray-900">Multiple Kelompok</div>
@@ -71,7 +71,7 @@
                                            class="sr-only peer"
                                            onchange="toggleTargetType('all_class')"
                                            {{ old('target_type', 'all_class') == 'all_class' ? 'checked' : '' }}>
-                                    <div class="p-4 border-2 border-gray-200 rounded-lg cursor-pointer peer-checked:border-blue-500 peer-checked:bg-blue-50">
+                                    <div class="p-4 border-2 border-gray-200 rounded-lg cursor-pointer peer-checked:border-primary-500 peer-checked:bg-primary-50">
                                         <div class="text-center">
                                             <i class="fas fa-school text-2xl mb-2 text-gray-400"></i>
                                             <div class="font-medium text-gray-900">Semua Kelas</div>
@@ -95,7 +95,7 @@
                                 Pilih Kelas <span class="text-red-500">*</span>
                             </label>
                             <select name="class_room_id" id="class_room_id" 
-                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500"
                                     onchange="loadGroups()">
                                 <option value="">-- Pilih Kelas --</option>
                                 @foreach($classRooms as $classRoom)
@@ -113,7 +113,7 @@
                                 Pilih Kelompok <span class="text-red-500">*</span>
                             </label>
                             <select name="group_id" id="group_id" 
-                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                                 <option value="">-- Pilih Kelompok --</option>
                                 @if($selectedGroup)
                                 <option value="{{ $selectedGroup->id }}" selected>
@@ -140,7 +140,7 @@
                                 Pilih Kelas Terlebih Dahulu <span class="text-red-500">*</span>
                             </label>
                             <select id="multiple_class_room_id" 
-                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 mb-3"
+                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 mb-3"
                                     onchange="loadGroupsForMultiple()">
                                 <option value="">-- Pilih Kelas --</option>
                                 @foreach($classRooms as $classRoom)
@@ -167,7 +167,7 @@
                                 Minggu Ke <span class="text-red-500">*</span>
                             </label>
                             <select name="week_number" id="week_number" required
-                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                                 <option value="">-- Pilih Minggu --</option>
                                 @for($i = 1; $i <= 16; $i++)
                                 <option value="{{ $i }}" {{ old('week_number') == $i ? 'selected' : '' }}>
@@ -188,7 +188,7 @@
                             <input type="text" name="title" id="title" required
                                    value="{{ old('title') }}"
                                    placeholder="Contoh: Membuat Use Case Diagram"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('title') border-red-500 @enderror">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('title') border-red-500 @enderror">
                             @error('title')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -201,7 +201,7 @@
                             </label>
                             <textarea name="description" id="description" rows="4" required
                                       placeholder="Jelaskan detail target yang harus dikerjakan mahasiswa..."
-                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
+                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
                             @error('description')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -215,7 +215,7 @@
                             <input type="datetime-local" name="deadline" id="deadline" required
                                    value="{{ old('deadline') }}"
                                    min="{{ now()->format('Y-m-d\TH:i') }}"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('deadline') border-red-500 @enderror">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('deadline') border-red-500 @enderror">
                                     <p class="mt-1 text-xs text-gray-500">
                                 <i class="fas fa-info-circle mr-1"></i>
                                 Mahasiswa harus submit sebelum deadline ini
@@ -232,7 +232,7 @@
                                 Batal
                             </a>
                             <button type="submit" 
-                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded">
+                                    class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-6 rounded">
                                 <i class="fas fa-save mr-2"></i>Buat Target
                             </button>
                         </div>
@@ -306,7 +306,7 @@
                         multipleList.innerHTML += `
                             <label class="flex items-center mb-2 hover:bg-gray-50 p-2 rounded">
                                 <input type="checkbox" name="group_ids[]" value="${group.id}" 
-                                       class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                                       class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                                 <span class="ml-2 text-sm text-gray-700">${group.name}</span>
                             </label>
                         `;

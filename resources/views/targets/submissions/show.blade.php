@@ -5,7 +5,7 @@
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Detail Target: ') . $target->title }}
             </h2>
         </div>
@@ -55,7 +55,7 @@
                         @php
                             $color = match($target->submission_status) {
                                 'pending' => 'bg-gray-100 text-gray-800',
-                                'submitted' => 'bg-blue-100 text-blue-800',
+                                'submitted' => 'bg-primary-100 text-primary-800',
                                 'late' => 'bg-orange-100 text-orange-800',
                                 'approved' => 'bg-green-100 text-green-800',
                                 'revision' => 'bg-yellow-100 text-yellow-800',
@@ -105,13 +105,13 @@
                                 </div>
                                 @if(isset($file['local_path']))
                                 <a href="{{ route('targets.download', [$target->id, $file['local_path']]) }}" 
-                                   class="text-blue-600 hover:text-blue-800 text-sm">
+                                   class="text-primary-600 hover:text-primary-800 text-sm">
                                     <i class="fas fa-download mr-1"></i>Download
                                 </a>
                                 @elseif(isset($file['file_url']))
                                 <a href="{{ $file['file_url'] }}" 
                                    target="_blank"
-                                   class="text-blue-600 hover:text-blue-800 text-sm">
+                                   class="text-primary-600 hover:text-primary-800 text-sm">
                                     <i class="fas fa-external-link-alt mr-1"></i>Buka
                                 </a>
                                 @endif
@@ -177,7 +177,7 @@
                             </a>
                             @elseif($target->isSubmitted() && !$target->isReviewed())
                             <a href="{{ route('targets.submissions.edit', $target->id) }}" 
-                               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded">
+                               class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-6 rounded">
                                 <i class="fas fa-edit mr-2"></i>Edit Submission
                             </a>
                             @endif

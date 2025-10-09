@@ -5,7 +5,7 @@
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Review & Nilai Target Mingguan') }}
             </h2>
         </div>
@@ -18,7 +18,7 @@
                 <div class="lg:col-span-1">
                     <div class="bg-white rounded-lg shadow-md p-6 sticky top-6">
                         <h3 class="font-semibold text-gray-800 mb-4">
-                            <i class="fas fa-info-circle mr-2 text-blue-600"></i>Info Target
+                            <i class="fas fa-info-circle mr-2 text-primary-600"></i>Info Target
                         </h3>
 
                         <div class="space-y-4">
@@ -32,7 +32,7 @@
                             <!-- Week -->
                             <div>
                                 <label class="block text-xs font-medium text-gray-500 mb-1">Minggu</label>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
                                     Minggu {{ $target->week_number }}
                                 </span>
                             </div>
@@ -66,7 +66,7 @@
                                     @foreach($target->evidence_files as $file)
                                     <a href="{{ asset('storage/' . $file['local_path']) }}" 
                                        target="_blank"
-                                       class="text-xs text-blue-600 hover:underline block">
+                                       class="text-xs text-primary-600 hover:underline block">
                                         <i class="fas fa-file mr-1"></i>{{ $file['file_name'] }}
                                     </a>
                                     @endforeach
@@ -100,7 +100,7 @@
                                        max="100"
                                        step="0.01"
                                        required
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('score') border-red-500 @enderror">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('score') border-red-500 @enderror">
                                 @error('score')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -115,7 +115,7 @@
                                 <select name="status" 
                                         id="status" 
                                         required
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('status') border-red-500 @enderror">
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('status') border-red-500 @enderror">
                                     <option value="">Pilih Status</option>
                                     <option value="approved" {{ old('status') == 'approved' ? 'selected' : '' }}>✓ Diterima (Approved)</option>
                                     <option value="needs_revision" {{ old('status') == 'needs_revision' ? 'selected' : '' }}>⚠ Perlu Revisi</option>
@@ -136,7 +136,7 @@
                                           rows="5"
                                           required
                                           placeholder="Berikan feedback konstruktif kepada mahasiswa mengenai target yang telah diselesaikan..."
-                                          class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('feedback') border-red-500 @enderror">{{ old('feedback') }}</textarea>
+                                          class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('feedback') border-red-500 @enderror">{{ old('feedback') }}</textarea>
                                 @error('feedback')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -151,7 +151,7 @@
                                           id="suggestions" 
                                           rows="4"
                                           placeholder="Berikan saran atau rekomendasi untuk improvement..."
-                                          class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('suggestions') border-red-500 @enderror">{{ old('suggestions') }}</textarea>
+                                          class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('suggestions') border-red-500 @enderror">{{ old('suggestions') }}</textarea>
                                 @error('suggestions')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror

@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-white leading-tight">
                     {{ $group->name }}
                 </h2>
                 <p class="text-sm text-gray-600">{{ $group->classRoom->name ?? 'Tanpa Kelas' }}</p>
@@ -52,7 +52,7 @@
                                 <div>
                                     <div class="text-sm text-gray-600">Ketua Kelompok</div>
                                     <div class="font-semibold flex items-center">
-                                        <span class="text-blue-600 mr-1">★</span>
+                                        <span class="text-primary-600 mr-1">★</span>
                                         {{ $group->leader->name }}
                                     </div>
                                 </div>
@@ -78,7 +78,7 @@
                                                 ? min(100, max(0, ($group->members->count() / $group->max_members) * 100))
                                                 : 0;
                                         @endphp
-                                        <div class="bg-blue-600 h-full transition-all duration-300" style="width: <?php echo $memberPercentage; ?>%"></div>
+                                        <div class="bg-primary-600 h-full transition-all duration-300" style="width: <?php echo $memberPercentage; ?>%"></div>
                                     </div>
                                 </div>
 
@@ -108,7 +108,7 @@
                             @else
                             <div class="space-y-2">
                                 @foreach($group->members as $member)
-                                <div class="flex items-center justify-between p-3 border rounded-lg {{ $member->is_leader ? 'bg-blue-50 border-blue-200' : 'bg-gray-50' }}">
+                                <div class="flex items-center justify-between p-3 border rounded-lg {{ $member->is_leader ? 'bg-primary-50 border-primary-200' : 'bg-gray-50' }}">
                                     <div class="flex items-center gap-3">
                                         <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center font-bold text-gray-600">
                                             {{ strtoupper(substr($member->user->name, 0, 1)) }}
@@ -117,7 +117,7 @@
                                             <div class="font-semibold flex items-center gap-2">
                                                 {{ $member->user->name }}
                                                 @if($member->is_leader)
-                                                <span class="px-2 py-0.5 bg-blue-600 text-white text-xs rounded-full">Ketua</span>
+                                                <span class="px-2 py-0.5 bg-primary-600 text-white text-xs rounded-full">Ketua</span>
                                                 @endif
                                             </div>
                                             <div class="text-sm text-gray-600">{{ $member->user->email }}</div>
@@ -159,7 +159,7 @@
                                         Pilih Mahasiswa <span class="text-red-500">*</span>
                                     </label>
                                     <select name="user_id" id="user_id" required
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                                         <option value="">-- Pilih Mahasiswa --</option>
                                         @foreach($availableStudents as $student)
                                         <option value="{{ $student->id }}">
@@ -172,7 +172,7 @@
                                 <div class="mb-4">
                                     <label class="flex items-center">
                                         <input type="checkbox" name="is_leader" value="1"
-                                            class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                                            class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                                         <span class="ml-2 text-sm text-gray-700">
                                             Jadikan sebagai <strong>Ketua Kelompok</strong>
                                         </span>
@@ -182,7 +182,7 @@
                                     </p>
                                 </div>
 
-                                <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                <button type="submit" class="w-full bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded">
                                     + Tambah Anggota
                                 </button>
                             </form>

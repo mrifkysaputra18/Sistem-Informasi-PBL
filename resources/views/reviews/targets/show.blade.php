@@ -6,12 +6,12 @@
                    class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </a>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-white leading-tight">
                     {{ __('Detail Review Target') }}
                 </h2>
             </div>
             <a href="{{ route('target-reviews.edit', $target) }}" 
-               class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded">
+               class="bg-primary-500 hover:bg-primary-600 text-white text-sm px-4 py-2 rounded">
                 <i class="fas fa-edit mr-1"></i>Edit Review
             </a>
         </div>
@@ -24,7 +24,7 @@
                 <div class="lg:col-span-1">
                     <div class="bg-white rounded-lg shadow-md p-6">
                         <h3 class="font-semibold text-gray-800 mb-4">
-                            <i class="fas fa-info-circle mr-2 text-blue-600"></i>Info Target
+                            <i class="fas fa-info-circle mr-2 text-primary-600"></i>Info Target
                         </h3>
 
                         <div class="space-y-4">
@@ -36,7 +36,7 @@
 
                             <div>
                                 <label class="block text-xs font-medium text-gray-500 mb-1">Minggu</label>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
                                     Minggu {{ $target->week_number }}
                                 </span>
                             </div>
@@ -66,7 +66,7 @@
                                     @foreach($target->evidence_files as $file)
                                     <a href="{{ asset('storage/' . $file['local_path']) }}" 
                                        target="_blank"
-                                       class="text-xs text-blue-600 hover:underline block">
+                                       class="text-xs text-primary-600 hover:underline block">
                                         <i class="fas fa-file mr-1"></i>{{ $file['file_name'] }}
                                     </a>
                                     @endforeach
@@ -88,9 +88,9 @@
                         <div class="space-y-6">
                             <!-- Score & Status -->
                             <div class="grid grid-cols-2 gap-4">
-                                <div class="bg-blue-50 rounded-lg p-4">
+                                <div class="bg-primary-50 rounded-lg p-4">
                                     <label class="block text-xs font-medium text-gray-500 mb-1">Nilai</label>
-                                    <p class="text-3xl font-bold text-blue-600">{{ number_format($target->review->score, 2) }}</p>
+                                    <p class="text-3xl font-bold text-primary-600">{{ number_format($target->review->score, 2) }}</p>
                                     <p class="text-xs text-gray-500">dari 100</p>
                                 </div>
                                 <div class="rounded-lg p-4 {{ $target->review->status == 'approved' ? 'bg-green-50' : ($target->review->status == 'needs_revision' ? 'bg-yellow-50' : 'bg-red-50') }}">

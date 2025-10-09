@@ -5,7 +5,7 @@
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Tambah Kriteria Penilaian') }}
             </h2>
         </div>
@@ -17,8 +17,8 @@
                 <div class="p-8">
                     <!-- Header -->
                     <div class="mb-8 text-center">
-                        <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-plus text-blue-600 text-2xl"></i>
+                        <div class="bg-primary-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-plus text-primary-600 text-2xl"></i>
                         </div>
                         <h3 class="text-2xl font-bold text-gray-900 mb-2">Buat Kriteria Baru</h3>
                         <p class="text-gray-600">Definisikan kriteria penilaian untuk evaluasi kelompok PBL</p>
@@ -37,7 +37,7 @@
                                    name="nama" 
                                    value="{{ old('nama') }}"
                                    placeholder="Contoh: Kualitas Presentasi"
-                                   class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('nama') border-red-500 @enderror">
+                                   class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-primary-500 transition duration-200 @error('nama') border-red-500 @enderror">
                             @error('nama')
                                 <p class="text-red-500 text-sm mt-1">
                                     <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -59,7 +59,7 @@
                                        min="0" 
                                        max="1"
                                        placeholder="0.25"
-                                       class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('bobot') border-red-500 @enderror">
+                                       class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-primary-500 transition duration-200 @error('bobot') border-red-500 @enderror">
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3">
                                     <span class="text-gray-500 text-sm">0.0 - 1.0</span>
                                 </div>
@@ -139,11 +139,11 @@
                                            {{ old('segment', 'group') == 'group' ? 'checked' : '' }}
                                            class="sr-only">
                                     <div class="flex items-center">
-                                        <div class="w-4 h-4 border-2 border-blue-500 rounded-full mr-3 flex items-center justify-center">
-                                            <div class="w-2 h-2 bg-blue-500 rounded-full group-indicator"></div>
+                                        <div class="w-4 h-4 border-2 border-primary-500 rounded-full mr-3 flex items-center justify-center">
+                                            <div class="w-2 h-2 bg-primary-500 rounded-full group-indicator"></div>
                                         </div>
                                         <div>
-                                            <div class="flex items-center text-blue-700 font-medium">
+                                            <div class="flex items-center text-primary-700 font-medium">
                                                 <i class="fas fa-users mr-2"></i>Group
                                             </div>
                                             <div class="text-sm text-gray-600">Penilaian untuk kelompok</div>
@@ -158,11 +158,11 @@
                                            {{ old('segment') == 'student' ? 'checked' : '' }}
                                            class="sr-only">
                                     <div class="flex items-center">
-                                        <div class="w-4 h-4 border-2 border-purple-500 rounded-full mr-3 flex items-center justify-center">
-                                            <div class="w-2 h-2 bg-purple-500 rounded-full hidden student-indicator"></div>
+                                        <div class="w-4 h-4 border-2 border-secondary-500 rounded-full mr-3 flex items-center justify-center">
+                                            <div class="w-2 h-2 bg-secondary-500 rounded-full hidden student-indicator"></div>
                                         </div>
                                         <div>
-                                            <div class="flex items-center text-purple-700 font-medium">
+                                            <div class="flex items-center text-secondary-700 font-medium">
                                                 <i class="fas fa-user mr-2"></i>Student
                                             </div>
                                             <div class="text-sm text-gray-600">Penilaian untuk individu</div>
@@ -184,7 +184,7 @@
                                 <i class="fas fa-times mr-2"></i>Batal
                             </a>
                             <button type="submit" 
-                                    class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                                    class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
                                 <i class="fas fa-save mr-2"></i>Simpan Kriteria
                             </button>
                         </div>

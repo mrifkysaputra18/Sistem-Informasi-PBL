@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Kelola Mahasiswa & User') }}
             </h2>
             <div class="flex gap-2">
@@ -10,7 +10,7 @@
                     <i class="fas fa-user-slash mr-2"></i>Mahasiswa Tanpa Kelompok
                 </a>
                 <a href="{{ route('admin.users.create') }}" 
-                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                   class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
                     <i class="fas fa-plus mr-2"></i>Tambah User
                 </a>
             </div>
@@ -49,7 +49,7 @@
                             </label>
                             <input type="text" name="search" value="{{ request('search') }}" 
                                    placeholder="Nama, email, atau ID..." 
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                         </div>
 
                         <!-- Role Filter -->
@@ -57,7 +57,7 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 <i class="fas fa-user-tag mr-1"></i>Role
                             </label>
-                            <select name="role" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <select name="role" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                                 <option value="">Semua Role</option>
                                 <option value="mahasiswa" {{ request('role') == 'mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
                                 <option value="dosen" {{ request('role') == 'dosen' ? 'selected' : '' }}>Dosen</option>
@@ -71,7 +71,7 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 <i class="fas fa-school mr-1"></i>Kelas
                             </label>
-                            <select name="class_room_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <select name="class_room_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                                 <option value="">Semua Kelas</option>
                                 @foreach($classRooms as $classroom)
                                     <option value="{{ $classroom->id }}" {{ request('class_room_id') == $classroom->id ? 'selected' : '' }}>
@@ -86,7 +86,7 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 <i class="fas fa-toggle-on mr-1"></i>Status
                             </label>
-                            <select name="is_active" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <select name="is_active" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                                 <option value="">Semua Status</option>
                                 <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Aktif</option>
                                 <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Tidak Aktif</option>
@@ -95,7 +95,7 @@
                     </div>
 
                     <div class="flex items-center gap-2 mt-4">
-                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-md">
+                        <button type="submit" class="bg-primary-500 hover:bg-primary-600 text-white py-2 px-6 rounded-md">
                             <i class="fas fa-filter mr-2"></i>Filter
                         </button>
                         @if(request()->hasAny(['search', 'role', 'class_room_id', 'is_active']))
@@ -112,10 +112,10 @@
                 <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-xl shadow-lg text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-blue-100 text-sm font-medium">Total User</p>
+                            <p class="text-primary-100 text-sm font-medium">Total User</p>
                             <p class="text-3xl font-bold">{{ $users->total() }}</p>
                         </div>
-                        <div class="bg-blue-400 bg-opacity-50 p-3 rounded-full">
+                        <div class="bg-primary-400 bg-opacity-50 p-3 rounded-full">
                             <i class="fas fa-users text-2xl"></i>
                         </div>
                     </div>
@@ -133,13 +133,13 @@
                     </div>
                 </div>
                 
-                <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-6 rounded-xl shadow-lg text-white">
+                <div class="bg-gradient-to-r from-secondary-500 to-secondary-600 p-6 rounded-xl shadow-lg text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-purple-100 text-sm font-medium">Dosen</p>
+                            <p class="text-secondary-100 text-sm font-medium">Dosen</p>
                             <p class="text-3xl font-bold">{{ \App\Models\User::where('role', 'dosen')->count() }}</p>
                         </div>
-                        <div class="bg-purple-400 bg-opacity-50 p-3 rounded-full">
+                        <div class="bg-secondary-400 bg-opacity-50 p-3 rounded-full">
                             <i class="fas fa-chalkboard-teacher text-2xl"></i>
                         </div>
                     </div>
@@ -217,7 +217,7 @@
                                         </thead>
                                         <tbody class="bg-white divide-y divide-gray-200">
                                             @foreach($usersByRole[$roleType] as $index => $user)
-                                                <tr class="hover:bg-blue-50 transition duration-200">
+                                                <tr class="hover:bg-primary-50 transition duration-200">
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                         {{ $index + 1 }}
                                                     </td>
@@ -225,8 +225,8 @@
                                                         <div class="flex items-center">
                                                             <div class="flex-shrink-0 h-12 w-12">
                                                                 <div class="h-12 w-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg
-                                                                    {{ $roleType === 'admin' ? 'bg-gradient-to-br from-red-500 to-pink-600' : '' }}
-                                                                    {{ $roleType === 'koordinator' ? 'bg-gradient-to-br from-purple-500 to-indigo-600' : '' }}
+                                                                    {{ $roleType === 'admin' ? 'bg-gradient-to-br from-red-500 to-secondary-600' : '' }}
+                                                                    {{ $roleType === 'koordinator' ? 'bg-gradient-to-br from-secondary-500 to-primary-600' : '' }}
                                                                     {{ $roleType === 'dosen' ? 'bg-gradient-to-br from-blue-500 to-cyan-600' : '' }}
                                                                     {{ $roleType === 'mahasiswa' ? 'bg-gradient-to-br from-green-500 to-emerald-600' : '' }}">
                                                                     {{ strtoupper(substr($user->name, 0, 2)) }}
@@ -246,7 +246,7 @@
                                                     @if($roleType === 'mahasiswa')
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
                                                         @if($user->classRoom)
-                                                            <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-100 text-indigo-800">
+                                                            <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary-100 text-primary-800">
                                                                 <i class="fas fa-school mr-1.5"></i>{{ $user->classRoom->name }}
                                                             </span>
                                                         @else
@@ -270,7 +270,7 @@
                                                                 <i class="fas fa-eye mr-1.5"></i>Detail
                                                             </a>
                                                             <a href="{{ route('admin.users.edit', $user) }}" 
-                                                               class="inline-flex items-center px-3 py-2 text-sm font-semibold text-indigo-700 bg-indigo-100 hover:bg-indigo-200 rounded-lg transition shadow-sm hover:shadow-md">
+                                                               class="inline-flex items-center px-3 py-2 text-sm font-semibold text-primary-700 bg-primary-100 hover:bg-primary-200 rounded-lg transition shadow-sm hover:shadow-md">
                                                                 <i class="fas fa-edit mr-1.5"></i>Edit
                                                             </a>
                                                             @if($user->id !== auth()->id())
@@ -351,8 +351,8 @@
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
                                                     {{ $user->role === 'admin' ? 'bg-red-100 text-red-800' : '' }}
-                                                    {{ $user->role === 'koordinator' ? 'bg-purple-100 text-purple-800' : '' }}
-                                                    {{ $user->role === 'dosen' ? 'bg-blue-100 text-blue-800' : '' }}
+                                                    {{ $user->role === 'koordinator' ? 'bg-secondary-100 text-secondary-800' : '' }}
+                                                    {{ $user->role === 'dosen' ? 'bg-primary-100 text-primary-800' : '' }}
                                                     {{ $user->role === 'mahasiswa' ? 'bg-green-100 text-green-800' : '' }}">
                                                     <i class="fas fa-circle text-xs mr-1"></i>
                                                     {{ ucfirst($user->role) }}
@@ -360,7 +360,7 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 @if($user->classRoom)
-                                                    <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-indigo-100 text-indigo-800">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-primary-100 text-primary-800">
                                                         <i class="fas fa-school mr-1"></i>{{ $user->classRoom->name }}
                                                     </span>
                                                 @else
@@ -383,7 +383,7 @@
                                                         <i class="fas fa-eye mr-1.5"></i>Detail
                                                     </a>
                                                     <a href="{{ route('admin.users.edit', $user) }}" 
-                                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-100 hover:bg-indigo-200 hover:text-indigo-900 rounded-lg transition">
+                                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-primary-600 bg-primary-100 hover:bg-primary-200 hover:text-primary-900 rounded-lg transition">
                                                         <i class="fas fa-edit mr-1.5"></i>Edit
                                                     </a>
                                                     @if($user->id !== auth()->id())
@@ -434,7 +434,7 @@
             
             // Remove active class from all tabs
             document.querySelectorAll('.role-tab').forEach(tab => {
-                tab.classList.remove('active', 'border-blue-600', 'text-blue-600');
+                tab.classList.remove('active', 'border-primary-600', 'text-primary-600');
                 tab.classList.add('border-transparent', 'text-gray-600');
             });
             
@@ -443,7 +443,7 @@
             
             // Add active class to selected tab
             const activeTab = document.getElementById('tab-' + role);
-            activeTab.classList.add('active', 'border-blue-600', 'text-blue-600');
+            activeTab.classList.add('active', 'border-primary-600', 'text-primary-600');
             activeTab.classList.remove('border-transparent', 'text-gray-600');
         }
         

@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Manajemen Kelompok') }}
             </h2>
             <div class="flex gap-2">
@@ -12,7 +12,7 @@
                 </a>
                 @endif
                 <a href="{{ route('groups.create') }}" 
-                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                   class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
                     <i class="fas fa-plus mr-2"></i>Tambah Kelompok
                 </a>
             </div>
@@ -36,7 +36,7 @@
                 <form method="GET" action="{{ route('groups.index') }}" class="flex gap-4">
                     <div class="flex-1">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Filter by Kelas</label>
-                        <select name="classroom" class="w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                        <select name="classroom" class="w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-500 focus:ring-secondary-500">
                             <option value="">Semua Kelas</option>
                             @foreach($classRooms as $classroom)
                             <option value="{{ $classroom->id }}" {{ request('classroom') == $classroom->id ? 'selected' : '' }}>
@@ -46,7 +46,7 @@
                         </select>
                     </div>
                     <div class="flex items-end gap-2">
-                        <button type="submit" class="bg-purple-500 hover:bg-purple-600 text-white py-2 px-6 rounded-md">
+                        <button type="submit" class="bg-secondary-500 hover:bg-secondary-600 text-white py-2 px-6 rounded-md">
                             <i class="fas fa-filter mr-2"></i>Filter
                         </button>
                         @if(request('classroom'))
@@ -63,10 +63,10 @@
                 <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-xl shadow-lg text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-blue-100 text-sm font-medium">Total Kelompok</p>
+                            <p class="text-primary-100 text-sm font-medium">Total Kelompok</p>
                             <p class="text-3xl font-bold">{{ $groups->total() }}</p>
                         </div>
-                        <div class="bg-blue-400 bg-opacity-50 p-3 rounded-full">
+                        <div class="bg-primary-400 bg-opacity-50 p-3 rounded-full">
                             <i class="fas fa-users text-2xl"></i>
                         </div>
                     </div>
@@ -84,13 +84,13 @@
                     </div>
                 </div>
                 
-                <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-6 rounded-xl shadow-lg text-white">
+                <div class="bg-gradient-to-r from-secondary-500 to-secondary-600 p-6 rounded-xl shadow-lg text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-purple-100 text-sm font-medium">Kelompok Penuh</p>
+                            <p class="text-secondary-100 text-sm font-medium">Kelompok Penuh</p>
                             <p class="text-3xl font-bold">{{ $groups->filter(fn($g) => $g->isFull())->count() }}</p>
                         </div>
-                        <div class="bg-purple-400 bg-opacity-50 p-3 rounded-full">
+                        <div class="bg-secondary-400 bg-opacity-50 p-3 rounded-full">
                             <i class="fas fa-user-check text-2xl"></i>
                         </div>
                     </div>
@@ -145,7 +145,7 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 @if($group->classRoom)
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
                                                     {{ $group->classRoom->name }}
                                                 </span>
                                                 @else
@@ -155,7 +155,7 @@
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 @if($group->leader)
                                                 <div class="flex items-center">
-                                                    <span class="text-blue-600 mr-1">★</span>
+                                                    <span class="text-primary-600 mr-1">★</span>
                                                     <div class="text-sm text-gray-900">{{ $group->leader->name }}</div>
                                                 </div>
                                                 @else
@@ -175,7 +175,7 @@
                                                         Detail
                                                     </a>
                                                     <a href="{{ route('groups.edit', $group) }}" 
-                                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-100 hover:bg-indigo-200 hover:text-indigo-900 rounded-lg transition duration-200 ease-in-out">
+                                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-primary-600 bg-primary-100 hover:bg-primary-200 hover:text-primary-900 rounded-lg transition duration-200 ease-in-out">
                                                         <i class="fas fa-edit mr-1.5"></i>
                                                         Edit
                                                     </a>
@@ -209,7 +209,7 @@
                             <h3 class="text-lg font-medium text-gray-900 mb-2">Belum ada kelompok</h3>
                             <p class="text-gray-500 mb-4">Mulai dengan menambahkan kelompok pertama Anda.</p>
                             <a href="{{ route('groups.create') }}" 
-                               class="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md transition duration-300">
+                               class="inline-flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-700 text-white font-bold rounded-lg shadow-md transition duration-300">
                                 <i class="fas fa-plus mr-2"></i>Tambah Kelompok Pertama
                             </a>
                         </div>

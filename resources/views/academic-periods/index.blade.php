@@ -1,14 +1,14 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Periode Akademik') }}
             </h2>
             <div class="flex gap-2">
-                <a href="{{ route('projects.index') }}" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                <a href="{{ route('projects.index') }}" class="bg-secondary-500 hover:bg-secondary-700 text-white font-bold py-2 px-4 rounded">
                     <i class="fas fa-book mr-2"></i>Mata Kuliah
                 </a>
-                <a href="{{ route('academic-periods.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <a href="{{ route('academic-periods.create') }}" class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded">
                     <i class="fas fa-plus mr-2"></i>Tambah Periode
                 </a>
             </div>
@@ -55,14 +55,14 @@
                                         <div class="text-sm text-gray-500">{{ $period->code }}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
                                             {{ $period->academic_year }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
-                                            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
-                                                <span class="text-sm font-semibold text-purple-600">{{ $period->semester_number }}</span>
+                                            <div class="w-8 h-8 bg-secondary-100 rounded-full flex items-center justify-center mr-3">
+                                                <span class="text-sm font-semibold text-secondary-600">{{ $period->semester_number }}</span>
                                             </div>
                                             @if($period->isPbl())
                                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -144,7 +144,7 @@
                     <div class="text-center py-8 bg-gray-50 rounded-lg">
                         <div class="text-gray-400 mb-3"><i class="fas fa-calendar-alt text-4xl"></i></div>
                         <p class="text-gray-600 mb-3">Belum ada periode akademik</p>
-                        <a href="{{ route('academic-periods.create') }}" class="inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded">
+                        <a href="{{ route('academic-periods.create') }}" class="inline-flex items-center bg-primary-500 hover:bg-primary-600 text-white text-sm px-4 py-2 rounded">
                             <i class="fas fa-plus mr-2"></i>Tambah Periode Akademik Pertama
                         </a>
                     </div>

@@ -6,7 +6,7 @@
                    class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </a>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-white leading-tight">
                     {{ __('Detail Komponen Rubrik') }}
                 </h2>
             </div>
@@ -54,12 +54,12 @@
                     @endif
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-blue-50 rounded-lg p-4">
+                        <div class="bg-primary-50 rounded-lg p-4">
                             <div class="flex items-center">
-                                <i class="fas fa-percentage text-blue-600 text-2xl mr-3"></i>
+                                <i class="fas fa-percentage text-primary-600 text-2xl mr-3"></i>
                                 <div>
-                                    <p class="text-sm text-blue-600 font-medium">Bobot</p>
-                                    <p class="text-2xl font-bold text-blue-900">{{ $rubricComponent->weight }}%</p>
+                                    <p class="text-sm text-primary-600 font-medium">Bobot</p>
+                                    <p class="text-2xl font-bold text-primary-900">{{ $rubricComponent->weight }}%</p>
                                 </div>
                             </div>
                         </div>
@@ -74,12 +74,12 @@
                             </div>
                         </div>
 
-                        <div class="bg-purple-50 rounded-lg p-4">
+                        <div class="bg-secondary-50 rounded-lg p-4">
                             <div class="flex items-center">
-                                <i class="fas fa-sort text-purple-600 text-2xl mr-3"></i>
+                                <i class="fas fa-sort text-secondary-600 text-2xl mr-3"></i>
                                 <div>
-                                    <p class="text-sm text-purple-600 font-medium">Urutan</p>
-                                    <p class="text-2xl font-bold text-purple-900">{{ $rubricComponent->order }}</p>
+                                    <p class="text-sm text-secondary-600 font-medium">Urutan</p>
+                                    <p class="text-2xl font-bold text-secondary-900">{{ $rubricComponent->order }}</p>
                                 </div>
                             </div>
                         </div>
@@ -143,7 +143,7 @@
                                                 {{ number_format($score->percentage, 1) }}%
                                             </div>
                                             <div class="w-16 bg-gray-200 rounded-full h-2">
-                                                <div class="bg-blue-600 h-2 rounded-full" 
+                                                <div class="bg-primary-600 h-2 rounded-full" 
                                                      style="width: {{ min($score->percentage, 100) }}%;"></div>
                                             </div>
                                         </div>

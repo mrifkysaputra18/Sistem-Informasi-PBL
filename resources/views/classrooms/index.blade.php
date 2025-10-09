@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Pilih Kelas') }}
             </h2>
             @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
-            <a href="{{ route('classrooms.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <a href="{{ route('classrooms.create') }}" class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded">
                 + Buat Kelas Baru
             </a>
             @endif
@@ -36,13 +36,13 @@
                                name="search" 
                                value="{{ request('search') }}"
                                placeholder="Nama atau kode kelas..."
-                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                     </div>
 
                     <!-- Subject Filter -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Mata Kuliah</label>
-                        <select name="subject_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <select name="subject_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                             <option value="">Semua Mata Kuliah</option>
                             @foreach($subjects as $subject)
                             <option value="{{ $subject->id }}" {{ request('subject_id') == $subject->id ? 'selected' : '' }}>
@@ -55,7 +55,7 @@
                     <!-- Semester Filter -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Semester</label>
-                        <select name="semester" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <select name="semester" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                             <option value="">Semua Semester</option>
                             @foreach($semesters as $semester)
                             <option value="{{ $semester }}" {{ request('semester') == $semester ? 'selected' : '' }}>
@@ -67,7 +67,7 @@
 
                     <!-- Submit Button -->
                     <div class="flex items-end">
-                        <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md">
+                        <button type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white py-2 px-4 rounded-md">
                             <i class="fas fa-search mr-2"></i>Filter
                         </button>
                     </div>
@@ -102,14 +102,14 @@
                                             ? min(100, max(0, ($classRoom->groups_count / $classRoom->max_groups) * 100))
                                             : 0;
                                     @endphp
-                                    <div class="bg-blue-600 h-full transition-all duration-300" style="width: <?php echo $percentage; ?>%"></div>
+                                    <div class="bg-primary-600 h-full transition-all duration-300" style="width: <?php echo $percentage; ?>%"></div>
                                 </div>
                             </div>
 
                             <div class="space-y-2">
                                 <!-- Lihat Kelompok Button -->
                                 <a href="{{ route('groups.index', ['classroom' => $classRoom->id]) }}" 
-                                   class="block w-full text-center bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                                   class="block w-full text-center bg-secondary-500 hover:bg-secondary-700 text-white font-bold py-2 px-4 rounded">
                                     <i class="fas fa-users mr-2"></i>Lihat Kelompok ({{ $classRoom->groups_count }})
                                 </a>
                                 

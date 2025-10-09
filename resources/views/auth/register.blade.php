@@ -1,4 +1,17 @@
 <x-guest-layout>
+    <!-- Logo Politala -->
+    <div class="flex justify-center mb-6">
+        <img src="{{ asset('images/logo/politala.png') }}" 
+             alt="Logo Politeknik Negeri Tanah Laut" 
+             class="h-24 w-auto object-contain">
+    </div>
+
+    <!-- Title -->
+    <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-1">Daftar Akun Baru</h2>
+        <p class="text-sm text-gray-600">Sistem Informasi PBL - Politeknik Negeri Tanah Laut</p>
+    </div>
+
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
@@ -40,7 +53,7 @@
         </div>
 
         <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
+            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" href="{{ route('login') }}">
                 {{ __('Already registered?') }}
             </a>
 

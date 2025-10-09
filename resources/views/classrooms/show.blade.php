@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-white leading-tight">
                     Kelas {{ $classRoom->name }}
                 </h2>
                 <p class="text-sm text-gray-600">{{ $classRoom->program_studi }} - Semester {{ $classRoom->semester }}</p>
@@ -12,7 +12,7 @@
                     ← Kembali
                 </a>
                 @if(!$classRoom->isFull())
-                <a href="{{ route('groups.create', ['class_room_id' => $classRoom->id]) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <a href="{{ route('groups.create', ['class_room_id' => $classRoom->id]) }}" class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded">
                     + Buat Kelompok Baru
                 </a>
                 @endif
@@ -38,16 +38,16 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="text-center p-4 bg-blue-50 rounded">
-                            <div class="text-3xl font-bold text-blue-600">{{ $classRoom->groups->count() }}</div>
+                        <div class="text-center p-4 bg-primary-50 rounded">
+                            <div class="text-3xl font-bold text-primary-600">{{ $classRoom->groups->count() }}</div>
                             <div class="text-sm text-gray-600">Total Kelompok</div>
                         </div>
                         <div class="text-center p-4 bg-green-50 rounded">
                             <div class="text-3xl font-bold text-green-600">{{ $classRoom->max_groups }}</div>
                             <div class="text-sm text-gray-600">Maksimal Kelompok</div>
                         </div>
-                        <div class="text-center p-4 bg-purple-50 rounded">
-                            <div class="text-3xl font-bold text-purple-600">{{ $classRoom->groups->sum(fn($g) => $g->members->count()) }}</div>
+                        <div class="text-center p-4 bg-secondary-50 rounded">
+                            <div class="text-3xl font-bold text-secondary-600">{{ $classRoom->groups->sum(fn($g) => $g->members->count()) }}</div>
                             <div class="text-sm text-gray-600">Total Mahasiswa</div>
                         </div>
                     </div>
@@ -62,7 +62,7 @@
                     @if($classRoom->groups->isEmpty())
                     <div class="text-center py-8 text-gray-500">
                         <p class="mb-4">Belum ada kelompok di kelas ini.</p>
-                        <a href="{{ route('groups.create', ['class_room_id' => $classRoom->id]) }}" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded">
+                        <a href="{{ route('groups.create', ['class_room_id' => $classRoom->id]) }}" class="inline-block bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-6 rounded">
                             Buat Kelompok Pertama
                         </a>
                     </div>
@@ -92,7 +92,7 @@
                                     <span class="px-2 py-1 bg-gray-100 text-xs rounded">
                                         {{ $member->user->name }}
                                         @if($member->is_leader)
-                                        <span class="text-blue-600">★</span>
+                                        <span class="text-primary-600">★</span>
                                         @endif
                                     </span>
                                     @endforeach
@@ -108,7 +108,7 @@
                             </div>
 
                             <div class="flex gap-2">
-                                <a href="{{ route('groups.show', $group) }}" class="flex-1 text-center bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded">
+                                <a href="{{ route('groups.show', $group) }}" class="flex-1 text-center bg-primary-500 hover:bg-primary-700 text-white text-sm font-bold py-2 px-4 rounded">
                                     Kelola Anggota
                                 </a>
                                 <a href="{{ route('groups.edit', $group) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white text-sm font-bold py-2 px-3 rounded">

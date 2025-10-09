@@ -2,16 +2,16 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-white leading-tight">
                     Dashboard Admin
                 </h2>
-                <p class="text-sm text-gray-600">Selamat datang, {{ auth()->user()->name }}</p>
+                <p class="text-sm text-white">Selamat datang, {{ auth()->user()->name }}</p>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('academic-periods.index') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <a href="{{ route('academic-periods.index') }}" class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded">
                     <i class="fas fa-calendar-alt mr-2"></i>Periode Akademik
                 </a>
-                <a href="{{ route('scores.index') }}" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                <a href="{{ route('scores.index') }}" class="bg-secondary-500 hover:bg-secondary-700 text-white font-bold py-2 px-4 rounded">
                     <i class="fas fa-trophy mr-2"></i>Nilai & Ranking
                 </a>
             </div>
@@ -26,14 +26,14 @@
                 <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-blue-100 text-sm font-medium">Total Users</p>
+                            <p class="text-primary-100 text-sm font-medium">Total Users</p>
                             <p class="text-3xl font-bold mt-2">{{ $stats['totalUsers'] }}</p>
-                            <p class="text-blue-100 text-xs mt-2">
+                            <p class="text-primary-100 text-xs mt-2">
                                 <span class="font-semibold">{{ $stats['totalMahasiswa'] }}</span> Mahasiswa • 
                                 <span class="font-semibold">{{ $stats['totalDosen'] }}</span> Dosen
                             </p>
                         </div>
-                        <div class="bg-blue-400 bg-opacity-50 p-3 rounded-full">
+                        <div class="bg-primary-400 bg-opacity-50 p-3 rounded-full">
                             <i class="fas fa-users text-3xl"></i>
                         </div>
                     </div>
@@ -56,16 +56,16 @@
                 </div>
 
                 <!-- Total Groups -->
-                <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="bg-gradient-to-br from-secondary-500 to-secondary-600 rounded-lg shadow-lg p-6 text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-purple-100 text-sm font-medium">Total Kelompok</p>
+                            <p class="text-secondary-100 text-sm font-medium">Total Kelompok</p>
                             <p class="text-3xl font-bold mt-2">{{ $stats['totalGroups'] }}</p>
-                            <p class="text-purple-100 text-xs mt-2">
+                            <p class="text-secondary-100 text-xs mt-2">
                                 <span class="font-semibold">{{ $stats['totalCriteria'] }}</span> Kriteria Penilaian
                             </p>
                         </div>
-                        <div class="bg-purple-400 bg-opacity-50 p-3 rounded-full">
+                        <div class="bg-secondary-400 bg-opacity-50 p-3 rounded-full">
                             <i class="fas fa-user-friends text-3xl"></i>
                         </div>
                     </div>
@@ -92,8 +92,8 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <a href="{{ route('academic-periods.create') }}" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
                     <div class="flex items-center">
-                        <div class="bg-blue-100 p-3 rounded-full mr-4">
-                            <i class="fas fa-plus text-blue-600 text-xl"></i>
+                        <div class="bg-primary-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-plus text-primary-600 text-xl"></i>
                         </div>
                         <div>
                             <h3 class="font-semibold text-gray-800">Tambah Periode Akademik</h3>
@@ -116,8 +116,8 @@
 
                 <a href="{{ route('groups.create') }}" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
                     <div class="flex items-center">
-                        <div class="bg-purple-100 p-3 rounded-full mr-4">
-                            <i class="fas fa-plus text-purple-600 text-xl"></i>
+                        <div class="bg-secondary-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-plus text-secondary-600 text-xl"></i>
                         </div>
                         <div>
                             <h3 class="font-semibold text-gray-800">Tambah Kelompok</h3>
@@ -133,7 +133,7 @@
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
                         <h3 class="font-semibold text-gray-800">
-                            <i class="fas fa-user-friends mr-2 text-purple-600"></i>
+                            <i class="fas fa-user-friends mr-2 text-secondary-600"></i>
                             Kelompok Terbaru
                         </h3>
                     </div>
@@ -143,8 +143,8 @@
                                 @foreach($recentGroups as $group)
                                 <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
                                     <div class="flex items-center">
-                                        <div class="bg-purple-100 p-2 rounded-full mr-3">
-                                            <i class="fas fa-users text-purple-600 text-sm"></i>
+                                        <div class="bg-secondary-100 p-2 rounded-full mr-3">
+                                            <i class="fas fa-users text-secondary-600 text-sm"></i>
                                         </div>
                                         <div>
                                             <p class="font-medium text-gray-800">{{ $group->name }}</p>
@@ -158,7 +158,7 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <a href="{{ route('groups.show', $group) }}" class="text-blue-600 hover:text-blue-800">
+                                    <a href="{{ route('groups.show', $group) }}" class="text-primary-600 hover:text-primary-800">
                                         <i class="fas fa-arrow-right"></i>
                                     </a>
                                 </div>
@@ -168,7 +168,7 @@
                             <p class="text-gray-500 text-center py-8">Belum ada kelompok</p>
                         @endif
                         <div class="mt-4 text-center">
-                            <a href="{{ route('groups.index') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                            <a href="{{ route('groups.index') }}" class="text-primary-600 hover:text-primary-800 text-sm font-medium">
                                 Lihat Semua Kelompok →
                             </a>
                         </div>
@@ -179,7 +179,7 @@
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
                         <h3 class="font-semibold text-gray-800">
-                            <i class="fas fa-user-plus mr-2 text-blue-600"></i>
+                            <i class="fas fa-user-plus mr-2 text-primary-600"></i>
                             User Terbaru
                         </h3>
                     </div>
@@ -189,8 +189,8 @@
                                 @foreach($recentUsers as $user)
                                 <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
                                     <div class="flex items-center">
-                                        <div class="bg-blue-100 p-2 rounded-full mr-3">
-                                            <i class="fas fa-user text-blue-600 text-sm"></i>
+                                        <div class="bg-primary-100 p-2 rounded-full mr-3">
+                                            <i class="fas fa-user text-primary-600 text-sm"></i>
                                         </div>
                                         <div>
                                             <p class="font-medium text-gray-800">{{ $user->name }}</p>
@@ -198,8 +198,8 @@
                                                 {{ $user->email }} • 
                                                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
                                                     @if($user->role === 'admin') bg-red-100 text-red-800
-                                                    @elseif($user->role === 'koordinator') bg-purple-100 text-purple-800
-                                                    @elseif($user->role === 'dosen') bg-blue-100 text-blue-800
+                                                    @elseif($user->role === 'koordinator') bg-secondary-100 text-secondary-800
+                                                    @elseif($user->role === 'dosen') bg-primary-100 text-primary-800
                                                     @else bg-green-100 text-green-800
                                                     @endif">
                                                     {{ ucfirst($user->role) }}

@@ -7,7 +7,7 @@
                     <i class="fas fa-arrow-left text-xl"></i>
                 </a>
                 <div>
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    <h2 class="font-semibold text-xl text-white leading-tight">
                         Detail Tahun Ajaran
                     </h2>
                     <p class="text-sm text-gray-600">{{ $academicYear->name }} ({{ $academicYear->code }})</p>
@@ -49,7 +49,7 @@
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500 mb-1">Kode</label>
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
                                         {{ $academicYear->code }}
                                     </span>
                                 </div>
@@ -116,8 +116,8 @@
                                 @foreach($academicYear->semesters->sortBy('number') as $semester)
                                 <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                     <div class="flex items-center">
-                                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                                            <span class="text-sm font-semibold text-blue-600">{{ $semester->number }}</span>
+                                        <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3">
+                                            <span class="text-sm font-semibold text-primary-600">{{ $semester->number }}</span>
                                         </div>
                                         <div>
                                             <p class="text-sm font-medium text-gray-900">{{ $semester->name }}</p>
@@ -135,7 +135,7 @@
                             
                             <div class="mt-4">
                                 <a href="{{ route('semesters.create') }}?academic_year_id={{ $academicYear->id }}" 
-                                   class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
+                                   class="inline-flex items-center text-sm text-primary-600 hover:text-primary-800">
                                     <i class="fas fa-plus mr-1"></i>Tambah Semester
                                 </a>
                             </div>
@@ -144,7 +144,7 @@
                                 <div class="text-gray-400 mb-2"><i class="fas fa-graduation-cap text-2xl"></i></div>
                                 <p class="text-sm text-gray-600 mb-3">Belum ada semester</p>
                                 <a href="{{ route('semesters.create') }}?academic_year_id={{ $academicYear->id }}" 
-                                   class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
+                                   class="inline-flex items-center text-sm text-primary-600 hover:text-primary-800">
                                     <i class="fas fa-plus mr-1"></i>Tambah Semester Pertama
                                 </a>
                             </div>

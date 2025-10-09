@@ -5,7 +5,7 @@
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 Edit Semester
             </h2>
         </div>
@@ -37,7 +37,7 @@
                             <select name="academic_year_id" 
                                     id="academic_year_id" 
                                     required
-                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('academic_year_id') border-red-500 @enderror">
+                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('academic_year_id') border-red-500 @enderror">
                                 <option value="">Pilih Tahun Ajaran</option>
                                 @foreach($academicYears as $academicYear)
                                 <option value="{{ $academicYear->id }}" 
@@ -62,7 +62,7 @@
                             <select name="number" 
                                     id="number" 
                                     required
-                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('number') border-red-500 @enderror">
+                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('number') border-red-500 @enderror">
                                 <option value="">Pilih Nomor Semester</option>
                                 @for($i = 1; $i <= 8; $i++)
                                 <option value="{{ $i }}" {{ old('number', $semester->number) == $i ? 'selected' : '' }}>
@@ -92,7 +92,7 @@
                                    value="{{ old('name', $semester->name) }}"
                                    required
                                    placeholder="Contoh: Semester 1, Semester 2"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
                             @error('name')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -112,7 +112,7 @@
                                    value="{{ old('code', $semester->code) }}"
                                    required
                                    placeholder="Contoh: 2023-2024-1, 2023-2024-2"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('code') border-red-500 @enderror">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('code') border-red-500 @enderror">
                             @error('code')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -131,7 +131,7 @@
                                    id="start_date" 
                                    value="{{ old('start_date', $semester->start_date->format('Y-m-d')) }}"
                                    required
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('start_date') border-red-500 @enderror">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('start_date') border-red-500 @enderror">
                             @error('start_date')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -150,7 +150,7 @@
                                    id="end_date" 
                                    value="{{ old('end_date', $semester->end_date->format('Y-m-d')) }}"
                                    required
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('end_date') border-red-500 @enderror">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('end_date') border-red-500 @enderror">
                             @error('end_date')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -168,7 +168,7 @@
                                       id="description" 
                                       rows="3"
                                       placeholder="Deskripsi singkat tentang semester..."
-                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description', $semester->description) }}</textarea>
+                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description', $semester->description) }}</textarea>
                             @error('description')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -184,7 +184,7 @@
                                        id="is_active" 
                                        value="1"
                                        {{ old('is_active', $semester->is_active) ? 'checked' : '' }}
-                                       class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                       class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                                 <label for="is_active" class="ml-3 text-sm font-medium text-gray-700">
                                     <i class="fas fa-check-circle text-green-600 mr-1"></i>
                                     Set sebagai semester aktif

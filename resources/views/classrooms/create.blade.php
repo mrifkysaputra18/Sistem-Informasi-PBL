@@ -5,7 +5,7 @@
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Buat Kelas Baru') }}
             </h2>
         </div>
@@ -25,7 +25,7 @@
                             <input type="text" name="name" id="name" required
                                 value="{{ old('name') }}"
                                 placeholder="Contoh: TI-3F"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
                             @error('name')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -38,7 +38,7 @@
                             <input type="text" name="code" id="code" required
                                 value="{{ old('code') }}"
                                 placeholder="Contoh: TI3F"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('code') border-red-500 @enderror">
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('code') border-red-500 @enderror">
                             @error('code')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -49,7 +49,7 @@
                                 Mata Kuliah
                             </label>
                             <select name="subject_id" id="subject_id"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('subject_id') border-red-500 @enderror">
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('subject_id') border-red-500 @enderror">
                                 <option value="">-- Pilih Mata Kuliah (Opsional) --</option>
                                 @foreach($subjects as $subject)
                                 <option value="{{ $subject->id }}" {{ old('subject_id') == $subject->id ? 'selected' : '' }}>
@@ -72,7 +72,7 @@
                             </label>
                             <input type="text" name="semester" id="semester" required
                                 value="{{ old('semester', '3') }}"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('semester') border-red-500 @enderror">
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('semester') border-red-500 @enderror">
                             @error('semester')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -84,7 +84,7 @@
                             </label>
                             <input type="text" name="program_studi" id="program_studi" required
                                 value="{{ old('program_studi', 'Teknik Informatika') }}"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('program_studi') border-red-500 @enderror">
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('program_studi') border-red-500 @enderror">
                             @error('program_studi')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -97,7 +97,7 @@
                             <input type="number" name="max_groups" id="max_groups" required
                                 value="{{ old('max_groups', 5) }}"
                                 min="1" max="10"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('max_groups') border-red-500 @enderror">
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('max_groups') border-red-500 @enderror">
                             <p class="mt-1 text-xs text-gray-500">Maksimal kelompok yang bisa dibuat di kelas ini</p>
                             @error('max_groups')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -108,7 +108,7 @@
                             <a href="{{ route('classrooms.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded">
                                 Batal
                             </a>
-                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded">
+                            <button type="submit" class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-6 rounded">
                                 Buat Kelas
                             </button>
                         </div>

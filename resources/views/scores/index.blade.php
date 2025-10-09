@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Manajemen Nilai & Ranking') }}
             </h2>
             <div class="flex gap-2">
@@ -20,7 +20,7 @@
                 @if(auth()->user()->isDosen() || auth()->user()->isKoordinator())
                     <!-- Dosen & Koordinator: Input Score -->
                     <a href="{{ route('scores.create') }}" 
-                       class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                       class="bg-secondary-500 hover:bg-secondary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
                         <i class="fas fa-plus mr-2"></i>Input Nilai
                     </a>
                 @endif
@@ -45,10 +45,10 @@
                 <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-xl shadow-lg text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-blue-100 text-sm font-medium">Total Kelompok</p>
+                            <p class="text-primary-100 text-sm font-medium">Total Kelompok</p>
                             <p class="text-3xl font-bold">{{ $groups->count() }}</p>
                         </div>
-                        <div class="bg-blue-400 bg-opacity-50 p-3 rounded-full">
+                        <div class="bg-primary-400 bg-opacity-50 p-3 rounded-full">
                             <i class="fas fa-users text-2xl"></i>
                         </div>
                     </div>
@@ -66,13 +66,13 @@
                     </div>
                 </div>
                 
-                <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-6 rounded-xl shadow-lg text-white">
+                <div class="bg-gradient-to-r from-secondary-500 to-secondary-600 p-6 rounded-xl shadow-lg text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-purple-100 text-sm font-medium">Total Nilai</p>
+                            <p class="text-secondary-100 text-sm font-medium">Total Nilai</p>
                             <p class="text-3xl font-bold">{{ $scores->count() }}</p>
                         </div>
-                        <div class="bg-purple-400 bg-opacity-50 p-3 rounded-full">
+                        <div class="bg-secondary-400 bg-opacity-50 p-3 rounded-full">
                             <i class="fas fa-star text-2xl"></i>
                         </div>
                     </div>
@@ -97,7 +97,7 @@
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                     <div class="p-6 bg-white border-b border-gray-200">
                         <h3 class="text-lg font-semibold text-gray-800 mb-4">
-                            <i class="fas fa-user-graduate mr-2 text-blue-500"></i>Mahasiswa Terbaik Per Kelas
+                            <i class="fas fa-user-graduate mr-2 text-primary-500"></i>Mahasiswa Terbaik Per Kelas
                         </h3>
 
                         @if(count($bestStudentsPerClass) > 0)
@@ -115,7 +115,7 @@
                                                     @if($index == 0) bg-yellow-50 border border-yellow-200
                                                     @elseif($index == 1) bg-gray-50 border border-gray-200
                                                     @elseif($index == 2) bg-orange-50 border border-orange-200
-                                                    @else bg-blue-50 border border-blue-200
+                                                    @else bg-primary-50 border border-primary-200
                                                     @endif">
                                                     <div class="flex items-center">
                                                         <div class="flex-shrink-0 mr-3">
@@ -126,7 +126,7 @@
                                                             @elseif($index == 2)
                                                                 <i class="fas fa-medal text-orange-500 text-lg"></i>
                                                             @else
-                                                                <span class="flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-600 rounded-full text-xs font-bold">
+                                                                <span class="flex items-center justify-center w-6 h-6 bg-primary-100 text-primary-600 rounded-full text-xs font-bold">
                                                                     {{ $index + 1 }}
                                                                 </span>
                                                             @endif
@@ -134,7 +134,7 @@
                                                         <div class="flex-1">
                                                             <div class="text-sm font-medium text-gray-900">{{ $studentData['student']->name }}</div>
                                                             <div class="text-xs text-gray-500">{{ $studentData['student']->politala_id }}</div>
-                                                            <div class="text-xs text-blue-600">
+                                                            <div class="text-xs text-primary-600">
                                                                 <i class="fas fa-users mr-1"></i>{{ $studentData['group']->name }}
                                                             </div>
                                                         </div>
@@ -142,7 +142,7 @@
                                                     <div class="text-right">
                                                         <div class="text-sm font-bold 
                                                             @if($studentData['final_score'] >= 80) text-green-600
-                                                            @elseif($studentData['final_score'] >= 70) text-blue-600
+                                                            @elseif($studentData['final_score'] >= 70) text-primary-600
                                                             @elseif($studentData['final_score'] >= 60) text-yellow-600
                                                             @else text-red-600
                                                             @endif">
@@ -189,7 +189,7 @@
                                                     @if($index == 0) bg-yellow-50 border border-yellow-200
                                                     @elseif($index == 1) bg-gray-50 border border-gray-200
                                                     @elseif($index == 2) bg-orange-50 border border-orange-200
-                                                    @else bg-blue-50 border border-blue-200
+                                                    @else bg-primary-50 border border-primary-200
                                                     @endif">
                                                     <div class="flex items-center">
                                                         <div class="flex-shrink-0 mr-3">
@@ -200,7 +200,7 @@
                                                             @elseif($index == 2)
                                                                 <i class="fas fa-medal text-orange-500 text-lg"></i>
                                                             @else
-                                                                <span class="flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-600 rounded-full text-xs font-bold">
+                                                                <span class="flex items-center justify-center w-6 h-6 bg-primary-100 text-primary-600 rounded-full text-xs font-bold">
                                                                     {{ $index + 1 }}
                                                                 </span>
                                                             @endif
@@ -213,7 +213,7 @@
                                                             </div>
                                                             @endif
                                                             @if(isset($groupData['completion_rate']))
-                                                            <div class="text-xs text-blue-600">
+                                                            <div class="text-xs text-primary-600">
                                                                 <i class="fas fa-tasks mr-1"></i>{{ round($groupData['completion_rate'], 1) }}% progres
                                                             </div>
                                                             @endif
@@ -222,7 +222,7 @@
                                                     <div class="text-right">
                                                         <div class="text-sm font-bold 
                                                             @if($groupData['total_score'] >= 80) text-green-600
-                                                            @elseif($groupData['total_score'] >= 70) text-blue-600
+                                                            @elseif($groupData['total_score'] >= 70) text-primary-600
                                                             @elseif($groupData['total_score'] >= 60) text-yellow-600
                                                             @else text-red-600
                                                             @endif">
@@ -304,7 +304,7 @@
                                                             @if($skor !== null)
                                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
                                                                     @if($skor >= 80) bg-green-100 text-green-800
-                                                                    @elseif($skor >= 70) bg-blue-100 text-blue-800
+                                                                    @elseif($skor >= 70) bg-primary-100 text-primary-800
                                                                     @elseif($skor >= 60) bg-yellow-100 text-yellow-800
                                                                     @else bg-red-100 text-red-800
                                                                     @endif">
@@ -328,7 +328,7 @@
                                                         @endphp
                                                         <span class="text-lg font-bold 
                                                             @if($totalScore >= 80) text-green-600
-                                                            @elseif($totalScore >= 70) text-blue-600
+                                                            @elseif($totalScore >= 70) text-primary-600
                                                             @elseif($totalScore >= 60) text-yellow-600
                                                             @else text-red-600
                                                             @endif">
@@ -368,7 +368,7 @@
                                             @if($rank['rank'] == 1) bg-yellow-50 border border-yellow-200
                                             @elseif($rank['rank'] == 2) bg-gray-50 border border-gray-200
                                             @elseif($rank['rank'] == 3) bg-orange-50 border border-orange-200
-                                            @else bg-blue-50 border border-blue-200
+                                            @else bg-primary-50 border border-primary-200
                                             @endif">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0 mr-3">
@@ -379,7 +379,7 @@
                                                     @elseif($rank['rank'] == 3)
                                                         <i class="fas fa-medal text-orange-500 text-xl"></i>
                                                     @else
-                                                        <span class="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-600 rounded-full text-sm font-bold">
+                                                        <span class="flex items-center justify-center w-8 h-8 bg-primary-100 text-primary-600 rounded-full text-sm font-bold">
                                                             {{ $rank['rank'] }}
                                                         </span>
                                                     @endif
@@ -390,7 +390,7 @@
                                                         <div class="text-xs text-gray-500">{{ Str::limit($rank['group']->classRoom->name, 15) }}</div>
                                                     @endif
                                                     @if(isset($rank['completion_rate']))
-                                                    <div class="text-xs text-blue-600 mt-1">
+                                                    <div class="text-xs text-primary-600 mt-1">
                                                         <i class="fas fa-tasks mr-1"></i>{{ round($rank['completion_rate'], 1) }}% progres
                                                     </div>
                                                     @endif
@@ -399,7 +399,7 @@
                                             <div class="text-right">
                                                 <div class="text-lg font-bold 
                                                     @if($rank['total_score'] >= 80) text-green-600
-                                                    @elseif($rank['total_score'] >= 70) text-blue-600
+                                                    @elseif($rank['total_score'] >= 70) text-primary-600
                                                     @elseif($rank['total_score'] >= 60) text-yellow-600
                                                     @else text-red-600
                                                     @endif">

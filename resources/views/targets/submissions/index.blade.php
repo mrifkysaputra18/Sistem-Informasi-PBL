@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Target Mingguan Saya') }}
             </h2>
             <div class="text-sm text-gray-600">
@@ -25,7 +25,7 @@
             @endif
 
             @if(session('info'))
-            <div class="mb-4 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded">
+            <div class="mb-4 bg-primary-100 border border-primary-400 text-primary-700 px-4 py-3 rounded">
                 {{ session('info') }}
             </div>
             @endif
@@ -38,8 +38,8 @@
                         <div class="text-2xl font-bold text-gray-600">{{ $targets->where('submission_status', 'pending')->count() }}</div>
                         <div class="text-sm text-gray-600">Belum Dikerjakan</div>
                     </div>
-                    <div class="text-center p-4 bg-blue-50 rounded">
-                        <div class="text-2xl font-bold text-blue-600">{{ $targets->whereIn('submission_status', ['submitted', 'late'])->count() }}</div>
+                    <div class="text-center p-4 bg-primary-50 rounded">
+                        <div class="text-2xl font-bold text-primary-600">{{ $targets->whereIn('submission_status', ['submitted', 'late'])->count() }}</div>
                         <div class="text-sm text-gray-600">Sudah Submit</div>
                     </div>
                     <div class="text-center p-4 bg-green-50 rounded">
@@ -78,7 +78,7 @@
                                     @php
                                         $color = match($target->submission_status) {
                                             'pending' => 'bg-gray-100 text-gray-800',
-                                            'submitted' => 'bg-blue-100 text-blue-800',
+                                            'submitted' => 'bg-primary-100 text-primary-800',
                                             'late' => 'bg-orange-100 text-orange-800',
                                             'approved' => 'bg-green-100 text-green-800',
                                             'revision' => 'bg-yellow-100 text-yellow-800',
@@ -124,7 +124,7 @@
                                     @if($target->isReviewed())
                                     <div class="text-right">
                                         <div class="text-sm font-medium text-gray-900">
-                                            <i class="fas fa-user-check mr-1 text-blue-500"></i>
+                                            <i class="fas fa-user-check mr-1 text-primary-500"></i>
                                             Direview oleh {{ $target->reviewer->name ?? 'Dosen' }}
                                         </div>
                                         <div class="text-sm text-gray-500">
@@ -141,7 +141,7 @@
                                 <div class="flex space-x-2">
                                     <!-- View Detail -->
                                     <a href="{{ route('targets.submissions.show', $target->id) }}" 
-                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition duration-200">
+                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-primary-600 bg-primary-50 hover:bg-primary-100 rounded-lg transition duration-200">
                                         <i class="fas fa-eye mr-1"></i>Lihat Detail
                                     </a>
 
@@ -161,7 +161,7 @@
                                         @elseif($target->isSubmitted() && !$target->isReviewed())
                                         <!-- Edit Submission -->
                                         <a href="{{ route('targets.submissions.edit', $target->id) }}" 
-                                           class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition duration-200">
+                                           class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition duration-200">
                                             <i class="fas fa-edit mr-1"></i>Edit Submission
                                         </a>
                                         @endif

@@ -2,16 +2,16 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-white leading-tight">
                     Dashboard Koordinator
                 </h2>
-                <p class="text-sm text-gray-600">Selamat datang, {{ auth()->user()->name }}</p>
+                <p class="text-sm text-white">Selamat datang, {{ auth()->user()->name }}</p>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('classrooms.index') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <a href="{{ route('classrooms.index') }}" class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded">
                     <i class="fas fa-school mr-2"></i>Kelas
                 </a>
-                <a href="{{ route('groups.index') }}" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                <a href="{{ route('groups.index') }}" class="bg-secondary-500 hover:bg-secondary-700 text-white font-bold py-2 px-4 rounded">
                     <i class="fas fa-users mr-2"></i>Kelompok
                 </a>
             </div>
@@ -26,26 +26,26 @@
                 <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-blue-100 text-sm font-medium">Total Kelas</p>
+                            <p class="text-primary-100 text-sm font-medium">Total Kelas</p>
                             <p class="text-3xl font-bold mt-2">{{ $stats['totalClassRooms'] }}</p>
                         </div>
-                        <div class="bg-blue-400 bg-opacity-50 p-3 rounded-full">
+                        <div class="bg-primary-400 bg-opacity-50 p-3 rounded-full">
                             <i class="fas fa-school text-3xl"></i>
                         </div>
                     </div>
                 </div>
 
                 <!-- Total Groups -->
-                <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="bg-gradient-to-br from-secondary-500 to-secondary-600 rounded-lg shadow-lg p-6 text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-purple-100 text-sm font-medium">Total Kelompok</p>
+                            <p class="text-secondary-100 text-sm font-medium">Total Kelompok</p>
                             <p class="text-3xl font-bold mt-2">{{ $stats['totalGroups'] }}</p>
-                            <p class="text-purple-100 text-xs mt-2">
+                            <p class="text-secondary-100 text-xs mt-2">
                                 <span class="font-semibold">{{ $stats['activeGroups'] }}</span> Aktif
                             </p>
                         </div>
-                        <div class="bg-purple-400 bg-opacity-50 p-3 rounded-full">
+                        <div class="bg-secondary-400 bg-opacity-50 p-3 rounded-full">
                             <i class="fas fa-users text-3xl"></i>
                         </div>
                     </div>
@@ -129,7 +129,7 @@
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
                         <h3 class="font-semibold text-gray-800">
-                            <i class="fas fa-file-alt mr-2 text-blue-600"></i>
+                            <i class="fas fa-file-alt mr-2 text-primary-600"></i>
                             Progress Terbaru
                         </h3>
                         <p class="text-xs text-gray-600 mt-1">Progres yang baru disubmit</p>
@@ -140,8 +140,8 @@
                                 @foreach($recentProgress as $progress)
                                 <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
                                     <div class="flex items-center flex-1">
-                                        <div class="bg-blue-100 p-2 rounded-full mr-3">
-                                            <i class="fas fa-file text-blue-600 text-sm"></i>
+                                        <div class="bg-primary-100 p-2 rounded-full mr-3">
+                                            <i class="fas fa-file text-primary-600 text-sm"></i>
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <p class="font-medium text-gray-800 truncate">{{ $progress->title }}</p>
@@ -174,8 +174,8 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                 <a href="{{ route('groups.index') }}" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
                     <div class="flex items-center">
-                        <div class="bg-purple-100 p-3 rounded-full mr-4">
-                            <i class="fas fa-users text-purple-600 text-xl"></i>
+                        <div class="bg-secondary-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-users text-secondary-600 text-xl"></i>
                         </div>
                         <div>
                             <h3 class="font-semibold text-gray-800">Kelola Kelompok</h3>
@@ -186,8 +186,8 @@
 
                 <a href="{{ route('scores.index') }}" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
                     <div class="flex items-center">
-                        <div class="bg-blue-100 p-3 rounded-full mr-4">
-                            <i class="fas fa-trophy text-blue-600 text-xl"></i>
+                        <div class="bg-primary-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-trophy text-primary-600 text-xl"></i>
                         </div>
                         <div>
                             <h3 class="font-semibold text-gray-800">Lihat Ranking</h3>

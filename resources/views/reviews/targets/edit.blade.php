@@ -5,7 +5,7 @@
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Edit Review Target') }}
             </h2>
         </div>
@@ -18,7 +18,7 @@
                 <div class="lg:col-span-1">
                     <div class="bg-white rounded-lg shadow-md p-6 sticky top-6">
                         <h3 class="font-semibold text-gray-800 mb-4">
-                            <i class="fas fa-info-circle mr-2 text-blue-600"></i>Info Target
+                            <i class="fas fa-info-circle mr-2 text-primary-600"></i>Info Target
                         </h3>
 
                         <div class="space-y-4">
@@ -30,7 +30,7 @@
 
                             <div>
                                 <label class="block text-xs font-medium text-gray-500 mb-1">Minggu</label>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
                                     Minggu {{ $target->week_number }}
                                 </span>
                             </div>
@@ -54,7 +54,7 @@
                                     @foreach($target->evidence_files as $file)
                                     <a href="{{ asset('storage/' . $file['local_path']) }}" 
                                        target="_blank"
-                                       class="text-xs text-blue-600 hover:underline block">
+                                       class="text-xs text-primary-600 hover:underline block">
                                         <i class="fas fa-file mr-1"></i>{{ $file['file_name'] }}
                                     </a>
                                     @endforeach
@@ -69,7 +69,7 @@
                 <div class="lg:col-span-2">
                     <div class="bg-white rounded-lg shadow-md p-6">
                         <h3 class="font-semibold text-gray-800 mb-6">
-                            <i class="fas fa-edit mr-2 text-blue-600"></i>Edit Penilaian
+                            <i class="fas fa-edit mr-2 text-primary-600"></i>Edit Penilaian
                         </h3>
 
                         <form action="{{ route('target-reviews.update', $target) }}" method="POST">
@@ -89,7 +89,7 @@
                                        max="100"
                                        step="0.01"
                                        required
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('score') border-red-500 @enderror">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('score') border-red-500 @enderror">
                                 @error('score')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -103,7 +103,7 @@
                                 <select name="status" 
                                         id="status" 
                                         required
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('status') border-red-500 @enderror">
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('status') border-red-500 @enderror">
                                     <option value="">Pilih Status</option>
                                     <option value="approved" {{ old('status', $target->review->status) == 'approved' ? 'selected' : '' }}>✓ Diterima (Approved)</option>
                                     <option value="needs_revision" {{ old('status', $target->review->status) == 'needs_revision' ? 'selected' : '' }}>⚠ Perlu Revisi</option>
@@ -123,7 +123,7 @@
                                           id="feedback" 
                                           rows="5"
                                           required
-                                          class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('feedback') border-red-500 @enderror">{{ old('feedback', $target->review->feedback) }}</textarea>
+                                          class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('feedback') border-red-500 @enderror">{{ old('feedback', $target->review->feedback) }}</textarea>
                                 @error('feedback')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -137,7 +137,7 @@
                                 <textarea name="suggestions" 
                                           id="suggestions" 
                                           rows="4"
-                                          class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('suggestions') border-red-500 @enderror">{{ old('suggestions', $target->review->suggestions) }}</textarea>
+                                          class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('suggestions') border-red-500 @enderror">{{ old('suggestions', $target->review->suggestions) }}</textarea>
                                 @error('suggestions')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -150,7 +150,7 @@
                                     <i class="fas fa-times mr-2"></i>Batal
                                 </a>
                                 <button type="submit" 
-                                        class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+                                        class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-primary-600 hover:bg-primary-700">
                                     <i class="fas fa-save mr-2"></i>Simpan Perubahan
                                 </button>
                             </div>

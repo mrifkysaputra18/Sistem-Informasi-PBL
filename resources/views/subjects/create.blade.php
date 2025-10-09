@@ -5,7 +5,7 @@
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 Tambah Mata Kuliah Baru
             </h2>
         </div>
@@ -17,8 +17,8 @@
                 <div class="p-8">
                     <!-- Header Icon -->
                     <div class="mb-8 text-center">
-                        <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-book text-blue-600 text-2xl"></i>
+                        <div class="bg-primary-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-book text-primary-600 text-2xl"></i>
                         </div>
                         <h3 class="text-2xl font-bold text-gray-900 mb-2">Tambah Mata Kuliah</h3>
                         <p class="text-gray-600">Isi form di bawah untuk menambahkan mata kuliah baru</p>
@@ -39,7 +39,7 @@
                                    value="{{ old('title') }}"
                                    required
                                    placeholder="Contoh: SI101, IF201"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('title') border-red-500 @enderror">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('title') border-red-500 @enderror">
                             @error('title')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -63,7 +63,7 @@
                                    value="{{ old('title') }}"
                                    required
                                    placeholder="Contoh: Sistem Informasi, Pemrograman Web"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('title') border-red-500 @enderror">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('title') border-red-500 @enderror">
                             @error('title')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -81,7 +81,7 @@
                                       id="description" 
                                       rows="4"
                                       placeholder="Deskripsi singkat tentang mata kuliah..."
-                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
+                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
                             @error('description')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -90,13 +90,13 @@
                         </div>
 
                         <!-- Info Box -->
-                        <div class="mb-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r">
+                        <div class="mb-6 bg-primary-50 border-l-4 border-primary-500 p-4 rounded-r">
                             <div class="flex">
                                 <div class="flex-shrink-0">
-                                    <i class="fas fa-info-circle text-blue-600"></i>
+                                    <i class="fas fa-info-circle text-primary-600"></i>
                                 </div>
                                 <div class="ml-3">
-                                    <p class="text-sm text-blue-700">
+                                    <p class="text-sm text-primary-700">
                                         <strong>Catatan:</strong> Semua mata kuliah dalam sistem ini terkait dengan PBL (Project-Based Learning).
                                     </p>
                                 </div>
@@ -110,7 +110,7 @@
                                 <i class="fas fa-times mr-2"></i>Batal
                             </a>
                             <button type="submit" 
-                                    class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                                    class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
                                 <i class="fas fa-save mr-2"></i>Simpan Mata Kuliah
                             </button>
                         </div>

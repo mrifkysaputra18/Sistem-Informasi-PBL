@@ -5,7 +5,7 @@
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Import Kelompok dari Excel') }}
             </h2>
         </div>
@@ -47,7 +47,7 @@
                                     <select name="class_room_id" 
                                             id="class_room_id" 
                                             required
-                                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                                         <option value="">-- Pilih Kelas --</option>
                                         @foreach($classRooms as $classRoom)
                                         <option value="{{ $classRoom->id }}">
@@ -74,8 +74,8 @@
                                                   file:mr-4 file:py-2 file:px-4
                                                   file:rounded-md file:border-0
                                                   file:text-sm file:font-semibold
-                                                  file:bg-blue-50 file:text-blue-700
-                                                  hover:file:bg-blue-100">
+                                                  file:bg-primary-50 file:text-primary-700
+                                                  hover:file:bg-primary-100">
                                     <p class="mt-1 text-xs text-gray-500">
                                         Format: .xlsx, .xls, .csv (Max 2MB)
                                     </p>
@@ -103,14 +103,14 @@
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg font-semibold mb-4">
-                                <i class="fas fa-download text-blue-600 mr-2"></i>
+                                <i class="fas fa-download text-primary-600 mr-2"></i>
                                 Download Template
                             </h3>
                             <p class="text-sm text-gray-600 mb-4">
                                 Download template Excel untuk import kelompok
                             </p>
                             <a href="{{ route('import.groups.template') }}" 
-                               class="block w-full text-center bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg">
+                               class="block w-full text-center bg-primary-500 hover:bg-primary-600 text-white py-2 px-4 rounded-lg">
                                 <i class="fas fa-download mr-2"></i>Download Template
                             </a>
                         </div>
@@ -120,7 +120,7 @@
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg font-semibold mb-4">
-                                <i class="fas fa-question-circle text-purple-600 mr-2"></i>
+                                <i class="fas fa-question-circle text-secondary-600 mr-2"></i>
                                 Format Excel
                             </h3>
                             <div class="text-sm text-gray-600 space-y-2">

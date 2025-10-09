@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-white leading-tight">
                     {{ __('Perhitungan Bobot Kriteria (AHP)') }}
                 </h2>
                 <p class="text-sm text-gray-600 mt-1">
@@ -11,7 +11,7 @@
             </div>
             <div class="flex gap-2">
                 <a href="{{ route('ahp.help') }}" 
-                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
+                   class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
                     <i class="fas fa-question-circle mr-2"></i>Panduan AHP
                 </a>
                 <a href="{{ route('criteria.index') }}" 
@@ -47,11 +47,11 @@
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg mb-6">
                 <div class="p-6">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">
-                        <i class="fas fa-sliders-h mr-2 text-purple-500"></i>Pilih Segment Kriteria
+                        <i class="fas fa-sliders-h mr-2 text-secondary-500"></i>Pilih Segment Kriteria
                     </h3>
                     <div class="flex gap-4">
                         <a href="{{ route('ahp.index', ['segment' => 'group']) }}" 
-                           class="flex-1 p-4 border-2 rounded-lg transition duration-300 {{ $segment == 'group' ? 'border-purple-500 bg-purple-50' : 'border-gray-300 hover:border-purple-300' }}">
+                           class="flex-1 p-4 border-2 rounded-lg transition duration-300 {{ $segment == 'group' ? 'border-secondary-500 bg-secondary-50' : 'border-gray-300 hover:border-secondary-300' }}">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <div class="font-semibold text-gray-900">
@@ -62,12 +62,12 @@
                                     </div>
                                 </div>
                                 @if($segment == 'group')
-                                    <i class="fas fa-check-circle text-purple-500 text-2xl"></i>
+                                    <i class="fas fa-check-circle text-secondary-500 text-2xl"></i>
                                 @endif
                             </div>
                         </a>
                         <a href="{{ route('ahp.index', ['segment' => 'student']) }}" 
-                           class="flex-1 p-4 border-2 rounded-lg transition duration-300 {{ $segment == 'student' ? 'border-purple-500 bg-purple-50' : 'border-gray-300 hover:border-purple-300' }}">
+                           class="flex-1 p-4 border-2 rounded-lg transition duration-300 {{ $segment == 'student' ? 'border-secondary-500 bg-secondary-50' : 'border-gray-300 hover:border-secondary-300' }}">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <div class="font-semibold text-gray-900">
@@ -78,7 +78,7 @@
                                     </div>
                                 </div>
                                 @if($segment == 'student')
-                                    <i class="fas fa-check-circle text-purple-500 text-2xl"></i>
+                                    <i class="fas fa-check-circle text-secondary-500 text-2xl"></i>
                                 @endif
                             </div>
                         </a>
@@ -87,38 +87,38 @@
             </div>
 
             <!-- AHP Info -->
-            <div class="bg-gradient-to-r from-purple-50 to-indigo-50 border-l-4 border-purple-600 p-6 rounded-r-xl shadow-lg mb-6">
+            <div class="bg-gradient-to-r from-secondary-50 to-primary-50 border-l-4 border-secondary-600 p-6 rounded-r-xl shadow-lg mb-6">
                 <div class="flex items-start">
                     <div class="flex-shrink-0">
-                        <div class="bg-purple-100 p-3 rounded-full">
-                            <i class="fas fa-calculator text-purple-600 text-2xl"></i>
+                        <div class="bg-secondary-100 p-3 rounded-full">
+                            <i class="fas fa-calculator text-secondary-600 text-2xl"></i>
                         </div>
                     </div>
                     <div class="ml-4 flex-1">
-                        <h3 class="text-lg font-bold text-purple-900 mb-2">
+                        <h3 class="text-lg font-bold text-secondary-900 mb-2">
                             Metode AHP (Analytical Hierarchy Process)
                         </h3>
-                        <p class="text-sm text-purple-800 mb-3">
+                        <p class="text-sm text-secondary-800 mb-3">
                             Metode untuk menentukan bobot kriteria berdasarkan perbandingan berpasangan antar kriteria.
                         </p>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                             <div class="bg-white bg-opacity-50 p-3 rounded-lg">
-                                <div class="font-semibold text-purple-900 mb-1">
+                                <div class="font-semibold text-secondary-900 mb-1">
                                     <i class="fas fa-balance-scale mr-1"></i>Perbandingan
                                 </div>
-                                <div class="text-purple-700">Bandingkan setiap pasang kriteria</div>
+                                <div class="text-secondary-700">Bandingkan setiap pasang kriteria</div>
                             </div>
                             <div class="bg-white bg-opacity-50 p-3 rounded-lg">
-                                <div class="font-semibold text-purple-900 mb-1">
+                                <div class="font-semibold text-secondary-900 mb-1">
                                     <i class="fas fa-percent mr-1"></i>Bobot Otomatis
                                 </div>
-                                <div class="text-purple-700">Hitung bobot secara matematis</div>
+                                <div class="text-secondary-700">Hitung bobot secara matematis</div>
                             </div>
                             <div class="bg-white bg-opacity-50 p-3 rounded-lg">
-                                <div class="font-semibold text-purple-900 mb-1">
+                                <div class="font-semibold text-secondary-900 mb-1">
                                     <i class="fas fa-check-double mr-1"></i>Konsistensi
                                 </div>
-                                <div class="text-purple-700">Validasi dengan CR ≤ 0.1</div>
+                                <div class="text-secondary-700">Validasi dengan CR ≤ 0.1</div>
                             </div>
                         </div>
                     </div>
@@ -155,9 +155,9 @@
                                     <!-- Header Kriteria -->
                                     <div class="grid grid-cols-2 gap-4 mb-6">
                                         <div class="text-center">
-                                            <div class="bg-blue-100 rounded-lg p-4 shadow-md">
-                                                <div class="font-bold text-blue-900 text-lg">{{ $comparison['criterion_a']->nama }}</div>
-                                                <div class="text-xs text-blue-600 mt-1">← Pilih di Kiri jika ini lebih penting</div>
+                                            <div class="bg-primary-100 rounded-lg p-4 shadow-md">
+                                                <div class="font-bold text-primary-900 text-lg">{{ $comparison['criterion_a']->nama }}</div>
+                                                <div class="text-xs text-primary-600 mt-1">← Pilih di Kiri jika ini lebih penting</div>
                                             </div>
                                         </div>
                                         <div class="text-center">
@@ -173,7 +173,7 @@
                                         <div class="grid grid-cols-2 gap-1">
                                             <!-- LEFT SIDE: Kriteria A lebih penting -->
                                             <div class="space-y-2">
-                                                <div class="text-center text-xs font-bold text-blue-700 mb-3">
+                                                <div class="text-center text-xs font-bold text-primary-700 mb-3">
                                                     ← {{ $comparison['criterion_a']->nama }} Lebih Penting
                                                 </div>
                                                 <button type="button"
@@ -303,8 +303,8 @@
 
                                     <!-- Current Selection Display -->
                                     <div class="mt-4 text-center">
-                                        <div class="inline-block bg-purple-100 px-4 py-2 rounded-lg">
-                                            <span class="text-sm font-semibold text-purple-900">
+                                        <div class="inline-block bg-secondary-100 px-4 py-2 rounded-lg">
+                                            <span class="text-sm font-semibold text-secondary-900">
                                                 Nilai Terpilih: <span class="text-lg">{{ $comparison['value'] }}</span>
                                             </span>
                                         </div>
@@ -356,12 +356,12 @@
                                     </div>
 
                                     <!-- Nilai Terpilih -->
-                                    <div class="mt-4 p-3 bg-purple-50 rounded-lg border border-purple-200 comparison-result-{{ $index }}">
+                                    <div class="mt-4 p-3 bg-secondary-50 rounded-lg border border-secondary-200 comparison-result-{{ $index }}">
                                         <div class="text-center">
-                                            <span class="text-sm text-purple-700">Nilai dipilih: </span>
-                                            <span class="text-lg font-bold text-purple-900 selected-value">{{ $comparison['value'] }}</span>
-                                            <span class="text-sm text-purple-700"> - </span>
-                                            <span class="text-sm text-purple-700 selected-description">
+                                            <span class="text-sm text-secondary-700">Nilai dipilih: </span>
+                                            <span class="text-lg font-bold text-secondary-900 selected-value">{{ $comparison['value'] }}</span>
+                                            <span class="text-sm text-secondary-700"> - </span>
+                                            <span class="text-sm text-secondary-700 selected-description">
                                                 {{ \App\Services\AhpService::getScaleDescription($comparison['value']) }}
                                             </span>
                                         </div>
@@ -374,7 +374,7 @@
                             <form action="{{ route('ahp.calculate') }}" method="GET">
                                 <input type="hidden" name="segment" value="{{ $segment }}">
                                 <button type="submit" 
-                                        class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300">
+                                        class="bg-secondary-500 hover:bg-secondary-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300">
                                     <i class="fas fa-calculator mr-2"></i>Hitung Bobot
                                 </button>
                             </form>
@@ -446,7 +446,7 @@
                                                 <div class="text-xs text-gray-500">{{ ucfirst($criterion->tipe) }}</div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-center">
-                                                <span class="text-lg font-bold text-purple-600">
+                                                <span class="text-lg font-bold text-secondary-600">
                                                     {{ number_format($result['weights'][$index], 4) }}
                                                 </span>
                                             </td>
@@ -457,7 +457,7 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="w-full bg-gray-200 rounded-full h-4">
-                                                    <div class="bg-gradient-to-r from-purple-500 to-indigo-500 h-4 rounded-full" 
+                                                    <div class="bg-gradient-to-r from-secondary-500 to-primary-500 h-4 rounded-full" 
                                                          style="width: {{ $result['weights'][$index] * 100 }}%"></div>
                                                 </div>
                                             </td>
@@ -682,7 +682,7 @@
             button.classList.add('active');
             
             // Update displayed value in the new UI
-            const displayDiv = parentDiv.querySelector('.bg-purple-100');
+            const displayDiv = parentDiv.querySelector('.bg-secondary-100');
             if (displayDiv) {
                 const valueSpan = displayDiv.querySelector('.text-lg');
                 if (valueSpan) {

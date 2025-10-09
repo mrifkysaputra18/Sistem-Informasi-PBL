@@ -1,16 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Manajemen Kriteria Penilaian') }}
             </h2>
             <div class="flex gap-2">
                 <a href="{{ route('ahp.index') }}" 
-                   class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                   class="bg-secondary-500 hover:bg-secondary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
                     <i class="fas fa-calculator mr-2"></i>Hitung Bobot AHP
                 </a>
                 <a href="{{ route('criteria.create') }}" 
-                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                   class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
                     <i class="fas fa-plus mr-2"></i>Tambah Kriteria
                 </a>
             </div>
@@ -34,10 +34,10 @@
                 <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-xl shadow-lg text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-blue-100 text-sm font-medium">Total Kriteria</p>
+                            <p class="text-primary-100 text-sm font-medium">Total Kriteria</p>
                             <p class="text-3xl font-bold">{{ $criteria->total() }}</p>
                         </div>
-                        <div class="bg-blue-400 bg-opacity-50 p-3 rounded-full">
+                        <div class="bg-primary-400 bg-opacity-50 p-3 rounded-full">
                             <i class="fas fa-list-check text-2xl"></i>
                         </div>
                     </div>
@@ -116,7 +116,7 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-center">
-                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
                                                         <i class="fas fa-weight-hanging mr-1.5"></i>
                                                         {{ number_format($criterion->bobot, 2) }}
                                                     </span>
@@ -134,7 +134,7 @@
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $criterion->segment == 'group' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800' }}">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $criterion->segment == 'group' ? 'bg-primary-100 text-primary-800' : 'bg-secondary-100 text-secondary-800' }}">
                                                     <i class="fas {{ $criterion->segment == 'group' ? 'fa-users' : 'fa-user' }} mr-1"></i>
                                                     {{ ucfirst($criterion->segment) }}
                                                 </span>
@@ -142,7 +142,7 @@
                                             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                                 <div class="flex items-center justify-center space-x-2">
                                                     <a href="{{ route('criteria.edit', $criterion) }}" 
-                                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-100 hover:bg-indigo-200 hover:text-indigo-900 rounded-lg transition duration-200 ease-in-out">
+                                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-primary-600 bg-primary-100 hover:bg-primary-200 hover:text-primary-900 rounded-lg transition duration-200 ease-in-out">
                                                         <i class="fas fa-edit mr-1.5"></i>
                                                         Edit
                                                     </a>
@@ -176,7 +176,7 @@
                             <h3 class="text-lg font-medium text-gray-900 mb-2">Belum ada kriteria</h3>
                             <p class="text-gray-500 mb-4">Mulai dengan menambahkan kriteria penilaian pertama Anda.</p>
                             <a href="{{ route('criteria.create') }}" 
-                               class="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md transition duration-300">
+                               class="inline-flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-700 text-white font-bold rounded-lg shadow-md transition duration-300">
                                 <i class="fas fa-plus mr-2"></i>Tambah Kriteria Pertama
                             </a>
                         </div>

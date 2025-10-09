@@ -2,14 +2,14 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-white leading-tight">
                     Dashboard Mahasiswa
                 </h2>
-                <p class="text-sm text-gray-600">Selamat datang, {{ auth()->user()->name }}</p>
+                <p class="text-sm text-white">Selamat datang, {{ auth()->user()->name }}</p>
             </div>
             @if($myGroup)
             <div class="flex gap-2">
-                <span class="bg-purple-100 text-purple-800 font-semibold py-2 px-4 rounded">
+                <span class="bg-secondary-100 text-secondary-800 font-semibold py-2 px-4 rounded">
                     <i class="fas fa-users mr-2"></i>{{ $myGroup->name }}
                 </span>
             </div>
@@ -26,10 +26,10 @@
                     <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-blue-100 text-sm font-medium">Total Target</p>
+                                <p class="text-primary-100 text-sm font-medium">Total Target</p>
                                 <p class="text-3xl font-bold mt-2">{{ $stats['totalTargets'] }}</p>
                             </div>
-                            <div class="bg-blue-400 bg-opacity-50 p-3 rounded-full">
+                            <div class="bg-primary-400 bg-opacity-50 p-3 rounded-full">
                                 <i class="fas fa-bullseye text-3xl"></i>
                             </div>
                         </div>
@@ -49,13 +49,13 @@
                     </div>
 
                     <!-- Completion Rate -->
-                    <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+                    <div class="bg-gradient-to-br from-secondary-500 to-secondary-600 rounded-lg shadow-lg p-6 text-white">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-purple-100 text-sm font-medium">Tingkat Submit</p>
+                                <p class="text-secondary-100 text-sm font-medium">Tingkat Submit</p>
                                 <p class="text-3xl font-bold mt-2">{{ $stats['completionRate'] }}%</p>
                             </div>
-                            <div class="bg-purple-400 bg-opacity-50 p-3 rounded-full">
+                            <div class="bg-secondary-400 bg-opacity-50 p-3 rounded-full">
                                 <i class="fas fa-chart-pie text-3xl"></i>
                             </div>
                         </div>
@@ -77,7 +77,7 @@
 
                 <!-- Group Info Card -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
-                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 px-6 py-4">
+                    <div class="bg-gradient-to-r from-secondary-500 to-secondary-600 px-6 py-4">
                         <h3 class="font-semibold text-white text-lg">
                             <i class="fas fa-users mr-2"></i>
                             Informasi Kelompok
@@ -128,14 +128,14 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 @foreach($myGroup->members as $member)
                                 <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                                    <div class="bg-purple-100 p-2 rounded-full mr-3">
-                                        <i class="fas fa-user text-purple-600 text-sm"></i>
+                                    <div class="bg-secondary-100 p-2 rounded-full mr-3">
+                                        <i class="fas fa-user text-secondary-600 text-sm"></i>
                                     </div>
                                     <div class="flex-1">
                                         <p class="font-medium text-gray-800">
                                             {{ $member->user->name }}
                                             @if($member->user->id === auth()->id())
-                                            <span class="ml-1 text-purple-600 text-xs">(Anda)</span>
+                                            <span class="ml-1 text-secondary-600 text-xs">(Anda)</span>
                                             @endif
                                         </p>
                                         <p class="text-xs text-gray-600">{{ $member->user->email }}</p>
@@ -156,7 +156,7 @@
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
                         <h3 class="font-semibold text-gray-800">
-                            <i class="fas fa-bullseye mr-2 text-blue-600"></i>
+                            <i class="fas fa-bullseye mr-2 text-primary-600"></i>
                             Target Mingguan dari Dosen
                         </h3>
                     </div>
@@ -187,7 +187,7 @@
                                         @foreach($weeklyTargets as $target)
                                         <tr class="hover:bg-gray-50 {{ $target->isOverdue() ? 'bg-red-50' : '' }}">
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
                                                     Minggu {{ $target->week_number }}
                                                 </span>
                                             </td>
@@ -220,7 +220,7 @@
                                                 @php
                                                     $statusColors = [
                                                         'pending' => 'bg-gray-100 text-gray-800',
-                                                        'submitted' => 'bg-blue-100 text-blue-800',
+                                                        'submitted' => 'bg-primary-100 text-primary-800',
                                                         'late' => 'bg-orange-100 text-orange-800',
                                                         'approved' => 'bg-green-100 text-green-800',
                                                         'revision' => 'bg-yellow-100 text-yellow-800',
@@ -233,7 +233,7 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-center">
                                                 <a href="{{ route('targets.submissions.show', $target->id) }}" 
-                                                   class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded transition duration-200 text-sm">
+                                                   class="inline-flex items-center px-3 py-1.5 bg-primary-100 text-primary-700 hover:bg-primary-200 rounded transition duration-200 text-sm">
                                                     <i class="fas fa-eye mr-1"></i>
                                                     Lihat
                                                 </a>
@@ -262,8 +262,8 @@
                         </div>
                         <h3 class="text-2xl font-bold text-gray-800 mb-2">Anda Belum Memiliki Kelompok</h3>
                         <p class="text-gray-600 mb-6">Silakan hubungi koordinator atau admin untuk ditambahkan ke kelompok.</p>
-                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
-                            <p class="text-sm text-blue-800">
+                        <div class="bg-primary-50 border border-primary-200 rounded-lg p-4 max-w-md mx-auto">
+                            <p class="text-sm text-primary-800">
                                 <i class="fas fa-info-circle mr-2"></i>
                                 Hanya koordinator dan admin yang dapat menambahkan Anda ke kelompok.
                             </p>

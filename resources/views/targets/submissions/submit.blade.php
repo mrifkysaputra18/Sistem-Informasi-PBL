@@ -5,7 +5,7 @@
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Submit Target: ') . $target->title }}
             </h2>
         </div>
@@ -68,10 +68,10 @@
                                     <input type="radio" name="submission_type" value="file" 
                                            class="sr-only peer" 
                                            onchange="toggleSubmissionType('file')" checked>
-                                    <div class="p-4 border-2 border-gray-200 rounded-lg cursor-pointer peer-checked:border-blue-500 peer-checked:bg-blue-50">
+                                    <div class="p-4 border-2 border-gray-200 rounded-lg cursor-pointer peer-checked:border-primary-500 peer-checked:bg-primary-50">
                                         <div class="text-center">
-                                            <i class="fas fa-file-upload text-2xl mb-2 text-gray-400 peer-checked:text-blue-500"></i>
-                                            <div class="font-medium text-gray-900 peer-checked:text-blue-700">Upload File</div>
+                                            <i class="fas fa-file-upload text-2xl mb-2 text-gray-400 peer-checked:text-primary-500"></i>
+                                            <div class="font-medium text-gray-900 peer-checked:text-primary-700">Upload File</div>
                                             <div class="text-sm text-gray-500">Upload bukti/tugas</div>
                                         </div>
                                     </div>
@@ -81,10 +81,10 @@
                                     <input type="radio" name="submission_type" value="checklist" 
                                            class="sr-only peer"
                                            onchange="toggleSubmissionType('checklist')">
-                                    <div class="p-4 border-2 border-gray-200 rounded-lg cursor-pointer peer-checked:border-blue-500 peer-checked:bg-blue-50">
+                                    <div class="p-4 border-2 border-gray-200 rounded-lg cursor-pointer peer-checked:border-primary-500 peer-checked:bg-primary-50">
                                         <div class="text-center">
-                                            <i class="fas fa-check-circle text-2xl mb-2 text-gray-400 peer-checked:text-blue-500"></i>
-                                            <div class="font-medium text-gray-900 peer-checked:text-blue-700">Tanpa File</div>
+                                            <i class="fas fa-check-circle text-2xl mb-2 text-gray-400 peer-checked:text-primary-500"></i>
+                                            <div class="font-medium text-gray-900 peer-checked:text-primary-700">Tanpa File</div>
                                             <div class="text-sm text-gray-500">Centang selesai tanpa upload</div>
                                         </div>
                                     </div>
@@ -105,7 +105,7 @@
                                 <label for="evidence" class="cursor-pointer">
                                     <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
                                     <div class="text-sm text-gray-600">
-                                        <span class="font-medium text-blue-600 hover:text-blue-500">Klik untuk upload</span>
+                                        <span class="font-medium text-primary-600 hover:text-primary-500">Klik untuk upload</span>
                                         atau drag & drop file
                                     </div>
                                     <div class="text-xs text-gray-500 mt-1">
@@ -143,7 +143,7 @@
                             </label>
                             <textarea name="submission_notes" id="submission_notes" rows="3"
                                       placeholder="Tambahkan catatan atau penjelasan tentang submission Anda..."
-                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ old('submission_notes') }}</textarea>
+                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">{{ old('submission_notes') }}</textarea>
                             @error('submission_notes')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror

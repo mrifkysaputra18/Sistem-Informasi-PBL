@@ -5,7 +5,7 @@
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Detail Target: ') . $target->title }}
             </h2>
         </div>
@@ -53,7 +53,7 @@
                             </span>
                             <p class="text-xs text-gray-500 mt-1">{{ $target->getClosureReason() }}</p>
                             @if($target->reopened_at)
-                            <p class="text-xs text-blue-600 mt-1">
+                            <p class="text-xs text-primary-600 mt-1">
                                 <i class="fas fa-history mr-1"></i>
                                 Pernah dibuka kembali oleh {{ $target->reopener->name ?? 'Dosen' }} pada {{ $target->reopened_at->format('d/m/Y H:i') }}
                             </p>
@@ -72,7 +72,7 @@
                         @php
                             $color = match($target->submission_status) {
                                 'pending' => 'bg-gray-100 text-gray-800',
-                                'submitted' => 'bg-blue-100 text-blue-800',
+                                'submitted' => 'bg-primary-100 text-primary-800',
                                 'late' => 'bg-orange-100 text-orange-800',
                                 'approved' => 'bg-green-100 text-green-800',
                                 'revision' => 'bg-yellow-100 text-yellow-800',
@@ -126,13 +126,13 @@
                                 </div>
                                 @if(isset($file['local_path']))
                                 <a href="{{ route('targets.download', [$target->id, $file['local_path']]) }}" 
-                                   class="text-blue-600 hover:text-blue-800 text-sm">
+                                   class="text-primary-600 hover:text-primary-800 text-sm">
                                     <i class="fas fa-download mr-1"></i>Download
                                 </a>
                                 @elseif(isset($file['file_url']))
                                 <a href="{{ $file['file_url'] }}" 
                                    target="_blank"
-                                   class="text-blue-600 hover:text-blue-800 text-sm">
+                                   class="text-primary-600 hover:text-primary-800 text-sm">
                                     <i class="fas fa-external-link-alt mr-1"></i>Buka
                                 </a>
                                 @endif
@@ -211,7 +211,7 @@
                                       onsubmit="return confirm('Yakin ingin membuka kembali target ini?\n\nMahasiswa akan dapat mensubmit target yang sudah tertutup.')">
                                     @csrf
                                     <button type="submit" 
-                                            class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded">
+                                            class="bg-secondary-500 hover:bg-secondary-700 text-white font-bold py-2 px-6 rounded">
                                         <i class="fas fa-unlock mr-2"></i>Buka Kembali Target
                                     </button>
                                 </form>

@@ -1,12 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Detail User') }}: {{ $user->name }}
             </h2>
             <div class="flex gap-2">
                 <a href="{{ route('admin.users.edit', $user) }}" 
-                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                   class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
                     <i class="fas fa-edit mr-2"></i>Edit
                 </a>
                 <a href="{{ route('admin.users.index') }}" 
@@ -34,15 +34,15 @@
                 <div class="lg:col-span-1">
                     <div class="bg-white rounded-lg shadow-xl overflow-hidden">
                         <!-- Profile Header -->
-                        <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white">
+                        <div class="bg-gradient-to-r from-blue-500 to-secondary-600 p-6 text-white">
                             <div class="flex flex-col items-center">
                                 <div class="w-24 h-24 rounded-full bg-white bg-opacity-20 backdrop-blur-lg flex items-center justify-center text-3xl font-bold mb-3">
                                     {{ strtoupper(substr($user->name, 0, 2)) }}
                                 </div>
                                 <h3 class="text-xl font-bold text-center">{{ $user->name }}</h3>
-                                <p class="text-sm text-blue-100 mt-1">{{ $user->email }}</p>
+                                <p class="text-sm text-primary-100 mt-1">{{ $user->email }}</p>
                                 @if($user->politala_id)
-                                    <p class="text-xs text-blue-100 mt-1 font-mono">ID: {{ $user->politala_id }}</p>
+                                    <p class="text-xs text-primary-100 mt-1 font-mono">ID: {{ $user->politala_id }}</p>
                                 @endif
                             </div>
                         </div>
@@ -53,8 +53,8 @@
                             <div class="text-center">
                                 <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium 
                                     {{ $user->role === 'admin' ? 'bg-red-100 text-red-800' : '' }}
-                                    {{ $user->role === 'koordinator' ? 'bg-purple-100 text-purple-800' : '' }}
-                                    {{ $user->role === 'dosen' ? 'bg-blue-100 text-blue-800' : '' }}
+                                    {{ $user->role === 'koordinator' ? 'bg-secondary-100 text-secondary-800' : '' }}
+                                    {{ $user->role === 'dosen' ? 'bg-primary-100 text-primary-800' : '' }}
                                     {{ $user->role === 'mahasiswa' ? 'bg-green-100 text-green-800' : '' }}">
                                     <i class="fas fa-user-tag mr-2"></i>
                                     {{ ucfirst($user->role) }}
@@ -152,7 +152,7 @@
                                                 <i class="fas fa-star mr-1"></i>Ketua
                                             </span>
                                             @else
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
                                                 Anggota
                                             </span>
                                             @endif
@@ -162,7 +162,7 @@
                                             {{ $group->members->count() }} anggota
                                         </div>
                                         <a href="{{ route('groups.show', $group) }}" 
-                                           class="inline-flex items-center mt-3 text-sm text-blue-600 hover:text-blue-800">
+                                           class="inline-flex items-center mt-3 text-sm text-primary-600 hover:text-primary-800">
                                             Lihat Detail <i class="fas fa-arrow-right ml-1"></i>
                                         </a>
                                     </div>
@@ -173,7 +173,7 @@
                                     <i class="fas fa-user-slash text-4xl mb-3 text-gray-300"></i>
                                     <p>Belum masuk kelompok manapun</p>
                                     <a href="{{ route('groups.create') }}" 
-                                       class="inline-flex items-center mt-3 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                                       class="inline-flex items-center mt-3 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition">
                                         <i class="fas fa-plus mr-2"></i>Tambahkan ke Kelompok
                                     </a>
                                 </div>
@@ -201,7 +201,7 @@
                                         @endif
                                     </div>
                                     <a href="{{ route('groups.show', $ledGroup) }}" 
-                                       class="text-blue-600 hover:text-blue-800">
+                                       class="text-primary-600 hover:text-primary-800">
                                         <i class="fas fa-arrow-right"></i>
                                     </a>
                                 </div>
@@ -214,7 +214,7 @@
 
                     <!-- Activity Timeline -->
                     <div class="bg-white rounded-lg shadow-xl overflow-hidden">
-                        <div class="bg-gradient-to-r from-purple-500 to-pink-500 p-4 text-white">
+                        <div class="bg-gradient-to-r from-secondary-500 to-secondary-500 p-4 text-white">
                             <h3 class="text-lg font-semibold flex items-center">
                                 <i class="fas fa-history mr-2"></i>
                                 Aktivitas Terakhir
@@ -224,8 +224,8 @@
                             <div class="space-y-4">
                                 <div class="flex items-start">
                                     <div class="flex-shrink-0">
-                                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                            <i class="fas fa-user-plus text-blue-600"></i>
+                                        <div class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center">
+                                            <i class="fas fa-user-plus text-primary-600"></i>
                                         </div>
                                     </div>
                                     <div class="ml-4">
@@ -255,7 +255,7 @@
 
                     <!-- Statistics Card -->
                     <div class="bg-white rounded-lg shadow-xl overflow-hidden">
-                        <div class="bg-gradient-to-r from-indigo-500 to-blue-500 p-4 text-white">
+                        <div class="bg-gradient-to-r from-primary-500 to-blue-500 p-4 text-white">
                             <h3 class="text-lg font-semibold flex items-center">
                                 <i class="fas fa-chart-bar mr-2"></i>
                                 Statistik
@@ -263,8 +263,8 @@
                         </div>
                         <div class="p-6">
                             <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                <div class="text-center p-4 bg-blue-50 rounded-lg">
-                                    <div class="text-2xl font-bold text-blue-600">{{ $user->groups->count() }}</div>
+                                <div class="text-center p-4 bg-primary-50 rounded-lg">
+                                    <div class="text-2xl font-bold text-primary-600">{{ $user->groups->count() }}</div>
                                     <div class="text-sm text-gray-600 mt-1">Kelompok</div>
                                 </div>
                                 @if($user->role === 'mahasiswa')
@@ -273,8 +273,8 @@
                                     <div class="text-sm text-gray-600 mt-1">Sebagai Ketua</div>
                                 </div>
                                 @endif
-                                <div class="text-center p-4 bg-purple-50 rounded-lg">
-                                    <div class="text-2xl font-bold text-purple-600">
+                                <div class="text-center p-4 bg-secondary-50 rounded-lg">
+                                    <div class="text-2xl font-bold text-secondary-600">
                                         {{ $user->is_active ? 'Aktif' : 'Tidak' }}
                                     </div>
                                     <div class="text-sm text-gray-600 mt-1">Status</div>

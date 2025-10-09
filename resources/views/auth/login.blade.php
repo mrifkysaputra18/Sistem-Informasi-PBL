@@ -1,4 +1,17 @@
 <x-guest-layout>
+    <!-- Logo Politala -->
+    <div class="flex justify-center mb-6">
+        <img src="{{ asset('images/logo/politala.png') }}" 
+             alt="Logo Politeknik Negeri Tanah Laut" 
+             class="h-24 w-auto object-contain">
+    </div>
+
+    <!-- Title -->
+    <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-1">Sistem Informasi PBL</h2>
+        <p class="text-sm text-gray-600">Politeknik Negeri Tanah Laut</p>
+    </div>
+
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
@@ -69,14 +82,14 @@
         <!-- Remember Me -->
         <div class="block mt-4">
             <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
+                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-primary-600 shadow-sm focus:ring-primary-500" name="remember">
                 <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
             </label>
         </div>
 
         <div class="flex items-center justify-end mt-4">
             @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
+                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" href="{{ route('password.request') }}">
                     {{ __('Forgot your password?') }}
                 </a>
             @endif
@@ -86,4 +99,14 @@
             </x-primary-button>
         </div>
     </form>
+
+    <!-- Register Link -->
+    <div class="mt-6 text-center">
+        <p class="text-sm text-gray-600">
+            Belum punya akun?
+            <a href="{{ route('register') }}" class="font-semibold text-primary-600 hover:text-primary-800 underline transition duration-150 ease-in-out">
+                Daftar Sekarang
+            </a>
+        </p>
+    </div>
 </x-guest-layout>

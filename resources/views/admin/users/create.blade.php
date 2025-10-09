@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Tambah User Baru') }}
             </h2>
             <a href="{{ route('admin.users.index') }}" 
@@ -20,7 +20,7 @@
                     <!-- Personal Information Section -->
                     <div class="mb-8">
                         <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                            <i class="fas fa-user-circle mr-2 text-blue-500"></i>
+                            <i class="fas fa-user-circle mr-2 text-primary-500"></i>
                             Informasi Pribadi
                         </h3>
                         
@@ -31,7 +31,7 @@
                                     Nama Lengkap <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="name" id="name" value="{{ old('name') }}" required
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
                                 @error('name')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -44,7 +44,7 @@
                                 </label>
                                 <input type="text" name="politala_id" id="politala_id" value="{{ old('politala_id') }}" required
                                        placeholder="Contoh: 2341080001"
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('politala_id') border-red-500 @enderror">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('politala_id') border-red-500 @enderror">
                                 @error('politala_id')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -57,7 +57,7 @@
                                 </label>
                                 <input type="email" name="email" id="email" value="{{ old('email') }}" required
                                        placeholder="nama@mhs.politala.ac.id"
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('email') border-red-500 @enderror">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('email') border-red-500 @enderror">
                                 @error('email')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -70,7 +70,7 @@
                                 </label>
                                 <input type="text" name="phone" id="phone" value="{{ old('phone') }}"
                                        placeholder="08123456789"
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('phone') border-red-500 @enderror">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('phone') border-red-500 @enderror">
                                 @error('phone')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -92,7 +92,7 @@
                                     Password <span class="text-red-500">*</span>
                                 </label>
                                 <input type="password" name="password" id="password" required
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('password') border-red-500 @enderror">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('password') border-red-500 @enderror">
                                 @error('password')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -105,7 +105,7 @@
                                     Konfirmasi Password <span class="text-red-500">*</span>
                                 </label>
                                 <input type="password" name="password_confirmation" id="password_confirmation" required
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                             </div>
 
                             <!-- Role -->
@@ -114,7 +114,7 @@
                                     Role <span class="text-red-500">*</span>
                                 </label>
                                 <select name="role" id="role" required
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('role') border-red-500 @enderror">
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('role') border-red-500 @enderror">
                                     <option value="">Pilih Role</option>
                                     <option value="mahasiswa" {{ old('role') == 'mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
                                     <option value="dosen" {{ old('role') == 'dosen' ? 'selected' : '' }}>Dosen</option>
@@ -132,7 +132,7 @@
                                     Status
                                 </label>
                                 <select name="is_active" id="is_active"
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                                     <option value="1" {{ old('is_active', '1') == '1' ? 'selected' : '' }}>Aktif</option>
                                     <option value="0" {{ old('is_active') == '0' ? 'selected' : '' }}>Tidak Aktif</option>
                                 </select>
@@ -143,7 +143,7 @@
                     <!-- Academic Information Section (For Students) -->
                     <div class="mb-8" id="academic-section">
                         <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                            <i class="fas fa-graduation-cap mr-2 text-purple-500"></i>
+                            <i class="fas fa-graduation-cap mr-2 text-secondary-500"></i>
                             Informasi Akademik
                         </h3>
 
@@ -154,7 +154,7 @@
                                     Program Studi
                                 </label>
                                 <input type="text" name="program_studi" id="program_studi" value="{{ old('program_studi', 'Teknik Informatika') }}"
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('program_studi') border-red-500 @enderror">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('program_studi') border-red-500 @enderror">
                                 @error('program_studi')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -166,7 +166,7 @@
                                     Kelas
                                 </label>
                                 <select name="class_room_id" id="class_room_id"
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('class_room_id') border-red-500 @enderror">
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('class_room_id') border-red-500 @enderror">
                                     <option value="">Pilih Kelas (Opsional)</option>
                                     @foreach($classRooms as $classroom)
                                         <option value="{{ $classroom->id }}" {{ old('class_room_id') == $classroom->id ? 'selected' : '' }}>
@@ -189,7 +189,7 @@
                             <i class="fas fa-times mr-2"></i>Batal
                         </a>
                         <button type="submit" 
-                                class="inline-flex items-center px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg shadow-md transition">
+                                class="inline-flex items-center px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white font-medium rounded-lg shadow-md transition">
                             <i class="fas fa-save mr-2"></i>Simpan User
                         </button>
                     </div>
@@ -197,18 +197,18 @@
             </div>
 
             <!-- Help Card -->
-            <div class="mt-6 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+            <div class="mt-6 bg-primary-50 border-l-4 border-primary-400 p-4 rounded-r-lg">
                 <div class="flex">
                     <div class="flex-shrink-0">
-                        <i class="fas fa-info-circle text-blue-400 text-xl"></i>
+                        <i class="fas fa-info-circle text-primary-400 text-xl"></i>
                     </div>
                     <div class="ml-3">
-                        <h3 class="text-sm font-medium text-blue-800">Tips</h3>
-                        <div class="mt-2 text-sm text-blue-700">
+                        <h3 class="text-sm font-medium text-primary-800">Tips</h3>
+                        <div class="mt-2 text-sm text-primary-700">
                             <ul class="list-disc list-inside space-y-1">
                                 <li>Untuk mahasiswa, pastikan memilih kelas yang sesuai</li>
                                 <li>Email harus unik dan valid</li>
-                                <li>Password default yang aman: <code class="bg-blue-100 px-2 py-1 rounded">password</code> (minimal 8 karakter)</li>
+                                <li>Password default yang aman: <code class="bg-primary-100 px-2 py-1 rounded">password</code> (minimal 8 karakter)</li>
                                 <li>Dosen dan staff tidak memerlukan kelas</li>
                             </ul>
                         </div>

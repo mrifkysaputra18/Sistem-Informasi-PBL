@@ -5,7 +5,7 @@
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 Edit Periode Akademik
             </h2>
         </div>
@@ -32,7 +32,7 @@
                                        value="{{ old('academic_year', $academicPeriod->academic_year) }}"
                                        required
                                        placeholder="2024/2025"
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm @error('academic_year') border-red-500 @enderror">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 text-sm @error('academic_year') border-red-500 @enderror">
                                 @error('academic_year')
                                 <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
@@ -46,7 +46,7 @@
                                 <select name="semester_number" 
                                         id="semester_number" 
                                         required
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm @error('semester_number') border-red-500 @enderror">
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 text-sm @error('semester_number') border-red-500 @enderror">
                                     <option value="">Pilih</option>
                                     @for($i = 1; $i <= 8; $i++)
                                     <option value="{{ $i }}" {{ old('semester_number', $academicPeriod->semester_number) == $i ? 'selected' : '' }}>
@@ -72,7 +72,7 @@
                                        id="start_date" 
                                        value="{{ old('start_date', $academicPeriod->start_date->format('Y-m-d')) }}"
                                        required
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm @error('start_date') border-red-500 @enderror">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 text-sm @error('start_date') border-red-500 @enderror">
                                 @error('start_date')
                                 <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
@@ -88,7 +88,7 @@
                                        id="end_date" 
                                        value="{{ old('end_date', $academicPeriod->end_date->format('Y-m-d')) }}"
                                        required
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm @error('end_date') border-red-500 @enderror">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 text-sm @error('end_date') border-red-500 @enderror">
                                 @error('end_date')
                                 <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
@@ -104,7 +104,7 @@
                                       id="description" 
                                       rows="2"
                                       placeholder="Deskripsi..."
-                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm @error('description') border-red-500 @enderror">{{ old('description', $academicPeriod->description) }}</textarea>
+                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 text-sm @error('description') border-red-500 @enderror">{{ old('description', $academicPeriod->description) }}</textarea>
                         </div>
 
                         <!-- Status Aktif (Inline) -->
@@ -115,7 +115,7 @@
                                        id="is_active" 
                                        value="1"
                                        {{ old('is_active', $academicPeriod->is_active) ? 'checked' : '' }}
-                                       class="rounded border-gray-300 text-blue-600 shadow-sm">
+                                       class="rounded border-gray-300 text-primary-600 shadow-sm">
                                 <span class="ml-2 text-sm text-gray-700">Set sebagai periode aktif</span>
                             </label>
                         </div>

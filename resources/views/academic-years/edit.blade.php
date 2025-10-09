@@ -5,7 +5,7 @@
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 Edit Tahun Ajaran
             </h2>
         </div>
@@ -40,7 +40,7 @@
                                    value="{{ old('name', $academicYear->name) }}"
                                    required
                                    placeholder="Contoh: 2023/2024, 2024/2025"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
                             @error('name')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -60,7 +60,7 @@
                                    value="{{ old('code', $academicYear->code) }}"
                                    required
                                    placeholder="Contoh: 2023-2024, 2024-2025"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('code') border-red-500 @enderror">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('code') border-red-500 @enderror">
                             @error('code')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -79,7 +79,7 @@
                                    id="start_date" 
                                    value="{{ old('start_date', $academicYear->start_date->format('Y-m-d')) }}"
                                    required
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('start_date') border-red-500 @enderror">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('start_date') border-red-500 @enderror">
                             @error('start_date')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -98,7 +98,7 @@
                                    id="end_date" 
                                    value="{{ old('end_date', $academicYear->end_date->format('Y-m-d')) }}"
                                    required
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('end_date') border-red-500 @enderror">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('end_date') border-red-500 @enderror">
                             @error('end_date')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -116,7 +116,7 @@
                                       id="description" 
                                       rows="3"
                                       placeholder="Deskripsi singkat tentang tahun ajaran..."
-                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description', $academicYear->description) }}</textarea>
+                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description', $academicYear->description) }}</textarea>
                             @error('description')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -132,7 +132,7 @@
                                        id="is_active" 
                                        value="1"
                                        {{ old('is_active', $academicYear->is_active) ? 'checked' : '' }}
-                                       class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                       class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                                 <label for="is_active" class="ml-3 text-sm font-medium text-gray-700">
                                     <i class="fas fa-check-circle text-green-600 mr-1"></i>
                                     Set sebagai tahun ajaran aktif

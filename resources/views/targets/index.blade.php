@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Kelola Target Mingguan') }}
             </h2>
             @if(in_array(auth()->user()->role, ['dosen', 'admin']))
-            <a href="{{ route('targets.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <a href="{{ route('targets.create') }}" class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded">
                 <i class="fas fa-plus mr-2"></i>Buat Target Baru
             </a>
             @endif
@@ -42,14 +42,14 @@
                 </div>
 
                 <!-- Sudah Submit -->
-                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-blue-400">
+                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-primary-400">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-600">Sudah Submit</p>
-                            <p class="text-2xl font-bold text-blue-800">{{ $stats['submitted'] }}</p>
+                            <p class="text-2xl font-bold text-primary-800">{{ $stats['submitted'] }}</p>
                         </div>
-                        <div class="bg-blue-100 rounded-full p-3">
-                            <i class="fas fa-check-circle text-2xl text-blue-600"></i>
+                        <div class="bg-primary-100 rounded-full p-3">
+                            <i class="fas fa-check-circle text-2xl text-primary-600"></i>
                         </div>
                     </div>
                 </div>
@@ -115,7 +115,7 @@
                     <!-- Class Filter -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Kelas</label>
-                        <select name="class_room_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <select name="class_room_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                             <option value="">Semua Kelas</option>
                             @foreach($classRooms as $classRoom)
                             <option value="{{ $classRoom->id }}" {{ request('class_room_id') == $classRoom->id ? 'selected' : '' }}>
@@ -128,7 +128,7 @@
                     <!-- Week Filter -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Minggu</label>
-                        <select name="week_number" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <select name="week_number" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                             <option value="">Semua Minggu</option>
                             @for($i = 1; $i <= 16; $i++)
                             <option value="{{ $i }}" {{ request('week_number') == $i ? 'selected' : '' }}>
@@ -141,7 +141,7 @@
                     <!-- Status Filter -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                        <select name="status" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <select name="status" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                             <option value="">Semua Status</option>
                             <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Belum Dikerjakan</option>
                             <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>Sudah Submit</option>
@@ -153,7 +153,7 @@
 
                     <!-- Submit Button -->
                     <div class="flex items-end">
-                        <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md">
+                        <button type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white py-2 px-4 rounded-md">
                             <i class="fas fa-search mr-2"></i>Filter
                         </button>
                     </div>
@@ -183,7 +183,7 @@
                                 @php
                                     // Highlight row untuk yang sudah submit
                                     $rowClass = match($target->submission_status) {
-                                        'submitted' => 'bg-blue-50 hover:bg-blue-100 border-l-4 border-blue-500',
+                                        'submitted' => 'bg-primary-50 hover:bg-primary-100 border-l-4 border-primary-500',
                                         'approved' => 'bg-green-50 hover:bg-green-100 border-l-4 border-green-500',
                                         'revision' => 'bg-yellow-50 hover:bg-yellow-100 border-l-4 border-yellow-500',
                                         'late' => 'bg-orange-50 hover:bg-orange-100 border-l-4 border-orange-500',
@@ -211,7 +211,7 @@
                                             <div class="text-sm font-semibold text-gray-900">{{ $target->group->name }}</div>
                                             <div class="text-sm text-gray-500">{{ $target->group->classRoom->name }}</div>
                                             @if($target->completedByUser)
-                                                <div class="text-xs text-blue-600 mt-1">
+                                                <div class="text-xs text-primary-600 mt-1">
                                                     <i class="fas fa-user text-xs"></i> Submit oleh: {{ $target->completedByUser->name }}
                                                 </div>
                                             @endif
@@ -249,7 +249,7 @@
                                         @php
                                             $color = match($target->submission_status) {
                                                 'pending' => 'bg-gray-100 text-gray-800',
-                                                'submitted' => 'bg-blue-100 text-blue-800',
+                                                'submitted' => 'bg-primary-100 text-primary-800',
                                                 'late' => 'bg-orange-100 text-orange-800',
                                                 'approved' => 'bg-green-100 text-green-800',
                                                 'revision' => 'bg-yellow-100 text-yellow-800',
@@ -274,7 +274,7 @@
                                         <div class="flex items-center gap-2">
                                             <!-- View Detail -->
                                             <a href="{{ route('targets.show', $target->id) }}" 
-                                               class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded transition duration-200"
+                                               class="inline-flex items-center px-3 py-1.5 bg-primary-100 text-primary-700 hover:bg-primary-200 rounded transition duration-200"
                                                title="Lihat Detail">
                                                 <i class="fas fa-eye mr-1"></i>
                                                 <span class="hidden sm:inline">Detail</span>
@@ -333,7 +333,7 @@
                                                           onsubmit="return confirm('Yakin ingin membuka kembali target ini?\n\nMahasiswa akan dapat mensubmit target yang sudah tertutup.')">
                                                         @csrf
                                                         <button type="submit" 
-                                                                class="inline-flex items-center px-3 py-1.5 bg-purple-100 text-purple-700 hover:bg-purple-200 rounded transition duration-200"
+                                                                class="inline-flex items-center px-3 py-1.5 bg-secondary-100 text-secondary-700 hover:bg-secondary-200 rounded transition duration-200"
                                                                 title="Buka Kembali Target">
                                                             <i class="fas fa-unlock mr-1"></i>
                                                             <span class="hidden sm:inline">Buka</span>
@@ -375,7 +375,7 @@
                         <p class="text-lg mb-2">Belum ada target mingguan</p>
                         @if(in_array(auth()->user()->role, ['dosen', 'admin']))
                             <p class="text-sm mb-4">Silakan buat target mingguan untuk kelompok</p>
-                            <a href="{{ route('targets.create') }}" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded">
+                            <a href="{{ route('targets.create') }}" class="inline-block bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-6 rounded">
                                 <i class="fas fa-plus mr-2"></i>Buat Target Pertama
                             </a>
                         @else

@@ -5,7 +5,7 @@
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Ranking Mahasiswa (SAW Method)') }}
             </h2>
         </div>
@@ -14,18 +14,18 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- SAW Method Info -->
-            <div class="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-600 p-6 rounded-r-xl shadow-lg">
+            <div class="mb-6 bg-gradient-to-r from-blue-50 to-primary-50 border-l-4 border-primary-600 p-6 rounded-r-xl shadow-lg">
                 <div class="flex items-start">
                     <div class="flex-shrink-0">
-                        <div class="bg-blue-100 p-3 rounded-full">
-                            <i class="fas fa-graduation-cap text-blue-600 text-2xl"></i>
+                        <div class="bg-primary-100 p-3 rounded-full">
+                            <i class="fas fa-graduation-cap text-primary-600 text-2xl"></i>
                         </div>
                     </div>
                     <div class="ml-4 flex-1">
-                        <h3 class="text-lg font-bold text-blue-900 mb-2">
+                        <h3 class="text-lg font-bold text-primary-900 mb-2">
                             Metode SAW (Simple Additive Weighting)
                         </h3>
-                        <p class="text-sm text-blue-800">
+                        <p class="text-sm text-primary-800">
                             Ranking dihitung menggunakan metode SAW dengan normalisasi otomatis berdasarkan tipe kriteria.
                         </p>
                     </div>
@@ -65,7 +65,7 @@
                                                     <i class="fas fa-medal text-2xl"></i>
                                                 </div>
                                             @else
-                                                <div class="bg-blue-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg">
+                                                <div class="bg-primary-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg">
                                                     <span class="text-2xl font-bold">{{ $rank['rank'] }}</span>
                                                 </div>
                                             @endif
@@ -85,7 +85,7 @@
                                                 <div class="text-right">
                                                     <div class="text-3xl font-bold 
                                                         @if($rank['total_score'] >= 80) text-green-600
-                                                        @elseif($rank['total_score'] >= 70) text-blue-600
+                                                        @elseif($rank['total_score'] >= 70) text-primary-600
                                                         @elseif($rank['total_score'] >= 60) text-yellow-600
                                                         @else text-red-600
                                                         @endif">

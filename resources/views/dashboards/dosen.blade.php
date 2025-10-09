@@ -2,19 +2,19 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-white leading-tight">
                     Dashboard Dosen
                 </h2>
-                <p class="text-sm text-gray-600">Selamat datang, {{ auth()->user()->name }}</p>
+                <p class="text-sm text-white">Selamat datang, {{ auth()->user()->name }}</p>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('classrooms.index') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <a href="{{ route('classrooms.index') }}" class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded">
                     <i class="fas fa-school mr-2"></i>Kelas
                 </a>
                 <a href="{{ route('scores.create') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                     <i class="fas fa-star mr-2"></i>Input Nilai
                 </a>
-                <a href="{{ route('targets.index') }}" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                <a href="{{ route('targets.index') }}" class="bg-secondary-500 hover:bg-secondary-700 text-white font-bold py-2 px-4 rounded">
                     <i class="fas fa-bullseye mr-2"></i>Target Mingguan
                 </a>
             </div>
@@ -29,23 +29,23 @@
                 <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-blue-100 text-sm font-medium">Total Kelas</p>
+                            <p class="text-primary-100 text-sm font-medium">Total Kelas</p>
                             <p class="text-3xl font-bold mt-2">{{ $stats['totalClassRooms'] }}</p>
                         </div>
-                        <div class="bg-blue-400 bg-opacity-50 p-3 rounded-full">
+                        <div class="bg-primary-400 bg-opacity-50 p-3 rounded-full">
                             <i class="fas fa-school text-3xl"></i>
                         </div>
                     </div>
                 </div>
 
                 <!-- Total Groups -->
-                <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="bg-gradient-to-br from-secondary-500 to-secondary-600 rounded-lg shadow-lg p-6 text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-purple-100 text-sm font-medium">Total Kelompok</p>
+                            <p class="text-secondary-100 text-sm font-medium">Total Kelompok</p>
                             <p class="text-3xl font-bold mt-2">{{ $stats['totalGroups'] }}</p>
                         </div>
-                        <div class="bg-purple-400 bg-opacity-50 p-3 rounded-full">
+                        <div class="bg-secondary-400 bg-opacity-50 p-3 rounded-full">
                             <i class="fas fa-users text-3xl"></i>
                         </div>
                     </div>
@@ -107,26 +107,26 @@
                 </div>
 
                 <!-- Completion Rate -->
-                <div class="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg shadow-lg p-6 text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-indigo-100 text-sm font-medium">Tingkat Selesai</p>
+                            <p class="text-primary-100 text-sm font-medium">Tingkat Selesai</p>
                             <p class="text-3xl font-bold mt-2">{{ $stats['completionRate'] }}%</p>
                         </div>
-                        <div class="bg-indigo-400 bg-opacity-50 p-3 rounded-full">
+                        <div class="bg-primary-400 bg-opacity-50 p-3 rounded-full">
                             <i class="fas fa-chart-pie text-3xl"></i>
                         </div>
                     </div>
                 </div>
 
                 <!-- Pending Targets -->
-                <div class="bg-gradient-to-br from-pink-500 to-pink-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="bg-gradient-to-br from-secondary-500 to-secondary-600 rounded-lg shadow-lg p-6 text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-pink-100 text-sm font-medium">Target Pending</p>
+                            <p class="text-secondary-100 text-sm font-medium">Target Pending</p>
                             <p class="text-3xl font-bold mt-2">{{ $stats['pendingTargets'] }}</p>
                         </div>
-                        <div class="bg-pink-400 bg-opacity-50 p-3 rounded-full">
+                        <div class="bg-secondary-400 bg-opacity-50 p-3 rounded-full">
                             <i class="fas fa-hourglass-half text-3xl"></i>
                         </div>
                     </div>
@@ -139,7 +139,7 @@
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
                         <h3 class="font-semibold text-gray-800">
-                            <i class="fas fa-school mr-2 text-blue-600"></i>
+                            <i class="fas fa-school mr-2 text-primary-600"></i>
                             Kelas & Kelompok
                         </h3>
                     </div>
@@ -150,8 +150,8 @@
                                 <div class="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
                                     <div class="flex items-center justify-between mb-2">
                                         <div class="flex items-center flex-1">
-                                            <div class="bg-blue-100 p-2 rounded-full mr-3">
-                                                <i class="fas fa-school text-blue-600 text-sm"></i>
+                                            <div class="bg-primary-100 p-2 rounded-full mr-3">
+                                                <i class="fas fa-school text-primary-600 text-sm"></i>
                                             </div>
                                             <div>
                                                 <p class="font-medium text-gray-800">{{ $classRoom->name }}</p>
@@ -163,18 +163,18 @@
                                                 </p>
                                             </div>
                                         </div>
-                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-secondary-100 text-secondary-800">
                                             {{ $classRoom->groups_count }} Kelompok
                                         </span>
                                     </div>
-                                    <a href="{{ url('/classrooms/' . $classRoom->id) }}" class="text-blue-600 hover:text-blue-800 text-sm">
+                                    <a href="{{ url('/classrooms/' . $classRoom->id) }}" class="text-primary-600 hover:text-primary-800 text-sm">
                                         Lihat Detail →
                                     </a>
                                 </div>
                                 @endforeach
                             </div>
                             <div class="mt-4 text-center">
-                                <a href="{{ route('classrooms.index') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                <a href="{{ route('classrooms.index') }}" class="text-primary-600 hover:text-primary-800 text-sm font-medium">
                                     Lihat Semua Kelas →
                                 </a>
                             </div>
@@ -223,7 +223,7 @@
                                         <button class="flex-1 bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded">
                                             Review
                                         </button>
-                                        <button class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded">
+                                        <button class="bg-primary-500 hover:bg-primary-600 text-white text-xs px-3 py-1 rounded">
                                             Detail
                                         </button>
                                     </div>
@@ -247,7 +247,7 @@
                         <i class="fas fa-bullseye mr-2 text-cyan-600"></i>
                         Target Mingguan Terbaru
                     </h3>
-                    <a href="{{ route('targets.index') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                    <a href="{{ route('targets.index') }}" class="text-primary-600 hover:text-primary-800 text-sm font-medium">
                         Lihat Semua →
                     </a>
                 </div>
@@ -289,8 +289,8 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
-                                                <div class="bg-purple-100 p-2 rounded-full mr-2">
-                                                    <i class="fas fa-users text-purple-600 text-xs"></i>
+                                                <div class="bg-secondary-100 p-2 rounded-full mr-2">
+                                                    <i class="fas fa-users text-secondary-600 text-xs"></i>
                                                 </div>
                                                 <span class="font-medium text-gray-900">
                                                     @if($target->group)
@@ -311,7 +311,7 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
                                                 Minggu {{ $target->week_number }}
                                             </span>
                                         </td>
@@ -362,8 +362,8 @@
 
                 <a href="{{ route('scores.index') }}" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
                     <div class="flex items-center">
-                        <div class="bg-purple-100 p-3 rounded-full mr-4">
-                            <i class="fas fa-trophy text-purple-600 text-xl"></i>
+                        <div class="bg-secondary-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-trophy text-secondary-600 text-xl"></i>
                         </div>
                         <div>
                             <h3 class="font-semibold text-gray-800">Lihat Ranking</h3>
@@ -374,8 +374,8 @@
 
                 <a href="{{ route('groups.index') }}" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
                     <div class="flex items-center">
-                        <div class="bg-blue-100 p-3 rounded-full mr-4">
-                            <i class="fas fa-users text-blue-600 text-xl"></i>
+                        <div class="bg-primary-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-users text-primary-600 text-xl"></i>
                         </div>
                         <div>
                             <h3 class="font-semibold text-gray-800">Lihat Kelompok</h3>

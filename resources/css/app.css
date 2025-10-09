@@ -83,8 +83,8 @@
 /* Alternative: Gradient Overlay */
 .app-background.with-gradient::before {
     background: linear-gradient(135deg, 
-        rgba(105, 130, 169, 0.1) 0%, 
-        rgba(147, 51, 234, 0.1) 100%);
+        rgba(0, 51, 102, 0.1) 0%, 
+        rgba(128, 0, 0, 0.1) 100%);
 }
 
 /* Alternative: Pattern Overlay */
@@ -158,18 +158,18 @@
    MODERN NAVIGATION BAR
    ======================================== */
 
-/* Main Navigation - Gradient Modern & Colorful */
+/* Main Navigation - Gradient Biru Laut & Maroon */
 .modern-navbar {
     background: linear-gradient(135deg, 
-        #667eea 0%,     /* Purple-blue */
-        #764ba2 25%,    /* Purple */
-        #f093fb 50%,    /* Pink-purple */
-        #4facfe 75%,    /* Sky blue */
-        #00f2fe 100%    /* Cyan */
+        #001f3f 0%,     /* Navy blue - darkest */
+        #003366 25%,    /* Navy blue */
+        #0056b3 50%,    /* Blue */
+        #004080 75%,    /* Navy blue - medium */
+        #800000 100%    /* Maroon accent */
     );
     border-bottom: 3px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3),
-                0 4px 16px rgba(79, 172, 254, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 51, 102, 0.4),
+                0 4px 16px rgba(128, 0, 0, 0.3);
     position: sticky;
     top: 0;
     z-index: 50;
@@ -237,7 +237,7 @@
 }
 
 .user-avatar-text {
-    color: #667eea;
+    color: #003366;
     font-weight: 700;
     font-size: 0.875rem;
     letter-spacing: 0.03em;
@@ -293,7 +293,7 @@
 /* Scroll Effect - Make navbar more opaque when scrolled */
 @media (min-width: 640px) {
     .modern-navbar {
-        background: rgba(79, 54, 222, 0.9);
+        background: rgba(0, 51, 102, 0.95);
     }
 }
 
@@ -359,8 +359,8 @@ div[class*="rounded-md"] a {
 }
 
 div[class*="rounded-md"] a:hover {
-    background: linear-gradient(to right, #dbeafe, #e0e7ff) !important;
-    color: #1e40af !important; /* Blue-800 */
+    background: linear-gradient(to right, #e6f0ff, #ffe6e6) !important;
+    color: #003366 !important; /* Navy blue */
 }
 
 /* ========================================
@@ -432,12 +432,12 @@ nav a[href][aria-current="page"]::before {
 
 .page-header {
     background: linear-gradient(135deg, 
-        rgba(102, 126, 234, 0.95) 0%,
-        rgba(118, 75, 162, 0.95) 50%,
-        rgba(240, 147, 251, 0.95) 100%
+        rgba(0, 51, 102, 0.95) 0%,
+        rgba(0, 86, 179, 0.95) 50%,
+        rgba(128, 0, 0, 0.95) 100%
     );
     border-bottom: 3px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 51, 102, 0.4);
     margin-bottom: 0;
     backdrop-filter: blur(10px);
 }

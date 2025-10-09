@@ -5,7 +5,7 @@
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Edit Kelompok') }}
             </h2>
         </div>
@@ -25,7 +25,7 @@
                                 Kelas <span class="text-red-500">*</span>
                             </label>
                             <select name="class_room_id" id="class_room_id" required
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('class_room_id') border-red-500 @enderror">
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('class_room_id') border-red-500 @enderror">
                                 <option value="">-- Pilih Kelas --</option>
                                 @foreach($classRooms as $classRoom)
                                 <option value="{{ $classRoom->id }}" 
@@ -47,7 +47,7 @@
                             <input type="text" name="name" id="name" required
                                 value="{{ old('name', $group->name) }}"
                                 placeholder="Contoh: Kelompok 1, Tim A, dll"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
                             @error('name')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -61,7 +61,7 @@
                             <input type="number" name="max_members" id="max_members" 
                                 value="{{ old('max_members', $group->max_members) }}"
                                 min="1" max="10"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('max_members') border-red-500 @enderror">
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('max_members') border-red-500 @enderror">
                             <p class="mt-1 text-xs text-gray-500">Maksimal anggota yang bisa bergabung</p>
                             @error('max_members')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -72,13 +72,13 @@
                         @if(auth()->user()->isKoordinator() || auth()->user()->isAdmin())
                             <!-- Only Koordinator & Admin can manage members -->
                             <div class="mb-6">
-                                <div class="bg-purple-50 border-l-4 border-purple-500 p-4 mb-4">
+                                <div class="bg-secondary-50 border-l-4 border-secondary-500 p-4 mb-4">
                                     <div class="flex">
                                         <div class="flex-shrink-0">
-                                            <i class="fas fa-user-shield text-purple-600"></i>
+                                            <i class="fas fa-user-shield text-secondary-600"></i>
                                         </div>
                                         <div class="ml-3">
-                                            <p class="text-sm text-purple-700">
+                                            <p class="text-sm text-secondary-700">
                                                 <strong>Koordinator/Admin:</strong> Anda dapat mengelola anggota kelompok
                                             </p>
                                         </div>
@@ -96,7 +96,7 @@
                                         <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0">
-                                                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                                                    <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
                                                         {{ substr($member->user->name, 0, 1) }}
                                                     </div>
                                                 </div>
@@ -152,14 +152,14 @@
                                     <form action="{{ route('groups.add-member', $group) }}" method="POST" class="flex gap-2">
                                         @csrf
                                         <select name="user_id" required
-                                                class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                                class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                                             <option value="">-- Pilih Mahasiswa --</option>
                                             @foreach($availableStudents as $student)
                                             <option value="{{ $student->id }}">{{ $student->name }} ({{ $student->email }})</option>
                                             @endforeach
                                         </select>
                                         <label class="flex items-center">
-                                            <input type="checkbox" name="is_leader" value="1" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            <input type="checkbox" name="is_leader" value="1" class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                                             <span class="ml-2 text-sm text-gray-700">Jadikan Ketua</span>
                                         </label>
                                         <button type="submit" 
@@ -179,13 +179,13 @@
                         @else
                             <!-- Dosen: View-only member list -->
                             <div class="mb-6">
-                                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
+                                <div class="bg-primary-50 border-l-4 border-primary-500 p-4 mb-4">
                                     <div class="flex">
                                         <div class="flex-shrink-0">
-                                            <i class="fas fa-info-circle text-blue-600"></i>
+                                            <i class="fas fa-info-circle text-primary-600"></i>
                                         </div>
                                         <div class="ml-3">
-                                            <p class="text-sm text-blue-700">
+                                            <p class="text-sm text-primary-700">
                                                 <strong>Info:</strong> Hanya koordinator dan admin yang dapat mengelola anggota kelompok
                                             </p>
                                         </div>
@@ -202,7 +202,7 @@
                                         @foreach($group->members as $member)
                                         <div class="flex items-center p-3 bg-gray-50 rounded-lg">
                                             <div class="flex-shrink-0">
-                                                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                                                <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
                                                     {{ substr($member->user->name, 0, 1) }}
                                                 </div>
                                             </div>
@@ -233,12 +233,12 @@
                         <div class="mb-6">
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="text-lg font-semibold text-gray-800">
-                                    <i class="fas fa-tasks mr-2 text-blue-600"></i>
+                                    <i class="fas fa-tasks mr-2 text-primary-600"></i>
                                     Target Mingguan
                                 </h3>
                                 @if(auth()->user()->isMahasiswa())
                                     <a href="{{ route('groups.targets.create', $group) }}" 
-                                       class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-bold py-2 px-4 rounded">
+                                       class="bg-primary-500 hover:bg-primary-600 text-white text-sm font-bold py-2 px-4 rounded">
                                         <i class="fas fa-plus mr-1"></i>Tambah Target
                                     </a>
                                 @endif
@@ -259,7 +259,7 @@
                                                 </div>
                                                 <div class="flex-1">
                                                     <div class="flex items-center gap-2 mb-1">
-                                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
                                                             Minggu {{ $target->week_number }}
                                                         </span>
                                                         @if($target->is_completed)
@@ -282,7 +282,7 @@
                                                     </p>
                                                     @endif
                                                     @if($target->evidence_file)
-                                                    <p class="text-xs text-blue-600 mt-1">
+                                                    <p class="text-xs text-primary-600 mt-1">
                                                         <i class="fas fa-paperclip mr-1"></i>
                                                         <a href="{{ asset('storage/' . $target->evidence_file) }}" target="_blank" class="hover:underline">
                                                             Lihat Bukti
@@ -340,7 +340,7 @@
                                 </div>
 
                                 <!-- Completion Stats -->
-                                <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+                                <div class="mt-4 p-4 bg-primary-50 rounded-lg">
                                     <div class="flex items-center justify-between mb-2">
                                         <span class="text-sm font-medium text-gray-700">Tingkat Penyelesaian</span>
                                         @php
@@ -371,7 +371,7 @@
                                     <p class="text-gray-600 mb-3">Belum ada target mingguan</p>
                                     @if(auth()->user()->isMahasiswa())
                                         <a href="{{ route('groups.targets.create', $group) }}" 
-                                           class="inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded">
+                                           class="inline-flex items-center bg-primary-500 hover:bg-primary-600 text-white text-sm px-4 py-2 rounded">
                                             <i class="fas fa-plus mr-2"></i>Tambah Target Pertama
                                         </a>
                                     @else
@@ -387,11 +387,11 @@
                         <!-- Action Buttons -->
                         <div class="flex items-center justify-between pt-6 border-t border-gray-200">
                             <a href="{{ route('groups.index') }}" 
-                               class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200">
+                               class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition duration-200">
                                 <i class="fas fa-times mr-2"></i>Batal
                             </a>
                             <button type="submit" 
-                                    class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200">
+                                    class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition duration-200">
                                 <i class="fas fa-save mr-2"></i>Update Kelompok
                             </button>
                         </div>

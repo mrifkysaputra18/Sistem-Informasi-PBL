@@ -7,7 +7,7 @@
                     <i class="fas fa-arrow-left text-xl"></i>
                 </a>
                 <div>
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    <h2 class="font-semibold text-xl text-white leading-tight">
                         Detail Semester
                     </h2>
                     <p class="text-sm text-gray-600">{{ $semester->name }} - {{ $semester->academicYear->name }}</p>
@@ -35,7 +35,7 @@
             @endif
 
             @if($semester->isPbl())
-            <div class="mb-6 bg-purple-100 border border-purple-400 text-purple-700 px-4 py-3 rounded-lg">
+            <div class="mb-6 bg-secondary-100 border border-secondary-400 text-secondary-700 px-4 py-3 rounded-lg">
                 <div class="flex items-center">
                     <i class="fas fa-project-diagram mr-2"></i>
                     <span class="font-semibold">Semester PBL (Project-Based Learning)</span>
@@ -54,8 +54,8 @@
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500 mb-1">Nama Semester</label>
                                     <div class="flex items-center">
-                                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                                            <span class="text-sm font-semibold text-blue-600">{{ $semester->number }}</span>
+                                        <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3">
+                                            <span class="text-sm font-semibold text-primary-600">{{ $semester->number }}</span>
                                         </div>
                                         <p class="text-lg font-semibold text-gray-900">{{ $semester->name }}</p>
                                     </div>
@@ -63,7 +63,7 @@
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500 mb-1">Kode</label>
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
                                         {{ $semester->code }}
                                     </span>
                                 </div>
@@ -114,7 +114,7 @@
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500 mb-1">Tipe Semester</label>
                                     @if($semester->isPbl())
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary-100 text-secondary-800">
                                         <i class="fas fa-project-diagram mr-1"></i>PBL
                                     </span>
                                     @else
@@ -149,8 +149,8 @@
                                 @foreach($semester->classrooms as $classroom)
                                 <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                     <div class="flex items-center">
-                                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                                            <i class="fas fa-school text-blue-600 text-sm"></i>
+                                        <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-school text-primary-600 text-sm"></i>
                                         </div>
                                         <div>
                                             <p class="text-sm font-medium text-gray-900">{{ $classroom->name }}</p>
@@ -158,7 +158,7 @@
                                         </div>
                                     </div>
                                     <a href="{{ url('/classrooms/' . $classroom->id) }}" 
-                                       class="text-xs text-blue-600 hover:text-blue-800">
+                                       class="text-xs text-primary-600 hover:text-primary-800">
                                         <i class="fas fa-external-link-alt"></i>
                                     </a>
                                 </div>
@@ -167,7 +167,7 @@
                             
                             <div class="mt-4">
                                 <a href="{{ route('classrooms.create') }}?semester_id={{ $semester->id }}" 
-                                   class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
+                                   class="inline-flex items-center text-sm text-primary-600 hover:text-primary-800">
                                     <i class="fas fa-plus mr-1"></i>Tambah Kelas
                                 </a>
                             </div>
@@ -176,7 +176,7 @@
                                 <div class="text-gray-400 mb-2"><i class="fas fa-school text-2xl"></i></div>
                                 <p class="text-sm text-gray-600 mb-3">Belum ada kelas</p>
                                 <a href="{{ route('classrooms.create') }}?semester_id={{ $semester->id }}" 
-                                   class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
+                                   class="inline-flex items-center text-sm text-primary-600 hover:text-primary-800">
                                     <i class="fas fa-plus mr-1"></i>Tambah Kelas Pertama
                                 </a>
                             </div>
@@ -203,7 +203,7 @@
                                 @if($semester->isPbl())
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm text-gray-600">Status PBL</span>
-                                    <span class="text-lg font-semibold text-purple-600">Aktif</span>
+                                    <span class="text-lg font-semibold text-secondary-600">Aktif</span>
                                 </div>
                                 @endif
                             </div>

@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Mahasiswa Tanpa Kelompok') }}
             </h2>
             <div class="flex gap-2">
@@ -10,7 +10,7 @@
                     <i class="fas fa-arrow-left mr-2"></i>Kembali
                 </a>
                 <a href="{{ route('groups.create') }}" 
-                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                   class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
                     <i class="fas fa-users mr-2"></i>Buat Kelompok
                 </a>
             </div>
@@ -165,7 +165,7 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 @if($student->classRoom)
-                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
                                                         <i class="fas fa-school mr-1"></i>{{ $student->classRoom->name }}
                                                     </span>
                                                 @else
@@ -180,7 +180,7 @@
                                             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                                 <div class="flex items-center justify-center space-x-2">
                                                     <a href="{{ route('admin.users.show', $student) }}" 
-                                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 bg-blue-100 hover:bg-blue-200 hover:text-blue-900 rounded-lg transition">
+                                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-primary-600 bg-primary-100 hover:bg-primary-200 hover:text-primary-900 rounded-lg transition">
                                                         <i class="fas fa-eye mr-1.5"></i>Detail
                                                     </a>
                                                     <a href="{{ route('admin.users.edit', $student) }}" 
@@ -218,14 +218,14 @@
             </div>
 
             <!-- Help Card -->
-            <div class="mt-6 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+            <div class="mt-6 bg-primary-50 border-l-4 border-primary-400 p-4 rounded-r-lg">
                 <div class="flex">
                     <div class="flex-shrink-0">
-                        <i class="fas fa-info-circle text-blue-400 text-xl"></i>
+                        <i class="fas fa-info-circle text-primary-400 text-xl"></i>
                     </div>
                     <div class="ml-3">
-                        <h3 class="text-sm font-medium text-blue-800">Informasi</h3>
-                        <div class="mt-2 text-sm text-blue-700">
+                        <h3 class="text-sm font-medium text-primary-800">Informasi</h3>
+                        <div class="mt-2 text-sm text-primary-700">
                             <ul class="list-disc list-inside space-y-1">
                                 <li>Mahasiswa yang belum masuk kelompok akan ditampilkan di halaman ini</li>
                                 <li>Pastikan setiap mahasiswa sudah memiliki kelas sebelum dimasukkan ke kelompok</li>

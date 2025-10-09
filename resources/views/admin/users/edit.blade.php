@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Edit User') }}: {{ $user->name }}
             </h2>
             <div class="flex gap-2">
@@ -37,7 +37,7 @@
                     <!-- Personal Information Section -->
                     <div class="mb-8">
                         <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                            <i class="fas fa-user-circle mr-2 text-blue-500"></i>
+                            <i class="fas fa-user-circle mr-2 text-primary-500"></i>
                             Informasi Pribadi
                         </h3>
                         
@@ -48,7 +48,7 @@
                                     Nama Lengkap <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" required
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
                                 @error('name')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -61,7 +61,7 @@
                                 </label>
                                 <input type="text" name="politala_id" id="politala_id" value="{{ old('politala_id', $user->politala_id) }}" required
                                        placeholder="Contoh: 2341080001"
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('politala_id') border-red-500 @enderror">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('politala_id') border-red-500 @enderror">
                                 @error('politala_id')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -73,7 +73,7 @@
                                     Email <span class="text-red-500">*</span>
                                 </label>
                                 <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}" required
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('email') border-red-500 @enderror">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('email') border-red-500 @enderror">
                                 @error('email')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -86,7 +86,7 @@
                                 </label>
                                 <input type="text" name="phone" id="phone" value="{{ old('phone', $user->phone) }}"
                                        placeholder="08123456789"
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('phone') border-red-500 @enderror">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('phone') border-red-500 @enderror">
                                 @error('phone')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -108,7 +108,7 @@
                                     Password Baru
                                 </label>
                                 <input type="password" name="password" id="password"
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('password') border-red-500 @enderror">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('password') border-red-500 @enderror">
                                 @error('password')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -121,7 +121,7 @@
                                     Konfirmasi Password
                                 </label>
                                 <input type="password" name="password_confirmation" id="password_confirmation"
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                             </div>
 
                             <!-- Role -->
@@ -130,7 +130,7 @@
                                     Role <span class="text-red-500">*</span>
                                 </label>
                                 <select name="role" id="role" required
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('role') border-red-500 @enderror">
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('role') border-red-500 @enderror">
                                     <option value="mahasiswa" {{ old('role', $user->role) == 'mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
                                     <option value="dosen" {{ old('role', $user->role) == 'dosen' ? 'selected' : '' }}>Dosen</option>
                                     <option value="koordinator" {{ old('role', $user->role) == 'koordinator' ? 'selected' : '' }}>Koordinator</option>
@@ -147,7 +147,7 @@
                                     Status
                                 </label>
                                 <select name="is_active" id="is_active"
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                                     <option value="1" {{ old('is_active', $user->is_active) == '1' ? 'selected' : '' }}>Aktif</option>
                                     <option value="0" {{ old('is_active', $user->is_active) == '0' ? 'selected' : '' }}>Tidak Aktif</option>
                                 </select>
@@ -158,7 +158,7 @@
                     <!-- Academic Information Section -->
                     <div class="mb-8">
                         <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                            <i class="fas fa-graduation-cap mr-2 text-purple-500"></i>
+                            <i class="fas fa-graduation-cap mr-2 text-secondary-500"></i>
                             Informasi Akademik
                         </h3>
 
@@ -169,7 +169,7 @@
                                     Program Studi
                                 </label>
                                 <input type="text" name="program_studi" id="program_studi" value="{{ old('program_studi', $user->program_studi) }}"
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('program_studi') border-red-500 @enderror">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('program_studi') border-red-500 @enderror">
                                 @error('program_studi')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -181,7 +181,7 @@
                                     Kelas
                                 </label>
                                 <select name="class_room_id" id="class_room_id"
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('class_room_id') border-red-500 @enderror">
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('class_room_id') border-red-500 @enderror">
                                     <option value="">Tidak ada kelas</option>
                                     @foreach($classRooms as $classroom)
                                         <option value="{{ $classroom->id }}" {{ old('class_room_id', $user->class_room_id) == $classroom->id ? 'selected' : '' }}>
@@ -204,7 +204,7 @@
                             <i class="fas fa-times mr-2"></i>Batal
                         </a>
                         <button type="submit" 
-                                class="inline-flex items-center px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg shadow-md transition">
+                                class="inline-flex items-center px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white font-medium rounded-lg shadow-md transition">
                             <i class="fas fa-save mr-2"></i>Update User
                         </button>
                     </div>

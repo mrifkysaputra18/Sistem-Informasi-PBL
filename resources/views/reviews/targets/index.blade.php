@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-white leading-tight">
             <i class="fas fa-clipboard-check mr-2"></i>{{ __('Review Target Mingguan') }}
         </h2>
     </x-slot>
@@ -54,7 +54,7 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
                                                 Minggu {{ $target->week_number }}
                                             </span>
                                         </td>

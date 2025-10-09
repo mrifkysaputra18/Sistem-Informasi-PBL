@@ -2,19 +2,19 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    <i class="fas fa-tachometer-alt mr-2 text-blue-600"></i>Dashboard PBL
+                <h2 class="font-semibold text-xl text-white leading-tight">
+                    <i class="fas fa-tachometer-alt mr-2 text-white"></i>Dashboard PBL
                 </h2>
-                <p class="text-sm text-gray-600 mt-1">Sistem Penilaian Project Based Learning</p>
+                <p class="text-sm text-white mt-1">Sistem Penilaian Project Based Learning</p>
             </div>
             <div class="flex items-center space-x-4">
-                <div class="flex items-center bg-blue-100 px-3 py-2 rounded-lg">
-                    <i class="{{ Auth::user()->role_icon ?? 'fas fa-chalkboard-teacher' }} text-blue-600 mr-2"></i>
-                    <span class="text-blue-800 font-medium">{{ Auth::user()->role_display ?? 'Dosen' }}</span>
+                <div class="flex items-center bg-primary-100 px-3 py-2 rounded-lg">
+                    <i class="{{ Auth::user()->role_icon ?? 'fas fa-chalkboard-teacher' }} text-primary-600 mr-2"></i>
+                    <span class="text-primary-800 font-medium">{{ Auth::user()->role_display ?? 'Dosen' }}</span>
                 </div>
                 <div class="text-right">
-                    <div class="text-sm text-gray-500">Selamat datang,</div>
-                    <div class="font-semibold text-gray-800">{{ Auth::user()->name }}</div>
+                    <div class="text-sm text-white">Selamat datang,</div>
+                    <div class="font-semibold text-white">{{ Auth::user()->name }}</div>
                 </div>
             </div>
         </div>
@@ -23,14 +23,14 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Welcome Banner -->
-            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg p-8 mb-8 text-white">
+            <div class="bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl shadow-lg p-8 mb-8 text-white">
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-3xl font-bold mb-2">
                             <i class="fas fa-graduation-cap mr-3"></i>Selamat Datang di Sistem PBL
                         </h1>
-                        <p class="text-blue-100 text-lg">Kelola penilaian Project Based Learning dengan mudah dan efisien</p>
-                        <div class="mt-4 flex items-center space-x-4 text-blue-100">
+                        <p class="text-primary-100 text-lg">Kelola penilaian Project Based Learning dengan mudah dan efisien</p>
+                        <div class="mt-4 flex items-center space-x-4 text-primary-100">
                             <div class="flex items-center">
                                 <i class="fas fa-calendar-alt mr-2"></i>
                                 <span>{{ now()->format('d F Y') }}</span>
@@ -56,7 +56,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
-                                <div class="bg-blue-500 rounded-lg p-3">
+                                <div class="bg-primary-500 rounded-lg p-3">
                                     <i class="fas fa-users text-white text-2xl"></i>
                                 </div>
                             </div>
@@ -77,7 +77,7 @@
                     </div>
                     <div class="bg-gray-50 px-6 py-3">
                         <div class="text-sm">
-                            <a href="{{ route('groups.index') }}" class="font-medium text-blue-600 hover:text-blue-500 transition duration-150 ease-in-out">
+                            <a href="{{ route('groups.index') }}" class="font-medium text-primary-600 hover:text-primary-500 transition duration-150 ease-in-out">
                                 Kelola kelompok <i class="fas fa-arrow-right ml-1"></i>
                             </a>
                         </div>
@@ -98,7 +98,7 @@
                                     <dt class="text-sm font-medium text-gray-500 truncate">Kriteria Penilaian</dt>
                                     <dd class="flex items-baseline">
                                         <div class="text-2xl font-semibold text-gray-900">{{ $totalKriteria }}</div>
-                                        <div class="ml-2 flex items-baseline text-sm font-semibold text-blue-600">
+                                        <div class="ml-2 flex items-baseline text-sm font-semibold text-primary-600">
                                             <i class="fas fa-layer-group mr-1"></i>
                                             <span class="sr-only">Group criteria</span>
                                             Group
@@ -122,7 +122,7 @@
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
-                                <div class="bg-purple-500 rounded-lg p-3">
+                                <div class="bg-secondary-500 rounded-lg p-3">
                                     <i class="fas fa-star text-white text-2xl"></i>
                                 </div>
                             </div>
@@ -131,7 +131,7 @@
                                     <dt class="text-sm font-medium text-gray-500 truncate">Input Nilai</dt>
                                     <dd class="flex items-baseline">
                                         <div class="text-2xl font-semibold text-gray-900">{{ $totalInputNilai }}</div>
-                                        <div class="ml-2 flex items-baseline text-sm font-semibold text-purple-600">
+                                        <div class="ml-2 flex items-baseline text-sm font-semibold text-secondary-600">
                                             <i class="fas fa-chart-bar mr-1"></i>
                                             <span class="sr-only">Scores entered</span>
                                             Score
@@ -143,7 +143,7 @@
                     </div>
                     <div class="bg-gray-50 px-6 py-3">
                         <div class="text-sm">
-                            <a href="{{ route('scores.index') }}" class="font-medium text-purple-600 hover:text-purple-500 transition duration-150 ease-in-out">
+                            <a href="{{ route('scores.index') }}" class="font-medium text-secondary-600 hover:text-secondary-500 transition duration-150 ease-in-out">
                                 Input nilai <i class="fas fa-arrow-right ml-1"></i>
                             </a>
                         </div>
@@ -162,14 +162,14 @@
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <a href="{{ route('groups.create') }}" 
-                           class="group bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 p-6 rounded-lg transition duration-300 transform hover:scale-105 border border-blue-200">
+                           class="group bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 p-6 rounded-lg transition duration-300 transform hover:scale-105 border border-primary-200">
                             <div class="flex items-center">
-                                <div class="bg-blue-500 group-hover:bg-blue-600 p-3 rounded-lg transition duration-300">
+                                <div class="bg-primary-500 group-hover:bg-primary-600 p-3 rounded-lg transition duration-300">
                                     <i class="fas fa-plus text-white text-xl"></i>
                                 </div>
                                 <div class="ml-4">
-                                    <h4 class="font-semibold text-blue-800">Tambah Kelompok</h4>
-                                    <p class="text-sm text-blue-600">Buat kelompok baru</p>
+                                    <h4 class="font-semibold text-primary-800">Tambah Kelompok</h4>
+                                    <p class="text-sm text-primary-600">Buat kelompok baru</p>
                                 </div>
                             </div>
                         </a>
@@ -188,14 +188,14 @@
                         </a>
 
                         <a href="{{ route('scores.create') }}" 
-                           class="group bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 p-6 rounded-lg transition duration-300 transform hover:scale-105 border border-purple-200">
+                           class="group bg-gradient-to-br from-secondary-50 to-secondary-100 hover:from-secondary-100 hover:to-secondary-200 p-6 rounded-lg transition duration-300 transform hover:scale-105 border border-secondary-200">
                             <div class="flex items-center">
-                                <div class="bg-purple-500 group-hover:bg-purple-600 p-3 rounded-lg transition duration-300">
+                                <div class="bg-secondary-500 group-hover:bg-secondary-600 p-3 rounded-lg transition duration-300">
                                     <i class="fas fa-edit text-white text-xl"></i>
                                 </div>
                                 <div class="ml-4">
-                                    <h4 class="font-semibold text-purple-800">Input Nilai</h4>
-                                    <p class="text-sm text-purple-600">Beri nilai kelompok</p>
+                                    <h4 class="font-semibold text-secondary-800">Input Nilai</h4>
+                                    <p class="text-sm text-secondary-600">Beri nilai kelompok</p>
                                 </div>
                             </div>
                         </a>
@@ -218,16 +218,16 @@
 
             <!-- Tips untuk User -->
             <div class="bg-white shadow-xl rounded-xl overflow-hidden">
-                <div class="px-6 py-4 bg-blue-50 border-b border-blue-200">
-                    <h3 class="text-lg font-semibold text-blue-800">
+                <div class="px-6 py-4 bg-primary-50 border-b border-primary-200">
+                    <h3 class="text-lg font-semibold text-primary-800">
                         <i class="fas fa-lightbulb mr-2 text-yellow-500"></i>Tips untuk {{ Auth::user()->role_display ?? 'Dosen' }}
                     </h3>
                 </div>
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="flex items-start">
-                            <div class="bg-blue-100 p-2 rounded-full mr-3 mt-1">
-                                <i class="fas fa-check text-blue-600 text-sm"></i>
+                            <div class="bg-primary-100 p-2 rounded-full mr-3 mt-1">
+                                <i class="fas fa-check text-primary-600 text-sm"></i>
                             </div>
                             <div>
                                 <h4 class="font-medium text-gray-800">Atur Kriteria</h4>
@@ -244,8 +244,8 @@
                             </div>
                         </div>
                         <div class="flex items-start">
-                            <div class="bg-purple-100 p-2 rounded-full mr-3 mt-1">
-                                <i class="fas fa-chart-line text-purple-600 text-sm"></i>
+                            <div class="bg-secondary-100 p-2 rounded-full mr-3 mt-1">
+                                <i class="fas fa-chart-line text-secondary-600 text-sm"></i>
                             </div>
                             <div>
                                 <h4 class="font-medium text-gray-800">Pantau Ranking</h4>

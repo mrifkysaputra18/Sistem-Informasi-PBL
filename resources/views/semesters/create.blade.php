@@ -5,7 +5,7 @@
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 Tambah Semester
             </h2>
         </div>
@@ -17,8 +17,8 @@
                 <div class="p-8">
                     <!-- Header Icon -->
                     <div class="mb-8 text-center">
-                        <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-graduation-cap text-blue-600 text-2xl"></i>
+                        <div class="bg-primary-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-graduation-cap text-primary-600 text-2xl"></i>
                         </div>
                         <h3 class="text-2xl font-bold text-gray-900 mb-2">Tambah Semester Baru</h3>
                         <p class="text-gray-600">Buat semester baru untuk tahun ajaran</p>
@@ -36,7 +36,7 @@
                             <select name="academic_year_id" 
                                     id="academic_year_id" 
                                     required
-                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('academic_year_id') border-red-500 @enderror">
+                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('academic_year_id') border-red-500 @enderror">
                                 <option value="">Pilih Tahun Ajaran</option>
                                 @foreach($academicYears as $academicYear)
                                 <option value="{{ $academicYear->id }}" 
@@ -61,7 +61,7 @@
                             <select name="number" 
                                     id="number" 
                                     required
-                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('number') border-red-500 @enderror">
+                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('number') border-red-500 @enderror">
                                 <option value="">Pilih Nomor Semester</option>
                                 @for($i = 1; $i <= 8; $i++)
                                 <option value="{{ $i }}" {{ old('number') == $i ? 'selected' : '' }}>
@@ -95,7 +95,7 @@
                                    value="{{ old('name') }}"
                                    required
                                    placeholder="Contoh: Semester 1, Semester 2"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
                             @error('name')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -115,7 +115,7 @@
                                    value="{{ old('code') }}"
                                    required
                                    placeholder="Contoh: 2023-2024-1, 2023-2024-2"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('code') border-red-500 @enderror">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('code') border-red-500 @enderror">
                             @error('code')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -138,7 +138,7 @@
                                    id="start_date" 
                                    value="{{ old('start_date') }}"
                                    required
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('start_date') border-red-500 @enderror">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('start_date') border-red-500 @enderror">
                             @error('start_date')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -157,7 +157,7 @@
                                    id="end_date" 
                                    value="{{ old('end_date') }}"
                                    required
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('end_date') border-red-500 @enderror">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('end_date') border-red-500 @enderror">
                             @error('end_date')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -175,7 +175,7 @@
                                       id="description" 
                                       rows="3"
                                       placeholder="Deskripsi singkat tentang semester..."
-                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
+                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
                             @error('description')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -191,7 +191,7 @@
                                        id="is_active" 
                                        value="1"
                                        {{ old('is_active') ? 'checked' : '' }}
-                                       class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                       class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                                 <label for="is_active" class="ml-3 text-sm font-medium text-gray-700">
                                     <i class="fas fa-check-circle text-green-600 mr-1"></i>
                                     Set sebagai semester aktif
@@ -210,7 +210,7 @@
                                 <i class="fas fa-times mr-2"></i>Batal
                             </a>
                             <button type="submit" 
-                                    class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                                    class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
                                 <i class="fas fa-save mr-2"></i>Simpan Semester
                             </button>
                         </div>

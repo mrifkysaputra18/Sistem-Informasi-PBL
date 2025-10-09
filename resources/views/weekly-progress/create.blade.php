@@ -5,7 +5,7 @@
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Upload Progress Mingguan') }}
             </h2>
         </div>
@@ -31,7 +31,7 @@
                                    value="{{ old('week_number') }}"
                                    min="1"
                                    required
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                         </div>
 
                         <!-- Judul Progress -->
@@ -45,7 +45,7 @@
                                    value="{{ old('title') }}"
                                    placeholder="Contoh: Implementasi Fitur Login"
                                    required
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                         </div>
 
                         <!-- Deskripsi -->
@@ -57,7 +57,7 @@
                                       id="description" 
                                       rows="4"
                                       placeholder="Jelaskan progress yang telah dicapai..."
-                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ old('description') }}</textarea>
+                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">{{ old('description') }}</textarea>
                         </div>
 
                         <!-- Upload Bukti atau Checkbox -->
@@ -75,7 +75,7 @@
                                            value="1"
                                            {{ old('is_checked_only') ? 'checked' : '' }}
                                            onchange="toggleEvidenceUpload()"
-                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                           class="h-4 w-4 text-primary-600 focus:ring-blue-500 border-gray-300 rounded">
                                     <label for="is_checked_only" class="ml-2 block text-sm text-gray-900">
                                         Tandai selesai tanpa upload bukti (hanya centang)
                                     </label>
@@ -95,8 +95,8 @@
                                                   file:mr-4 file:py-2 file:px-4
                                                   file:rounded-md file:border-0
                                                   file:text-sm file:font-semibold
-                                                  file:bg-blue-50 file:text-blue-700
-                                                  hover:file:bg-blue-100">
+                                                  file:bg-primary-50 file:text-primary-700
+                                                  hover:file:bg-primary-100">
                                     <p class="mt-1 text-xs text-gray-500">
                                         Format: JPG, PNG, PDF, DOC, DOCX (Max 5 file, masing-masing max 2MB)
                                     </p>
@@ -111,7 +111,7 @@
                                 <i class="fas fa-times mr-2"></i>Batal
                             </a>
                             <button type="submit" 
-                                    class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-purple-600 hover:bg-purple-700">
+                                    class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-secondary-600 hover:bg-secondary-700">
                                 <i class="fas fa-upload mr-2"></i>Upload Progress
                             </button>
                         </div>

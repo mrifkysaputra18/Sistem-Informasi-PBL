@@ -5,7 +5,7 @@
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 Edit Mata Kuliah
             </h2>
         </div>
@@ -40,7 +40,7 @@
                                    value="{{ old('code', $subject->id) }}"
                                    required
                                    placeholder="Contoh: SI101, IF201"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('title') border-red-500 @enderror">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('title') border-red-500 @enderror">
                             @error('title')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -64,7 +64,7 @@
                                    value="{{ old('name', $subject->title) }}"
                                    required
                                    placeholder="Contoh: Sistem Informasi, Pemrograman Web"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('title') border-red-500 @enderror">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('title') border-red-500 @enderror">
                             @error('title')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -82,7 +82,7 @@
                                       id="description" 
                                       rows="4"
                                       placeholder="Deskripsi singkat tentang mata kuliah..."
-                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description', $subject->description) }}</textarea>
+                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description', $subject->description) }}</textarea>
                             @error('description')
                             <p class="mt-1 text-sm text-red-600">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -91,13 +91,13 @@
                         </div>
 
                         <!-- Info Box -->
-                        <div class="mb-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r">
+                        <div class="mb-6 bg-primary-50 border-l-4 border-primary-500 p-4 rounded-r">
                             <div class="flex">
                                 <div class="flex-shrink-0">
-                                    <i class="fas fa-info-circle text-blue-600"></i>
+                                    <i class="fas fa-info-circle text-primary-600"></i>
                                 </div>
                                 <div class="ml-3">
-                                    <p class="text-sm text-blue-700">
+                                    <p class="text-sm text-primary-700">
                                         <strong>Catatan:</strong> Semua mata kuliah dalam sistem ini terkait dengan PBL (Project-Based Learning).
                                     </p>
                                 </div>

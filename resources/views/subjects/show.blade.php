@@ -7,7 +7,7 @@
                     <i class="fas fa-arrow-left text-xl"></i>
                 </a>
                 <div>
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    <h2 class="font-semibold text-xl text-white leading-tight">
                         Detail Mata Kuliah
                     </h2>
                     <p class="text-sm text-gray-600">{{ $subject->id }} - {{ $subject->title }}</p>
@@ -45,7 +45,7 @@
                             </div>
                             <div>
                                 <h3 class="text-white text-2xl font-bold">{{ $subject->title }}</h3>
-                                <p class="text-blue-100">Kode: {{ $subject->id }}</p>
+                                <p class="text-primary-100">Kode: {{ $subject->id }}</p>
                             </div>
                         </div>
                         <div class="flex gap-2">
@@ -55,7 +55,7 @@
                             </span>
                             @endif
                             @if(($subject->status === 'active'))
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
                                 <i class="fas fa-check mr-1"></i>Aktif
                             </span>
                             @else
@@ -103,7 +103,7 @@
                                 <i class="fas fa-toggle-on text-gray-500 mr-1"></i>Status Aktif
                             </h4>
                             @if(($subject->status === 'active'))
-                            <p class="text-blue-600 font-medium">
+                            <p class="text-primary-600 font-medium">
                                 <i class="fas fa-check mr-1"></i>Mata kuliah aktif
                             </p>
                             @else
@@ -137,7 +137,7 @@
                 <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h3 class="font-semibold text-gray-800">
-                            <i class="fas fa-school mr-2 text-blue-600"></i>
+                            <i class="fas fa-school mr-2 text-primary-600"></i>
                             Kelas yang Menggunakan Mata Kuliah Ini
                         </h3>
                         <span class="text-sm text-gray-600">{{ $subject->classRooms->count() }} Kelas</span>
@@ -150,7 +150,7 @@
                             <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
                                 <div class="flex items-center justify-between mb-2">
                                     <h4 class="font-semibold text-gray-800">{{ $classRoom->name }}</h4>
-                                    <span class="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
+                                    <span class="text-xs px-2 py-1 bg-primary-100 text-primary-800 rounded-full">
                                         {{ $classRoom->groups->count() ?? 0 }} Kelompok
                                     </span>
                                 </div>
@@ -161,7 +161,7 @@
                                     <i class="fas fa-calendar mr-1"></i>Semester {{ $classRoom->semester }}
                                 </div>
                                 <a href="{{ url('/classrooms/' . $classRoom->id) }}" 
-                                   class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                   class="text-primary-600 hover:text-primary-800 text-sm font-medium">
                                     Lihat Detail →
                                 </a>
                             </div>
@@ -184,7 +184,7 @@
                 <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h3 class="font-semibold text-gray-800">
-                            <i class="fas fa-list-check mr-2 text-purple-600"></i>
+                            <i class="fas fa-list-check mr-2 text-secondary-600"></i>
                             Kriteria Penilaian
                         </h3>
                         <span class="text-sm text-gray-600">{{ $subject->criteria->count() }} Kriteria</span>
@@ -195,8 +195,8 @@
                         @foreach($subject->criteria as $criterion)
                         <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                             <div class="flex items-center">
-                                <div class="bg-purple-100 p-2 rounded-full mr-3">
-                                    <i class="fas fa-check text-purple-600 text-sm"></i>
+                                <div class="bg-secondary-100 p-2 rounded-full mr-3">
+                                    <i class="fas fa-check text-secondary-600 text-sm"></i>
                                 </div>
                                 <div>
                                     <p class="font-medium text-gray-800">{{ $criterion->nama }}</p>

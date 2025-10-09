@@ -5,7 +5,7 @@
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Panduan Metode AHP') }}
             </h2>
         </div>
@@ -18,7 +18,7 @@
                     <!-- Intro -->
                     <div class="mb-8">
                         <h3 class="text-2xl font-bold text-gray-900 mb-4">
-                            <i class="fas fa-book mr-2 text-purple-600"></i>
+                            <i class="fas fa-book mr-2 text-secondary-600"></i>
                             Apa itu AHP?
                         </h3>
                         <p class="text-gray-700 mb-4">
@@ -56,40 +56,40 @@
                     <!-- Langkah-langkah -->
                     <div class="mb-8">
                         <h3 class="text-xl font-bold text-gray-900 mb-4">
-                            <i class="fas fa-list-ol mr-2 text-blue-600"></i>
+                            <i class="fas fa-list-ol mr-2 text-primary-600"></i>
                             Langkah-Langkah Menggunakan AHP
                         </h3>
                         <div class="space-y-4">
                             <div class="flex">
-                                <div class="flex-shrink-0 w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold mr-3">1</div>
+                                <div class="flex-shrink-0 w-8 h-8 bg-secondary-500 text-white rounded-full flex items-center justify-center font-bold mr-3">1</div>
                                 <div class="flex-1">
                                     <h4 class="font-semibold text-gray-900">Pilih Segment</h4>
                                     <p class="text-gray-600 text-sm">Pilih apakah ingin menghitung bobot untuk Kriteria Kelompok atau Kriteria Mahasiswa.</p>
                                 </div>
                             </div>
                             <div class="flex">
-                                <div class="flex-shrink-0 w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold mr-3">2</div>
+                                <div class="flex-shrink-0 w-8 h-8 bg-secondary-500 text-white rounded-full flex items-center justify-center font-bold mr-3">2</div>
                                 <div class="flex-1">
                                     <h4 class="font-semibold text-gray-900">Bandingkan Kriteria</h4>
                                     <p class="text-gray-600 text-sm">Geser slider untuk membandingkan setiap pasang kriteria. Pilih nilai 1-9 sesuai tingkat kepentingan.</p>
                                 </div>
                             </div>
                             <div class="flex">
-                                <div class="flex-shrink-0 w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold mr-3">3</div>
+                                <div class="flex-shrink-0 w-8 h-8 bg-secondary-500 text-white rounded-full flex items-center justify-center font-bold mr-3">3</div>
                                 <div class="flex-1">
                                     <h4 class="font-semibold text-gray-900">Hitung Bobot</h4>
                                     <p class="text-gray-600 text-sm">Klik tombol "Hitung Bobot" untuk menghitung bobot setiap kriteria.</p>
                                 </div>
                             </div>
                             <div class="flex">
-                                <div class="flex-shrink-0 w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold mr-3">4</div>
+                                <div class="flex-shrink-0 w-8 h-8 bg-secondary-500 text-white rounded-full flex items-center justify-center font-bold mr-3">4</div>
                                 <div class="flex-1">
                                     <h4 class="font-semibold text-gray-900">Cek Konsistensi</h4>
                                     <p class="text-gray-600 text-sm">Periksa nilai CR (Consistency Ratio). Jika CR ≤ 0.1, hasil konsisten dan dapat diterapkan.</p>
                                 </div>
                             </div>
                             <div class="flex">
-                                <div class="flex-shrink-0 w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold mr-3">5</div>
+                                <div class="flex-shrink-0 w-8 h-8 bg-secondary-500 text-white rounded-full flex items-center justify-center font-bold mr-3">5</div>
                                 <div class="flex-1">
                                     <h4 class="font-semibold text-gray-900">Terapkan Bobot</h4>
                                     <p class="text-gray-600 text-sm">Jika konsisten, klik "Terapkan Bobot ke Kriteria" untuk mengupdate bobot di database.</p>
@@ -132,7 +132,7 @@
                         <p class="text-gray-700 mb-4">
                             Misalnya ada 3 kriteria: <strong>Kecepatan Progres</strong>, <strong>Kualitas Output</strong>, dan <strong>Keterlambatan</strong>.
                         </p>
-                        <div class="bg-blue-50 p-4 rounded-lg">
+                        <div class="bg-primary-50 p-4 rounded-lg">
                             <p class="font-semibold mb-2">Perbandingan:</p>
                             <ul class="list-disc list-inside space-y-1 text-sm">
                                 <li>Kecepatan Progres vs Kualitas Output = <strong>3</strong> (Kecepatan sedikit lebih penting)</li>
@@ -177,7 +177,7 @@
                     <!-- Back Button -->
                     <div class="text-center pt-4 border-t">
                         <a href="{{ route('ahp.index') }}" 
-                           class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-200">
+                           class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-500 transition duration-200">
                             <i class="fas fa-arrow-left mr-2"></i>Kembali ke Perhitungan AHP
                         </a>
                     </div>

@@ -1,10 +1,10 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Tahun Ajaran') }}
             </h2>
-            <a href="{{ route('academic-years.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <a href="{{ route('academic-years.create') }}" class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded">
                 <i class="fas fa-plus mr-2"></i>Tambah Tahun Ajaran
             </a>
         </div>
@@ -51,7 +51,7 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
                                             {{ $academicYear->code }}
                                         </span>
                                     </td>
@@ -86,7 +86,7 @@
                                         <div class="flex justify-end gap-2">
                                             <!-- View Button -->
                                             <a href="{{ route('academic-years.show', $academicYear) }}" 
-                                               class="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 bg-blue-100 hover:bg-blue-200 hover:text-blue-900 rounded-lg transition duration-200 ease-in-out"
+                                               class="inline-flex items-center px-3 py-2 text-sm font-medium text-primary-600 bg-primary-100 hover:bg-primary-200 hover:text-primary-900 rounded-lg transition duration-200 ease-in-out"
                                                title="Lihat Detail">
                                                 <i class="fas fa-eye mr-1"></i>
                                                 Lihat
@@ -132,7 +132,7 @@
                     <div class="text-center py-8 bg-gray-50 rounded-lg">
                         <div class="text-gray-400 mb-3"><i class="fas fa-calendar-alt text-4xl"></i></div>
                         <p class="text-gray-600 mb-3">Belum ada tahun ajaran</p>
-                        <a href="{{ route('academic-years.create') }}" class="inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded">
+                        <a href="{{ route('academic-years.create') }}" class="inline-flex items-center bg-primary-500 hover:bg-primary-600 text-white text-sm px-4 py-2 rounded">
                             <i class="fas fa-plus mr-2"></i>Tambah Tahun Ajaran Pertama
                         </a>
                     </div>

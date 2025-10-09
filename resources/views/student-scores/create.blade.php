@@ -5,7 +5,7 @@
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Input Nilai Mahasiswa') }}
             </h2>
         </div>
@@ -17,22 +17,22 @@
                 <div class="p-8">
                     <!-- Header -->
                     <div class="mb-8 text-center">
-                        <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-user-graduate text-blue-600 text-2xl"></i>
+                        <div class="bg-primary-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-user-graduate text-primary-600 text-2xl"></i>
                         </div>
                         <h3 class="text-2xl font-bold text-gray-900 mb-2">Input Nilai Mahasiswa</h3>
                         <p class="text-gray-600">Berikan nilai untuk mahasiswa berdasarkan kriteria yang telah ditetapkan</p>
                     </div>
 
                     <!-- Info SAW Method -->
-                    <div class="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                    <div class="mb-6 bg-gradient-to-r from-blue-50 to-primary-50 border-l-4 border-primary-500 p-4 rounded-r-lg">
                         <div class="flex items-start">
                             <div class="flex-shrink-0">
-                                <i class="fas fa-info-circle text-blue-500 text-xl mt-1"></i>
+                                <i class="fas fa-info-circle text-primary-500 text-xl mt-1"></i>
                             </div>
                             <div class="ml-3">
-                                <h4 class="text-sm font-semibold text-blue-900 mb-1">Metode SAW (Simple Additive Weighting)</h4>
-                                <p class="text-sm text-blue-800">
+                                <h4 class="text-sm font-semibold text-primary-900 mb-1">Metode SAW (Simple Additive Weighting)</h4>
+                                <p class="text-sm text-primary-800">
                                     Sistem akan menghitung ranking mahasiswa menggunakan metode SAW dengan normalisasi otomatis berdasarkan tipe kriteria (Benefit/Cost).
                                 </p>
                             </div>
@@ -49,7 +49,7 @@
                             </label>
                             <select id="user_id" 
                                     name="user_id" 
-                                    class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('user_id') border-red-500 @enderror">
+                                    class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-primary-500 transition duration-200 @error('user_id') border-red-500 @enderror">
                                 <option value="">Pilih Mahasiswa</option>
                                 @foreach($students as $student)
                                     <option value="{{ $student->id }}" {{ old('user_id') == $student->id ? 'selected' : '' }}>
@@ -77,7 +77,7 @@
                             </label>
                             <select id="criterion_id" 
                                     name="criterion_id" 
-                                    class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('criterion_id') border-red-500 @enderror">
+                                    class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-primary-500 transition duration-200 @error('criterion_id') border-red-500 @enderror">
                                 <option value="">Pilih Kriteria</option>
                                 @foreach($criteria as $criterion)
                                     <option value="{{ $criterion->id }}" 
@@ -122,7 +122,7 @@
                                        max="100"
                                        step="0.01"
                                        placeholder="Masukkan skor 0-100"
-                                       class="block w-full px-4 py-3 pr-16 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('skor') border-red-500 @enderror">
+                                       class="block w-full px-4 py-3 pr-16 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-primary-500 transition duration-200 @error('skor') border-red-500 @enderror">
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3">
                                     <span class="text-gray-500 text-sm">/ 100</span>
                                 </div>
@@ -146,7 +146,7 @@
                                 <i class="fas fa-times mr-2"></i>Batal
                             </a>
                             <button type="submit" 
-                                    class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                                    class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
                                 <i class="fas fa-save mr-2"></i>Simpan Nilai
                             </button>
                         </div>
