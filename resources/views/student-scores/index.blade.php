@@ -2,7 +2,11 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-white leading-tight">
-                {{ __('Manajemen Nilai Mahasiswa & Ranking (SAW)') }}
+                @if(auth()->user()->isKoordinator())
+                    {{ __('Nilai Mahasiswa & Ranking') }}
+                @else
+                    {{ __('Manajemen Nilai Mahasiswa & Ranking (SAW)') }}
+                @endif
             </h2>
             <div class="flex gap-2">
                 @if(auth()->user()->isDosen() || auth()->user()->isAdmin())
@@ -38,7 +42,8 @@
                 </div>
             @endif
 
-            <!-- SAW Method Info -->
+            <!-- SAW Method Info (Only for Admin and Dosen) -->
+            @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
             <div class="mb-6 bg-gradient-to-r from-blue-50 to-primary-50 border-l-4 border-primary-600 p-6 rounded-r-xl shadow-lg">
                 <div class="flex items-start">
                     <div class="flex-shrink-0">
@@ -76,6 +81,7 @@
                     </div>
                 </div>
             </div>
+            @endif
 
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
