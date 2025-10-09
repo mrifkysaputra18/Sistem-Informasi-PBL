@@ -37,7 +37,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
             
             <!-- Statistics Cards - Law of Common Region & Von Restorff Effect -->
-            <div>
+                        <div>
                 <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
@@ -60,7 +60,7 @@
                                 <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
                                 </svg>
-                            </div>
+                        </div>
                         </div>
                     </div>
 
@@ -77,13 +77,13 @@
                                         <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6 97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
                                     </svg>
                                     <span><span class="font-semibold">{{ $stats['activeGroups'] }}</span> Aktif</span>
-                                </div>
-                            </div>
+                    </div>
+                </div>
                             <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
                                 <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
                                 </svg>
-                            </div>
+                        </div>
                         </div>
                     </div>
 
@@ -96,12 +96,12 @@
                                 <p class="text-green-100 text-xs font-medium uppercase tracking-wider">Total Progress</p>
                                 <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['totalProgress'] }}</p>
                                 <p class="text-xs text-green-100 mt-2">Progress terdaftar</p>
-                            </div>
+                </div>
                             <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
                                 <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
                                 </svg>
-                            </div>
+                        </div>
                         </div>
                     </div>
 
@@ -114,12 +114,12 @@
                                 <p class="text-orange-100 text-xs font-medium uppercase tracking-wider">Perlu Review</p>
                                 <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['pendingReviews'] }}</p>
                                 <p class="text-xs text-orange-100 mt-2">Menunggu persetujuan</p>
-                            </div>
+                </div>
                             <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
                                 <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
                                 </svg>
-                            </div>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -283,16 +283,16 @@
                                 <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
                                 </svg>
-                            </div>
+                        </div>
                             <div class="flex-1">
                                 <h3 class="font-bold text-gray-900 mb-1 group-hover:text-red-600 transition-colors">Kelola Kelompok</h3>
-                                <p class="text-sm text-gray-600">Tambah/hapus anggota</p>
+                            <p class="text-sm text-gray-600">Tambah/hapus anggota</p>
                             </div>
                             <svg class="w-5 h-5 text-gray-400 group-hover:text-red-600 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                             </svg>
-                        </div>
-                    </a>
+                    </div>
+                </a>
 
                     <!-- Action 2 -->
                     <a href="{{ route('scores.index') }}" 
@@ -303,16 +303,16 @@
                                 <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                 </svg>
-                            </div>
+                        </div>
                             <div class="flex-1">
                                 <h3 class="font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">Lihat Ranking</h3>
-                                <p class="text-sm text-gray-600">Monitor peringkat</p>
+                            <p class="text-sm text-gray-600">Monitor peringkat</p>
                             </div>
                             <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                             </svg>
-                        </div>
-                    </a>
+                    </div>
+                </a>
 
                     <!-- Action 3 -->
                     <a href="{{ route('classrooms.index') }}" 
@@ -323,17 +323,17 @@
                                 <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
                                 </svg>
-                            </div>
+                        </div>
                             <div class="flex-1">
                                 <h3 class="font-bold text-gray-900 mb-1 group-hover:text-green-600 transition-colors">Lihat Kelas</h3>
-                                <p class="text-sm text-gray-600">Monitor semua kelas</p>
+                            <p class="text-sm text-gray-600">Monitor semua kelas</p>
                             </div>
                             <svg class="w-5 h-5 text-gray-400 group-hover:text-green-600 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                             </svg>
                         </div>
                     </a>
-                </div>
+                    </div>
             </div>
 
         </div>

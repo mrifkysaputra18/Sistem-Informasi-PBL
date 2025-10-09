@@ -44,7 +44,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
             
             <!-- Statistics Cards - Law of Common Region & Von Restorff Effect -->
-            <div>
+                        <div>
                 <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
@@ -67,7 +67,7 @@
                                 <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
                                 </svg>
-                            </div>
+                        </div>
                         </div>
                     </div>
 
@@ -80,12 +80,12 @@
                                 <p class="text-red-100 text-xs font-medium uppercase tracking-wider">Total Kelompok</p>
                                 <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['totalGroups'] }}</p>
                                 <p class="text-xs text-red-100 mt-2">Kelompok aktif</p>
-                            </div>
+                </div>
                             <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
                                 <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
                                 </svg>
-                            </div>
+                        </div>
                         </div>
                     </div>
 
@@ -98,12 +98,12 @@
                                 <p class="text-green-100 text-xs font-medium uppercase tracking-wider">Nilai Tersimpan</p>
                                 <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['totalScores'] }}</p>
                                 <p class="text-xs text-green-100 mt-2">Total penilaian</p>
-                            </div>
+                </div>
                             <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
                                 <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                 </svg>
-                            </div>
+                        </div>
                         </div>
                     </div>
 
@@ -116,12 +116,12 @@
                                 <p class="text-orange-100 text-xs font-medium uppercase tracking-wider">Perlu Review</p>
                                 <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['pendingReviews'] }}</p>
                                 <p class="text-xs text-orange-100 mt-2">Menunggu review</p>
-                            </div>
+                </div>
                             <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
                                 <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
                                 </svg>
-                            </div>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -144,12 +144,12 @@
                                 <p class="text-cyan-100 text-xs font-medium uppercase tracking-wider">Total Target</p>
                                 <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['totalTargets'] }}</p>
                                 <p class="text-xs text-cyan-100 mt-2">Target dibuat</p>
-                            </div>
+            </div>
                             <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
                                 <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
                                 </svg>
-                            </div>
+                        </div>
                         </div>
                     </div>
 
@@ -162,12 +162,12 @@
                                 <p class="text-teal-100 text-xs font-medium uppercase tracking-wider">Target Selesai</p>
                                 <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['completedTargets'] }}</p>
                                 <p class="text-xs text-teal-100 mt-2">Sudah tercapai</p>
-                            </div>
+                </div>
                             <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
                                 <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                                 </svg>
-                            </div>
+                        </div>
                         </div>
                     </div>
 
@@ -180,12 +180,12 @@
                                 <p class="text-indigo-100 text-xs font-medium uppercase tracking-wider">Tingkat Selesai</p>
                                 <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['completionRate'] }}%</p>
                                 <p class="text-xs text-indigo-100 mt-2">Completion rate</p>
-                            </div>
+                </div>
                             <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
                                 <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
                                 </svg>
-                            </div>
+                        </div>
                         </div>
                     </div>
 
@@ -198,12 +198,12 @@
                                 <p class="text-purple-100 text-xs font-medium uppercase tracking-wider">Target Pending</p>
                                 <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['pendingTargets'] }}</p>
                                 <p class="text-xs text-purple-100 mt-2">Belum selesai</p>
-                            </div>
+                </div>
                             <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
                                 <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
                                 </svg>
-                            </div>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -313,21 +313,21 @@
                                             <svg class="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
                                             </svg>
-                                        </div>
-                                        <div class="flex-1 min-w-0">
+                                            </div>
+                                            <div class="flex-1 min-w-0">
                                             <p class="font-semibold text-gray-900">{{ $progress->title }}</p>
                                             <p class="text-xs text-gray-600 mt-1 flex items-center gap-1">
-                                                @if($progress->group)
+                                                    @if($progress->group)
                                                 <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                                     <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
                                                 </svg>
                                                 <span class="truncate">{{ $progress->group->name }}</span>
-                                                @if($progress->group->classRoom)
+                                                    @if($progress->group->classRoom)
                                                 <span class="text-gray-400">•</span>
                                                 <span class="truncate">{{ $progress->group->classRoom->name }}</span>
-                                                @endif
-                                                @endif
-                                            </p>
+                                                    @endif
+                                                    @endif
+                                                </p>
                                             <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
                                                 <span>Minggu {{ $progress->week_number }}</span>
                                                 <span class="text-gray-400">•</span>
@@ -380,8 +380,8 @@
                             <svg class="w-5 h-5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
                             </svg>
-                            Target Mingguan Terbaru
-                        </h3>
+                        Target Mingguan Terbaru
+                    </h3>
                         <p class="text-xs text-gray-600 mt-1">10 target terbaru</p>
                     </div>
                     <a href="{{ route('targets.index') }}" 
@@ -481,7 +481,7 @@
                                                     </svg>
                                                     <div>
                                                         <p class="text-sm font-medium">Selesai</p>
-                                                        <p class="text-xs text-gray-500">{{ $target->completed_at->diffForHumans() }}</p>
+                                                <p class="text-xs text-gray-500">{{ $target->completed_at->diffForHumans() }}</p>
                                                     </div>
                                                 </div>
                                             @else
@@ -490,8 +490,8 @@
                                                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
                                                     </svg>
                                                     <div>
-                                                        <p class="text-sm text-gray-600">Dibuat</p>
-                                                        <p class="text-xs text-gray-500">{{ $target->created_at->diffForHumans() }}</p>
+                                                <p class="text-sm text-gray-600">Dibuat</p>
+                                                <p class="text-xs text-gray-500">{{ $target->created_at->diffForHumans() }}</p>
                                                     </div>
                                                 </div>
                                             @endif
@@ -534,16 +534,16 @@
                                 <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                 </svg>
-                            </div>
+                        </div>
                             <div class="flex-1">
                                 <h3 class="font-bold text-gray-900 mb-1 group-hover:text-green-600 transition-colors">Input Nilai</h3>
-                                <p class="text-sm text-gray-600">Berikan nilai kelompok</p>
+                            <p class="text-sm text-gray-600">Berikan nilai kelompok</p>
                             </div>
                             <svg class="w-5 h-5 text-gray-400 group-hover:text-green-600 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                             </svg>
-                        </div>
-                    </a>
+                    </div>
+                </a>
 
                     <!-- Action 2 -->
                     <a href="{{ route('scores.index') }}" 
@@ -554,16 +554,16 @@
                                 <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                 </svg>
-                            </div>
+                        </div>
                             <div class="flex-1">
                                 <h3 class="font-bold text-gray-900 mb-1 group-hover:text-yellow-600 transition-colors">Lihat Ranking</h3>
-                                <p class="text-sm text-gray-600">Monitor peringkat</p>
+                            <p class="text-sm text-gray-600">Monitor peringkat</p>
                             </div>
                             <svg class="w-5 h-5 text-gray-400 group-hover:text-yellow-600 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                             </svg>
-                        </div>
-                    </a>
+                    </div>
+                </a>
 
                     <!-- Action 3 -->
                     <a href="{{ route('groups.index') }}" 
@@ -574,17 +574,17 @@
                                 <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
                                 </svg>
-                            </div>
+                        </div>
                             <div class="flex-1">
                                 <h3 class="font-bold text-gray-900 mb-1 group-hover:text-red-600 transition-colors">Lihat Kelompok</h3>
-                                <p class="text-sm text-gray-600">Monitor kelompok</p>
+                            <p class="text-sm text-gray-600">Monitor kelompok</p>
                             </div>
                             <svg class="w-5 h-5 text-gray-400 group-hover:text-red-600 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                             </svg>
                         </div>
                     </a>
-                </div>
+                    </div>
             </div>
 
         </div>

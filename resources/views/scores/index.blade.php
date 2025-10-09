@@ -91,58 +91,94 @@
                 </div>
             </div>
 
-            <!-- Best Students & Groups Per Class -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                <!-- Best Students Per Class -->
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                    <div class="p-6 bg-white border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">
-                            <i class="fas fa-user-graduate mr-2 text-primary-500"></i>Mahasiswa Terbaik Per Kelas
-                        </h3>
-
+            <!-- Best Students & Groups - Progressive Disclosure with Tabs -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 mb-6">
+                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 px-6 py-4 border-b border-indigo-200">
+                    <h3 class="font-bold text-gray-900 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                        Top Performers
+                    </h3>
+                    <p class="text-xs text-gray-600 mt-1">Mahasiswa & kelompok terbaik per kelas</p>
+                </div>
+                
+                <!-- Tabs Navigation - Hick's Law: Simple choice -->
+                <div class="flex border-b border-gray-200 bg-gray-50">
+                    <button onclick="showTab('students')" id="tab-students" class="tab-button active flex-1 px-6 py-3 text-sm font-semibold transition-all duration-200 border-b-2">
+                        <div class="flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+                            </svg>
+                            <span>Mahasiswa Terbaik</span>
+                        </div>
+                    </button>
+                    <button onclick="showTab('groups')" id="tab-groups" class="tab-button flex-1 px-6 py-3 text-sm font-semibold transition-all duration-200 border-b-2">
+                        <div class="flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+                            </svg>
+                            <span>Kelompok Terbaik</span>
+                        </div>
+                    </button>
+                </div>
+                
+                <!-- Tab Content -->
+                <div class="p-6">
+                    <!-- Students Tab Content -->
+                    <div id="content-students" class="tab-content">
                         @if(count($bestStudentsPerClass) > 0)
-                            <div class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 @foreach($bestStudentsPerClass as $classData)
-                                    <div class="border border-gray-200 rounded-lg p-4">
-                                        <div class="flex items-center justify-between mb-3">
-                                            <h4 class="font-semibold text-gray-800">{{ $classData['class_room']->name }}</h4>
-                                            <span class="text-sm text-gray-500">{{ $classData['class_room']->code }}</span>
+                                    <div class="border border-gray-200 rounded-xl p-4 bg-gradient-to-br from-white to-blue-50 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center justify-between mb-3 pb-3 border-b border-gray-200">
+                                            <h4 class="font-semibold text-gray-900">{{ $classData['class_room']->name }}</h4>
+                                            <span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full font-semibold">{{ $classData['class_room']->code }}</span>
                                         </div>
                                         
                                         <div class="space-y-2">
                                             @foreach($classData['top_students'] as $index => $studentData)
-                                                <div class="flex items-center justify-between p-2 rounded-lg 
+                                                <div class="flex items-center justify-between p-3 rounded-lg 
                                                     @if($index == 0) bg-yellow-50 border border-yellow-200
                                                     @elseif($index == 1) bg-gray-50 border border-gray-200
                                                     @elseif($index == 2) bg-orange-50 border border-orange-200
-                                                    @else bg-primary-50 border border-primary-200
+                                                    @else bg-blue-50 border border-blue-100
                                                     @endif">
-                                                    <div class="flex items-center">
-                                                        <div class="flex-shrink-0 mr-3">
+                                                    <div class="flex items-center flex-1 min-w-0 gap-2">
+                                                        <div class="flex-shrink-0">
                                                             @if($index == 0)
-                                                                <i class="fas fa-crown text-yellow-500 text-lg"></i>
+                                                                <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                                </svg>
                                                             @elseif($index == 1)
-                                                                <i class="fas fa-medal text-gray-500 text-lg"></i>
+                                                                <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                                </svg>
                                                             @elseif($index == 2)
-                                                                <i class="fas fa-medal text-orange-500 text-lg"></i>
+                                                                <svg class="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                                </svg>
                                                             @else
-                                                                <span class="flex items-center justify-center w-6 h-6 bg-primary-100 text-primary-600 rounded-full text-xs font-bold">
+                                                                <span class="flex items-center justify-center w-5 h-5 bg-blue-100 text-blue-600 rounded-full text-xs font-bold">
                                                                     {{ $index + 1 }}
                                                                 </span>
                                                             @endif
                                                         </div>
-                                                        <div class="flex-1">
-                                                            <div class="text-sm font-medium text-gray-900">{{ $studentData['student']->name }}</div>
+                                                        <div class="flex-1 min-w-0">
+                                                            <div class="text-sm font-medium text-gray-900 truncate">{{ $studentData['student']->name }}</div>
                                                             <div class="text-xs text-gray-500">{{ $studentData['student']->politala_id }}</div>
-                                                            <div class="text-xs text-primary-600">
-                                                                <i class="fas fa-users mr-1"></i>{{ $studentData['group']->name }}
+                                                            <div class="text-xs text-primary-600 flex items-center gap-1 mt-0.5">
+                                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+                                                                </svg>
+                                                                {{ $studentData['group']->name }}
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="text-right">
+                                                    <div class="text-right ml-2">
                                                         <div class="text-sm font-bold 
                                                             @if($studentData['final_score'] >= 80) text-green-600
-                                                            @elseif($studentData['final_score'] >= 70) text-primary-600
+                                                            @elseif($studentData['final_score'] >= 70) text-blue-600
                                                             @elseif($studentData['final_score'] >= 60) text-yellow-600
                                                             @else text-red-600
                                                             @endif">
@@ -157,72 +193,80 @@
                                 @endforeach
                             </div>
                         @else
-                            <div class="text-center py-8">
-                                <div class="text-gray-400 mb-4">
-                                    <i class="fas fa-user-graduate text-4xl"></i>
+                            <div class="text-center py-12">
+                                <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+                                    <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+                                    </svg>
                                 </div>
                                 <p class="text-gray-500 text-sm">Belum ada data mahasiswa tersedia</p>
                             </div>
                         @endif
                     </div>
-                </div>
-
-                <!-- Best Groups Per Class -->
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                    <div class="p-6 bg-white border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">
-                            <i class="fas fa-users mr-2 text-green-500"></i>Kelompok Terbaik Per Kelas
-                        </h3>
-
+                    
+                    <!-- Groups Tab Content -->
+                    <div id="content-groups" class="tab-content hidden">
                         @if(count($bestGroupsPerClass) > 0)
-                            <div class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 @foreach($bestGroupsPerClass as $classData)
-                                    <div class="border border-gray-200 rounded-lg p-4">
-                                        <div class="flex items-center justify-between mb-3">
-                                            <h4 class="font-semibold text-gray-800">{{ $classData['class_room']->name }}</h4>
-                                            <span class="text-sm text-gray-500">{{ $classData['class_room']->code }}</span>
+                                    <div class="border border-gray-200 rounded-xl p-4 bg-gradient-to-br from-white to-green-50 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center justify-between mb-3 pb-3 border-b border-gray-200">
+                                            <h4 class="font-semibold text-gray-900">{{ $classData['class_room']->name }}</h4>
+                                            <span class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full font-semibold">{{ $classData['class_room']->code }}</span>
                                         </div>
                                         
                                         <div class="space-y-2">
                                             @foreach($classData['top_groups'] as $index => $groupData)
-                                                <div class="flex items-center justify-between p-2 rounded-lg 
+                                                <div class="flex items-center justify-between p-3 rounded-lg 
                                                     @if($index == 0) bg-yellow-50 border border-yellow-200
                                                     @elseif($index == 1) bg-gray-50 border border-gray-200
                                                     @elseif($index == 2) bg-orange-50 border border-orange-200
-                                                    @else bg-primary-50 border border-primary-200
+                                                    @else bg-green-50 border border-green-100
                                                     @endif">
-                                                    <div class="flex items-center">
-                                                        <div class="flex-shrink-0 mr-3">
+                                                    <div class="flex items-center flex-1 min-w-0 gap-2">
+                                                        <div class="flex-shrink-0">
                                                             @if($index == 0)
-                                                                <i class="fas fa-trophy text-yellow-500 text-lg"></i>
+                                                                <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                                </svg>
                                                             @elseif($index == 1)
-                                                                <i class="fas fa-medal text-gray-500 text-lg"></i>
+                                                                <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                                </svg>
                                                             @elseif($index == 2)
-                                                                <i class="fas fa-medal text-orange-500 text-lg"></i>
+                                                                <svg class="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                                </svg>
                                                             @else
-                                                                <span class="flex items-center justify-center w-6 h-6 bg-primary-100 text-primary-600 rounded-full text-xs font-bold">
+                                                                <span class="flex items-center justify-center w-5 h-5 bg-green-100 text-green-600 rounded-full text-xs font-bold">
                                                                     {{ $index + 1 }}
                                                                 </span>
                                                             @endif
                                                         </div>
-                                                        <div class="flex-1">
-                                                            <div class="text-sm font-medium text-gray-900">{{ $groupData['group']->name }}</div>
+                                                        <div class="flex-1 min-w-0">
+                                                            <div class="text-sm font-medium text-gray-900 truncate">{{ $groupData['group']->name }}</div>
                                                             @if($groupData['group']->leader)
-                                                            <div class="text-xs text-gray-500">
-                                                                <i class="fas fa-user-tie mr-1"></i>{{ $groupData['group']->leader->name }}
+                                                            <div class="text-xs text-gray-500 flex items-center gap-1">
+                                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                                                                </svg>
+                                                                {{ $groupData['group']->leader->name }}
                                                             </div>
                                                             @endif
                                                             @if(isset($groupData['completion_rate']))
-                                                            <div class="text-xs text-primary-600">
-                                                                <i class="fas fa-tasks mr-1"></i>{{ round($groupData['completion_rate'], 1) }}% progres
+                                                            <div class="text-xs text-primary-600 flex items-center gap-1 mt-0.5">
+                                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                                                </svg>
+                                                                {{ round($groupData['completion_rate'], 1) }}% progres
                                                             </div>
                                                             @endif
                                                         </div>
                                                     </div>
-                                                    <div class="text-right">
+                                                    <div class="text-right ml-2">
                                                         <div class="text-sm font-bold 
                                                             @if($groupData['total_score'] >= 80) text-green-600
-                                                            @elseif($groupData['total_score'] >= 70) text-primary-600
+                                                            @elseif($groupData['total_score'] >= 70) text-blue-600
                                                             @elseif($groupData['total_score'] >= 60) text-yellow-600
                                                             @else text-red-600
                                                             @endif">
@@ -237,9 +281,11 @@
                                 @endforeach
                             </div>
                         @else
-                            <div class="text-center py-8">
-                                <div class="text-gray-400 mb-4">
-                                    <i class="fas fa-users text-4xl"></i>
+                            <div class="text-center py-12">
+                                <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                                    <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+                                    </svg>
                                 </div>
                                 <p class="text-gray-500 text-sm">Belum ada data kelompok tersedia</p>
                             </div>
@@ -424,4 +470,68 @@
             </div>
         </div>
     </div>
+
+    <!-- Tab Switching Script -->
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active', 'text-primary-600', 'border-primary-600', 'bg-white');
+                button.classList.add('text-gray-600', 'border-transparent', 'hover:text-gray-900', 'hover:border-gray-300');
+            });
+            
+            // Show selected tab content
+            document.getElementById('content-' + tabName).classList.remove('hidden');
+            
+            // Add active class to selected tab
+            const activeTab = document.getElementById('tab-' + tabName);
+            activeTab.classList.remove('text-gray-600', 'border-transparent', 'hover:text-gray-900', 'hover:border-gray-300');
+            activeTab.classList.add('active', 'text-primary-600', 'border-primary-600', 'bg-white');
+        }
+        
+        // Initialize first tab as active
+        document.addEventListener('DOMContentLoaded', function() {
+            showTab('students');
+        });
+    </script>
+
+    <!-- Tab Styles -->
+    <style>
+        .tab-button {
+            position: relative;
+        }
+        
+        .tab-button.active {
+            border-bottom-width: 2px;
+            margin-bottom: -2px;
+        }
+        
+        .tab-content {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .tab-button:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .tab-button.active:hover {
+            background-color: white;
+        }
+    </style>
 </x-app-layout>
