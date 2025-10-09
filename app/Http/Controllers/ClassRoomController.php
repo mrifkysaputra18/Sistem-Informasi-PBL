@@ -12,7 +12,7 @@ class ClassRoomController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ClassRoom::with('subject')->withCount('groups');
+        $query = ClassRoom::withCount('groups');
 
         // Filter by subject
         if ($request->has('subject_id') && $request->subject_id != '') {
@@ -36,7 +36,7 @@ class ClassRoomController extends Controller
         $classRooms = $query->orderBy('name')->paginate(10);
         
         // Get filter options
-        $subjects = Subject::orderBy('name')->get(); // Semua mata kuliah aktif
+        $subjects = Subject::orderBy('name')->get() ?? collect(); // Semua mata kuliah aktif
         $semesters = ClassRoom::distinct()->pluck('semester')->sort();
             
         return view('classrooms.index', compact('classRooms', 'subjects', 'semesters'));
@@ -57,6 +57,11 @@ class ClassRoomController extends Controller
      */
     public function create()
     {
+        // Only admin can create class rooms
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action. Hanya admin yang dapat membuat kelas.');
+        }
+
         $subjects = Subject::where('is_active', true)->orderBy('name')->get();
         $academicYears = AcademicYear::orderBy('start_date', 'desc')->get();
         $semesters = Semester::with('academicYear')->orderBy('academic_year_id', 'desc')->orderBy('number', 'asc')->get();
@@ -69,6 +74,11 @@ class ClassRoomController extends Controller
      */
     public function store(Request $request)
     {
+        // Only admin can store class rooms
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action. Hanya admin yang dapat membuat kelas.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:100',
             'code' => 'required|string|max:20|unique:class_rooms,code',
@@ -92,6 +102,11 @@ class ClassRoomController extends Controller
      */
     public function edit(ClassRoom $classRoom)
     {
+        // Only admin can edit class rooms
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action. Hanya admin yang dapat mengedit kelas.');
+        }
+
         $subjects = Subject::where('is_active', true)->orderBy('name')->get();
         $academicYears = AcademicYear::orderBy('start_date', 'desc')->get();
         $semesters = Semester::with('academicYear')->orderBy('academic_year_id', 'desc')->orderBy('number', 'asc')->get();
@@ -104,6 +119,11 @@ class ClassRoomController extends Controller
      */
     public function update(Request $request, ClassRoom $classRoom)
     {
+        // Only admin can update class rooms
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action. Hanya admin yang dapat mengupdate kelas.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:100',
             'code' => 'required|string|max:20|unique:class_rooms,code,' . $classRoom->id,
@@ -128,6 +148,11 @@ class ClassRoomController extends Controller
      */
     public function destroy(ClassRoom $classRoom)
     {
+        // Only admin can delete class rooms
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action. Hanya admin yang dapat menghapus kelas.');
+        }
+
         if ($classRoom->groups()->count() > 0) {
             return back()->with('error', 'Tidak dapat menghapus kelas yang masih memiliki kelompok!');
         }
