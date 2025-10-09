@@ -456,3 +456,33 @@ nav a[href][aria-current="page"]::before {
         border-bottom-color: rgba(55, 65, 81, 0.3);
     }
 }
+
+/* Shimmer Animation for Progress Bar */
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.animate-shimmer {
+    animation: shimmer 2s infinite;
+}
+
+/* Slide In Animation */
+@keyframes slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-slide-in {
+    animation: slide-in 0.4s ease-out;
+}

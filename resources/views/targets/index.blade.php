@@ -1,160 +1,264 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-white leading-tight">
-                {{ __('Kelola Target Mingguan') }}
-            </h2>
+        <!-- Law of Proximity & Visual Hierarchy -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="space-y-1">
+                <h2 class="font-bold text-2xl text-white leading-tight flex items-center gap-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                    </svg>
+                    Kelola Target Mingguan
+                </h2>
+                <p class="text-sm text-white/90">Monitoring dan kelola target mingguan kelompok</p>
+            </div>
+            
+            <!-- Fitts's Law: Larger, accessible action button -->
             @if(in_array(auth()->user()->role, ['dosen', 'admin']))
-            <a href="{{ route('targets.create') }}" class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded">
-                <i class="fas fa-plus mr-2"></i>Buat Target Baru
+            <a href="{{ route('targets.create') }}" 
+               class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-semibold py-2.5 px-4 rounded-lg border border-white/30 transition-all duration-200 hover:scale-105 hover:shadow-lg group">
+                <svg class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                <span>Buat Target Baru</span>
             </a>
             @endif
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <!-- Law of Symmetry: Balanced spacing -->
+    <div class="py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            
+            <!-- Feedback Visibility - Success/Error Messages -->
             @if(session('success'))
-            <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                {{ session('success') }}
+            <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-xl animate-slide-in shadow-md">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <p class="text-sm text-green-800 font-medium">{{ session('success') }}</p>
+                </div>
             </div>
             @endif
 
             @if(session('error'))
-            <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                {{ session('error') }}
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl animate-slide-in shadow-md">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-red-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    <p class="text-sm text-red-800 font-medium">{{ session('error') }}</p>
+                </div>
             </div>
             @endif
 
-            <!-- Submission Statistics -->
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-                <!-- Total Target -->
-                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-gray-400">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-600">Total Target</p>
-                            <p class="text-2xl font-bold text-gray-800">{{ $stats['total'] }}</p>
-                        </div>
-                        <div class="bg-gray-100 rounded-full p-3">
-                            <i class="fas fa-clipboard-list text-2xl text-gray-600"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sudah Submit -->
-                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-primary-400">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-600">Sudah Submit</p>
-                            <p class="text-2xl font-bold text-primary-800">{{ $stats['submitted'] }}</p>
-                        </div>
-                        <div class="bg-primary-100 rounded-full p-3">
-                            <i class="fas fa-check-circle text-2xl text-primary-600"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Disetujui -->
-                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-green-400">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-600">Disetujui</p>
-                            <p class="text-2xl font-bold text-green-800">{{ $stats['approved'] }}</p>
-                        </div>
-                        <div class="bg-green-100 rounded-full p-3">
-                            <i class="fas fa-check-double text-2xl text-green-600"></i>
+            <!-- Statistics Cards - Von Restorff Effect & Miller's Law (5 items) -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    Statistik Submission
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    
+                    <!-- Card 1: Total Target -->
+                    <div class="group relative bg-gradient-to-br from-gray-500 to-gray-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <div class="relative flex items-start justify-between">
+                            <div class="flex-1">
+                                <p class="text-gray-100 text-xs font-medium uppercase tracking-wider">Total Target</p>
+                                <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['total'] }}</p>
+                                <p class="text-xs text-gray-100 mt-2">Total keseluruhan</p>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Perlu Revisi -->
-                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-yellow-400">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-600">Perlu Revisi</p>
-                            <p class="text-2xl font-bold text-yellow-800">{{ $stats['revision'] }}</p>
-                        </div>
-                        <div class="bg-yellow-100 rounded-full p-3">
-                            <i class="fas fa-edit text-2xl text-yellow-600"></i>
+                    <!-- Card 2: Sudah Submit -->
+                    <div class="group relative bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <div class="relative flex items-start justify-between">
+                            <div class="flex-1">
+                                <p class="text-blue-100 text-xs font-medium uppercase tracking-wider">Sudah Submit</p>
+                                <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['submitted'] }}</p>
+                                <p class="text-xs text-blue-100 mt-2">Menunggu review</p>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Belum Submit -->
-                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-red-400">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-600">Belum Submit</p>
-                            <p class="text-2xl font-bold text-red-800">{{ $stats['pending'] + $stats['late'] }}</p>
+                    <!-- Card 3: Disetujui -->
+                    <div class="group relative bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <div class="relative flex items-start justify-between">
+                            <div class="flex-1">
+                                <p class="text-green-100 text-xs font-medium uppercase tracking-wider">Disetujui</p>
+                                <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['approved'] }}</p>
+                                <p class="text-xs text-green-100 mt-2">Sudah direview</p>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
                         </div>
-                        <div class="bg-red-100 rounded-full p-3">
-                            <i class="fas fa-hourglass-half text-2xl text-red-600"></i>
+                    </div>
+
+                    <!-- Card 4: Perlu Revisi - Von Restorff Effect -->
+                    <div class="group relative bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <div class="relative flex items-start justify-between">
+                            <div class="flex-1">
+                                <p class="text-yellow-100 text-xs font-medium uppercase tracking-wider">Perlu Revisi</p>
+                                <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['revision'] }}</p>
+                                <p class="text-xs text-yellow-100 mt-2">Butuh perbaikan</p>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 5: Belum Submit -->
+                    <div class="group relative bg-gradient-to-br from-red-500 to-red-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <div class="relative flex items-start justify-between">
+                            <div class="flex-1">
+                                <p class="text-red-100 text-xs font-medium uppercase tracking-wider">Belum Submit</p>
+                                <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['pending'] + $stats['late'] }}</p>
+                                <p class="text-xs text-red-100 mt-2">Pending & terlambat</p>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Progress Bar -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                <div class="flex items-center justify-between mb-2">
-                    <h3 class="text-sm font-semibold text-gray-700">Progress Submission</h3>
-                    <span class="text-sm font-bold text-gray-700">{{ $stats['submitted_percentage'] }}%</span>
+            <!-- Progress Bar - Feedback Visibility -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        <h3 class="text-sm font-bold text-gray-900">Progress Submission</h3>
+                    </div>
+                    <span class="text-2xl font-black bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">{{ $stats['submitted_percentage'] }}%</span>
                 </div>
-                <div class="w-full bg-gray-200 rounded-full h-4">
-                    <div class="bg-gradient-to-r from-blue-500 to-green-500 h-4 rounded-full transition-all duration-500" 
-                         style="width: {{ $stats['submitted_percentage'] }}%"></div>
+                <div class="relative w-full bg-gray-200 rounded-full h-6 overflow-hidden shadow-inner">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-500 via-indigo-500 to-green-500 h-6 rounded-full transition-all duration-700 ease-out shadow-lg" 
+                         style="width: {{ $stats['submitted_percentage'] }}%">
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
+                    </div>
                 </div>
-                <p class="text-xs text-gray-500 mt-2">
-                    {{ $stats['submitted'] + $stats['approved'] + $stats['revision'] }} dari {{ $stats['total'] }} kelompok sudah submit target
-                </p>
+                <div class="mt-3 flex items-center justify-between text-xs">
+                    <p class="text-gray-600 flex items-center gap-1">
+                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="font-semibold text-gray-900">{{ $stats['submitted'] + $stats['approved'] + $stats['revision'] }}</span> dari <span class="font-semibold text-gray-900">{{ $stats['total'] }}</span> kelompok sudah submit
+                    </p>
+                    @if($stats['pending'] + $stats['late'] > 0)
+                    <p class="text-red-600 flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="font-semibold">{{ $stats['pending'] + $stats['late'] }}</span> belum submit
+                    </p>
+                    @endif
+                </div>
             </div>
 
-            <!-- Filters -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <!-- Filters - Hick's Law: Organized choices -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <div class="flex items-center gap-2 mb-4">
+                    <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                    </svg>
+                    <h3 class="text-sm font-bold text-gray-900">Filter Data</h3>
+                </div>
                 <form method="GET" action="{{ route('targets.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <!-- Class Filter -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Kelas</label>
-                        <select name="class_room_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
-                            <option value="">Semua Kelas</option>
-                            @foreach($classRooms as $classRoom)
-                            <option value="{{ $classRoom->id }}" {{ request('class_room_id') == $classRoom->id ? 'selected' : '' }}>
-                                {{ $classRoom->name }}
-                            </option>
-                            @endforeach
-                        </select>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Kelas</label>
+                        <div class="relative">
+                            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                            </svg>
+                            <select name="class_room_id" class="w-full pl-10 pr-4 py-2.5 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200">
+                                <option value="">Semua Kelas</option>
+                                @foreach($classRooms as $classRoom)
+                                <option value="{{ $classRoom->id }}" {{ request('class_room_id') == $classRoom->id ? 'selected' : '' }}>
+                                    {{ $classRoom->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
 
                     <!-- Week Filter -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Minggu</label>
-                        <select name="week_number" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
-                            <option value="">Semua Minggu</option>
-                            @for($i = 1; $i <= 16; $i++)
-                            <option value="{{ $i }}" {{ request('week_number') == $i ? 'selected' : '' }}>
-                                Minggu {{ $i }}
-                            </option>
-                            @endfor
-                        </select>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Minggu</label>
+                        <div class="relative">
+                            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                            </svg>
+                            <select name="week_number" class="w-full pl-10 pr-4 py-2.5 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200">
+                                <option value="">Semua Minggu</option>
+                                @for($i = 1; $i <= 16; $i++)
+                                <option value="{{ $i }}" {{ request('week_number') == $i ? 'selected' : '' }}>
+                                    Minggu {{ $i }}
+                                </option>
+                                @endfor
+                            </select>
+                        </div>
                     </div>
 
                     <!-- Status Filter -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                        <select name="status" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
-                            <option value="">Semua Status</option>
-                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Belum Dikerjakan</option>
-                            <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>Sudah Submit</option>
-                            <option value="late" {{ request('status') == 'late' ? 'selected' : '' }}>Terlambat</option>
-                            <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
-                            <option value="revision" {{ request('status') == 'revision' ? 'selected' : '' }}>Perlu Revisi</option>
-                        </select>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
+                        <div class="relative">
+                            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <select name="status" class="w-full pl-10 pr-4 py-2.5 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200">
+                                <option value="">Semua Status</option>
+                                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Belum Dikerjakan</option>
+                                <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>Sudah Submit</option>
+                                <option value="late" {{ request('status') == 'late' ? 'selected' : '' }}>Terlambat</option>
+                                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
+                                <option value="revision" {{ request('status') == 'revision' ? 'selected' : '' }}>Perlu Revisi</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <!-- Submit Button -->
+                    <!-- Submit Button - Fitts's Law -->
                     <div class="flex items-end">
-                        <button type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white py-2 px-4 rounded-md">
-                            <i class="fas fa-search mr-2"></i>Filter
+                        <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold py-2.5 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            Filter
                         </button>
                     </div>
                 </form>
