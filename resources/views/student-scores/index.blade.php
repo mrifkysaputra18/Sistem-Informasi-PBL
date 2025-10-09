@@ -1,28 +1,43 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-white leading-tight">
-                @if(auth()->user()->isKoordinator())
-                    {{ __('Nilai Mahasiswa & Ranking') }}
-                @else
-                    {{ __('Manajemen Nilai Mahasiswa & Ranking (SAW)') }}
-                @endif
-            </h2>
-            <div class="flex gap-2">
+        <!-- Law of Proximity & Visual Hierarchy -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="space-y-1">
+                <h2 class="font-bold text-2xl text-white leading-tight flex items-center gap-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/>
+                    </svg>
+                    @if(auth()->user()->isKoordinator())
+                        Nilai Mahasiswa & Ranking
+                    @else
+                        Manajemen Nilai Mahasiswa & Ranking (SAW)
+                    @endif
+                </h2>
+                <p class="text-sm text-white/90">Monitoring dan kelola nilai mahasiswa dengan metode SAW</p>
+            </div>
+            
+            <!-- Fitts's Law: Larger, accessible action buttons -->
+            <div class="flex flex-wrap gap-2">
                 @if(auth()->user()->isDosen() || auth()->user()->isAdmin())
-                    <!-- Input Score -->
                     <a href="{{ route('student-scores.create') }}" 
-                       class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-                        <i class="fas fa-plus mr-2"></i>Input Nilai Mahasiswa
+                       class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-semibold py-2.5 px-4 rounded-lg border border-white/30 transition-all duration-200 hover:scale-105 hover:shadow-lg group">
+                        <svg class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                        <span>Input Nilai</span>
                     </a>
                     
-                    <!-- Recalculate Ranking -->
                     <form action="{{ route('student-scores.recalc') }}" method="POST" class="inline">
                         @csrf
                         <button type="submit" 
                                 onclick="return confirm('Hitung ulang ranking untuk semua mahasiswa?')"
-                                class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-                            <i class="fas fa-calculator mr-2"></i>Hitung Ulang Ranking
+                                class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-semibold py-2.5 px-4 rounded-lg border border-white/30 transition-all duration-200 hover:scale-105 hover:shadow-lg group">
+                            <svg class="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            <span>Hitung Ulang</span>
                         </button>
                     </form>
                 @endif
@@ -30,52 +45,70 @@
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Alert Success -->
+    <!-- Law of Symmetry: Balanced spacing -->
+    <div class="py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            
+            <!-- Feedback Visibility - Success Message -->
             @if(session('ok'))
-                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-r-lg shadow-md">
-                    <div class="flex items-center">
-                        <i class="fas fa-check-circle mr-2"></i>
-                        <span>{{ session('ok') }}</span>
-                    </div>
+            <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-xl animate-slide-in shadow-md">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <p class="text-sm text-green-800 font-medium">{{ session('ok') }}</p>
                 </div>
+            </div>
             @endif
 
-            <!-- SAW Method Info (Only for Admin and Dosen) -->
+            <!-- SAW Method Info (Only for Admin and Dosen) - Progressive Disclosure -->
             @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
-            <div class="mb-6 bg-gradient-to-r from-blue-50 to-primary-50 border-l-4 border-primary-600 p-6 rounded-r-xl shadow-lg">
-                <div class="flex items-start">
-                    <div class="flex-shrink-0">
-                        <div class="bg-primary-100 p-3 rounded-full">
-                            <i class="fas fa-graduation-cap text-primary-600 text-2xl"></i>
+            <div class="bg-gradient-to-r from-blue-50 via-indigo-50 to-primary-50 border-l-4 border-primary-600 rounded-r-2xl shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0">
+                            <div class="bg-gradient-to-br from-primary-500 to-primary-600 p-3 rounded-xl shadow-md">
+                                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
+                                </svg>
+                            </div>
                         </div>
-                    </div>
-                    <div class="ml-4 flex-1">
-                        <h3 class="text-lg font-bold text-primary-900 mb-2">
-                            Metode SAW (Simple Additive Weighting)
-                        </h3>
-                        <p class="text-sm text-primary-800 mb-3">
-                            Sistem ini menggunakan metode SAW untuk menghitung ranking mahasiswa secara otomatis dan objektif berdasarkan kriteria yang telah ditentukan.
-                        </p>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                            <div class="bg-white bg-opacity-50 p-3 rounded-lg">
-                                <div class="font-semibold text-primary-900 mb-1">
-                                    <i class="fas fa-check-circle mr-1"></i>Normalisasi Benefit
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
+                                Metode SAW (Simple Additive Weighting)
+                                <span class="text-xs px-2 py-0.5 bg-primary-100 text-primary-700 rounded-full font-semibold">Automatic</span>
+                            </h3>
+                            <p class="text-sm text-gray-700 mb-4">
+                                Sistem ini menggunakan metode SAW untuk menghitung ranking mahasiswa secara otomatis dan objektif berdasarkan kriteria yang telah ditentukan.
+                            </p>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <div class="bg-white/70 backdrop-blur-sm p-4 rounded-xl border border-primary-200 shadow-sm hover:shadow-md transition-shadow">
+                                    <div class="flex items-center gap-2 font-semibold text-gray-900 mb-2">
+                                        <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <span class="text-sm">Normalisasi Benefit</span>
+                                    </div>
+                                    <div class="text-sm text-gray-600 font-mono bg-gray-50 px-2 py-1 rounded">r<sub>ij</sub> = x<sub>ij</sub> / max(x<sub>ij</sub>)</div>
                                 </div>
-                                <div class="text-primary-700">r<sub>ij</sub> = x<sub>ij</sub> / max(x<sub>ij</sub>)</div>
-                            </div>
-                            <div class="bg-white bg-opacity-50 p-3 rounded-lg">
-                                <div class="font-semibold text-primary-900 mb-1">
-                                    <i class="fas fa-times-circle mr-1"></i>Normalisasi Cost
+                                <div class="bg-white/70 backdrop-blur-sm p-4 rounded-xl border border-orange-200 shadow-sm hover:shadow-md transition-shadow">
+                                    <div class="flex items-center gap-2 font-semibold text-gray-900 mb-2">
+                                        <svg class="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <span class="text-sm">Normalisasi Cost</span>
+                                    </div>
+                                    <div class="text-sm text-gray-600 font-mono bg-gray-50 px-2 py-1 rounded">r<sub>ij</sub> = min(x<sub>ij</sub>) / x<sub>ij</sub></div>
                                 </div>
-                                <div class="text-primary-700">r<sub>ij</sub> = min(x<sub>ij</sub>) / x<sub>ij</sub></div>
-                            </div>
-                            <div class="bg-white bg-opacity-50 p-3 rounded-lg">
-                                <div class="font-semibold text-primary-900 mb-1">
-                                    <i class="fas fa-calculator mr-1"></i>Nilai Preferensi
+                                <div class="bg-white/70 backdrop-blur-sm p-4 rounded-xl border border-blue-200 shadow-sm hover:shadow-md transition-shadow">
+                                    <div class="flex items-center gap-2 font-semibold text-gray-900 mb-2">
+                                        <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+                                        </svg>
+                                        <span class="text-sm">Nilai Preferensi</span>
+                                    </div>
+                                    <div class="text-sm text-gray-600 font-mono bg-gray-50 px-2 py-1 rounded">V<sub>i</sub> = Σ(w<sub>j</sub> × r<sub>ij</sub>)</div>
                                 </div>
-                                <div class="text-primary-700">V<sub>i</sub> = Σ(w<sub>j</sub> × r<sub>ij</sub>)</div>
                             </div>
                         </div>
                     </div>
@@ -83,52 +116,85 @@
             </div>
             @endif
 
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-xl shadow-lg text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-primary-100 text-sm font-medium">Total Mahasiswa</p>
-                            <p class="text-3xl font-bold">{{ $students->count() }}</p>
-                        </div>
-                        <div class="bg-primary-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-user-graduate text-2xl"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-gradient-to-r from-green-500 to-green-600 p-6 rounded-xl shadow-lg text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-green-100 text-sm font-medium">Kriteria Mahasiswa</p>
-                            <p class="text-3xl font-bold">{{ $criteria->count() }}</p>
-                        </div>
-                        <div class="bg-green-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-list-check text-2xl"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-gradient-to-r from-secondary-500 to-secondary-600 p-6 rounded-xl shadow-lg text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-secondary-100 text-sm font-medium">Total Nilai</p>
-                            <p class="text-3xl font-bold">{{ $scores->count() }}</p>
-                        </div>
-                        <div class="bg-secondary-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-star text-2xl"></i>
+            <!-- Statistics Cards - Von Restorff Effect & Miller's Law (4 items) -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    Statistik Nilai Mahasiswa
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    
+                    <!-- Card 1: Total Mahasiswa -->
+                    <div class="group relative bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <div class="relative flex items-start justify-between">
+                            <div class="flex-1">
+                                <p class="text-blue-100 text-xs font-medium uppercase tracking-wider">Total Mahasiswa</p>
+                                <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $students->count() }}</p>
+                                <p class="text-xs text-blue-100 mt-2">Mahasiswa terdaftar</p>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+                                </svg>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="bg-gradient-to-r from-orange-500 to-orange-600 p-6 rounded-xl shadow-lg text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-orange-100 text-sm font-medium">Rata-rata Skor</p>
-                            <p class="text-3xl font-bold">{{ number_format($averageScore, 1) }}</p>
+                    <!-- Card 2: Kriteria Mahasiswa -->
+                    <div class="group relative bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <div class="relative flex items-start justify-between">
+                            <div class="flex-1">
+                                <p class="text-green-100 text-xs font-medium uppercase tracking-wider">Kriteria Mahasiswa</p>
+                                <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $criteria->count() }}</p>
+                                <p class="text-xs text-green-100 mt-2">Kriteria penilaian</p>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
                         </div>
-                        <div class="bg-orange-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-chart-line text-2xl"></i>
+                    </div>
+
+                    <!-- Card 3: Total Nilai -->
+                    <div class="group relative bg-gradient-to-br from-red-500 to-red-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <div class="relative flex items-start justify-between">
+                            <div class="flex-1">
+                                <p class="text-red-100 text-xs font-medium uppercase tracking-wider">Total Nilai</p>
+                                <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $scores->count() }}</p>
+                                <p class="text-xs text-red-100 mt-2">Nilai tersimpan</p>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Rata-rata Skor -->
+                    <div class="group relative bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <div class="relative flex items-start justify-between">
+                            <div class="flex-1">
+                                <p class="text-orange-100 text-xs font-medium uppercase tracking-wider">Rata-rata Skor</p>
+                                <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ number_format($averageScore, 1) }}</p>
+                                <p class="text-xs text-orange-100 mt-2">Skor keseluruhan</p>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+                                </svg>
+                            </div>
                         </div>
                     </div>
                 </div>
