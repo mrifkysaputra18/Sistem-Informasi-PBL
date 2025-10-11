@@ -1,147 +1,104 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div>
-                <p class="text-xs uppercase tracking-widest text-primary-100 font-semibold">
-                    Navigasi Koordinator
-                </p>
-                <h1 class="text-2xl font-bold text-white leading-tight">
-                    {{ __('Kurasi Kelas & Kelompok') }}
-                </h1>
-                <p class="text-primary-50/90 text-sm mt-1">
-                    Kelola kelas aktif, monitor kapasitas kelompok, dan arahkan dosen dengan cepat.
-                </p>
-            </div>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-white leading-tight">
+                {{ __('Manajemen Kelas') }}
+            </h2>
             @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
             <a href="{{ route('classrooms.create') }}" 
-               class="inline-flex items-center justify-center gap-2 bg-white text-primary-600 font-semibold px-4 py-2 rounded-xl shadow-md hover:shadow-xl hover:bg-primary-50 transition-all duration-200">
-                <i class="fas fa-plus-circle"></i>
-                <span>Buat Kelas Baru</span>
+               class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                <i class="fas fa-plus mr-2"></i>Tambah Kelas
             </a>
             @endif
         </div>
     </x-slot>
 
-    <div class="py-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Alert Success -->
             @if(session('success'))
-                <div class="rounded-xl border border-green-200 bg-green-50/70 px-4 py-3 text-sm text-green-800 flex items-start gap-3 shadow-sm">
-                    <span class="mt-0.5">
-                        <i class="fas fa-check-circle"></i>
-                    </span>
-                    <span>{{ session('success') }}</span>
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-r-lg shadow-md">
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        <span>{{ session('success') }}</span>
+                    </div>
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="rounded-xl border border-red-200 bg-red-50/80 px-4 py-3 text-sm text-red-800 flex items-start gap-3 shadow-sm">
-                    <span class="mt-0.5">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </span>
-                    <span>{{ session('error') }}</span>
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-r-lg shadow-md">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        <span>{{ session('error') }}</span>
+                    </div>
                 </div>
             @endif
 
-            <!-- Insight Tiles -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                @php
-                    $insights = [
-                        [
-                            'label' => 'Total Kelas',
-                            'value' => number_format($stats['total_classes']),
-                            'icon' => 'fa-school',
-                            'color' => 'primary',
-                        ],
-                        [
-                            'label' => 'Kelas Aktif',
-                            'value' => number_format($stats['active_classes']),
-                            'icon' => 'fa-bolt',
-                            'color' => 'emerald',
-                        ],
-                        [
-                            'label' => 'Total Kelompok',
-                            'value' => number_format($stats['total_groups']),
-                            'icon' => 'fa-users',
-                            'color' => 'secondary',
-                        ],
-                        [
-                            'label' => 'Rata-rata Terisi',
-                            'value' => $stats['average_fill'] . '%',
-                            'icon' => 'fa-chart-line',
-                            'color' => 'slate',
-                        ],
-                    ];
-
-                    $colorClasses = [
-                        'primary' => 'bg-white text-primary-800 border border-primary-100',
-                        'emerald' => 'bg-white text-emerald-700 border border-emerald-100',
-                        'secondary' => 'bg-white text-secondary-700 border border-secondary-100',
-                        'slate' => 'bg-white text-slate-700 border border-slate-100',
-                    ];
-
-                    $iconPills = [
-                        'primary' => 'bg-primary-50 text-primary-500',
-                        'emerald' => 'bg-emerald-50 text-emerald-500',
-                        'secondary' => 'bg-secondary-50 text-secondary-500',
-                        'slate' => 'bg-slate-100 text-slate-500',
-                    ];
-                @endphp
-
-                @foreach($insights as $insight)
-                    <div class="rounded-2xl {{ $colorClasses[$insight['color']] }} p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <p class="text-xs font-semibold uppercase tracking-wide text-gray-400">
-                                    {{ $insight['label'] }}
-                                </p>
-                                <p class="text-3xl font-bold mt-2 text-gray-900">
-                                    {{ $insight['value'] }}
-                                </p>
-                            </div>
-                            <span class="rounded-xl px-3 py-2 {{ $iconPills[$insight['color']] }}">
-                                <i class="fas {{ $insight['icon'] }} text-lg"></i>
-                            </span>
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-xl shadow-lg text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-primary-100 text-sm font-medium">Total Kelas</p>
+                            <p class="text-3xl font-bold">{{ $stats['total_classes'] }}</p>
+                        </div>
+                        <div class="bg-primary-400 bg-opacity-50 p-3 rounded-full">
+                            <i class="fas fa-school text-2xl"></i>
                         </div>
                     </div>
-                @endforeach
+                </div>
+                
+                <div class="bg-gradient-to-r from-green-500 to-green-600 p-6 rounded-xl shadow-lg text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-green-100 text-sm font-medium">Kelas Aktif</p>
+                            <p class="text-3xl font-bold">{{ $stats['active_classes'] }}</p>
+                        </div>
+                        <div class="bg-green-400 bg-opacity-50 p-3 rounded-full">
+                            <i class="fas fa-bolt text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-r from-secondary-500 to-secondary-600 p-6 rounded-xl shadow-lg text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-secondary-100 text-sm font-medium">Total Kelompok</p>
+                            <p class="text-3xl font-bold">{{ $stats['total_groups'] }}</p>
+                        </div>
+                        <div class="bg-secondary-400 bg-opacity-50 p-3 rounded-full">
+                            <i class="fas fa-users text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-orange-500 to-orange-600 p-6 rounded-xl shadow-lg text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-orange-100 text-sm font-medium">Rata-rata Terisi</p>
+                            <p class="text-3xl font-bold">{{ $stats['average_fill'] }}%</p>
+                        </div>
+                        <div class="bg-orange-400 bg-opacity-50 p-3 rounded-full">
+                            <i class="fas fa-chart-line text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Filter Panel -->
-            <div class="rounded-2xl bg-white shadow-md border border-gray-100 p-6 space-y-5">
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                    <div>
-                        <h2 class="text-base font-semibold text-gray-900">Filter kelas</h2>
-                        <p class="text-xs text-gray-500 mt-1">
-                            Saring data seperlunya agar daftar tetap fokus.
-                        </p>
-                    </div>
-                    @if(request()->hasAny(['search','subject_id','semester']))
-                        <a href="{{ route('classrooms.index') }}"
-                           class="inline-flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-primary-600 transition-colors">
-                            <i class="fas fa-undo-alt"></i>
-                            Reset filter
-                        </a>
-                    @endif
-                </div>
-                <form method="GET" action="{{ route('classrooms.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="col-span-1 md:col-span-2">
-                        <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">
-                            Cari kelas
-                        </label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-3 flex items-center text-gray-400">
-                                <i class="fas fa-search"></i>
-                            </span>
-                            <input type="text"
-                                   name="search"
-                                   value="{{ request('search') }}"
-                                   placeholder="Nama atau kode kelas..."
-                                   class="pl-10 pr-4 py-2.5 w-full rounded-xl border border-gray-200 focus:border-primary-400 focus:ring-1 focus:ring-primary-200 transition-all">
-                        </div>
+            <!-- Filter Section -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <form method="GET" action="{{ route('classrooms.index') }}" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Cari Kelas</label>
+                        <input type="text"
+                               name="search"
+                               value="{{ request('search') }}"
+                               placeholder="Nama atau kode kelas..."
+                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-500 focus:ring-secondary-500">
                     </div>
                     <div>
-                        <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">Mata kuliah</label>
-                        <select name="subject_id" class="w-full rounded-xl border border-gray-200 py-2.5 px-3 focus:border-secondary-400 focus:ring-1 focus:ring-secondary-200 transition-all">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Mata Kuliah</label>
+                        <select name="subject_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-500 focus:ring-secondary-500">
                             <option value="">Semua Mata Kuliah</option>
                             @foreach($subjects as $subject)
                                 <option value="{{ $subject->id }}" {{ request('subject_id') == $subject->id ? 'selected' : '' }}>
@@ -151,8 +108,8 @@
                         </select>
                     </div>
                     <div>
-                        <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">Semester</label>
-                        <select name="semester" class="w-full rounded-xl border border-gray-200 py-2.5 px-3 focus:border-secondary-400 focus:ring-1 focus:ring-secondary-200 transition-all">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Semester</label>
+                        <select name="semester" class="w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-500 focus:ring-secondary-500">
                             <option value="">Semua Semester</option>
                             @foreach($semesters as $semester)
                                 <option value="{{ $semester }}" {{ request('semester') == $semester ? 'selected' : '' }}>
@@ -161,106 +118,147 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="md:col-span-4 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2">
-                        <button type="submit" class="inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all duration-200">
-                            <i class="fas fa-filter"></i>
-                            Terapkan filter
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <select name="is_active" class="w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-500 focus:ring-secondary-500">
+                            <option value="">Semua Status</option>
+                            <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Aktif</option>
+                            <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Tidak Aktif</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <button type="submit" class="bg-secondary-500 hover:bg-secondary-600 text-white py-2 px-6 rounded-md">
+                            <i class="fas fa-filter mr-2"></i>Filter
                         </button>
+                        @if(request()->hasAny(['search','subject_id','semester','is_active']))
+                            <a href="{{ route('classrooms.index') }}"
+                               class="bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-md transition">
+                                <i class="fas fa-undo"></i>
+                            </a>
+                        @endif
                     </div>
                 </form>
             </div>
 
-            <!-- Class List -->
-            <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-lg font-semibold text-gray-900">Daftar Kelas</h2>
-                    <p class="text-sm text-gray-500">
-                        {{ __('Fitts’s Law: setiap kartu dapat diklik untuk aksi utama.') }}
-                    </p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-                    @forelse($classRooms as $classRoom)
-                        @php
-                            $fillPercentage = $classRoom->max_groups > 0
-                                ? min(100, max(0, ($classRoom->groups_count / $classRoom->max_groups) * 100))
-                                : 0;
-                        @endphp
-                        <div class="group relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 shadow hover:shadow-lg transition-all duration-200">
-                            <div class="flex items-start justify-between gap-4">
-                                <div>
-                                    <p class="text-xs uppercase tracking-widest text-gray-400">Kode Kelas</p>
-                                    <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ $classRoom->name }}</h3>
-                                    <p class="text-sm text-gray-500">{{ $classRoom->code }}</p>
-                                </div>
-                                <span class="px-3 py-1 text-xs font-semibold rounded-full {{ $classRoom->is_active ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-gray-100 text-gray-600 border border-gray-200' }}">
-                                    {{ $classRoom->is_active ? 'Aktif' : 'Tidak Aktif' }}
-                                </span>
-                            </div>
-
-                            <div class="mt-5 space-y-4">
-                                <div class="flex items-center justify-between text-sm">
-                                    <span class="text-gray-500">Kelompok Terdaftar</span>
-                                    <span class="font-semibold text-gray-800">{{ $classRoom->groups_count }} / {{ $classRoom->max_groups }}</span>
-                                </div>
-                                <div class="w-full h-2 rounded-full bg-gray-100 overflow-hidden">
-                                    <div class="h-full rounded-full bg-primary-500 transition-all duration-500" style="width: {{ $fillPercentage }}%"></div>
-                                </div>
-                                <div class="flex items-center justify-between text-xs text-gray-400">
-                                    <span>Progres kapasitas</span>
-                                    <span>{{ round($fillPercentage) }}%</span>
-                                </div>
-                            </div>
-
-                            <div class="mt-6 space-y-2">
-                                <a href="{{ route('groups.index', ['classroom' => $classRoom->id]) }}"
-                                   class="flex items-center justify-center gap-2 rounded-xl bg-secondary-500 hover:bg-secondary-600 text-white font-semibold py-2.5 transition-all duration-200 shadow">
-                                    <i class="fas fa-users"></i>
-                                    Lihat Kelompok ({{ $classRoom->groups_count }})
-                                </a>
-
-                                @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <a href="{{ url('/classrooms/' . $classRoom->id . '/edit') }}"
-                                           class="inline-flex items-center justify-center gap-2 rounded-xl bg-yellow-50 text-yellow-700 border border-yellow-100 py-2 text-sm font-medium hover:bg-yellow-100 transition">
-                                            <i class="fas fa-edit"></i>Edit
-                                        </a>
-                                        <button type="button"
-                                                onclick="deleteClass({{ $classRoom->id }}, '{{ addslashes($classRoom->name) }}')"
-                                                class="inline-flex items-center justify-center gap-2 rounded-xl bg-red-50 text-red-600 border border-red-100 py-2 text-sm font-medium hover:bg-red-100 transition">
-                                            <i class="fas fa-trash-alt"></i>Hapus
-                                        </button>
-                                    </div>
-                                @endif
-                            </div>
+            <!-- Main Content Card -->
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+                <div class="p-6 bg-white border-b border-gray-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">
+                            <i class="fas fa-table mr-2 text-gray-600"></i>Daftar Kelas
+                        </h3>
+                        <div class="text-sm text-gray-600">
+                            Showing {{ $classRooms->count() }} of {{ $classRooms->total() }} entries
                         </div>
-                    @empty
-                        <div class="col-span-full">
-                            <div class="rounded-2xl border border-dashed border-gray-200 bg-white p-10 text-center shadow-sm">
-                                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary-50 text-primary-500">
-                                    <i class="fas fa-layer-group text-2xl"></i>
-                                </div>
-                                <h3 class="text-lg font-semibold text-gray-800">Belum ada kelas</h3>
-                                <p class="text-sm text-gray-500 mt-2">
-                                    Gunakan tombol aksi utama untuk menambahkan kelas pertama Anda.
-                                </p>
-                                @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
-                                    <a href="{{ route('classrooms.create') }}"
-                                       class="inline-flex items-center justify-center gap-2 mt-4 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl shadow-md transition-all">
-                                        <i class="fas fa-plus"></i>
-                                        Tambah Kelas Sekarang
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-                    @endforelse
-                </div>
-
-                @if($classRooms->hasPages())
-                    <div class="pt-4">
-                        {{ $classRooms->onEachSide(1)->links() }}
                     </div>
-                @endif
+
+                    @if($classRooms->count() > 0)
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <i class="fas fa-hashtag mr-1"></i>No
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <i class="fas fa-school mr-1"></i>Nama Kelas
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <i class="fas fa-code mr-1"></i>Kode
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <i class="fas fa-book mr-1"></i>Mata Kuliah
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <i class="fas fa-users mr-1"></i>Kelompok
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <i class="fas fa-toggle-on mr-1"></i>Status
+                                        </th>
+                                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <i class="fas fa-cogs mr-1"></i>Aksi
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach($classRooms as $index => $classRoom)
+                                        <tr class="hover:bg-gray-50 transition duration-200">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                {{ ($classRooms->currentPage() - 1) * $classRooms->perPage() + $index + 1 }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm font-medium text-gray-900">{{ $classRoom->name }}</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                    {{ $classRoom->code }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                @if($classRoom->subject)
+                                                <span class="text-sm text-gray-900">{{ $classRoom->subject->name }}</span>
+                                                @else
+                                                <span class="text-gray-400">-</span>
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $classRoom->groups_count >= $classRoom->max_groups ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }}">
+                                                    <i class="fas fa-users mr-1"></i>{{ $classRoom->groups_count }}/{{ $classRoom->max_groups }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $classRoom->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                                    {{ $classRoom->is_active ? 'Aktif' : 'Tidak Aktif' }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                                <div class="flex items-center justify-center space-x-2">
+                                                    <a href="{{ route('groups.index', ['classroom' => $classRoom->id]) }}" 
+                                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 bg-blue-100 hover:bg-blue-200 hover:text-blue-900 rounded-lg transition duration-200 ease-in-out">
+                                                        <i class="fas fa-users mr-1.5"></i>
+                                                        Kelompok
+                                                    </a>
+                                                    @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
+                                                    <a href="{{ url('/classrooms/' . $classRoom->id . '/edit') }}" 
+                                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-primary-600 bg-primary-100 hover:bg-primary-200 hover:text-primary-900 rounded-lg transition duration-200 ease-in-out">
+                                                        <i class="fas fa-edit mr-1.5"></i>
+                                                        Edit
+                                                    </a>
+                                                    <button type="button"
+                                                            onclick="deleteClass({{ $classRoom->id }}, '{{ addslashes($classRoom->name) }}')"
+                                                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-100 hover:bg-red-200 hover:text-red-900 rounded-lg transition duration-200 ease-in-out">
+                                                        <i class="fas fa-trash mr-1.5"></i>
+                                                        Hapus
+                                                    </button>
+                                                    @endif
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="mt-6">
+                            {{ $classRooms->links() }}
+                        </div>
+                    @else
+                        <div class="text-center py-12">
+                            <div class="text-gray-400 mb-4">
+                                <i class="fas fa-school text-6xl"></i>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">Belum ada kelas</h3>
+                            <p class="text-gray-500 mb-4">Mulai dengan menambahkan kelas pertama Anda.</p>
+                            @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
+                            <a href="{{ route('classrooms.create') }}" 
+                               class="inline-flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-700 text-white font-bold rounded-lg shadow-md transition duration-300">
+                                <i class="fas fa-plus mr-2"></i>Tambah Kelas Pertama
+                            </a>
+                            @endif
+                        </div>
+                    @endif
+                </div>
             </div>
         </div>
     </div>

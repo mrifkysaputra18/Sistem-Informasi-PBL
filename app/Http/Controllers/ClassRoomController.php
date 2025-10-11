@@ -24,6 +24,10 @@ class ClassRoomController extends Controller
             $query->where('semester', $request->semester);
         }
 
+        if ($request->has('is_active') && $request->is_active !== '') {
+            $query->where('is_active', $request->is_active === '1');
+        }
+
 
         // Search by name or code
         if ($request->has('search') && $request->search != '') {
