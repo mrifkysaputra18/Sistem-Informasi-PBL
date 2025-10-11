@@ -26,7 +26,7 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-1 sm:ms-8 lg:flex items-center">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard', 'admin.dashboard', 'koordinator.dashboard', 'dosen.dashboard', 'mahasiswa.dashboard')">
                         <i class="fas fa-tachometer-alt mr-1"></i>{{ __('Dashboard') }}
                     </x-nav-link>
 
@@ -150,7 +150,7 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden lg:hidden mobile-menu">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard', 'admin.dashboard', 'koordinator.dashboard', 'dosen.dashboard', 'mahasiswa.dashboard')">
                 <i class="fas fa-tachometer-alt mr-1"></i>{{ __('Dashboard') }}
             </x-responsive-nav-link>
 
