@@ -31,32 +31,44 @@
                 </div>
             @endif
 
-            <!-- Filter -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                <form method="GET" action="{{ route('groups.index') }}" class="flex gap-4">
-                    <div class="flex-1">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Filter by Kelas</label>
-                        <select name="classroom" class="w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-500 focus:ring-secondary-500">
-                            <option value="">Semua Kelas</option>
-                            @foreach($classRooms as $classroom)
-                            <option value="{{ $classroom->id }}" {{ request('classroom') == $classroom->id ? 'selected' : '' }}>
-                                {{ $classroom->name }}
-                            </option>
-                            @endforeach
-                        </select>
+            <!-- Filter hanya tampil pada halaman awal (tanpa filter kelas terpilih) -->
+            @if(!request()->filled('classroom'))
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <form method="GET" action="{{ route('groups.index') }}" class="flex gap-4">
+                        <div class="flex-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Filter by Kelas</label>
+                            <select name="classroom" class="w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-500 focus:ring-secondary-500">
+                                <option value="">Semua Kelas</option>
+                                @foreach($classRooms as $classroom)
+                                <option value="{{ $classroom->id }}" {{ request('classroom') == $classroom->id ? 'selected' : '' }}>
+                                    {{ $classroom->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="flex items-end gap-2">
+                            <button type="submit" class="bg-secondary-500 hover:bg-secondary-600 text-white py-2 px-6 rounded-md">
+                                <i class="fas fa-filter mr-2"></i>Filter
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            @else
+                @php
+                    $selectedClass = $classRooms->firstWhere('id', request('classroom'));
+                @endphp
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6 flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500">Menampilkan kelompok untuk kelas:</p>
+                        <p class="text-xl font-semibold text-gray-900 mt-1">
+                            {{ $selectedClass?->name ?? 'Kelas tidak ditemukan' }}
+                        </p>
                     </div>
-                    <div class="flex items-end gap-2">
-                        <button type="submit" class="bg-secondary-500 hover:bg-secondary-600 text-white py-2 px-6 rounded-md">
-                            <i class="fas fa-filter mr-2"></i>Filter
-                        </button>
-                        @if(request('classroom'))
-                        <a href="{{ route('groups.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-6 rounded-md">
-                            <i class="fas fa-times mr-2"></i>Reset
-                        </a>
-                        @endif
-                    </div>
-                </form>
-            </div>
+                    <a href="{{ route('groups.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition">
+                        <i class="fas fa-undo mr-2"></i>Ganti Kelas
+                    </a>
+                </div>
+            @endif
 
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
