@@ -33,13 +33,30 @@ class ClassRoomController extends Controller
             });
         }
 
+        $statsCollection = (clone $query)->orderBy('name')->get();
+
         $classRooms = $query->orderBy('name')->paginate(10);
-        
+
         // Get filter options
         $subjects = Subject::orderBy('name')->get() ?? collect(); // Semua mata kuliah aktif
         $semesters = ClassRoom::distinct()->pluck('semester')->sort();
+
+        // Calculate lightweight statistics for UX cues
+        $totalClasses = $statsCollection->count();
+        $totalActiveClasses = $statsCollection->where('is_active', true)->count();
+        $totalGroups = $statsCollection->sum('groups_count');
+        $totalMaxGroups = $statsCollection->sum('max_groups');
+        $averageFill = $totalMaxGroups > 0 
+            ? round(($totalGroups / $totalMaxGroups) * 100)
+            : 0;
+        $stats = [
+            'total_classes' => $totalClasses,
+            'active_classes' => $totalActiveClasses,
+            'total_groups' => $totalGroups,
+            'average_fill' => $averageFill,
+        ];
             
-        return view('classrooms.index', compact('classRooms', 'subjects', 'semesters'));
+        return view('classrooms.index', compact('classRooms', 'subjects', 'semesters', 'stats'));
     }
 
     /**

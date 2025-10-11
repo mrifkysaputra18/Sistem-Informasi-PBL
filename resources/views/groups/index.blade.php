@@ -64,7 +64,7 @@
                             {{ $selectedClass?->name ?? 'Kelas tidak ditemukan' }}
                         </p>
                     </div>
-                    <a href="{{ route('groups.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition">
+                    <a href="{{ route('classrooms.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition">
                         <i class="fas fa-undo mr-2"></i>Ganti Kelas
                     </a>
                 </div>
