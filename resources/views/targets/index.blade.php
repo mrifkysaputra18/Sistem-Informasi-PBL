@@ -271,15 +271,15 @@
                     
                     @if($targets->count() > 0)
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
+                        <table class="min-w-full divide-y divide-gray-200 table-fixed">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Target</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelompok</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Minggu</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deadline</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">Target</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">Kelompok</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Minggu</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-28">Deadline</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-max">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -374,14 +374,14 @@
                                             @endif
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <div class="flex items-center gap-2">
+                                    <td class="px-6 py-4 text-sm font-medium">
+                                        <div class="flex items-center gap-2 flex-nowrap">
                                             <!-- View Detail -->
                                             <a href="{{ route('targets.show', $target->id) }}" 
                                                class="inline-flex items-center px-3 py-1.5 bg-primary-100 text-primary-700 hover:bg-primary-200 rounded transition duration-200"
                                                title="Lihat Detail">
                                                 <i class="fas fa-eye mr-1"></i>
-                                                <span class="hidden sm:inline">Detail</span>
+                                                <span>Detail</span>
                                             </a>
                                             
                                             @if(in_array(auth()->user()->role, ['dosen', 'admin']))
@@ -391,7 +391,7 @@
                                                        class="inline-flex items-center px-3 py-1.5 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 rounded transition duration-200"
                                                        title="Edit Target">
                                                         <i class="fas fa-edit mr-1"></i>
-                                                        <span class="hidden sm:inline">Edit</span>
+                                                        <span>Edit</span>
                                                     </a>
                                                     
                                                     <!-- Delete -->
@@ -405,14 +405,14 @@
                                                                 class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 rounded transition duration-200"
                                                                 title="Hapus Target">
                                                             <i class="fas fa-trash mr-1"></i>
-                                                            <span class="hidden sm:inline">Hapus</span>
+                                                            <span>Hapus</span>
                                                         </button>
                                                     </form>
                                                 @elseif(($target->created_by === auth()->id() || auth()->user()->isAdmin()) && !$target->canBeModified())
                                                     <!-- Locked indicator (only show to creator/admin) -->
                                                     <span class="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-500 rounded text-xs" title="Target sudah direview/disubmit, tidak bisa diedit">
                                                         <i class="fas fa-lock mr-1"></i>
-                                                        <span class="hidden sm:inline">Terkunci</span>
+                                                        <span>Terkunci</span>
                                                     </span>
                                                 @endif
                                             @endif
@@ -423,7 +423,7 @@
                                                class="inline-flex items-center px-3 py-1.5 bg-green-100 text-green-700 hover:bg-green-200 rounded transition duration-200"
                                                title="Review Submission">
                                                 <i class="fas fa-check-circle mr-1"></i>
-                                                <span class="hidden sm:inline">Review</span>
+                                                <span>Review</span>
                                             </a>
                                             @endif
                                             
@@ -440,7 +440,7 @@
                                                                 class="inline-flex items-center px-3 py-1.5 bg-secondary-100 text-secondary-700 hover:bg-secondary-200 rounded transition duration-200"
                                                                 title="Buka Kembali Target">
                                                             <i class="fas fa-unlock mr-1"></i>
-                                                            <span class="hidden sm:inline">Buka</span>
+                                                            <span>Buka</span>
                                                         </button>
                                                     </form>
                                                 @else
@@ -454,7 +454,7 @@
                                                                 class="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded transition duration-200"
                                                                 title="Tutup Target">
                                                             <i class="fas fa-lock mr-1"></i>
-                                                            <span class="hidden sm:inline">Tutup</span>
+                                                            <span>Tutup</span>
                                                         </button>
                                                     </form>
                                                 @endif
