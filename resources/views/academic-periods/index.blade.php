@@ -1,15 +1,21 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-white leading-tight">
-                {{ __('Periode Akademik') }}
-            </h2>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="space-y-1">
+                <h2 class="font-bold text-2xl text-white leading-tight flex items-center gap-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    {{ __('Periode Akademik') }}
+                </h2>
+                <p class="text-sm text-white/90">Kelola tahun ajaran, semester, dan mata kuliah PBL</p>
+            </div>
             <div class="flex gap-2">
                 <a href="{{ route('projects.index') }}" class="bg-secondary-500 hover:bg-secondary-700 text-white font-bold py-2 px-4 rounded">
-                    <i class="fas fa-book mr-2"></i>Mata Kuliah
+                    <i class="fa-solid fa-book-open mr-2"></i>Mata Kuliah
                 </a>
                 <a href="{{ route('academic-periods.create') }}" class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded">
-                    <i class="fas fa-plus mr-2"></i>Tambah Periode
+                    <i class="fa-solid fa-circle-plus mr-2"></i>Tambah Periode
                 </a>
             </div>
         </div>
@@ -19,13 +25,13 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @if(session('success'))
             <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
+                <i class="fa-solid fa-circle-check mr-2"></i>{{ session('success') }}
             </div>
             @endif
 
             @if(session('error'))
             <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                <i class="fas fa-exclamation-circle mr-2"></i>{{ session('error') }}
+                <i class="fa-solid fa-circle-exclamation mr-2"></i>{{ session('error') }}
             </div>
             @endif
 
@@ -66,39 +72,39 @@
                                             </div>
                                             @if($period->isPbl())
                                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                <i class="fas fa-project-diagram mr-1"></i>PBL
+                                                <i class="fa-solid fa-diagram-project mr-1"></i>PBL
                                             </span>
                                             @endif
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         <div class="text-sm">
-                                            <i class="fas fa-calendar-start text-gray-400 mr-1"></i>
+                                            <i class="fa-solid fa-calendar-days text-gray-400 mr-1"></i>
                                             {{ $period->start_date->format('d M Y') }}
                                         </div>
                                         <div class="text-sm text-gray-500">
-                                            <i class="fas fa-calendar-end text-gray-400 mr-1"></i>
+                                            <i class="fa-solid fa-calendar-days text-gray-400 mr-1"></i>
                                             {{ $period->end_date->format('d M Y') }}
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @if($period->is_active)
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            <i class="fas fa-check-circle mr-1"></i>Aktif
+                                            <i class="fa-solid fa-circle-check mr-1"></i>Aktif
                                         </span>
                                         @else
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                            <i class="fas fa-pause-circle mr-1"></i>Tidak Aktif
+                                            <i class="fa-solid fa-circle-pause mr-1"></i>Tidak Aktif
                                         </span>
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         <div class="text-sm">
-                                            <i class="fas fa-book text-gray-400 mr-1"></i>
+                                            <i class="fa-solid fa-book-open text-gray-400 mr-1"></i>
                                             {{ $period->subjects_count ?? 0 }} Mata Kuliah
                                         </div>
                                         <div class="text-sm text-gray-500">
-                                            <i class="fas fa-school text-gray-400 mr-1"></i>
+                                            <i class="fa-solid fa-chalkboard-user text-gray-400 mr-1"></i>
                                             {{ $period->classrooms_count ?? 0 }} Kelas
                                         </div>
                                     </td>
@@ -108,7 +114,7 @@
                                             <a href="{{ route('academic-periods.edit', $period) }}" 
                                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-yellow-600 bg-yellow-100 hover:bg-yellow-200 hover:text-yellow-900 rounded-lg transition duration-200 ease-in-out"
                                                title="Edit Periode">
-                                                <i class="fas fa-edit mr-1"></i>
+                                                <i class="fa-solid fa-pen-to-square mr-1"></i>
                                                 Edit
                                             </a>
                                             
@@ -122,7 +128,7 @@
                                                 <button type="submit" 
                                                         class="inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-100 hover:bg-red-200 hover:text-red-900 rounded-lg transition duration-200 ease-in-out"
                                                         title="Hapus Periode">
-                                                    <i class="fas fa-trash mr-1"></i>
+                                                    <i class="fa-solid fa-trash-can mr-1"></i>
                                                     Hapus
                                                 </button>
                                             </form>
@@ -142,10 +148,10 @@
                     @endif
                     @else
                     <div class="text-center py-8 bg-gray-50 rounded-lg">
-                        <div class="text-gray-400 mb-3"><i class="fas fa-calendar-alt text-4xl"></i></div>
+                        <div class="text-gray-400 mb-3"><i class="fa-solid fa-calendar-days text-4xl"></i></div>
                         <p class="text-gray-600 mb-3">Belum ada periode akademik</p>
                         <a href="{{ route('academic-periods.create') }}" class="inline-flex items-center bg-primary-500 hover:bg-primary-600 text-white text-sm px-4 py-2 rounded">
-                            <i class="fas fa-plus mr-2"></i>Tambah Periode Akademik Pertama
+                            <i class="fa-solid fa-circle-plus mr-2"></i>Tambah Periode Akademik Pertama
                         </a>
                     </div>
                     @endif

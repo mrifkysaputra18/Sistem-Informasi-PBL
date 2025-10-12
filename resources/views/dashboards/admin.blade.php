@@ -10,7 +10,7 @@
                     </svg>
                     Dashboard Admin
                 </h2>
-                <p class="text-sm text-white/90">Selamat datang kembali, <span class="font-semibold">{{ auth()->user()->name }}</span> 👋</p>
+                <p class="text-sm text-white/90">Monitoring dan kelola sistem informasi PBL secara keseluruhan</p>
             </div>
             
             <!-- Fitts's Law: Larger, grouped actions -->

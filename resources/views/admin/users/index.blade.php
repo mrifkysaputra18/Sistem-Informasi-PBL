@@ -1,17 +1,23 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-white leading-tight">
-                {{ __('Kelola Mahasiswa & User') }}
-            </h2>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="space-y-1">
+                <h2 class="font-bold text-2xl text-white leading-tight flex items-center gap-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    {{ __('Kelola Mahasiswa & User') }}
+                </h2>
+                <p class="text-sm text-white/90">Manajemen user sistem untuk semua role pengguna</p>
+            </div>
             <div class="flex gap-2">
                 <a href="{{ route('admin.users.without-group') }}" 
                    class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-                    <i class="fas fa-user-slash mr-2"></i>Mahasiswa Tanpa Kelompok
+                    <i class="fa-solid fa-user-xmark mr-2"></i>Mahasiswa Tanpa Kelompok
                 </a>
                 <a href="{{ route('admin.users.create') }}" 
                    class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-                    <i class="fas fa-plus mr-2"></i>Tambah User
+                    <i class="fa-solid fa-circle-plus mr-2"></i>Tambah User
                 </a>
             </div>
         </div>
@@ -23,7 +29,7 @@
             @if(session('success'))
                 <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-r-lg shadow-md">
                     <div class="flex items-center">
-                        <i class="fas fa-check-circle mr-2"></i>
+                        <i class="fa-solid fa-circle-check mr-2"></i>
                         <span>{{ session('success') }}</span>
                     </div>
                 </div>
@@ -32,7 +38,7 @@
             @if(session('error'))
                 <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-r-lg shadow-md">
                     <div class="flex items-center">
-                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        <i class="fa-solid fa-circle-exclamation mr-2"></i>
                         <span>{{ session('error') }}</span>
                     </div>
                 </div>
@@ -45,7 +51,7 @@
                         <!-- Search -->
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                <i class="fas fa-search mr-1"></i>Cari
+                                <i class="fa-solid fa-magnifying-glass mr-1"></i>Cari
                             </label>
                             <input type="text" name="search" value="{{ request('search') }}" 
                                    placeholder="Nama, email, atau ID..." 
@@ -55,7 +61,7 @@
                         <!-- Role Filter -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                <i class="fas fa-user-tag mr-1"></i>Role
+                                <i class="fa-solid fa-user-tag mr-1"></i>Role
                             </label>
                             <select name="role" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                                 <option value="">Semua Role</option>
@@ -69,7 +75,7 @@
                         <!-- Class Filter -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                <i class="fas fa-school mr-1"></i>Kelas
+                                <i class="fa-solid fa-chalkboard-user mr-1"></i>Kelas
                             </label>
                             <select name="class_room_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                                 <option value="">Semua Kelas</option>
@@ -84,7 +90,7 @@
                         <!-- Status Filter -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                <i class="fas fa-toggle-on mr-1"></i>Status
+                                <i class="fa-solid fa-toggle-on mr-1"></i>Status
                             </label>
                             <select name="is_active" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                                 <option value="">Semua Status</option>
@@ -96,11 +102,11 @@
 
                     <div class="flex items-center gap-2 mt-4">
                         <button type="submit" class="bg-primary-500 hover:bg-primary-600 text-white py-2 px-6 rounded-md">
-                            <i class="fas fa-filter mr-2"></i>Filter
+                            <i class="fa-solid fa-filter mr-2"></i>Filter
                         </button>
                         @if(request()->hasAny(['search', 'role', 'class_room_id', 'is_active']))
                             <a href="{{ route('admin.users.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-6 rounded-md">
-                                <i class="fas fa-times mr-2"></i>Reset
+                                <i class="fa-solid fa-xmark mr-2"></i>Reset
                             </a>
                         @endif
                     </div>
@@ -116,7 +122,7 @@
                             <p class="text-3xl font-bold">{{ $users->total() }}</p>
                         </div>
                         <div class="bg-primary-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-users text-2xl"></i>
+                            <i class="fa-solid fa-users text-2xl"></i>
                         </div>
                     </div>
                 </div>
@@ -128,7 +134,7 @@
                             <p class="text-3xl font-bold">{{ \App\Models\User::where('role', 'mahasiswa')->count() }}</p>
                         </div>
                         <div class="bg-green-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-user-graduate text-2xl"></i>
+                            <i class="fa-solid fa-user-graduate text-2xl"></i>
                         </div>
                     </div>
                 </div>
@@ -140,7 +146,7 @@
                             <p class="text-3xl font-bold">{{ \App\Models\User::where('role', 'dosen')->count() }}</p>
                         </div>
                         <div class="bg-secondary-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-chalkboard-teacher text-2xl"></i>
+                            <i class="fa-solid fa-chalkboard-user text-2xl"></i>
                         </div>
                     </div>
                 </div>
@@ -152,7 +158,7 @@
                             <p class="text-3xl font-bold">{{ \App\Models\User::whereIn('role', ['admin', 'koordinator'])->count() }}</p>
                         </div>
                         <div class="bg-orange-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-user-tie text-2xl"></i>
+                            <i class="fa-solid fa-user-tie text-2xl"></i>
                         </div>
                     </div>
                 </div>
@@ -164,19 +170,19 @@
                 <div class="border-b border-gray-200">
                     <nav class="flex -mb-px" aria-label="Tabs">
                         <button onclick="showTab('admin')" id="tab-admin" class="role-tab active flex-1 py-4 px-6 text-center border-b-4 font-semibold text-sm transition-all">
-                            <i class="fas fa-user-shield mr-2"></i>
+                            <i class="fa-solid fa-user-shield mr-2"></i>
                             Admin ({{ $usersByRole['admin']->count() }})
                         </button>
                         <button onclick="showTab('koordinator')" id="tab-koordinator" class="role-tab flex-1 py-4 px-6 text-center border-b-4 font-semibold text-sm transition-all">
-                            <i class="fas fa-user-tie mr-2"></i>
+                            <i class="fa-solid fa-user-tie mr-2"></i>
                             Koordinator ({{ $usersByRole['koordinator']->count() }})
                         </button>
                         <button onclick="showTab('dosen')" id="tab-dosen" class="role-tab flex-1 py-4 px-6 text-center border-b-4 font-semibold text-sm transition-all">
-                            <i class="fas fa-chalkboard-teacher mr-2"></i>
+                            <i class="fa-solid fa-chalkboard-user mr-2"></i>
                             Dosen ({{ $usersByRole['dosen']->count() }})
                         </button>
                         <button onclick="showTab('mahasiswa')" id="tab-mahasiswa" class="role-tab flex-1 py-4 px-6 text-center border-b-4 font-semibold text-sm transition-all">
-                            <i class="fas fa-user-graduate mr-2"></i>
+                            <i class="fa-solid fa-user-graduate mr-2"></i>
                             Mahasiswa ({{ $usersByRole['mahasiswa']->count() }})
                         </button>
                     </nav>
@@ -194,7 +200,7 @@
                         <div id="content-{{ $roleType }}" class="tab-content {{ $roleType === 'admin' ? '' : 'hidden' }}">
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="text-lg font-semibold text-gray-800">
-                                    <i class="fas fa-users mr-2 text-gray-600"></i>Daftar {{ ucfirst($roleType) }}
+                                    <i class="fa-solid fa-users mr-2 text-gray-600"></i>Daftar {{ ucfirst($roleType) }}
                                 </h3>
                                 <div class="text-sm text-gray-600">
                                     Total: {{ $usersByRole[$roleType]->count() }} {{ $roleType }}

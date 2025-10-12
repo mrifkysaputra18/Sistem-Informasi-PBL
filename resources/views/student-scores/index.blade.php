@@ -15,7 +15,7 @@
                         Manajemen Nilai Mahasiswa & Ranking
                     @endif
                 </h2>
-                <p class="text-sm text-white/90">Monitoring dan kelola nilai mahasiswa</p>
+                <p class="text-sm text-white/90">Monitoring nilai mahasiswa per kriteria dengan ranking otomatis</p>
             </div>
             
             <!-- Fitts's Law: Larger, accessible action buttons -->
