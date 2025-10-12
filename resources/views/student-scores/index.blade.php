@@ -10,34 +10,23 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/>
                     </svg>
                     @if(auth()->user()->isKoordinator())
-                        Nilai Mahasiswa & Ranking
+                        Ranking Mahasiswa
                     @else
-                        Manajemen Nilai Mahasiswa & Ranking (SAW)
+                        Ranking Mahasiswa
                     @endif
                 </h2>
-                <p class="text-sm text-white/90">Monitoring dan kelola nilai mahasiswa dengan metode SAW</p>
+                <p class="text-sm text-white/90">Monitoring dan ranking mahasiswa berdasarkan kriteria penilaian</p>
             </div>
             
             <!-- Fitts's Law: Larger, accessible action buttons -->
             <div class="flex flex-wrap gap-2">
                 @if(auth()->user()->isDosen() || auth()->user()->isAdmin())
-                    <a href="{{ route('student-scores.create') }}" 
-                       class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-semibold py-2.5 px-4 rounded-lg border border-white/30 transition-all duration-200 hover:scale-105 hover:shadow-lg group">
-                        <svg class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                        </svg>
-                        <span>Input Nilai</span>
-                    </a>
-                    
                     <form action="{{ route('student-scores.recalc') }}" method="POST" class="inline">
                         @csrf
                         <button type="submit" 
                                 onclick="return confirm('Hitung ulang ranking untuk semua mahasiswa?')"
-                                class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-semibold py-2.5 px-4 rounded-lg border border-white/30 transition-all duration-200 hover:scale-105 hover:shadow-lg group">
-                            <svg class="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                            </svg>
-                            <span>Hitung Ulang</span>
+                                class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                            <i class="fas fa-calculator mr-2"></i>Hitung Ulang Ranking
                         </button>
                     </form>
                 @endif
@@ -61,60 +50,7 @@
             </div>
             @endif
 
-            <!-- SAW Method Info (Only for Admin and Dosen) - Progressive Disclosure -->
-            @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
-            <div class="bg-gradient-to-r from-blue-50 via-indigo-50 to-primary-50 border-l-4 border-primary-600 rounded-r-2xl shadow-lg overflow-hidden">
-                <div class="p-6">
-                    <div class="flex items-start gap-4">
-                        <div class="flex-shrink-0">
-                            <div class="bg-gradient-to-br from-primary-500 to-primary-600 p-3 rounded-xl shadow-md">
-                                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
-                                Metode SAW (Simple Additive Weighting)
-                                <span class="text-xs px-2 py-0.5 bg-primary-100 text-primary-700 rounded-full font-semibold">Automatic</span>
-                            </h3>
-                            <p class="text-sm text-gray-700 mb-4">
-                                Sistem ini menggunakan metode SAW untuk menghitung ranking mahasiswa secara otomatis dan objektif berdasarkan kriteria yang telah ditentukan.
-                            </p>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                <div class="bg-white/70 backdrop-blur-sm p-4 rounded-xl border border-primary-200 shadow-sm hover:shadow-md transition-shadow">
-                                    <div class="flex items-center gap-2 font-semibold text-gray-900 mb-2">
-                                        <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                        </svg>
-                                        <span class="text-sm">Normalisasi Benefit</span>
-                                    </div>
-                                    <div class="text-sm text-gray-600 font-mono bg-gray-50 px-2 py-1 rounded">r<sub>ij</sub> = x<sub>ij</sub> / max(x<sub>ij</sub>)</div>
-                                </div>
-                                <div class="bg-white/70 backdrop-blur-sm p-4 rounded-xl border border-orange-200 shadow-sm hover:shadow-md transition-shadow">
-                                    <div class="flex items-center gap-2 font-semibold text-gray-900 mb-2">
-                                        <svg class="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd"/>
-                                        </svg>
-                                        <span class="text-sm">Normalisasi Cost</span>
-                                    </div>
-                                    <div class="text-sm text-gray-600 font-mono bg-gray-50 px-2 py-1 rounded">r<sub>ij</sub> = min(x<sub>ij</sub>) / x<sub>ij</sub></div>
-                                </div>
-                                <div class="bg-white/70 backdrop-blur-sm p-4 rounded-xl border border-blue-200 shadow-sm hover:shadow-md transition-shadow">
-                                    <div class="flex items-center gap-2 font-semibold text-gray-900 mb-2">
-                                        <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
-                                        </svg>
-                                        <span class="text-sm">Nilai Preferensi</span>
-                                    </div>
-                                    <div class="text-sm text-gray-600 font-mono bg-gray-50 px-2 py-1 rounded">V<sub>i</sub> = Σ(w<sub>j</sub> × r<sub>ij</sub>)</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @endif
+
 
             <!-- Statistics Cards - Von Restorff Effect & Miller's Law (4 items) -->
             <div>
@@ -200,6 +136,50 @@
                 </div>
             </div>
 
+            <!-- Filter Section -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                    </svg>
+                    Filter Ranking
+                </h3>
+                <form method="GET" action="{{ route('student-scores.index') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Angkatan (Tahun Ajaran)</label>
+                        <select name="academic_year" id="academic_year" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                            <option value="">Semua Angkatan</option>
+                            @foreach($academicYears as $year)
+                                <option value="{{ $year }}" {{ request('academic_year') == $year ? 'selected' : '' }}>
+                                    {{ $year }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Kelas</label>
+                        <select name="class_room_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                            <option value="">Semua Kelas</option>
+                            @foreach($classRooms as $classRoom)
+                                <option value="{{ $classRoom->id }}" {{ request('class_room_id') == $classRoom->id ? 'selected' : '' }}>
+                                    {{ $classRoom->name }} @if($classRoom->academicPeriod) ({{ $classRoom->academicPeriod->academic_year }})@endif
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <button type="submit" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-semibold py-2 px-6 rounded-md transition duration-200">
+                            <i class="fa-solid fa-filter mr-2"></i>Terapkan Filter
+                        </button>
+                        @if(request()->hasAny(['academic_year', 'class_room_id']))
+                            <a href="{{ route('student-scores.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-md transition duration-200">
+                                <i class="fa-solid fa-times mr-1"></i>Reset
+                            </a>
+                        @endif
+                    </div>
+                </form>
+            </div>
+
             <!-- Main Content -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Score Matrix -->
@@ -235,7 +215,7 @@
                                                     </th>
                                                 @endforeach
                                                 <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    <i class="fas fa-trophy mr-1"></i>Total SAW
+                                                    <i class="fas fa-trophy mr-1"></i>Total
                                                 </th>
                                             </tr>
                                         </thead>

@@ -1,9 +1,15 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-white leading-tight">
-                {{ __('Manajemen Kelas') }}
-            </h2>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="space-y-1">
+                <h2 class="font-bold text-2xl text-white leading-tight flex items-center gap-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                    {{ __('Manajemen Kelas') }}
+                </h2>
+                <p class="text-sm text-white/90">Kelola kelas dan pembagian mahasiswa per periode akademik</p>
+            </div>
             @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
             <a href="{{ route('classrooms.create') }}" 
                class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
@@ -36,50 +42,66 @@
 
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-xl shadow-lg text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-primary-100 text-sm font-medium">Total Kelas</p>
-                            <p class="text-3xl font-bold">{{ $stats['total_classes'] }}</p>
+                <!-- Card 1: Total Kelas -->
+                <div class="group relative bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-blue-100 text-xs font-medium uppercase tracking-wider">Total Kelas</p>
+                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['total_classes'] }}</p>
+                            <p class="text-xs text-blue-100 mt-2">Kelas terdaftar</p>
                         </div>
-                        <div class="bg-primary-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-school text-2xl"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-gradient-to-r from-green-500 to-green-600 p-6 rounded-xl shadow-lg text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-green-100 text-sm font-medium">Kelas Aktif</p>
-                            <p class="text-3xl font-bold">{{ $stats['active_classes'] }}</p>
-                        </div>
-                        <div class="bg-green-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-bolt text-2xl"></i>
+                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                            <i class="fa-solid fa-chalkboard-user text-2xl"></i>
                         </div>
                     </div>
                 </div>
                 
-                <div class="bg-gradient-to-r from-secondary-500 to-secondary-600 p-6 rounded-xl shadow-lg text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-secondary-100 text-sm font-medium">Total Kelompok</p>
-                            <p class="text-3xl font-bold">{{ $stats['total_groups'] }}</p>
+                <!-- Card 2: Kelas Aktif -->
+                <div class="group relative bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-green-100 text-xs font-medium uppercase tracking-wider">Kelas Aktif</p>
+                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['active_classes'] }}</p>
+                            <p class="text-xs text-green-100 mt-2">Kelas berjalan</p>
                         </div>
-                        <div class="bg-secondary-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-users text-2xl"></i>
+                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                            <i class="fa-solid fa-circle-check text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card 3: Total Kelompok -->
+                <div class="group relative bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-purple-100 text-xs font-medium uppercase tracking-wider">Total Kelompok</p>
+                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['total_groups'] }}</p>
+                            <p class="text-xs text-purple-100 mt-2">Kelompok di kelas</p>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                            <i class="fa-solid fa-users text-2xl"></i>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-gradient-to-r from-orange-500 to-orange-600 p-6 rounded-xl shadow-lg text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-orange-100 text-sm font-medium">Rata-rata Terisi</p>
-                            <p class="text-3xl font-bold">{{ $stats['average_fill'] }}%</p>
+                <!-- Card 4: Rata-rata Terisi -->
+                <div class="group relative bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-orange-100 text-xs font-medium uppercase tracking-wider">Rata-rata Terisi</p>
+                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['average_fill'] }}%</p>
+                            <p class="text-xs text-orange-100 mt-2">Kapasitas kelas</p>
                         </div>
-                        <div class="bg-orange-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-chart-line text-2xl"></i>
+                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                            <i class="fa-solid fa-chart-line text-2xl"></i>
                         </div>
                     </div>
                 </div>
@@ -147,7 +169,7 @@
                         <h3 class="text-lg font-semibold text-gray-800">
                             <i class="fas fa-table mr-2 text-gray-600"></i>Daftar Kelas
                         </h3>
-                        <div class="text-sm text-gray-600">
+                        <div class="text-sm text-gray-700 font-medium">
                             Showing {{ $classRooms->count() }} of {{ $classRooms->total() }} entries
                         </div>
                     </div>

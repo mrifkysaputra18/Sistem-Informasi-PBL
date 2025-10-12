@@ -31,7 +31,7 @@
         
         /* Miller's Law: Chunking information */
         .section-spacing {
-            margin-bottom: 32px;
+            margin-bottom: 20px;
         }
         
         /* Jakob's Law: Familiar patterns */
@@ -55,8 +55,10 @@
         /* Serial Position Effect: Important info at top and bottom */
         /* Aesthetic-Usability Effect: Beautiful and functional */
         .card {
-            backdrop-filter: blur(20px);
-            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(24px);
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
         
         /* Progressive Disclosure: Show manual login on demand */
@@ -67,7 +69,7 @@
         }
         
         .manual-login.show {
-            max-height: 500px;
+            max-height: 400px;
         }
         
         /* Law of Common Region: Group related elements */
@@ -87,28 +89,53 @@
         }
     </style>
 </head>
-<body class="antialiased bg-gradient-to-br from-primary-50 via-white to-secondary-50 min-h-screen flex items-center justify-center p-4">
+<body class="antialiased min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+    
+    <!-- Background Image with Overlay -->
+    <div class="fixed inset-0 z-0">
+        <!-- Gambar Gedung Politala sebagai Background -->
+        <!-- Fallback: Gradient background jika gambar belum ada -->
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 bg-cover bg-center bg-no-repeat" 
+             style="background-image: url('{{ asset('images/gedung-politala.jpg') }}');">
+        </div>
+        
+        <!-- Dark Overlay untuk readability dan contrast -->
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-900/85 via-indigo-900/80 to-purple-900/85"></div>
+        
+        <!-- Animated Pattern Overlay -->
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+        </div>
+        
+        <!-- Floating Elements untuk aesthetic -->
+        <div class="absolute top-20 left-20 w-32 h-32 bg-white/5 rounded-full blur-3xl animate-float-slow"></div>
+        <div class="absolute bottom-20 right-20 w-40 h-40 bg-primary-400/10 rounded-full blur-3xl animate-float-slower"></div>
+        <div class="absolute top-1/2 left-1/3 w-24 h-24 bg-secondary-400/10 rounded-full blur-2xl animate-float"></div>
+    </div>
+    
+    <!-- Content with higher z-index -->
+    <div class="relative z-10 w-full max-w-md">
     
     <!-- Law of Symmetry: Balanced layout -->
     <div class="login-container w-full">
         
         <!-- Card with proper hierarchy (Visual Hierarchy Law) -->
-        <div class="card rounded-2xl shadow-2xl p-8 space-y-8">
+        <div class="card rounded-2xl shadow-2xl p-6 space-y-5 max-h-[90vh] overflow-y-auto">
             
             <!-- Law of Proximity: Logo + Title grouped -->
-            <div class="text-center section-spacing">
+            <div class="text-center mb-4">
                 <!-- Logo (Recognition over Recall) -->
-                <div class="flex justify-center mb-6">
+                <div class="flex justify-center mb-4">
                     <img src="{{ asset('images/logo/politala.png') }}" 
                          alt="Logo Politala" 
-                         class="h-20 w-auto object-contain animate-fade-in">
+                         class="h-16 w-auto object-contain animate-fade-in">
                 </div>
                 
                 <!-- Title (Clear Hierarchy) -->
-                <h1 class="text-2xl font-bold text-gray-900 mb-2">
+                <h1 class="text-xl font-bold text-gray-900 mb-1">
                     Sistem Informasi PBL
                 </h1>
-                <p class="text-sm text-gray-600">
+                <p class="text-xs text-gray-600">
                     Politeknik Negeri Tanah Laut
                 </p>
             </div>
@@ -139,9 +166,9 @@
             @endif
 
             <!-- Primary Action (Von Restorff Effect + Fitts's Law) -->
-            <div class="section-spacing">
+            <div class="mb-4">
                 <a href="{{ route('auth.google') }}" 
-                   class="google-btn w-full flex items-center justify-center gap-3 text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 group">
+                   class="google-btn w-full flex items-center justify-center gap-3 text-white font-semibold py-3 px-5 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 group">
                     <!-- Google Icon -->
                     <svg class="w-6 h-6 bg-white rounded p-1" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -156,7 +183,7 @@
                 </a>
                 
                 <!-- Affordance: Show that there's an alternative -->
-                <p class="mt-4 text-center text-xs text-gray-500">
+                <p class="mt-2 text-center text-xs text-gray-500">
                     Login cepat dengan akun Google Politala
                 </p>
             </div>
@@ -177,7 +204,7 @@
             <!-- Manual Login (Hidden by default - Progressive Disclosure) -->
             <div id="manualLogin" class="manual-login">
                 <!-- Divider -->
-                <div class="relative mb-6">
+                <div class="relative mb-4">
                     <div class="absolute inset-0 flex items-center">
                         <div class="w-full border-t border-gray-200"></div>
                     </div>
@@ -186,12 +213,12 @@
                     </div>
                 </div>
 
-                <form method="POST" action="{{ route('login') }}" class="space-y-5">
+                <form method="POST" action="{{ route('login') }}" class="space-y-4">
                     @csrf
 
                     <!-- Email (Law of Common Region) -->
                     <div class="form-field">
-                        <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <label for="email" class="block text-sm font-semibold text-gray-700 mb-1.5">
                             Email
                         </label>
                         <div class="input-group">
@@ -204,7 +231,7 @@
                                 autofocus 
                                 autocomplete="username"
                                 placeholder="admin@politala.ac.id"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 placeholder-gray-400"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 placeholder-gray-400"
                             />
                         </div>
                         <div class="input-feedback text-red-600">
@@ -214,7 +241,7 @@
 
                     <!-- Password (Law of Common Region) -->
                     <div class="form-field">
-                        <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center justify-between mb-1.5">
                             <label for="password" class="block text-sm font-semibold text-gray-700">
                                 Password
                             </label>
@@ -233,7 +260,7 @@
                                 required 
                                 autocomplete="current-password"
                                 placeholder="••••••••"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 placeholder-gray-400"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 placeholder-gray-400"
                             />
                         </div>
                         <div class="input-feedback text-red-600">
@@ -257,7 +284,7 @@
                     <!-- Submit Button (Fitts's Law + Von Restorff Effect) -->
                     <button 
                         type="submit"
-                        class="btn-primary w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2 group">
+                        class="btn-primary w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3.5 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2 group">
                         <span>Masuk</span>
                         <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
@@ -270,11 +297,13 @@
 
         <!-- Footer (Serial Position Effect - Remember last thing) -->
         <div class="mt-6 text-center">
-            <p class="text-xs text-gray-600">
+            <p class="text-xs text-white/80 font-medium drop-shadow-lg">
                 © {{ date('Y') }} Politeknik Negeri Tanah Laut
             </p>
         </div>
     </div>
+    
+    </div><!-- Close wrapper -->
 
     <script>
         // Progressive Disclosure
@@ -332,6 +361,68 @@
         *:focus-visible {
             outline: 2px solid #0056b3;
             outline-offset: 2px;
+        }
+        
+        /* Floating Animations untuk background elements */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+            }
+            33% {
+                transform: translateY(-20px) translateX(10px);
+            }
+            66% {
+                transform: translateY(10px) translateX(-10px);
+            }
+        }
+        
+        @keyframes float-slow {
+            0%, 100% {
+                transform: translateY(0) translateX(0) scale(1);
+            }
+            50% {
+                transform: translateY(-30px) translateX(20px) scale(1.1);
+            }
+        }
+        
+        @keyframes float-slower {
+            0%, 100% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(20px) translateX(-30px) rotate(180deg);
+            }
+        }
+        
+        .animate-float {
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        .animate-float-slow {
+            animation: float-slow 12s ease-in-out infinite;
+        }
+        
+        .animate-float-slower {
+            animation: float-slower 15s ease-in-out infinite;
+        }
+        
+        /* Custom Scrollbar untuk card */
+        .card::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .card::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+        
+        .card::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.3);
+            border-radius: 10px;
+        }
+        
+        .card::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.5);
         }
     </style>
 </body>

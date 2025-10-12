@@ -1,9 +1,15 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-white leading-tight">
-                {{ __('Manajemen Nilai & Ranking') }}
-            </h2>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="space-y-1">
+                <h2 class="font-bold text-2xl text-white leading-tight flex items-center gap-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    {{ __('Ranking Kelompok') }}
+                </h2>
+                <p class="text-sm text-white/90">Monitoring dan ranking kelompok berdasarkan kriteria penilaian</p>
+            </div>
             <div class="flex gap-2">
                 @if(auth()->user()->isAdmin())
                     <!-- Admin Only: Recalculate Ranking -->
@@ -15,14 +21,6 @@
                             <i class="fas fa-calculator mr-2"></i>Hitung Ulang Ranking
                         </button>
                     </form>
-                @endif
-                
-                @if(auth()->user()->isDosen())
-                    <!-- Dosen Only: Input Score -->
-                    <a href="{{ route('scores.create') }}" 
-                       class="bg-secondary-500 hover:bg-secondary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-                        <i class="fas fa-plus mr-2"></i>Input Nilai
-                    </a>
                 @endif
             </div>
         </div>
@@ -42,53 +40,113 @@
 
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-xl shadow-lg text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-primary-100 text-sm font-medium">Total Kelompok</p>
-                            <p class="text-3xl font-bold">{{ $groups->count() }}</p>
+                <!-- Card 1: Total Kelompok -->
+                <div class="group relative bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-blue-100 text-xs font-medium uppercase tracking-wider">Total Kelompok</p>
+                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $groups->count() }}</p>
+                            <p class="text-xs text-blue-100 mt-2">Kelompok dinilai</p>
                         </div>
-                        <div class="bg-primary-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-users text-2xl"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-gradient-to-r from-green-500 to-green-600 p-6 rounded-xl shadow-lg text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-green-100 text-sm font-medium">Total Kriteria</p>
-                            <p class="text-3xl font-bold">{{ $criteria->count() }}</p>
-                        </div>
-                        <div class="bg-green-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-list-check text-2xl"></i>
+                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                            <i class="fa-solid fa-users text-2xl"></i>
                         </div>
                     </div>
                 </div>
                 
-                <div class="bg-gradient-to-r from-secondary-500 to-secondary-600 p-6 rounded-xl shadow-lg text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-secondary-100 text-sm font-medium">Total Nilai</p>
-                            <p class="text-3xl font-bold">{{ $scores->count() }}</p>
+                <!-- Card 2: Total Kriteria -->
+                <div class="group relative bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-green-100 text-xs font-medium uppercase tracking-wider">Total Kriteria</p>
+                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $criteria->count() }}</p>
+                            <p class="text-xs text-green-100 mt-2">Kriteria penilaian</p>
                         </div>
-                        <div class="bg-secondary-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-star text-2xl"></i>
+                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                            <i class="fa-solid fa-list-check text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card 3: Total Nilai -->
+                <div class="group relative bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-purple-100 text-xs font-medium uppercase tracking-wider">Total Nilai</p>
+                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $scores->count() }}</p>
+                            <p class="text-xs text-purple-100 mt-2">Data penilaian</p>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                            <i class="fa-solid fa-star text-2xl"></i>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-gradient-to-r from-orange-500 to-orange-600 p-6 rounded-xl shadow-lg text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-orange-100 text-sm font-medium">Rata-rata Skor</p>
-                            <p class="text-3xl font-bold">{{ number_format($averageScore, 1) }}</p>
+                <!-- Card 4: Rata-rata Skor -->
+                <div class="group relative bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-orange-100 text-xs font-medium uppercase tracking-wider">Rata-rata Skor</p>
+                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ number_format($averageScore, 1) }}</p>
+                            <p class="text-xs text-orange-100 mt-2">Skor rata-rata</p>
                         </div>
-                        <div class="bg-orange-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-chart-line text-2xl"></i>
+                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                            <i class="fa-solid fa-chart-line text-2xl"></i>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                    </svg>
+                    Filter Ranking
+                </h3>
+                <form method="GET" action="{{ route('scores.index') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Angkatan (Tahun Ajaran)</label>
+                        <select name="academic_year" id="academic_year" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                            <option value="">Semua Angkatan</option>
+                            @foreach($academicYears as $year)
+                                <option value="{{ $year }}" {{ request('academic_year') == $year ? 'selected' : '' }}>
+                                    {{ $year }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Kelas</label>
+                        <select name="class_room_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                            <option value="">Semua Kelas</option>
+                            @foreach($classRooms as $classRoom)
+                                <option value="{{ $classRoom->id }}" {{ request('class_room_id') == $classRoom->id ? 'selected' : '' }}>
+                                    {{ $classRoom->name }} @if($classRoom->academicPeriod) ({{ $classRoom->academicPeriod->academic_year }})@endif
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <button type="submit" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-semibold py-2 px-6 rounded-md transition duration-200">
+                            <i class="fa-solid fa-filter mr-2"></i>Terapkan Filter
+                        </button>
+                        @if(request()->hasAny(['academic_year', 'class_room_id']))
+                            <a href="{{ route('scores.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-md transition duration-200">
+                                <i class="fa-solid fa-times mr-1"></i>Reset
+                            </a>
+                        @endif
+                    </div>
+                </form>
             </div>
 
             <!-- Best Students & Groups - Progressive Disclosure with Tabs -->

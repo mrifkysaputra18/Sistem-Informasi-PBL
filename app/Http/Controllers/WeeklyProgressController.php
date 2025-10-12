@@ -49,6 +49,38 @@ class WeeklyProgressController extends Controller
         return view('weekly-progress.create', compact('group'));
     }
 
+    /**
+     * Show upload form for weekly progress (flexible upload)
+     */
+    public function upload(Request $request)
+    {
+        $groupId = $request->get('group_id');
+        $weekNumber = $request->get('week_number');
+        $targetId = $request->get('target_id');
+        
+        if (!$groupId || !$weekNumber) {
+            return redirect()->route('mahasiswa.dashboard')
+                ->with('error', 'Data tidak lengkap. Silakan coba lagi.');
+        }
+        
+        $group = Group::findOrFail($groupId);
+        
+        // Check if user is member of the group
+        $isMember = $group->members()->where('user_id', auth()->id())->exists();
+        
+        if (!$isMember) {
+            abort(403, 'Anda bukan anggota kelompok ini.');
+        }
+
+        // Get target if exists
+        $target = null;
+        if ($targetId) {
+            $target = \App\Models\WeeklyTarget::find($targetId);
+        }
+
+        return view('weekly-progress.upload', compact('group', 'weekNumber', 'target'));
+    }
+
     public function store(Request $request)
     {
         $group = Group::findOrFail($request->group_id);
@@ -66,7 +98,8 @@ class WeeklyProgressController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'is_checked_only' => 'nullable|boolean',
-            'evidence.*' => 'nullable|file|max:2048', // 2MB max per file
+            'target_id' => 'nullable|exists:weekly_targets,id',
+            'evidence.*' => 'nullable|file|max:5120', // 5MB max per file
         ]);
 
         // Handle evidence uploads - upload to Google Drive
@@ -85,33 +118,48 @@ class WeeklyProgressController extends Controller
                         'file_id' => $fileId,
                         'file_name' => $file->getClientOriginalName(),
                         'file_url' => $this->googleDriveService->getFileUrl($fileId),
+                        'uploaded_at' => now()->toDateTimeString(),
                     ];
                 } catch (\Exception $e) {
                     \Log::error('Google Drive upload error: ' . $e->getMessage());
                     
                     // Fallback: simpan ke local storage jika Google Drive gagal
-                    $path = $file->store('evidence', 'public');
+                    $path = $file->store('weekly-progress/evidence', 'public');
                     $evidencePaths[] = [
                         'local_path' => $path,
                         'file_name' => $file->getClientOriginalName(),
+                        'file_url' => asset('storage/' . $path),
+                        'uploaded_at' => now()->toDateTimeString(),
                     ];
                 }
             }
         }
 
+        // Create weekly progress entry
         $weeklyProgress = WeeklyProgress::create([
             'group_id' => $group->id,
             'week_number' => $validated['week_number'],
             'title' => $validated['title'],
             'description' => $validated['description'] ?? '',
-            'documents' => json_encode($evidencePaths),
+            'documents' => $evidencePaths,
             'is_checked_only' => $request->is_checked_only ?? false,
             'status' => 'submitted',
             'submitted_at' => now(),
         ]);
 
+        // Update related weekly target status if exists
+        if ($request->target_id) {
+            $target = \App\Models\WeeklyTarget::find($request->target_id);
+            if ($target && $target->group_id == $group->id) {
+                $target->update([
+                    'submission_status' => 'submitted',
+                    'submitted_at' => now(),
+                ]);
+            }
+        }
+
         return redirect()->route('mahasiswa.dashboard')
-            ->with('success', 'Progress mingguan berhasil diupload!');
+            ->with('success', 'Progress mingguan berhasil diupload! Dosen akan segera mereview progress Anda.');
     }
 
     public function show(Group $group, WeeklyProgress $weeklyProgress)

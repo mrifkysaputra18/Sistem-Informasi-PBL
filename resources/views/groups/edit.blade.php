@@ -19,21 +19,31 @@
                         @csrf
                         @method('PATCH')
 
-                        <!-- Pilih Kelas -->
+                        <!-- Pilih Kelas (Locked saat edit) -->
                         <div class="mb-4">
-                            <label for="class_room_id" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="class_room_id_display" class="block text-sm font-medium text-gray-700 mb-2">
                                 Kelas <span class="text-red-500">*</span>
+                                <span class="ml-2 text-xs text-gray-500 font-normal">
+                                    <i class="fa-solid fa-lock mr-1"></i>Tidak dapat diubah
+                                </span>
                             </label>
-                            <select name="class_room_id" id="class_room_id" required
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('class_room_id') border-red-500 @enderror">
-                                <option value="">-- Pilih Kelas --</option>
+                            <!-- Hidden input untuk mengirim nilai asli -->
+                            <input type="hidden" name="class_room_id" value="{{ $group->class_room_id }}">
+                            
+                            <!-- Select yang di-disable hanya untuk tampilan -->
+                            <select id="class_room_id_display" disabled
+                                class="w-full rounded-md border-gray-300 bg-gray-100 text-gray-600 shadow-sm cursor-not-allowed">
                                 @foreach($classRooms as $classRoom)
                                 <option value="{{ $classRoom->id }}" 
-                                    {{ old('class_room_id', $group->class_room_id) == $classRoom->id ? 'selected' : '' }}>
+                                    {{ $group->class_room_id == $classRoom->id ? 'selected' : '' }}>
                                     {{ $classRoom->name }}
                                 </option>
                                 @endforeach
                             </select>
+                            <p class="mt-1 text-xs text-gray-500">
+                                <i class="fa-solid fa-info-circle mr-1"></i>
+                                Kelas tidak dapat dipindahkan setelah kelompok dibuat. Jika ingin memindahkan, silakan buat kelompok baru.
+                            </p>
                             @error('class_room_id')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror

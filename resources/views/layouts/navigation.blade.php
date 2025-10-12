@@ -27,68 +27,68 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-2 sm:ms-6 lg:flex items-center">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard', 'admin.dashboard', 'koordinator.dashboard', 'dosen.dashboard', 'mahasiswa.dashboard')">
-                        <i class="fas fa-tachometer-alt mr-1"></i>{{ __('Dashboard') }}
+                        {{ __('Dashboard') }}
                     </x-nav-link>
 
                     @if(auth()->user()->isAdmin())
                         <!-- Admin Only - Periode Akademik (Gabungan: Mata Kuliah + Tahun Ajaran + Semester) -->
                         <x-nav-link :href="route('academic-periods.index')" :active="request()->routeIs('academic-periods.*') || request()->routeIs('projects.*')">
-                            <i class="fas fa-calendar-alt mr-1"></i>{{ __('Periode Akademik') }}
+                            {{ __('Periode Akademik') }}
                         </x-nav-link>
                         
                         <!-- Admin Only - User Management -->
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
-                            <i class="fas fa-users-cog mr-1"></i>{{ __('Kelola User') }}
+                            {{ __('Kelola User') }}
                         </x-nav-link>
                     @endif
 
                     @if(auth()->user()->isKoordinator() || auth()->user()->isAdmin())
                         <!-- Koordinator, Admin Menu - Kelola Kelompok -->
                         <x-nav-link :href="route('classrooms.index')" :active="request()->routeIs('classrooms.*')">
-                            <i class="fas fa-school mr-1"></i>{{ __('Kelas') }}
+                            {{ __('Kelas') }}
                         </x-nav-link>
                         <x-nav-link :href="route('groups.index')" :active="request()->routeIs('groups.*')">
-                            <i class="fas fa-users mr-1"></i>{{ __('Kelompok') }}
+                            {{ __('Kelompok') }}
                         </x-nav-link>
                     @endif
 
                     @if(auth()->user()->isAdmin())
                         <!-- Admin Only - Criteria -->
                         <x-nav-link :href="route('criteria.index')" :active="request()->routeIs('criteria.*')">
-                            <i class="fas fa-list-check mr-1"></i>{{ __('Kriteria') }}
+                            {{ __('Kriteria') }}
                         </x-nav-link>
                     @endif
 
                     @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
                         <!-- Dosen, Koordinator, Admin - Kelola Target Mingguan -->
                         <x-nav-link :href="route('targets.index')" :active="request()->routeIs('targets.*')">
-                            <i class="fas fa-bullseye mr-1"></i>{{ __('Target Mingguan') }}
+                            {{ __('Target Mingguan') }}
                         </x-nav-link>
                     @endif
 
                     @if(auth()->user()->isDosen() || auth()->user()->isKoordinator())
                         <!-- Dosen, Koordinator - Review Target -->
                         <x-nav-link :href="route('target-reviews.index')" :active="request()->routeIs('target-reviews.*')">
-                            <i class="fas fa-clipboard-check mr-1"></i>{{ __('Review Target') }}
+                            {{ __('Review Target') }}
                         </x-nav-link>
                     @endif
 
                     @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
                         <!-- Dosen, Koordinator, Admin - Group Scores -->
                         <x-nav-link :href="route('scores.index')" :active="request()->routeIs('scores.*') && !request()->routeIs('student-scores.*')">
-                            <i class="fas fa-users-rectangle mr-1"></i>{{ __('Nilai Kelompok') }}
+                            {{ __('Ranking Kelompok') }}
                         </x-nav-link>
                         
                         <!-- Dosen, Koordinator, Admin - Student Scores -->
                         <x-nav-link :href="route('student-scores.index')" :active="request()->routeIs('student-scores.*')">
-                            <i class="fas fa-user-graduate mr-1"></i>{{ __('Nilai Mahasiswa') }}
+                            {{ __('Ranking Mahasiswa') }}
                         </x-nav-link>
                     @endif
 
                     @if(auth()->user()->isMahasiswa())
                         <!-- Mahasiswa - Target Mingguan -->
                         <x-nav-link :href="route('targets.submissions.index')" :active="request()->routeIs('targets.submissions.*')">
-                            <i class="fas fa-bullseye mr-1"></i>{{ __('Target Mingguan') }}
+                            {{ __('Target Mingguan') }}
                         </x-nav-link>
                     @endif
                 </div>
@@ -151,61 +151,61 @@
     <div :class="{'block': open, 'hidden': ! open}" class="hidden lg:hidden mobile-menu">
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard', 'admin.dashboard', 'koordinator.dashboard', 'dosen.dashboard', 'mahasiswa.dashboard')">
-                <i class="fas fa-tachometer-alt mr-1"></i>{{ __('Dashboard') }}
+                {{ __('Dashboard') }}
             </x-responsive-nav-link>
 
             @if(auth()->user()->isAdmin())
                 <!-- Admin Menu - Periode Akademik -->
                 <x-responsive-nav-link :href="route('academic-periods.index')" :active="request()->routeIs('academic-periods.*') || request()->routeIs('projects.*')">
-                    <i class="fas fa-calendar-alt mr-1"></i>{{ __('Periode Akademik') }}
+                    {{ __('Periode Akademik') }}
                 </x-responsive-nav-link>
                 
                 <!-- Admin Menu - User Management -->
                 <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
-                    <i class="fas fa-users-cog mr-1"></i>{{ __('Kelola User') }}
+                    {{ __('Kelola User') }}
                 </x-responsive-nav-link>
             @endif
 
             @if(auth()->user()->isKoordinator() || auth()->user()->isAdmin())
                 <!-- Koordinator, Admin Menu -->
                 <x-responsive-nav-link :href="route('classrooms.index')" :active="request()->routeIs('classrooms.*')">
-                    <i class="fas fa-school mr-1"></i>{{ __('Kelas') }}
+                    {{ __('Kelas') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('groups.index')" :active="request()->routeIs('groups.*')">
-                    <i class="fas fa-users mr-1"></i>{{ __('Kelompok') }}
+                    {{ __('Kelompok') }}
                 </x-responsive-nav-link>
             @endif
 
             @if(auth()->user()->isAdmin())
                 <!-- Admin Only - Criteria -->
                 <x-responsive-nav-link :href="route('criteria.index')" :active="request()->routeIs('criteria.*')">
-                    <i class="fas fa-list-check mr-1"></i>{{ __('Kriteria') }}
+                    {{ __('Kriteria') }}
                 </x-responsive-nav-link>
             @endif
 
             @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
                 <!-- Dosen, Koordinator, Admin - Target Mingguan -->
                 <x-responsive-nav-link :href="route('targets.index')" :active="request()->routeIs('targets.*')">
-                    <i class="fas fa-bullseye mr-1"></i>{{ __('Target Mingguan') }}
+                    {{ __('Target Mingguan') }}
                 </x-responsive-nav-link>
             @endif
 
             @if(auth()->user()->isDosen() || auth()->user()->isKoordinator())
                 <!-- Dosen, Koordinator - Review Target -->
                 <x-responsive-nav-link :href="route('target-reviews.index')" :active="request()->routeIs('target-reviews.*')">
-                    <i class="fas fa-clipboard-check mr-1"></i>{{ __('Review Target') }}
+                    {{ __('Review Target') }}
                 </x-responsive-nav-link>
             @endif
 
             @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
                 <!-- Dosen, Koordinator, Admin - Group Scores -->
                 <x-responsive-nav-link :href="route('scores.index')" :active="request()->routeIs('scores.*') && !request()->routeIs('student-scores.*')">
-                    <i class="fas fa-users-rectangle mr-1"></i>{{ __('Nilai Kelompok') }}
+                    {{ __('Ranking Kelompok') }}
                 </x-responsive-nav-link>
                 
                 <!-- Dosen, Koordinator, Admin - Student Scores -->
                 <x-responsive-nav-link :href="route('student-scores.index')" :active="request()->routeIs('student-scores.*')">
-                    <i class="fas fa-user-graduate mr-1"></i>{{ __('Nilai Mahasiswa') }}
+                    {{ __('Ranking Mahasiswa') }}
                 </x-responsive-nav-link>
             @endif
 
@@ -229,7 +229,7 @@
                     </div>
                 </div>
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium role-badge-{{ auth()->user()->role }}">
-                    <i class="fas fa-circle text-xs mr-1"></i>
+                    <i class="fa-solid fa-circle text-xs mr-1"></i>
                     {{ ucfirst(Auth::user()->role) }}
                 </span>
             </div>

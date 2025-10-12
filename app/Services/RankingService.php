@@ -206,11 +206,18 @@ class RankingService
     /**
      * Hitung ranking lengkap dengan detail untuk kelompok
      * 
+     * @param array|null $filterGroupIds Optional array of group IDs to filter
      * @return array
      */
-    public function getGroupRankingWithDetails(): array
+    public function getGroupRankingWithDetails(?array $filterGroupIds = null): array
     {
         $totals = $this->computeGroupTotals();
+        
+        // Filter by group IDs if provided
+        if ($filterGroupIds !== null && !empty($filterGroupIds)) {
+            $totals = array_intersect_key($totals, array_flip($filterGroupIds));
+        }
+        
         arsort($totals); // Urutkan dari tertinggi ke terendah
         
         $ranking = [];
@@ -237,12 +244,18 @@ class RankingService
     /**
      * Hitung ranking lengkap dengan detail untuk mahasiswa
      * 
-     * @param int|null $classRoomId
+     * @param int|null $classRoomId Filter by class room
+     * @param array|null $filterStudentIds Optional array of student IDs to filter
      * @return array
      */
-    public function getStudentRankingWithDetails($classRoomId = null): array
+    public function getStudentRankingWithDetails($classRoomId = null, ?array $filterStudentIds = null): array
     {
         $totals = $this->computeStudentTotals($classRoomId);
+        
+        // Filter by student IDs if provided
+        if ($filterStudentIds !== null && !empty($filterStudentIds)) {
+            $totals = array_intersect_key($totals, array_flip($filterStudentIds));
+        }
         arsort($totals); // Urutkan dari tertinggi ke terendah
         
         $ranking = [];

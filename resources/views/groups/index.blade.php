@@ -1,9 +1,15 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-white leading-tight">
-                {{ __('Manajemen Kelompok') }}
-            </h2>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="space-y-1">
+                <h2 class="font-bold text-2xl text-white leading-tight flex items-center gap-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    {{ __('Manajemen Kelompok') }}
+                </h2>
+                <p class="text-sm text-white/90">Kelola kelompok mahasiswa dan anggota untuk project PBL</p>
+            </div>
             <div class="flex gap-2">
                 @if(auth()->user()->isAdmin())
                 <a href="{{ route('import.groups') }}" 
@@ -72,38 +78,50 @@
 
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-xl shadow-lg text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-primary-100 text-sm font-medium">Total Kelompok</p>
-                            <p class="text-3xl font-bold">{{ $groups->total() }}</p>
+                <!-- Card 1: Total Kelompok -->
+                <div class="group relative bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-blue-100 text-xs font-medium uppercase tracking-wider">Total Kelompok</p>
+                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $groups->total() }}</p>
+                            <p class="text-xs text-blue-100 mt-2">Kelompok terdaftar</p>
                         </div>
-                        <div class="bg-primary-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-users text-2xl"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-gradient-to-r from-green-500 to-green-600 p-6 rounded-xl shadow-lg text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-green-100 text-sm font-medium">Kelompok Aktif</p>
-                            <p class="text-3xl font-bold">{{ $groups->count() }}</p>
-                        </div>
-                        <div class="bg-green-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-check-circle text-2xl"></i>
+                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                            <i class="fa-solid fa-users text-2xl"></i>
                         </div>
                     </div>
                 </div>
                 
-                <div class="bg-gradient-to-r from-secondary-500 to-secondary-600 p-6 rounded-xl shadow-lg text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-secondary-100 text-sm font-medium">Kelompok Penuh</p>
-                            <p class="text-3xl font-bold">{{ $groups->filter(fn($g) => $g->isFull())->count() }}</p>
+                <!-- Card 2: Kelompok Aktif -->
+                <div class="group relative bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-green-100 text-xs font-medium uppercase tracking-wider">Kelompok Aktif</p>
+                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $groups->count() }}</p>
+                            <p class="text-xs text-green-100 mt-2">Kelompok aktif</p>
                         </div>
-                        <div class="bg-secondary-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-user-check text-2xl"></i>
+                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                            <i class="fa-solid fa-circle-check text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card 3: Kelompok Penuh -->
+                <div class="group relative bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-purple-100 text-xs font-medium uppercase tracking-wider">Kelompok Penuh</p>
+                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $groups->filter(fn($g) => $g->isFull())->count() }}</p>
+                            <p class="text-xs text-purple-100 mt-2">Anggota lengkap</p>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                            <i class="fa-solid fa-user-check text-2xl"></i>
                         </div>
                     </div>
                 </div>
@@ -116,7 +134,7 @@
                         <h3 class="text-lg font-semibold text-gray-800">
                             <i class="fas fa-table mr-2 text-gray-600"></i>Daftar Kelompok
                         </h3>
-                        <div class="text-sm text-gray-600">
+                        <div class="text-sm text-gray-700 font-medium">
                             Showing {{ $groups->count() }} of {{ $groups->total() }} entries
                         </div>
                     </div>
