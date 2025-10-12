@@ -12,24 +12,56 @@ class StudentScoreController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $students = User::where('role', 'mahasiswa')
-            ->with(['classRoom', 'groups', 'studentScores'])
-            ->get();
+        // Build query with filters
+        $query = User::where('role', 'mahasiswa')
+            ->with(['classRoom.academicPeriod', 'groups', 'studentScores']);
         
+        // Filter by academic year (angkatan)
+        if ($request->filled('academic_year')) {
+            $query->whereHas('classRoom.academicPeriod', function($q) use ($request) {
+                $q->where('academic_year', $request->academic_year);
+            });
+        }
+        
+        // Filter by class
+        if ($request->filled('class_room_id')) {
+            $query->where('class_room_id', $request->class_room_id);
+        }
+        
+        $students = $query->get();
         $criteria = Criterion::where('segment', 'student')->get();
-        $scores = StudentScore::all();
+        
+        // Filter scores based on filtered students
+        $studentIds = $students->pluck('id');
+        $scores = StudentScore::whereIn('user_id', $studentIds)->get();
         
         // Calculate ranking using RankingService
         $rankingService = new RankingService();
-        $ranking = $rankingService->getStudentRankingWithDetails();
+        $ranking = $rankingService->getStudentRankingWithDetails($request->class_room_id, $studentIds->toArray());
         
         // Calculate average score
         $averageScore = $scores->count() > 0 ? $scores->avg('skor') : 0;
         
-        // Get best students per class
-        $bestStudentsPerClass = $this->getBestStudentsPerClass();
+        // Get best students per class (with filter)
+        $bestStudentsPerClass = $this->getBestStudentsPerClass($request->academic_year, $request->class_room_id);
+        
+        // Get unique academic years for filter
+        $academicYears = \App\Models\AcademicPeriod::orderBy('academic_year', 'desc')
+            ->pluck('academic_year')
+            ->unique()
+            ->values();
+        
+        // Get classrooms for filter
+        $classRooms = ClassRoom::with('academicPeriod')
+            ->when($request->filled('academic_year'), function($q) use ($request) {
+                $q->whereHas('academicPeriod', function($query) use ($request) {
+                    $query->where('academic_year', $request->academic_year);
+                });
+            })
+            ->orderBy('name')
+            ->get();
         
         return view('student-scores.index', compact(
             'students', 
@@ -37,7 +69,9 @@ class StudentScoreController extends Controller
             'scores', 
             'ranking', 
             'averageScore',
-            'bestStudentsPerClass'
+            'bestStudentsPerClass',
+            'academicYears',
+            'classRooms'
         ));
     }
 
@@ -154,14 +188,31 @@ class StudentScoreController extends Controller
     
     /**
      * Get best students per class
+     * 
+     * @param string|null $academicYear Filter by academic year
+     * @param int|null $classRoomId Filter by specific class
      */
-    private function getBestStudentsPerClass()
+    private function getBestStudentsPerClass($academicYear = null, $classRoomId = null)
     {
         $bestStudents = [];
         $rankingService = new RankingService();
         
-        // Get all classes with their students
-        $classRooms = ClassRoom::with(['students'])->get();
+        // Build query with filters
+        $query = ClassRoom::with(['students', 'academicPeriod']);
+        
+        // Filter by academic year
+        if ($academicYear) {
+            $query->whereHas('academicPeriod', function($q) use ($academicYear) {
+                $q->where('academic_year', $academicYear);
+            });
+        }
+        
+        // Filter by specific class
+        if ($classRoomId) {
+            $query->where('id', $classRoomId);
+        }
+        
+        $classRooms = $query->get();
         
         foreach ($classRooms as $classRoom) {
             if ($classRoom->students->count() > 0) {
