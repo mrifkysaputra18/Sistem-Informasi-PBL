@@ -93,7 +93,7 @@
                         <h3 class="text-lg font-semibold text-gray-800">
                             <i class="fa-solid fa-table mr-2 text-gray-600"></i>Daftar Kriteria
                         </h3>
-                        <div class="text-sm text-gray-600">
+                        <div class="text-sm text-gray-700 font-medium">
                             Showing {{ $criteria->count() }} of {{ $criteria->total() }} entries
                         </div>
                     </div>

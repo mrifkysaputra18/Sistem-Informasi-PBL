@@ -335,7 +335,7 @@
                             <h3 class="text-lg font-semibold text-gray-800">
                                 <i class="fas fa-filter mr-2 text-gray-600"></i>Hasil Filter
                             </h3>
-                            <div class="text-sm text-gray-600">
+                            <div class="text-sm text-gray-700 font-medium">
                                 Showing {{ $users->count() }} of {{ $users->total() }} entries
                             </div>
                         </div>
