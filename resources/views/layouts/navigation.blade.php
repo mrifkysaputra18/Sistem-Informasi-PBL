@@ -76,12 +76,12 @@
                     @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
                         <!-- Dosen, Koordinator, Admin - Group Scores -->
                         <x-nav-link :href="route('scores.index')" :active="request()->routeIs('scores.*') && !request()->routeIs('student-scores.*')">
-                            <i class="fa-solid fa-users-rectangle mr-1"></i>{{ __('Nilai Kelompok') }}
+                            <i class="fa-solid fa-users-rectangle mr-1"></i>{{ __('Ranking Kelompok') }}
                         </x-nav-link>
                         
                         <!-- Dosen, Koordinator, Admin - Student Scores -->
                         <x-nav-link :href="route('student-scores.index')" :active="request()->routeIs('student-scores.*')">
-                            <i class="fa-solid fa-user-graduate mr-1"></i>{{ __('Nilai Mahasiswa') }}
+                            <i class="fa-solid fa-user-graduate mr-1"></i>{{ __('Ranking Mahasiswa') }}
                         </x-nav-link>
                     @endif
 
@@ -200,12 +200,12 @@
             @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
                 <!-- Dosen, Koordinator, Admin - Group Scores -->
                 <x-responsive-nav-link :href="route('scores.index')" :active="request()->routeIs('scores.*') && !request()->routeIs('student-scores.*')">
-                    <i class="fa-solid fa-users-rectangle mr-1"></i>{{ __('Nilai Kelompok') }}
+                    <i class="fa-solid fa-users-rectangle mr-1"></i>{{ __('Ranking Kelompok') }}
                 </x-responsive-nav-link>
                 
                 <!-- Dosen, Koordinator, Admin - Student Scores -->
                 <x-responsive-nav-link :href="route('student-scores.index')" :active="request()->routeIs('student-scores.*')">
-                    <i class="fa-solid fa-user-graduate mr-1"></i>{{ __('Nilai Mahasiswa') }}
+                    <i class="fa-solid fa-user-graduate mr-1"></i>{{ __('Ranking Mahasiswa') }}
                 </x-responsive-nav-link>
             @endif
 

@@ -10,34 +10,23 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/>
                     </svg>
                     @if(auth()->user()->isKoordinator())
-                        Nilai Mahasiswa & Ranking
+                        Ranking Mahasiswa
                     @else
-                        Manajemen Nilai Mahasiswa & Ranking
+                        Ranking Mahasiswa
                     @endif
                 </h2>
-                <p class="text-sm text-white/90">Monitoring nilai mahasiswa per kriteria dengan ranking otomatis</p>
+                <p class="text-sm text-white/90">Monitoring dan ranking mahasiswa berdasarkan kriteria penilaian</p>
             </div>
             
             <!-- Fitts's Law: Larger, accessible action buttons -->
             <div class="flex flex-wrap gap-2">
                 @if(auth()->user()->isDosen() || auth()->user()->isAdmin())
-                    <a href="{{ route('student-scores.create') }}" 
-                       class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-semibold py-2.5 px-4 rounded-lg border border-white/30 transition-all duration-200 hover:scale-105 hover:shadow-lg group">
-                        <svg class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                        </svg>
-                        <span>Input Nilai</span>
-                    </a>
-                    
                     <form action="{{ route('student-scores.recalc') }}" method="POST" class="inline">
                         @csrf
                         <button type="submit" 
                                 onclick="return confirm('Hitung ulang ranking untuk semua mahasiswa?')"
-                                class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-semibold py-2.5 px-4 rounded-lg border border-white/30 transition-all duration-200 hover:scale-105 hover:shadow-lg group">
-                            <svg class="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                            </svg>
-                            <span>Hitung Ulang</span>
+                                class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                            <i class="fas fa-calculator mr-2"></i>Hitung Ulang Ranking
                         </button>
                     </form>
                 @endif
