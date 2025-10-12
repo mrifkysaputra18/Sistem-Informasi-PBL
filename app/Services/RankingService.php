@@ -206,11 +206,18 @@ class RankingService
     /**
      * Hitung ranking lengkap dengan detail untuk kelompok
      * 
+     * @param array|null $filterGroupIds Optional array of group IDs to filter
      * @return array
      */
-    public function getGroupRankingWithDetails(): array
+    public function getGroupRankingWithDetails(?array $filterGroupIds = null): array
     {
         $totals = $this->computeGroupTotals();
+        
+        // Filter by group IDs if provided
+        if ($filterGroupIds !== null && !empty($filterGroupIds)) {
+            $totals = array_intersect_key($totals, array_flip($filterGroupIds));
+        }
+        
         arsort($totals); // Urutkan dari tertinggi ke terendah
         
         $ranking = [];

@@ -12,15 +12,33 @@ class GroupScoreController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $groups = Group::with(['classRoom', 'leader', 'members', 'weeklyTargets'])->get();
+        // Build query with filters
+        $query = Group::with(['classRoom.academicPeriod', 'leader', 'members', 'weeklyTargets']);
+        
+        // Filter by academic year (angkatan)
+        if ($request->filled('academic_year')) {
+            $query->whereHas('classRoom.academicPeriod', function($q) use ($request) {
+                $q->where('academic_year', $request->academic_year);
+            });
+        }
+        
+        // Filter by class
+        if ($request->filled('class_room_id')) {
+            $query->where('class_room_id', $request->class_room_id);
+        }
+        
+        $groups = $query->get();
         $criteria = Criterion::where('segment', 'group')->get();
-        $scores = GroupScore::all();
+        
+        // Filter scores based on filtered groups
+        $groupIds = $groups->pluck('id');
+        $scores = GroupScore::whereIn('group_id', $groupIds)->get();
         
         // Calculate ranking using RankingService dengan metode SAW
         $rankingService = new RankingService();
-        $ranking = $rankingService->getGroupRankingWithDetails();
+        $ranking = $rankingService->getGroupRankingWithDetails($groupIds->toArray());
         
         // Calculate average score
         $averageScore = $scores->count() > 0 ? $scores->avg('skor') : 0;
@@ -28,13 +46,29 @@ class GroupScoreController extends Controller
         // Get progress speed scores
         $progressSpeedScores = $rankingService->getProgressSpeedScores();
         
-        // Get best students per class
-        $bestStudentsPerClass = $this->getBestStudentsPerClass();
+        // Get best students per class (with filter)
+        $bestStudentsPerClass = $this->getBestStudentsPerClass($request->academic_year, $request->class_room_id);
         
-        // Get best groups per class
-        $bestGroupsPerClass = $this->getBestGroupsPerClass();
+        // Get best groups per class (with filter)
+        $bestGroupsPerClass = $this->getBestGroupsPerClass($request->academic_year, $request->class_room_id);
         
-        return view('scores.index', compact('groups', 'criteria', 'scores', 'ranking', 'averageScore', 'progressSpeedScores', 'bestStudentsPerClass', 'bestGroupsPerClass'));
+        // Get unique academic years for filter
+        $academicYears = \App\Models\AcademicPeriod::orderBy('academic_year', 'desc')
+            ->pluck('academic_year')
+            ->unique()
+            ->values();
+        
+        // Get classrooms for filter
+        $classRooms = \App\Models\ClassRoom::with('academicPeriod')
+            ->when($request->filled('academic_year'), function($q) use ($request) {
+                $q->whereHas('academicPeriod', function($query) use ($request) {
+                    $query->where('academic_year', $request->academic_year);
+                });
+            })
+            ->orderBy('name')
+            ->get();
+        
+        return view('scores.index', compact('groups', 'criteria', 'scores', 'ranking', 'averageScore', 'progressSpeedScores', 'bestStudentsPerClass', 'bestGroupsPerClass', 'academicYears', 'classRooms'));
     }
 
     /**
@@ -124,13 +158,30 @@ class GroupScoreController extends Controller
     
     /**
      * Get best students per class based on individual performance
+     * 
+     * @param string|null $academicYear Filter by academic year
+     * @param int|null $classRoomId Filter by specific class
      */
-    private function getBestStudentsPerClass()
+    private function getBestStudentsPerClass($academicYear = null, $classRoomId = null)
     {
         $bestStudents = [];
         
-        // Get all classes with their groups
-        $classRooms = \App\Models\ClassRoom::with(['groups.members.user'])->get();
+        // Build query with filters
+        $query = \App\Models\ClassRoom::with(['groups.members.user', 'academicPeriod']);
+        
+        // Filter by academic year
+        if ($academicYear) {
+            $query->whereHas('academicPeriod', function($q) use ($academicYear) {
+                $q->where('academic_year', $academicYear);
+            });
+        }
+        
+        // Filter by specific class
+        if ($classRoomId) {
+            $query->where('id', $classRoomId);
+        }
+        
+        $classRooms = $query->get();
         
         foreach ($classRooms as $classRoom) {
             $students = collect();
@@ -170,13 +221,30 @@ class GroupScoreController extends Controller
     
     /**
      * Get best groups per class
+     * 
+     * @param string|null $academicYear Filter by academic year
+     * @param int|null $classRoomId Filter by specific class
      */
-    private function getBestGroupsPerClass()
+    private function getBestGroupsPerClass($academicYear = null, $classRoomId = null)
     {
         $bestGroups = [];
         
-        // Get all classes with their groups
-        $classRooms = \App\Models\ClassRoom::with(['groups'])->get();
+        // Build query with filters
+        $query = \App\Models\ClassRoom::with(['groups', 'academicPeriod']);
+        
+        // Filter by academic year
+        if ($academicYear) {
+            $query->whereHas('academicPeriod', function($q) use ($academicYear) {
+                $q->where('academic_year', $academicYear);
+            });
+        }
+        
+        // Filter by specific class
+        if ($classRoomId) {
+            $query->where('id', $classRoomId);
+        }
+        
+        $classRooms = $query->get();
         
         foreach ($classRooms as $classRoom) {
             $groups = $classRoom->groups;
