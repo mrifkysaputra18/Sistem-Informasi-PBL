@@ -40,50 +40,66 @@
 
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-xl shadow-lg text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-primary-100 text-sm font-medium">Total Kelompok</p>
-                            <p class="text-3xl font-bold">{{ $groups->count() }}</p>
+                <!-- Card 1: Total Kelompok -->
+                <div class="group relative bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-blue-100 text-xs font-medium uppercase tracking-wider">Total Kelompok</p>
+                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $groups->count() }}</p>
+                            <p class="text-xs text-blue-100 mt-2">Kelompok dinilai</p>
                         </div>
-                        <div class="bg-primary-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-users text-2xl"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-gradient-to-r from-green-500 to-green-600 p-6 rounded-xl shadow-lg text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-green-100 text-sm font-medium">Total Kriteria</p>
-                            <p class="text-3xl font-bold">{{ $criteria->count() }}</p>
-                        </div>
-                        <div class="bg-green-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-list-check text-2xl"></i>
+                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                            <i class="fa-solid fa-users text-2xl"></i>
                         </div>
                     </div>
                 </div>
                 
-                <div class="bg-gradient-to-r from-secondary-500 to-secondary-600 p-6 rounded-xl shadow-lg text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-secondary-100 text-sm font-medium">Total Nilai</p>
-                            <p class="text-3xl font-bold">{{ $scores->count() }}</p>
+                <!-- Card 2: Total Kriteria -->
+                <div class="group relative bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-green-100 text-xs font-medium uppercase tracking-wider">Total Kriteria</p>
+                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $criteria->count() }}</p>
+                            <p class="text-xs text-green-100 mt-2">Kriteria penilaian</p>
                         </div>
-                        <div class="bg-secondary-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-star text-2xl"></i>
+                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                            <i class="fa-solid fa-list-check text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card 3: Total Nilai -->
+                <div class="group relative bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-purple-100 text-xs font-medium uppercase tracking-wider">Total Nilai</p>
+                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $scores->count() }}</p>
+                            <p class="text-xs text-purple-100 mt-2">Data penilaian</p>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                            <i class="fa-solid fa-star text-2xl"></i>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-gradient-to-r from-orange-500 to-orange-600 p-6 rounded-xl shadow-lg text-white">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-orange-100 text-sm font-medium">Rata-rata Skor</p>
-                            <p class="text-3xl font-bold">{{ number_format($averageScore, 1) }}</p>
+                <!-- Card 4: Rata-rata Skor -->
+                <div class="group relative bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-orange-100 text-xs font-medium uppercase tracking-wider">Rata-rata Skor</p>
+                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ number_format($averageScore, 1) }}</p>
+                            <p class="text-xs text-orange-100 mt-2">Skor rata-rata</p>
                         </div>
-                        <div class="bg-orange-400 bg-opacity-50 p-3 rounded-full">
-                            <i class="fas fa-chart-line text-2xl"></i>
+                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                            <i class="fa-solid fa-chart-line text-2xl"></i>
                         </div>
                     </div>
                 </div>
