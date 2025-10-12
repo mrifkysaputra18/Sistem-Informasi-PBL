@@ -1,7 +1,7 @@
 <nav x-data="{ open: false }" class="modern-navbar">
     <!-- Primary Navigation Menu -->
     <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-20">
+        <div class="flex justify-between h-16">
             <div class="flex items-center">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
@@ -17,7 +17,7 @@
                         @else
                             <x-application-logo class="block h-10 w-auto fill-current text-gray-800" />
                         @endif
-                        <div class="hidden lg:block border-l-2 border-gray-300/50 pl-3 ml-1">
+                        <div class="hidden lg:block border-l-2 border-white/30 pl-3 ml-1">
                             <div class="logo-text-main">Sistem Informasi PBL</div>
                             <div class="logo-text-sub">Politeknik Negeri Tanah Laut</div>
                         </div>
@@ -25,7 +25,7 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-1 sm:ms-8 lg:flex items-center">
+                <div class="hidden space-x-2 sm:ms-6 lg:flex items-center">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard', 'admin.dashboard', 'koordinator.dashboard', 'dosen.dashboard', 'mahasiswa.dashboard')">
                         <i class="fas fa-tachometer-alt mr-1"></i>{{ __('Dashboard') }}
                     </x-nav-link>

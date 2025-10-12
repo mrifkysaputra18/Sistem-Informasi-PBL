@@ -10,6 +10,23 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        
+        <!-- Fallback Font Awesome -->
+        <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v6.4.0/css/all.css" onerror="this.onerror=null;this.href='https://use.fontawesome.com/releases/v6.4.0/css/all.css';" />
+
+        <!-- Critical CSS Fallback -->
+        <style>
+            /* Emergency Navigation Fallback */
+            nav { background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%) !important; min-height: 64px !important; }
+            nav * { color: white !important; }
+            nav a { color: white !important; text-decoration: none !important; padding: 8px 16px !important; display: inline-flex !important; align-items: center !important; }
+            nav a:hover { background: rgba(255,255,255,0.1) !important; }
+            .fas, .fa, [class*="fa-"] { font-family: "Font Awesome 6 Free", "Font Awesome 6 Pro", FontAwesome !important; font-weight: 900 !important; }
+            button { display: inline-flex !important; align-items: center !important; cursor: pointer !important; }
+        </style>
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
