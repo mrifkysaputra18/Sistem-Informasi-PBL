@@ -237,11 +237,23 @@
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-center">
-                                                <a href="{{ route('targets.submissions.show', $target->id) }}" 
-                                                   class="inline-flex items-center px-3 py-1.5 bg-primary-100 text-primary-700 hover:bg-primary-200 rounded transition duration-200 text-sm">
-                                                    <i class="fas fa-eye mr-1"></i>
-                                                    Lihat
-                                                </a>
+                                                <div class="flex items-center justify-center gap-2">
+                                                    @if($target->submission_status === 'pending' || $target->submission_status === 'revision')
+                                                    <!-- Upload Progress Button -->
+                                                    <a href="{{ route('weekly-progress.upload', ['group_id' => $myGroup->id, 'week_number' => $target->week_number, 'target_id' => $target->id]) }}" 
+                                                       class="inline-flex items-center px-3 py-1.5 bg-green-500 text-white hover:bg-green-600 rounded-lg transition duration-200 text-sm font-medium shadow-sm hover:shadow-md">
+                                                        <i class="fas fa-upload mr-1.5"></i>
+                                                        Upload Progress
+                                                    </a>
+                                                    @endif
+                                                    
+                                                    <!-- Detail Button -->
+                                                    <a href="{{ route('targets.submissions.show', $target->id) }}" 
+                                                       class="inline-flex items-center px-3 py-1.5 bg-primary-100 text-primary-700 hover:bg-primary-200 rounded-lg transition duration-200 text-sm font-medium">
+                                                        <i class="fas fa-eye mr-1.5"></i>
+                                                        Detail
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                         @endforeach

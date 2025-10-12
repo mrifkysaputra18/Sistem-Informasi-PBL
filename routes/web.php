@@ -135,6 +135,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post('targets/{target}/submit', [WeeklyTargetSubmissionController::class, 'storeSubmission'])->name('targets.submissions.store');
         Route::get('targets/{target}/edit-submission', [WeeklyTargetSubmissionController::class, 'editSubmission'])->name('targets.submissions.edit');
         Route::put('targets/{target}/submit', [WeeklyTargetSubmissionController::class, 'updateSubmission'])->name('targets.submissions.update');
+        
+        // Weekly Progress Upload (Flexible)
+        Route::get('weekly-progress/upload', [WeeklyProgressController::class, 'upload'])->name('weekly-progress.upload');
+        Route::post('weekly-progress/store', [WeeklyProgressController::class, 'store'])->name('weekly-progress.store');
     });
 
     // ========================================

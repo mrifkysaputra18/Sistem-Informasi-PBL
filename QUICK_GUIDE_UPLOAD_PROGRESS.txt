@@ -1,0 +1,62 @@
+╔══════════════════════════════════════════════════════════════════╗
+║          📤 QUICK GUIDE: Upload Progress Mahasiswa               ║
+╚══════════════════════════════════════════════════════════════════╝
+
+📍 LOKASI FITUR:
+   Dashboard Mahasiswa > Target Mingguan > Tombol "Upload Progress"
+
+🎯 CARA MENGGUNAKAN:
+   1. Login sebagai mahasiswa
+   2. Lihat tabel "Target Mingguan dari Dosen"
+   3. Klik tombol hijau "Upload Progress" pada target yang ingin disubmit
+   4. Isi form upload:
+      - Judul (sudah terisi otomatis, bisa diedit)
+      - Deskripsi (opsional)
+      - Upload file (opsional, max 5 files @ 5MB)
+      - ATAU centang "Target sudah selesai tanpa file"
+   5. Klik "Submit Progress"
+   6. Selesai! Status akan berubah menjadi "Submitted"
+
+✨ FITUR UNGGULAN:
+   ✅ Upload multiple files sekaligus (max 5 files)
+   ✅ Fleksibel: bisa dengan/tanpa file
+   ✅ File preview sebelum submit
+   ✅ Auto-validation ukuran & format
+   ✅ Terintegrasi dengan Google Drive
+   ✅ UI modern & user-friendly
+
+📄 FORMAT FILE YANG DIDUKUNG:
+   • Dokumen: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX
+   • Gambar: JPG, JPEG, PNG
+   • Archive: ZIP, RAR
+   
+   ⚠️ Maksimal 5MB per file
+
+🔄 ALUR KERJA:
+   Mahasiswa Upload → Status: "Submitted" → Dosen Review → Approved/Revision
+
+📂 FILES YANG DIMODIFIKASI:
+   1. resources/views/dashboards/mahasiswa.blade.php (+ tombol upload)
+   2. resources/views/weekly-progress/upload.blade.php (form baru)
+   3. routes/web.php (+ 2 routes baru)
+   4. app/Http/Controllers/WeeklyProgressController.php (+ 2 methods)
+
+🔗 ROUTES:
+   GET  /weekly-progress/upload?group_id=X&week_number=Y&target_id=Z
+   POST /weekly-progress/store
+
+🎨 LAWS OF UX YANG DITERAPKAN:
+   • Fitts's Law: Tombol besar & mudah diklik
+   • Hick's Law: Pilihan sederhana (upload/tidak)
+   • Law of Proximity: Grouping yang jelas
+   • Feedback & Visibility: Preview file & validation real-time
+   • Progressive Disclosure: Info muncul bertahap
+   • Aesthetic-Usability Effect: Desain menarik & modern
+
+🚀 STATUS: ✅ READY TO USE!
+
+═══════════════════════════════════════════════════════════════════
+Dibuat: 12 Oktober 2025
+Versi: 1.0
+═══════════════════════════════════════════════════════════════════
+
