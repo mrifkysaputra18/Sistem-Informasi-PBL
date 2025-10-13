@@ -1,6 +1,8 @@
+/* stylelint-disable at-rule-no-unknown */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* stylelint-enable at-rule-no-unknown */
 
 /* ========================================
    CUSTOM BACKGROUND STYLES
@@ -29,14 +31,6 @@
     background-repeat: no-repeat;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .app-background,
-    .app-background.with-image {
-        background-attachment: scroll;
-    }
-}
-
 /* Background Overlay - Minimal untuk gambar SANGAT JELAS */
 .app-background::before {
     content: '';
@@ -49,7 +43,6 @@
     background: rgba(255, 255, 255, 0.10);
     backdrop-filter: blur(0px); /* TIDAK ADA BLUR - gambar tajam! */
 }
-
 
 /* Content wrapper untuk ensure readability */
 .content-wrapper {
@@ -83,7 +76,8 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .app-background {
+    .app-background,
+    .app-background.with-image {
         background-attachment: scroll;
     }
 }
@@ -91,34 +85,6 @@
 /* ========================================
    LOGO STYLES
    ======================================== */
-
-/* Navigation Logo */
-.app-logo {
-    height: 50px;
-    width: auto;
-    max-width: 50px;
-    object-fit: contain;
-    transition: transform 0.2s ease;
-    /* Background putih untuk logo agar terlihat jelas */
-    background: white;
-    padding: 6px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border: 2px solid rgba(255, 255, 255, 0.8);
-}
-
-/* Logo hover effect */
-.app-logo:hover {
-    transform: scale(1.05);
-}
-
-/* Mobile logo - slightly smaller */
-@media (max-width: 640px) {
-    .app-logo {
-        height: 42px;
-        max-width: 42px;
-    }
-}
 
 /* Logo fade-in animation */
 @keyframes logoFadeIn {
@@ -132,13 +98,32 @@
     }
 }
 
+/* Navigation Logo */
 .app-logo {
+    height: 50px;
+    width: auto;
+    max-width: 50px;
+    object-fit: contain;
+    /* Background putih untuk logo agar terlihat jelas */
+    background: white;
+    padding: 6px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.8);
     animation: logoFadeIn 0.5s ease-in-out;
     transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .app-logo:hover {
     transform: scale(1.05);
+}
+
+/* Mobile logo - slightly smaller */
+@media (max-width: 640px) {
+    .app-logo {
+        height: 42px;
+        max-width: 42px;
+    }
 }
 
 /* ========================================

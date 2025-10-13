@@ -32,11 +32,12 @@ class GroupController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
         $classRooms = ClassRoom::orderBy('name')->get();
         $projects = \App\Models\Project::orderBy('title')->get();
-        return view('groups.create', compact('classRooms', 'projects'));
+        $selectedClassroom = $request->input('classroom');
+        return view('groups.create', compact('classRooms', 'projects', 'selectedClassroom'));
     }
 
     /**

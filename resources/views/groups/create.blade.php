@@ -32,7 +32,7 @@
                                         <option value="">-- Pilih Kelas --</option>
                                         @foreach($classRooms as $classRoom)
                                         <option value="{{ $classRoom->id }}" 
-                                            {{ old('class_room_id', request('class_room_id')) == $classRoom->id ? 'selected' : '' }}
+                                            {{ old('class_room_id', $selectedClassroom ?? request('class_room_id')) == $classRoom->id ? 'selected' : '' }}
                                             {{ !$classRoom->canAddGroup() ? 'disabled' : '' }}>
                                             {{ $classRoom->name }} 
                                             ({{ $classRoom->groups->count() }}/{{ $classRoom->max_groups }} kelompok)
@@ -261,6 +261,15 @@
 
         // Initial check - attach listeners for any pre-loaded students
         attachCheckboxListeners();
+        
+        // Auto-load students if classroom is pre-selected
+        document.addEventListener('DOMContentLoaded', function() {
+            const classRoomId = classRoomSelect.value;
+            if (classRoomId) {
+                // Trigger change event to load students automatically
+                classRoomSelect.dispatchEvent(new Event('change'));
+            }
+        });
     </script>
     @endpush
 </x-app-layout>
