@@ -274,12 +274,11 @@
                         <table class="min-w-full divide-y divide-gray-200 table-fixed">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">Target</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">Kelompok</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Minggu</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-28">Deadline</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-max">Aksi</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelompok</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Minggu</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deadline</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -295,28 +294,14 @@
                                     };
                                 @endphp
                                 <tr class="{{ $rowClass }}">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            @if(in_array($target->submission_status, ['submitted', 'approved', 'revision']))
-                                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                            @elseif($target->submission_status === 'late')
-                                                <i class="fas fa-exclamation-triangle text-orange-500 mr-2"></i>
-                                            @else
-                                                <i class="fas fa-clock text-gray-400 mr-2"></i>
-                                            @endif
-                                            <div>
-                                                <div class="text-sm font-medium text-gray-900">{{ $target->title }}</div>
-                                                <div class="text-sm text-gray-500">{{ Str::limit($target->description, 50) }}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-6 py-4">
                                         <div>
                                             <div class="text-sm font-semibold text-gray-900">{{ $target->group->name }}</div>
-                                            <div class="text-sm text-gray-500">{{ $target->group->classRoom->name }}</div>
+                                            <div class="text-xs text-gray-500">{{ $target->group->classRoom->name }}</div>
+                                            <div class="text-sm text-gray-700 mt-1">{{ $target->title }}</div>
                                             @if($target->completedByUser)
                                                 <div class="text-xs text-primary-600 mt-1">
-                                                    <i class="fas fa-user text-xs"></i> Submit oleh: {{ $target->completedByUser->name }}
+                                                    <i class="fas fa-user text-xs"></i> {{ $target->completedByUser->name }}
                                                 </div>
                                             @endif
                                         </div>
@@ -374,92 +359,14 @@
                                             @endif
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 text-sm font-medium">
-                                        <div class="flex items-center gap-2 flex-nowrap">
-                                            <!-- View Detail -->
-                                            <a href="{{ route('targets.show', $target->id) }}" 
-                                               class="inline-flex items-center px-3 py-1.5 bg-primary-100 text-primary-700 hover:bg-primary-200 rounded transition duration-200"
-                                               title="Lihat Detail">
-                                                <i class="fas fa-eye mr-1"></i>
-                                                <span>Detail</span>
-                                            </a>
-                                            
-                                            @if(in_array(auth()->user()->role, ['dosen', 'admin']))
-                                                @if(($target->created_by === auth()->id() || auth()->user()->isAdmin()) && $target->canBeModified())
-                                                    <!-- Edit -->
-                                                    <a href="{{ route('targets.edit', $target->id) }}" 
-                                                       class="inline-flex items-center px-3 py-1.5 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 rounded transition duration-200"
-                                                       title="Edit Target">
-                                                        <i class="fas fa-edit mr-1"></i>
-                                                        <span>Edit</span>
-                                                    </a>
-                                                    
-                                                    <!-- Delete -->
-                                                    <form action="{{ route('targets.destroy', $target->id) }}" 
-                                                          method="POST" 
-                                                          class="inline"
-                                                          onsubmit="return confirm('Yakin ingin menghapus target ini?\n\nTarget: {{ $target->title }}\nKelompok: {{ $target->group->name }}')">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" 
-                                                                class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 rounded transition duration-200"
-                                                                title="Hapus Target">
-                                                            <i class="fas fa-trash mr-1"></i>
-                                                            <span>Hapus</span>
-                                                        </button>
-                                                    </form>
-                                                @elseif(($target->created_by === auth()->id() || auth()->user()->isAdmin()) && !$target->canBeModified())
-                                                    <!-- Locked indicator (only show to creator/admin) -->
-                                                    <span class="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-500 rounded text-xs" title="Target sudah direview/disubmit, tidak bisa diedit">
-                                                        <i class="fas fa-lock mr-1"></i>
-                                                        <span>Terkunci</span>
-                                                    </span>
-                                                @endif
-                                            @endif
-                                            
-                                            <!-- Review -->
-                                            @if($target->isSubmitted() && !$target->isReviewed())
-                                            <a href="{{ route('targets.review', $target->id) }}" 
-                                               class="inline-flex items-center px-3 py-1.5 bg-green-100 text-green-700 hover:bg-green-200 rounded transition duration-200"
-                                               title="Review Submission">
-                                                <i class="fas fa-check-circle mr-1"></i>
-                                                <span>Review</span>
-                                            </a>
-                                            @endif
-                                            
-                                            <!-- Reopen/Close Target (Only for dosen/admin and not reviewed yet) -->
-                                            @if(in_array(auth()->user()->role, ['dosen', 'admin', 'koordinator']) && !$target->isReviewed())
-                                                @if($target->isClosed())
-                                                    <!-- Reopen Button -->
-                                                    <form action="{{ route('targets.reopen', $target->id) }}" 
-                                                          method="POST" 
-                                                          class="inline"
-                                                          onsubmit="return confirm('Yakin ingin membuka kembali target ini?\n\nMahasiswa akan dapat mensubmit target yang sudah tertutup.')">
-                                                        @csrf
-                                                        <button type="submit" 
-                                                                class="inline-flex items-center px-3 py-1.5 bg-secondary-100 text-secondary-700 hover:bg-secondary-200 rounded transition duration-200"
-                                                                title="Buka Kembali Target">
-                                                            <i class="fas fa-unlock mr-1"></i>
-                                                            <span>Buka</span>
-                                                        </button>
-                                                    </form>
-                                                @else
-                                                    <!-- Close Button -->
-                                                    <form action="{{ route('targets.close', $target->id) }}" 
-                                                          method="POST" 
-                                                          class="inline"
-                                                          onsubmit="return confirm('Yakin ingin menutup target ini?\n\nMahasiswa tidak akan dapat mensubmit target ini.')">
-                                                        @csrf
-                                                        <button type="submit" 
-                                                                class="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded transition duration-200"
-                                                                title="Tutup Target">
-                                                            <i class="fas fa-lock mr-1"></i>
-                                                            <span>Tutup</span>
-                                                        </button>
-                                                    </form>
-                                                @endif
-                                            @endif
-                                        </div>
+                                    <td class="px-6 py-4 text-sm font-medium text-center">
+                                        <!-- View Detail Button Only -->
+                                        <a href="{{ route('targets.show', $target->id) }}" 
+                                           class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105"
+                                           title="Lihat Detail">
+                                            <i class="fas fa-eye mr-2"></i>
+                                            <span>Detail</span>
+                                        </a>
                                     </td>
                                 </tr>
                                 @endforeach

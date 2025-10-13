@@ -281,19 +281,17 @@ class WeeklyTargetController extends Controller
 
     /**
      * Show the form for editing the target (DOSEN)
+     * Allow editing even if submitted (dosen override)
      */
     public function edit(WeeklyTarget $target)
     {
-        // Dosen hanya bisa edit target yang dia buat
+        // Dosen hanya bisa edit target yang dia buat (or admin can edit all)
         if ($target->created_by !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Anda tidak memiliki akses untuk mengedit target ini.');
         }
 
-        // Tidak bisa edit jika sudah ada submission
-        if ($target->isSubmitted()) {
-            return redirect()->back()
-                ->with('error', 'Target yang sudah ada submission tidak dapat diedit. Silakan buat target baru.');
-        }
+        // Allow dosen to edit even if submitted (removed restriction)
+        // Original restriction: if ($target->isSubmitted()) return error
 
         $group = $target->group;
 
@@ -302,6 +300,7 @@ class WeeklyTargetController extends Controller
 
     /**
      * Update the target (DOSEN)
+     * Allow updating even if submitted (dosen override)
      */
     public function update(Request $request, WeeklyTarget $target)
     {
@@ -310,11 +309,7 @@ class WeeklyTargetController extends Controller
             abort(403, 'Anda tidak memiliki akses untuk mengedit target ini.');
         }
 
-        // Check if already submitted
-        if ($target->isSubmitted()) {
-            return redirect()->back()
-                ->with('error', 'Target yang sudah ada submission tidak dapat diedit.');
-        }
+        // Allow dosen to update even if submitted (removed restriction)
 
         $validated = $request->validate([
             'week_number' => 'required|integer|min:1|max:16',
@@ -328,14 +323,16 @@ class WeeklyTargetController extends Controller
         \Log::info('WeeklyTarget Updated', [
             'target_id' => $target->id,
             'updated_by' => auth()->id(),
+            'was_submitted' => $target->isSubmitted(),
         ]);
 
-        return redirect()->route('targets.index')
+        return redirect()->route('targets.show', $target->id)
             ->with('success', 'Target berhasil diupdate!');
     }
 
     /**
      * Remove the target (DOSEN)
+     * Allow deleting even if submitted (dosen override)
      */
     public function destroy(WeeklyTarget $target)
     {
@@ -344,22 +341,51 @@ class WeeklyTargetController extends Controller
             abort(403, 'Anda tidak memiliki akses untuk menghapus target ini.');
         }
 
-        // Check if already submitted
-        if ($target->isSubmitted()) {
-            return redirect()->back()
-                ->with('error', 'Target yang sudah ada submission tidak dapat dihapus.');
-        }
+        // Allow dosen to delete even if submitted (removed restriction)
+        // Original restriction: if ($target->isSubmitted()) return error
 
-        \Log::info('WeeklyTarget Deleted', [
+        \Log::warning('WeeklyTarget Deleted by Dosen', [
             'target_id' => $target->id,
             'title' => $target->title,
             'deleted_by' => auth()->id(),
+            'was_submitted' => $target->isSubmitted(),
+            'was_reviewed' => $target->isReviewed(),
         ]);
 
         $target->delete();
 
         return redirect()->route('targets.index')
             ->with('success', 'Target berhasil dihapus!');
+    }
+
+    /**
+     * Force delete target (ADMIN ONLY - even if submitted)
+     * Use with caution!
+     */
+    public function forceDestroy(WeeklyTarget $target)
+    {
+        // Only admin can force delete
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Hanya admin yang dapat force delete target.');
+        }
+
+        $targetTitle = $target->title;
+        $targetId = $target->id;
+        
+        \Log::warning('WeeklyTarget FORCE DELETED', [
+            'target_id' => $target->id,
+            'title' => $target->title,
+            'status' => $target->submission_status,
+            'was_submitted' => $target->isSubmitted(),
+            'was_reviewed' => $target->isReviewed(),
+            'deleted_by' => auth()->id(),
+        ]);
+
+        // Delete target regardless of status
+        $target->delete();
+
+        return redirect()->route('targets.index')
+            ->with('success', "Target '{$targetTitle}' berhasil dihapus (force delete)!");
     }
 
     /**
