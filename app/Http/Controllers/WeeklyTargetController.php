@@ -15,13 +15,51 @@ class WeeklyTargetController extends Controller
      */
     public function index(Request $request)
     {
+        // Get user's assigned class rooms (dosen hanya lihat kelas sendiri)
+        $user = auth()->user();
+        $myClassRoomIds = [];
+        
+        if ($user->isDosen()) {
+            // Dosen hanya lihat target dari kelas yang dia ampu
+            $myClassRoomIds = ClassRoom::where('dosen_id', $user->id)->pluck('id');
+            
+            // Auto filter untuk dosen
+            if ($myClassRoomIds->isEmpty()) {
+                return view('targets.index', [
+                    'targets' => collect(),
+                    'classRooms' => collect(),
+                    'stats' => [
+                        'total' => 0, 'submitted' => 0, 'approved' => 0, 
+                        'revision' => 0, 'pending' => 0, 'late' => 0,
+                        'submitted_percentage' => 0,
+                    ],
+                    'message' => 'Anda belum ditugaskan ke kelas manapun.'
+                ]);
+            }
+        }
+
         $query = WeeklyTarget::with(['group.classRoom', 'creator', 'completedByUser']);
 
         // Base query untuk statistik (sebelum pagination)
         $statsQuery = clone $query;
 
-        // Filter by class
+        // Auto filter untuk dosen - Hanya dari kelas yang diampu
+        if ($user->isDosen() && count($myClassRoomIds) > 0) {
+            $query->whereHas('group', function($q) use ($myClassRoomIds) {
+                $q->whereIn('class_room_id', $myClassRoomIds);
+            });
+            $statsQuery->whereHas('group', function($q) use ($myClassRoomIds) {
+                $q->whereIn('class_room_id', $myClassRoomIds);
+            });
+        }
+
+        // Additional filter by class (untuk admin atau filtering lebih spesifik)
         if ($request->has('class_room_id') && $request->class_room_id != '') {
+            // Untuk dosen: hanya allow filter ke kelas yang diampu
+            if ($user->isDosen() && !in_array($request->class_room_id, $myClassRoomIds->toArray())) {
+                abort(403, 'You are not assigned to this class.');
+            }
+            
             $query->whereHas('group', function($q) use ($request) {
                 $q->where('class_room_id', $request->class_room_id);
             });
@@ -60,8 +98,16 @@ class WeeklyTargetController extends Controller
             ->orderBy('deadline')
             ->paginate(20);
 
-        // Get filter options
-        $classRooms = ClassRoom::orderBy('name')->get();
+        // Get filter options - Dosen hanya lihat kelas yang diampu
+        if ($user->isDosen()) {
+            $classRooms = ClassRoom::where('dosen_id', $user->id)
+                ->with('groups')
+                ->orderBy('name')
+                ->get();
+        } else {
+            // Admin lihat semua kelas
+            $classRooms = ClassRoom::with('groups')->orderBy('name')->get();
+        }
 
         return view('targets.index', compact('targets', 'classRooms', 'stats'));
     }
@@ -71,20 +117,43 @@ class WeeklyTargetController extends Controller
      */
     public function create(Request $request)
     {
+        $user = auth()->user();
+        
         // Only admin and dosen can create targets
-        if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
+        if (!$user->isAdmin() && !$user->isDosen()) {
             abort(403, 'Unauthorized action. Hanya admin dan dosen yang dapat membuat target mingguan.');
         }
 
         $classRoomId = $request->get('class_room_id');
         $groupId = $request->get('group_id');
         
-        // Get class rooms untuk dropdown
-        $classRooms = ClassRoom::with('groups')->orderBy('name')->get();
+        // Get class rooms untuk dropdown - Dosen hanya lihat kelas yang diampu
+        if ($user->isDosen()) {
+            $classRooms = ClassRoom::where('dosen_id', $user->id)
+                ->with('groups')
+                ->orderBy('name')
+                ->get();
+                
+            // Jika dosen tidak ada kelas, jaga-jaga
+            if ($classRooms->isEmpty()) {
+                return back()->with('error', 'Anda belum ditugaskan ke kelas manapun.');
+            }
+        } else {
+            // Admin lihat semua kelas
+            $classRooms = ClassRoom::with('groups')->orderBy('name')->get();
+        }
         
         // Jika ada class_room_id, ambil groups nya
         $groups = null;
         if ($classRoomId) {
+            // Validasi: dosen hanya bisa akses kelas yang diampu
+            if ($user->isDosen()) {
+                $classRoom = ClassRoom::find($classRoomId);
+                if (!$classRoom || $classRoom->dosen_id !== $user->id) {
+                    abort(403, 'You are not assigned to this class.');
+                }
+            }
+            
             $groups = Group::where('class_room_id', $classRoomId)
                 ->orderBy('name')
                 ->get();
@@ -93,7 +162,12 @@ class WeeklyTargetController extends Controller
         // Jika ada group_id spesifik
         $selectedGroup = null;
         if ($groupId) {
-            $selectedGroup = Group::findOrFail($groupId);
+            $selectedGroup = Group::with('classRoom')->findOrFail($groupId);
+            
+            // Validasi: dosen hanya bisa buat target untuk kelas yang diampu
+            if ($user->isDosen() && $selectedGroup->classRoom->dosen_id !== $user->id) {
+                abort(403, 'You are not assigned to this group\'s class.');
+            }
         }
 
         return view('targets.create', compact('classRooms', 'groups', 'selectedGroup'));

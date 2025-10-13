@@ -10,44 +10,77 @@ class DosenDashboardController extends Controller
     {
         $user = auth()->user();
 
-        // Get weekly targets data
-        $totalTargets = WeeklyTarget::count();
-        $completedTargets = WeeklyTarget::where('is_completed', true)->count();
+        // Filter data berdasarkan kelas yang diampu oleh dosen
+        $myClassRoomIds = ClassRoom::where('dosen_id', $user->id)->pluck('id');
+        $myGroupIds = Group::whereIn('class_room_id', $myClassRoomIds)->pluck('id');
+
+        // Get weekly targets data for this dosen's classes
+        $totalTargets = WeeklyTarget::whereIn('group_id', $myGroupIds)->count();
+        $completedTargets = WeeklyTarget::whereIn('group_id', $myGroupIds)
+            ->where('is_completed', true)->count();
         $completionRate = $totalTargets > 0 ? ($completedTargets / $totalTargets) * 100 : 0;
 
-        // Dosen dapat melihat kelas yang mereka ampu
-        // Untuk saat ini, tampilkan semua data
+        // Stats untuk kelas yang diampu dosen
         $stats = [
-            'totalClassRooms' => ClassRoom::count(),
-            'totalGroups' => Group::count(),
-            'totalScores' => GroupScore::count(),
-            'pendingReviews' => WeeklyProgress::where('status', 'submitted')->count(),
+            'totalClassRooms' => ClassRoom::where('dosen_id', $user->id)->count(),
+            'totalGroups' => Group::whereIn('class_room_id', $myClassRoomIds)->count(),
+            'totalScores' => GroupScore::whereIn('group_id', $myGroupIds)->count(),
+            'pendingReviews' => WeeklyTarget::whereIn('group_id', $myGroupIds)
+                ->whereIn('submission_status', ['submitted', 'revision'])->count(),
             'totalTargets' => $totalTargets,
             'completedTargets' => $completedTargets,
             'completionRate' => round($completionRate, 1),
             'pendingTargets' => $totalTargets - $completedTargets,
         ];
 
-        // Classes with groups
-        $classRooms = ClassRoom::with(['groups', 'subject'])
+        // Classes assigned to this dosen
+        $classRooms = ClassRoom::with(['groups.members.user', 'subject', 'academicPeriod'])
+            ->where('dosen_id', $user->id)
+            ->where('is_active', true)
             ->withCount('groups')
             ->latest()
-            ->take(5)
             ->get();
 
-        // Progress yang perlu direview
-        $progressToReview = WeeklyProgress::with(['group.classRoom'])
-            ->where('status', 'submitted')
-            ->latest('submitted_at')
-            ->take(5)
+        // Progress yang perlu direview dari kelas dosen
+        $progressToReview = WeeklyTarget::with(['group.classRoom', 'completedByUser'])
+            ->whereIn('group_id', $myGroupIds)
+            ->whereIn('submission_status', ['submitted', 'revision'])
+            ->latest('completed_at')
+            ->take(10)
             ->get();
 
-        // Recent weekly targets
-        $recentTargets = WeeklyTarget::with(['group.classRoom'])
+        // Recent weekly targets from dosen's classes
+        $recentTargets = WeeklyTarget::with(['group.classRoom', 'creator'])
+            ->whereIn('group_id', $myGroupIds)
             ->latest('created_at')
             ->take(10)
             ->get();
 
-        return view('dashboards.dosen', compact('stats', 'classRooms', 'progressToReview', 'recentTargets'));
+        // Quick access: Get submission stats per class (akan kosong jika tidak ada class rooms)
+        $classStats = collect();
+        
+        if ($classRooms->isNotEmpty()) {
+            $classStats = $classRooms->map(function($classRoom) {
+                $targets = WeeklyTarget::whereHas('group', function($query) use ($classRoom) {
+                    $query->where('class_room_id', $classRoom->id);
+                })->get();
+
+                $approvedCount = $targets->where('submission_status', 'approved')->count();
+                
+                return [
+                    'classRoom' => $classRoom,
+                    'totalTargets' => $targets->count(),
+                    'submittedTargets' => $targets->whereIn('submission_status', ['submitted', 'approved', 'revision'])->count(),
+                    'approvedTargets' => $approvedCount,
+                    'pendingReviews' => $targets->whereIn('submission_status', ['submitted', 'revision'])->count(),
+                    'completionRate' => $targets->count() > 0 
+                        ? round(($approvedCount / $targets->count()) * 100, 1)
+                        : 0,
+                ];
+            });
+        }
+
+        return view('dashboards.dosen', 
+            compact('stats', 'classRooms', 'progressToReview', 'recentTargets', 'classStats'));
     }
 }

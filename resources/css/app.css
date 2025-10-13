@@ -50,19 +50,6 @@
     backdrop-filter: blur(0px); /* TIDAK ADA BLUR - gambar tajam! */
 }
 
-/* Light mode - overlay tipis */
-@media (prefers-color-scheme: light) {
-    .app-background::before {
-        background: rgba(255, 255, 255, 0.15);
-    }
-}
-
-/* Dark mode - overlay dengan warna terang */
-@media (prefers-color-scheme: dark) {
-    .app-background::before {
-        background: rgba(240, 245, 250, 0.20);
-    }
-}
 
 /* Content wrapper untuk ensure readability */
 .content-wrapper {
@@ -294,49 +281,6 @@
     }
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-    .modern-navbar {
-        background: rgba(17, 24, 39, 0.95);
-        border-bottom-color: rgba(55, 65, 81, 0.5);
-    }
-    
-    .logo-text-sub {
-        color: #9ca3af;
-    }
-    
-    .user-profile-btn {
-        background: rgba(31, 41, 55, 0.8);
-        border-color: rgba(55, 65, 81, 0.5);
-    }
-    
-    .user-profile-btn:hover {
-        background: rgba(31, 41, 55, 1);
-        border-color: rgba(75, 85, 99, 0.8);
-    }
-    
-    .user-name {
-        color: #f9fafb;
-    }
-    
-    .hamburger-btn {
-        background: rgba(31, 41, 55, 0.5);
-        border-color: rgba(55, 65, 81, 0.5);
-        color: #9ca3af;
-    }
-    
-    .hamburger-btn:hover {
-        background: rgba(31, 41, 55, 1);
-        border-color: rgba(75, 85, 99, 0.8);
-        color: #d1d5db;
-    }
-    
-    .mobile-menu {
-        background: rgba(17, 24, 39, 0.98);
-        border-bottom-color: rgba(55, 65, 81, 0.5);
-    }
-}
-
 /* Smooth scroll for navigation */
 html {
     scroll-behavior: smooth;
@@ -470,13 +414,6 @@ button {
     color: #ffffff;
     letter-spacing: -0.02em;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-@media (prefers-color-scheme: dark) {
-    .page-header {
-        background: rgba(17, 24, 39, 0.85);
-        border-bottom-color: rgba(55, 65, 81, 0.3);
-    }
 }
 
 /* Shimmer Animation for Progress Bar */
