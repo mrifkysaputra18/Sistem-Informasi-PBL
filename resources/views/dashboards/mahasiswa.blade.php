@@ -248,12 +248,17 @@
                     </div>
                 </div>
 
-                <!-- Weekly Targets Section - Laws of UX: Visual Hierarchy, Fitts's Law, Feedback -->
+                <!-- Weekly Targets Section - Enhanced with Better UX -->
                 <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow duration-300">
-                    <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-6 py-5">
-                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                    <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-6 py-5 relative overflow-hidden">
+                        <!-- Animated Background Pattern -->
+                        <div class="absolute inset-0 opacity-10">
+                            <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" xmlns="http://www.w3.org/2000/svg"%3E%3Cdefs%3E%3Cpattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse"%3E%3Cpath d="M 60 0 L 0 0 0 60" fill="none" stroke="white" stroke-width="1"/%3E%3C/pattern%3E%3C/defs%3E%3Crect width="100%25" height="100%25" fill="url(%23grid)"/%3E%3C/svg%3E');"></div>
+                        </div>
+                        
+                        <div class="relative flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                             <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                                <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <i class="fas fa-tasks text-white text-xl"></i>
                                 </div>
                                 <div>
@@ -262,17 +267,86 @@
                                 </div>
                             </div>
                             @if($weeklyTargets->count() > 0)
-                            <div class="flex items-center gap-2">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <!-- Target Count Badge -->
                                 <span class="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg text-white text-sm font-semibold">
+                                    <i class="fas fa-bullseye mr-1"></i>
                                     {{ $weeklyTargets->count() }} Target
                                 </span>
+                                
+                                <!-- Quick Filter Buttons -->
+                                <div class="flex items-center gap-1" id="targetFilters">
+                                    <button onclick="filterTargets('all')" 
+                                            class="filter-btn active px-3 py-1.5 bg-white/30 backdrop-blur-sm rounded-lg text-white text-xs font-medium hover:bg-white/40 transition-all">
+                                        Semua
+                                    </button>
+                                    <button onclick="filterTargets('pending')" 
+                                            class="filter-btn px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg text-white text-xs font-medium hover:bg-white/30 transition-all">
+                                        Belum
+                                    </button>
+                                    <button onclick="filterTargets('submitted')" 
+                                            class="filter-btn px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg text-white text-xs font-medium hover:bg-white/30 transition-all">
+                                        Submit
+                                    </button>
+                                    <button onclick="filterTargets('approved')" 
+                                            class="filter-btn px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg text-white text-xs font-medium hover:bg-white/30 transition-all">
+                                        Selesai
+                                    </button>
+                                </div>
+                                
+                                <!-- View Toggle -->
+                                <div class="flex items-center bg-white/20 backdrop-blur-sm rounded-lg p-1">
+                                    <button onclick="setTargetView('cards')" id="cardViewBtn"
+                                            class="view-btn active px-2 py-1 rounded text-white hover:bg-white/30 transition-all" title="Card View">
+                                        <i class="fas fa-th-large text-xs"></i>
+                                    </button>
+                                    <button onclick="setTargetView('timeline')" id="timelineViewBtn"
+                                            class="view-btn px-2 py-1 rounded text-white hover:bg-white/30 transition-all" title="Timeline View">
+                                        <i class="fas fa-stream text-xs"></i>
+                                    </button>
+                                </div>
                             </div>
                             @endif
                         </div>
                     </div>
                     <div class="p-6 bg-gradient-to-br from-gray-50 to-white">
                         @if($weeklyTargets->count() > 0)
-                            <div class="space-y-4">
+                            <!-- Progress Summary -->
+                            <div class="mb-6 p-4 bg-white rounded-xl border border-gray-200">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                                            <i class="fas fa-chart-pie text-white text-lg"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-gray-500 font-medium">Progress Mingguan</p>
+                                            <div class="flex items-baseline gap-2">
+                                                <p class="text-2xl font-black text-gray-900">
+                                                    {{ $weeklyTargets->where('submission_status', 'approved')->count() }}
+                                                </p>
+                                                <p class="text-sm text-gray-600">dari {{ $weeklyTargets->count() }} selesai</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Mini Progress Bar -->
+                                    <div class="flex-1 max-w-xs ml-4">
+                                        <div class="flex items-center justify-between text-xs mb-1">
+                                            <span class="text-gray-600">Progress</span>
+                                            <span class="font-bold text-indigo-600">
+                                                {{ $weeklyTargets->count() > 0 ? round(($weeklyTargets->where('submission_status', 'approved')->count() / $weeklyTargets->count()) * 100) : 0 }}%
+                                            </span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                                            <div class="h-full bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full transition-all duration-500" 
+                                                 style="width: {{ $weeklyTargets->count() > 0 ? round(($weeklyTargets->where('submission_status', 'approved')->count() / $weeklyTargets->count()) * 100) : 0 }}%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Cards View -->
+                            <div class="space-y-4" id="cardsView">
                                         @foreach($weeklyTargets as $target)
                                 @php
                                     $statusConfig = [
@@ -310,8 +384,8 @@
                                     $status = $statusConfig[$target->submission_status] ?? $statusConfig['pending'];
                                 @endphp
                                 
-                                <!-- Target Card -->
-                                <div class="bg-white rounded-xl border-2 {{ $status['border'] }} shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group {{ $target->isOverdue() && $target->submission_status === 'pending' ? 'ring-2 ring-orange-300' : '' }} cursor-pointer">
+                                <!-- Enhanced Target Card -->
+                                <div class="target-card bg-white rounded-xl border-2 {{ $status['border'] }} shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group {{ $target->isOverdue() && $target->submission_status === 'pending' ? 'ring-2 ring-orange-300 animate-pulse-slow' : '' }} cursor-pointer transform hover:-translate-y-1" data-status="{{ $target->submission_status }}">
                                     <div class="p-5">
                                         <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                                             <!-- Left Section: Info -->
@@ -421,6 +495,103 @@
                                 </div>
                                         @endforeach
                             </div>
+                            
+                            <!-- Timeline View (Hidden by default) -->
+                            <div class="hidden" id="timelineView">
+                                <div class="relative">
+                                    <!-- Timeline Line -->
+                                    <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-indigo-500 via-purple-500 to-pink-500"></div>
+                                    
+                                    @foreach($weeklyTargets->sortBy('week_number') as $index => $target)
+                                    @php
+                                        $statusConfig = [
+                                            'pending' => [
+                                                'bg' => 'bg-gray-100',
+                                                'dot' => 'bg-gray-400',
+                                                'icon' => 'fa-clock',
+                                            ],
+                                            'submitted' => [
+                                                'bg' => 'bg-blue-100',
+                                                'dot' => 'bg-blue-500',
+                                                'icon' => 'fa-paper-plane',
+                                            ],
+                                            'late' => [
+                                                'bg' => 'bg-red-100',
+                                                'dot' => 'bg-red-500',
+                                                'icon' => 'fa-exclamation-triangle',
+                                            ],
+                                            'approved' => [
+                                                'bg' => 'bg-green-100',
+                                                'dot' => 'bg-green-500',
+                                                'icon' => 'fa-check-circle',
+                                            ],
+                                            'revision' => [
+                                                'bg' => 'bg-yellow-100',
+                                                'dot' => 'bg-yellow-500',
+                                                'icon' => 'fa-redo',
+                                            ],
+                                        ];
+                                        $status = $statusConfig[$target->submission_status] ?? $statusConfig['pending'];
+                                    @endphp
+                                    
+                                    <!-- Timeline Item -->
+                                    <div class="timeline-item relative flex items-start mb-8 group" data-status="{{ $target->submission_status }}">
+                                        <!-- Timeline Dot -->
+                                        <div class="relative z-10">
+                                            <div class="w-16 h-16 {{ $status['dot'] }} rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                                                <i class="fas {{ $status['icon'] }} text-white text-lg"></i>
+                                            </div>
+                                            <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
+                                                <span class="text-xs font-bold text-gray-600 whitespace-nowrap">Minggu {{ $target->week_number }}</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Timeline Content -->
+                                        <div class="ml-6 flex-1">
+                                            <div class="{{ $status['bg'] }} rounded-xl p-5 shadow-md hover:shadow-lg transition-all group-hover:translate-x-2">
+                                                <div class="flex items-start justify-between">
+                                                    <div class="flex-1">
+                                                        <h4 class="text-lg font-bold text-gray-900 mb-1">{{ $target->title }}</h4>
+                                                        @if($target->description)
+                                                        <p class="text-sm text-gray-600 mb-3">{{ $target->description }}</p>
+                                                        @endif
+                                                        
+                                                        <!-- Meta Info -->
+                                                        <div class="flex flex-wrap items-center gap-3">
+                                                            @if($target->deadline)
+                                                            <div class="flex items-center gap-1 text-xs text-gray-600">
+                                                                <i class="fas fa-calendar-alt"></i>
+                                                                <span>{{ $target->deadline->format('d M Y, H:i') }}</span>
+                                                            </div>
+                                                            @endif
+                                                            
+                                                            <span class="px-2 py-1 bg-white/80 rounded-full text-xs font-semibold text-gray-700">
+                                                                {{ $target->getStatusLabel() }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- Actions -->
+                                                    <div class="flex flex-col gap-2 ml-4">
+                                                        @if($target->submission_status === 'pending' || $target->submission_status === 'revision')
+                                                        <a href="{{ route('weekly-progress.upload', ['group_id' => $myGroup->id, 'week_number' => $target->week_number, 'target_id' => $target->id]) }}" 
+                                                           class="px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs font-bold transition-all">
+                                                            <i class="fas fa-upload"></i>
+                                                        </a>
+                                                        @endif
+                                                        
+                                                        <a href="{{ route('targets.submissions.show', $target->id) }}" 
+                                                           class="px-3 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg text-xs font-bold transition-all">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
                         @else
                             <!-- Empty State -->
                             <div class="text-center py-16">
@@ -509,6 +680,107 @@
             }
         }
 
+        // Filter Targets Function
+        function filterTargets(status) {
+            const cards = document.querySelectorAll('.target-card');
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            
+            // Update active button
+            filterBtns.forEach(btn => btn.classList.remove('active', 'bg-white/30'));
+            event.target.classList.add('active', 'bg-white/30');
+            
+            // Filter cards and timeline items
+            const elements = [...cards, ...timelineItems];
+            elements.forEach(el => {
+                if (status === 'all') {
+                    el.style.display = '';
+                    el.classList.remove('hidden');
+                    // Add fade-in animation
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(10px)';
+                    setTimeout(() => {
+                        el.style.transition = 'all 0.3s ease-out';
+                        el.style.opacity = '1';
+                        el.style.transform = 'translateY(0)';
+                    }, 50);
+                } else if (el.dataset.status === status || 
+                          (status === 'pending' && (el.dataset.status === 'pending' || el.dataset.status === 'late')) ||
+                          (status === 'submitted' && (el.dataset.status === 'submitted' || el.dataset.status === 'revision'))) {
+                    el.style.display = '';
+                    el.classList.remove('hidden');
+                    // Add fade-in animation
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(10px)';
+                    setTimeout(() => {
+                        el.style.transition = 'all 0.3s ease-out';
+                        el.style.opacity = '1';
+                        el.style.transform = 'translateY(0)';
+                    }, 50);
+                } else {
+                    el.style.opacity = '0';
+                    setTimeout(() => {
+                        el.style.display = 'none';
+                        el.classList.add('hidden');
+                    }, 300);
+                }
+            });
+        }
+
+        // Set Target View (Cards/Timeline)
+        function setTargetView(view) {
+            const cardsView = document.getElementById('cardsView');
+            const timelineView = document.getElementById('timelineView');
+            const cardBtn = document.getElementById('cardViewBtn');
+            const timelineBtn = document.getElementById('timelineViewBtn');
+            const viewBtns = document.querySelectorAll('.view-btn');
+            
+            // Update active button
+            viewBtns.forEach(btn => {
+                btn.classList.remove('active', 'bg-white/30');
+            });
+            
+            if (view === 'cards') {
+                // Show cards view
+                cardsView.classList.remove('hidden');
+                timelineView.classList.add('hidden');
+                cardBtn.classList.add('active', 'bg-white/30');
+                
+                // Animate cards
+                const cards = cardsView.querySelectorAll('.target-card');
+                cards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.style.opacity = '0';
+                        card.style.transform = 'translateX(-20px)';
+                        setTimeout(() => {
+                            card.style.transition = 'all 0.4s ease-out';
+                            card.style.opacity = '1';
+                            card.style.transform = 'translateX(0)';
+                        }, 50);
+                    }, index * 50);
+                });
+            } else if (view === 'timeline') {
+                // Show timeline view
+                timelineView.classList.remove('hidden');
+                cardsView.classList.add('hidden');
+                timelineBtn.classList.add('active', 'bg-white/30');
+                
+                // Animate timeline items
+                const items = timelineView.querySelectorAll('.timeline-item');
+                items.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.style.opacity = '0';
+                        item.style.transform = 'translateX(20px)';
+                        setTimeout(() => {
+                            item.style.transition = 'all 0.4s ease-out';
+                            item.style.opacity = '1';
+                            item.style.transform = 'translateX(0)';
+                        }, 50);
+                    }, index * 100);
+                });
+            }
+        }
+
         // Animate stats cards on load
         document.addEventListener('DOMContentLoaded', function() {
             const cards = document.querySelectorAll('.group');
@@ -522,6 +794,20 @@
                         card.style.transform = 'translateY(0)';
                     }, 50);
                 }, index * 100);
+            });
+            
+            // Initialize target cards animation
+            const targetCards = document.querySelectorAll('.target-card');
+            targetCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px) scale(0.95)';
+                    setTimeout(() => {
+                        card.style.transition = 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0) scale(1)';
+                    }, 50);
+                }, 200 + (index * 100));
             });
         });
     </script>
@@ -540,8 +826,70 @@
             }
         }
         
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+        
+        @keyframes pulse-slow {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
         .animate-slideDown {
             animation: slideDown 0.3s ease-out forwards;
+        }
+        
+        .animate-shimmer {
+            animation: shimmer 2s infinite;
+        }
+        
+        .animate-pulse-slow {
+            animation: pulse-slow 3s infinite;
+        }
+        
+        .animate-fadeInUp {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+        
+        .animate-bounceIn {
+            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
         
         .line-clamp-2 {
@@ -551,9 +899,79 @@
             overflow: hidden;
         }
         
+        /* Hover effects for target cards */
+        .target-card {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .target-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .target-card:hover::before {
+            left: 100%;
+        }
+        
+        /* Timeline dot pulse animation */
+        .timeline-item:hover .w-16 {
+            animation: pulse 1s infinite;
+        }
+        
+        /* Filter and view buttons active states */
+        .filter-btn.active,
+        .view-btn.active {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        /* Progress bar animation */
+        .progress-fill {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
         /* Smooth transitions for all interactive elements */
         * {
             scroll-behavior: smooth;
+        }
+        
+        /* Custom scrollbar for better UX */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #6366f1, #8b5cf6);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(to bottom, #4f46e5, #7c3aed);
         }
     </style>
     @endpush

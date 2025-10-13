@@ -78,7 +78,7 @@
 
             <!-- Progress Overview with Visual Hierarchy (Miller's Law & Aesthetic-Usability Effect) -->
             <div class="mb-8">
-                <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+                <div class="bg-gradient-to-br from-white via-gray-50 to-indigo-50 rounded-2xl shadow-xl p-6 border border-indigo-100">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-xl font-bold text-gray-800 flex items-center">
                             <svg class="w-6 h-6 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -229,7 +229,7 @@
                 </div>
                     
                 @if($targets->count() > 0)
-                    <div class="space-y-4" id="targets-container">
+                    <div class="space-y-6" id="targets-container">
                         @foreach($targets as $index => $target)
                         @php
                             // Determine vibrant card colors based on status
@@ -260,44 +260,39 @@
                              style="animation-delay: {{ $index * 0.1 }}s">
                             
                             <!-- Card Container with Ultra Colorful Design -->
-                            <div class="relative {{ $cardStyle }} rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-visible border-2 mb-8">
+                            <div class="relative {{ $cardStyle }} rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden border-2">
                                 
                                 <!-- Colorful Side Ribbon -->
-                                <div class="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b {{ $ribbonColor }} rounded-l-2xl"></div>
+                                <div class="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-b {{ $ribbonColor }} rounded-l-2xl"></div>
                                 
                                 @if($isUrgent)
                                 <!-- Urgent Banner with Animation -->
-                                <div class="absolute -top-3 -right-3 z-30 transform rotate-3 hover:rotate-0 transition-transform">
-                                    <div class="bg-gradient-to-r from-red-600 via-pink-600 to-rose-600 text-white px-5 py-2 rounded-xl shadow-xl animate-pulse">
+                                <div class="absolute top-4 left-16 z-10 transform hover:scale-105 transition-transform">
+                                    <div class="bg-gradient-to-r from-red-500 to-rose-600 text-white px-4 py-1.5 rounded-lg shadow-lg animate-pulse">
                                         <div class="flex items-center space-x-2">
-                                            <span class="relative flex h-3 w-3">
+                                            <span class="relative flex h-2 w-2">
                                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                                                <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                                                <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
                                             </span>
-                                            <span class="font-black text-sm uppercase tracking-wider">Urgent!</span>
+                                            <span class="font-bold text-xs uppercase tracking-wider">Urgent!</span>
                                         </div>
                                     </div>
                                 </div>
                                 @endif
                                 
-                                <!-- Colorful Week Badge -->
-                                <div class="relative">
-                                    <div class="absolute -top-5 left-8 z-20">
-                                        <div class="relative">
-                                            <div class="bg-gradient-to-br from-purple-600 via-pink-600 to-indigo-600 text-white px-8 py-4 rounded-2xl shadow-2xl transform -rotate-3 hover:rotate-0 transition-all duration-300">
-                                                <div class="absolute inset-0 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 rounded-2xl opacity-0 hover:opacity-30 transition-opacity"></div>
-                                                <div class="relative text-center">
-                                                    <span class="text-xs font-bold uppercase tracking-widest opacity-90">Week</span>
-                                                    <span class="block text-4xl font-black">{{ $target->week_number }}</span>
-                                                </div>
-                                            </div>
+                                <!-- Fixed Week Badge -->
+                                <div class="absolute top-4 right-4 z-10">
+                                    <div class="bg-gradient-to-br from-purple-600 via-pink-600 to-indigo-600 text-white px-6 py-3 rounded-xl shadow-lg transform hover:scale-110 transition-all duration-300">
+                                        <div class="text-center">
+                                            <span class="text-xs font-bold uppercase tracking-widest opacity-90">Week</span>
+                                            <span class="block text-2xl font-black">{{ $target->week_number }}</span>
                                         </div>
                                     </div>
                                 </div>
                                 
-                                <div class="p-8 pt-14">
+                                <div class="p-6">
                                     <!-- Header Section -->
-                                    <div class="flex justify-between items-start mb-4">
+                                    <div class="flex justify-between items-start mb-4 pr-20">
                                         <div class="flex-1 pr-4">
                                             <h4 class="text-xl font-bold text-gray-800 mb-2 group-hover:text-indigo-600 transition-colors">
                                                 {{ $target->title }}

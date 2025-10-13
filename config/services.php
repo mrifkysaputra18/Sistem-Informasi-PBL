@@ -43,7 +43,9 @@ return [
 
     'google_drive' => [
         'folder_id' => env('GOOGLE_DRIVE_FOLDER_ID'),
-        'service_account_path' => env('GOOGLE_DRIVE_SERVICE_ACCOUNT', storage_path('app/google-drive-service-account.json')),
+        'service_account_path' => env('GOOGLE_DRIVE_SERVICE_ACCOUNT_PATH') 
+            ? base_path(env('GOOGLE_DRIVE_SERVICE_ACCOUNT_PATH'))
+            : storage_path('app/google-drive-service-account.json'),
     ],
 
 ];
