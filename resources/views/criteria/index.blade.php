@@ -164,12 +164,12 @@
                                                         <i class="fa-solid fa-pen-to-square mr-1.5"></i>
                                                         Edit
                                                     </a>
-                                                    <form action="{{ route('criteria.destroy', $criterion) }}" method="POST" class="inline">
+                                                    <form action="{{ route('criteria.destroy', $criterion) }}" method="POST" class="inline delete-form">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" 
-                                                                onclick="return confirm('Yakin ingin menghapus kriteria ini?')"
-                                                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-100 hover:bg-red-200 hover:text-red-900 rounded-lg transition duration-200 ease-in-out">
+                                                        <button type="button" 
+                                                                class="delete-btn inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-100 hover:bg-red-200 hover:text-red-900 rounded-lg transition duration-200 ease-in-out"
+                                                                data-name="{{ $criterion->name }}">
                                                             <i class="fa-solid fa-trash-can mr-1.5"></i>
                                                             Hapus
                                                         </button>
@@ -203,4 +203,28 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle delete button clicks
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const criteriaName = this.getAttribute('data-name');
+                    const form = this.closest('.delete-form');
+                    
+                    confirmDelete(
+                        'Hapus Kriteria?',
+                        `Apakah Anda yakin ingin menghapus kriteria <strong>"${criteriaName}"</strong>?<br><small class="text-gray-500">Tindakan ini tidak dapat dibatalkan.</small>`,
+                        form
+                    );
+                });
+            });
+        });
+    </script>
+    @endpush
 </x-app-layout>
