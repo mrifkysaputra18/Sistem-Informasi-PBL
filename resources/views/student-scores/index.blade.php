@@ -21,6 +21,10 @@
             <!-- Fitts's Law: Larger, accessible action buttons -->
             <div class="flex flex-wrap gap-2">
                 @if(auth()->user()->isDosen() || auth()->user()->isAdmin())
+                    <a href="{{ route('student-scores.create') }}" 
+                       class="bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 inline-flex items-center">
+                        <i class="fas fa-plus mr-2"></i>Input Nilai Mahasiswa
+                    </a>
                     <form action="{{ route('student-scores.recalc') }}" method="POST" class="inline recalc-form">
                         @csrf
                         <button type="button" 
