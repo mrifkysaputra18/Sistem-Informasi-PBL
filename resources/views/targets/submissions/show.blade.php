@@ -181,7 +181,22 @@
                                 <i class="fas fa-edit mr-2"></i>Edit Submission
                             </a>
                             @endif
-                        @else
+                        @endif
+                        
+                        <!-- Cancel Submission Button (if can cancel) -->
+                        @if($target->canCancelSubmission())
+                        <form action="{{ route('targets.submissions.cancel', $target->id) }}" method="POST" class="inline"
+                              onsubmit="return confirm('Apakah Anda yakin ingin membatalkan submission ini?\n\nFile yang diupload akan dihapus dan status kembali ke Belum Dikerjakan.')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" 
+                                    class="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-2 px-6 rounded shadow-lg hover:shadow-xl transition-all">
+                                <i class="fas fa-times-circle mr-2"></i>Batalkan Submit
+                            </button>
+                        </form>
+                        @endif
+                        
+                        @if(!$target->canAcceptSubmission() && !$target->canCancelSubmission())
                             @if($target->isClosed())
                             <div class="text-red-600 text-sm bg-red-50 px-4 py-2 rounded border border-red-200">
                                 <i class="fas fa-lock mr-2"></i>Target sudah tertutup. Tidak dapat mensubmit lagi.

@@ -291,4 +291,112 @@ class WeeklyTargetSubmissionController extends Controller
         return redirect()->route('mahasiswa.dashboard')
             ->with('success', 'Submission berhasil diupdate!');
     }
+
+    /**
+     * Cancel submission yang sudah di-submit (sebelum deadline & belum direview)
+     */
+    public function cancelSubmission(WeeklyTarget $target)
+    {
+        // Check if user is member
+        $user = auth()->user();
+        $isMember = $target->group->members()->where('user_id', $user->id)->exists();
+
+        if (!$isMember) {
+            abort(403, 'Anda bukan anggota kelompok ini.');
+        }
+
+        // Check if submission can be cancelled
+        if (!$target->canCancelSubmission()) {
+            $reasons = [];
+            
+            if (!in_array($target->submission_status, ['submitted', 'late'])) {
+                $reasons[] = 'Target belum disubmit';
+            }
+            if ($target->is_reviewed) {
+                $reasons[] = 'Target sudah direview oleh dosen';
+            }
+            if ($target->isClosed()) {
+                $reasons[] = 'Target sudah ditutup';
+            }
+            if ($target->deadline && now()->gt($target->deadline)) {
+                $reasons[] = 'Deadline sudah lewat';
+            }
+
+            $message = 'Submission tidak dapat dibatalkan. ' . implode(', ', $reasons) . '.';
+            
+            return redirect()->back()->with('error', $message);
+        }
+
+        try {
+            // Delete files from Google Drive or local storage
+            $evidenceFiles = $target->evidence_files ?? [];
+            $deletedFiles = 0;
+            
+            foreach ($evidenceFiles as $file) {
+                try {
+                    if (isset($file['file_id'])) {
+                        // Delete from Google Drive
+                        $this->googleDriveService->deleteFile($file['file_id']);
+                        $deletedFiles++;
+                        \Log::info('File deleted from Google Drive', [
+                            'file_id' => $file['file_id'],
+                            'file_name' => $file['file_name'] ?? 'unknown'
+                        ]);
+                    } elseif (isset($file['local_path'])) {
+                        // Delete from local storage
+                        $fullPath = storage_path('app/public/' . $file['local_path']);
+                        if (file_exists($fullPath)) {
+                            unlink($fullPath);
+                            $deletedFiles++;
+                            \Log::info('File deleted from local storage', [
+                                'path' => $file['local_path']
+                            ]);
+                        }
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Failed to delete file during cancellation', [
+                        'error' => $e->getMessage(),
+                        'file' => $file
+                    ]);
+                    // Continue even if file deletion fails
+                }
+            }
+
+            // Reset target to pending state
+            $target->update([
+                'submission_status' => 'pending',
+                'submission_notes' => null,
+                'evidence_files' => null,
+                'is_checked_only' => false,
+                'is_completed' => false,  // Reset is_completed
+                'completed_at' => null,
+                'completed_by' => null,
+                'submitted_at' => null,  // Reset submitted_at juga
+            ]);
+
+            \Log::info('Submission cancelled successfully', [
+                'target_id' => $target->id,
+                'user_id' => $user->id,
+                'files_deleted' => $deletedFiles
+            ]);
+
+            $message = 'Submission berhasil dibatalkan!';
+            if ($deletedFiles > 0) {
+                $message .= " ({$deletedFiles} file dihapus)";
+            }
+
+            return redirect()->route('mahasiswa.dashboard')
+                ->with('success', $message);
+
+        } catch (\Exception $e) {
+            \Log::error('Error cancelling submission', [
+                'target_id' => $target->id,
+                'user_id' => $user->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat membatalkan submission. Silakan coba lagi.');
+        }
+    }
 }

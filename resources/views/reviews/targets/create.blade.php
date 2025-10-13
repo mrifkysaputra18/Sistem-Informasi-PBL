@@ -61,15 +61,56 @@
                             <!-- Evidence Files -->
                             @if($target->evidence_files && count($target->evidence_files) > 0)
                             <div>
-                                <label class="block text-xs font-medium text-gray-500 mb-1">Bukti ({{ count($target->evidence_files) }} file)</label>
-                                <div class="space-y-1">
-                                    @foreach($target->evidence_files as $file)
-                                    <a href="{{ asset('storage/' . $file['local_path']) }}" 
-                                       target="_blank"
-                                       class="text-xs text-primary-600 hover:underline block">
-                                        <i class="fas fa-file mr-1"></i>{{ $file['file_name'] }}
+                                <div class="flex items-center justify-between mb-2">
+                                    <label class="block text-xs font-medium text-gray-500">Bukti ({{ count($target->evidence_files) }} file)</label>
+                                    <a href="{{ route('target-reviews.download-all', $target->id) }}" 
+                                       class="inline-flex items-center px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition-colors">
+                                        <i class="fas fa-download mr-1"></i>Download All (ZIP)
                                     </a>
+                                </div>
+                                <div class="space-y-2 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                    @foreach($target->evidence_files as $index => $file)
+                                    <div class="flex items-center justify-between bg-white p-2 rounded border border-gray-200 hover:border-blue-300 transition-colors">
+                                        <div class="flex items-center min-w-0 flex-1">
+                                            @php
+                                                $ext = isset($file['file_name']) ? strtolower(pathinfo($file['file_name'], PATHINFO_EXTENSION)) : '';
+                                                $icon = match($ext) {
+                                                    'pdf' => 'fa-file-pdf text-red-600',
+                                                    'doc', 'docx' => 'fa-file-word text-blue-600',
+                                                    'xls', 'xlsx' => 'fa-file-excel text-green-600',
+                                                    'jpg', 'jpeg', 'png', 'gif' => 'fa-file-image text-purple-600',
+                                                    'zip', 'rar' => 'fa-file-archive text-yellow-600',
+                                                    default => 'fa-file text-gray-600',
+                                                };
+                                            @endphp
+                                            <i class="fas {{ $icon }} mr-2 flex-shrink-0"></i>
+                                            <span class="text-xs text-gray-900 truncate font-medium">{{ $file['file_name'] ?? 'File ' . ($index + 1) }}</span>
+                                            @if(isset($file['storage_type']))
+                                            <span class="ml-2 px-1.5 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">
+                                                {{ $file['storage_type'] === 'google_drive' ? '☁️ Drive' : '💾 Local' }}
+                                            </span>
+                                            @endif
+                                        </div>
+                                        <a href="{{ route('target-reviews.download-file', [$target->id, $index]) }}" 
+                                           class="ml-2 inline-flex items-center px-2 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded transition-colors flex-shrink-0">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    </div>
                                     @endforeach
+                                </div>
+                            </div>
+                            @elseif($target->is_checked_only)
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                <div class="flex items-center text-xs text-yellow-800">
+                                    <i class="fas fa-check-circle mr-2"></i>
+                                    <span class="font-medium">Target diselesaikan tanpa upload file (checklist only)</span>
+                                </div>
+                            </div>
+                            @else
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                                <div class="flex items-center text-xs text-gray-600">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    <span>Tidak ada file bukti yang diupload</span>
                                 </div>
                             </div>
                             @endif

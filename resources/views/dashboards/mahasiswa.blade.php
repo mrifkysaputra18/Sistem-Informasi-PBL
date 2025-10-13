@@ -455,6 +455,18 @@
                                                     <i class="fas fa-upload"></i>
                                                     <span>Upload Progress</span>
                                                 </a>
+                                                @elseif($target->canCancelSubmission())
+                                                <!-- Cancel Submission Button (if can cancel) -->
+                                                <form action="{{ route('targets.submissions.cancel', $target->id) }}" method="POST" class="flex-1 lg:flex-none"
+                                                      onsubmit="return confirm('Apakah Anda yakin ingin membatalkan submission ini?\n\nFile yang diupload akan dihapus dan status kembali ke Belum Dikerjakan.')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" 
+                                                            class="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-xl transition-all duration-200 text-sm font-bold shadow-lg shadow-orange-200 hover:shadow-xl hover:-translate-y-0.5">
+                                                        <i class="fas fa-times-circle"></i>
+                                                        <span>Batalkan Submit</span>
+                                                    </button>
+                                                </form>
                                                 @endif
                                                 
                                                 <!-- Detail Button (Secondary Action) -->

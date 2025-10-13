@@ -180,6 +180,18 @@ class WeeklyProgressController extends Controller
                 $target->update([
                     'submission_status' => 'submitted',
                     'submitted_at' => now(),
+                    'is_completed' => true,  // Set is_completed untuk review dosen
+                    'completed_at' => now(),
+                    'completed_by' => auth()->id(),
+                    'evidence_files' => $evidencePaths,  // Save evidence files reference
+                    'submission_notes' => $validated['description'] ?? null,
+                    'is_checked_only' => $request->is_checked_only ?? false,
+                ]);
+                
+                \Log::info('Weekly target updated with submission', [
+                    'target_id' => $target->id,
+                    'group_id' => $group->id,
+                    'user_id' => auth()->id(),
                 ]);
             }
         }

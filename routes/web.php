@@ -153,10 +153,12 @@ Route::middleware(['auth'])->group(function () {
         Route::post('targets/{target}/submit', [WeeklyTargetSubmissionController::class, 'storeSubmission'])->name('targets.submissions.store');
         Route::get('targets/{target}/edit-submission', [WeeklyTargetSubmissionController::class, 'editSubmission'])->name('targets.submissions.edit');
         Route::put('targets/{target}/submit', [WeeklyTargetSubmissionController::class, 'updateSubmission'])->name('targets.submissions.update');
+        Route::delete('targets/{target}/cancel', [WeeklyTargetSubmissionController::class, 'cancelSubmission'])->name('targets.submissions.cancel');
         
         // Weekly Progress Upload (Flexible)
         Route::get('weekly-progress/upload', [WeeklyProgressController::class, 'upload'])->name('weekly-progress.upload');
         Route::post('weekly-progress/store', [WeeklyProgressController::class, 'store'])->name('weekly-progress.store');
+        Route::delete('weekly-progress/{weeklyProgress}/cancel', [WeeklyProgressController::class, 'cancel'])->name('weekly-progress.cancel');
     });
 
     // ========================================
@@ -221,6 +223,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('target-reviews/{weeklyTarget}', [WeeklyTargetReviewController::class, 'store'])->name('target-reviews.store');
         Route::get('target-reviews/{weeklyTarget}/edit', [WeeklyTargetReviewController::class, 'edit'])->name('target-reviews.edit');
         Route::put('target-reviews/{weeklyTarget}', [WeeklyTargetReviewController::class, 'update'])->name('target-reviews.update');
+        Route::get('target-reviews/{weeklyTarget}/download/{fileIndex}', [WeeklyTargetReviewController::class, 'downloadFile'])->name('target-reviews.download-file');
+        Route::get('target-reviews/{weeklyTarget}/download-all', [WeeklyTargetReviewController::class, 'downloadAllFiles'])->name('target-reviews.download-all');
     });
     
     // ========================================
