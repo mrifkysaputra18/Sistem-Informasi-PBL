@@ -8,7 +8,7 @@
                     </svg>
                     {{ __('Manajemen Kelas') }}
                 </h2>
-                <p class="text-sm text-white/90">Kelola kelas dan pembagian mahasiswa per periode akademik</p>
+                <p class="text-sm text-white/90">Kelola kelas dan data mahasiswa per periode akademik</p>
             </div>
             @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
             <a href="{{ route('classrooms.create') }}" 
@@ -74,31 +74,31 @@
                     </div>
                 </div>
                 
-                <!-- Card 3: Total Kelompok -->
+                <!-- Card 3: Total Mahasiswa -->
                 <div class="group relative bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
                     <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     
                     <div class="relative flex items-start justify-between">
                         <div class="flex-1">
-                            <p class="text-purple-100 text-xs font-medium uppercase tracking-wider">Total Kelompok</p>
-                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['total_groups'] }}</p>
-                            <p class="text-xs text-purple-100 mt-2">Kelompok di kelas</p>
+                            <p class="text-purple-100 text-xs font-medium uppercase tracking-wider">Total Mahasiswa</p>
+                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['total_students'] }}</p>
+                            <p class="text-xs text-purple-100 mt-2">Mahasiswa terdaftar</p>
                         </div>
                         <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
-                            <i class="fa-solid fa-users text-2xl"></i>
+                            <i class="fa-solid fa-user-graduate text-2xl"></i>
                         </div>
                     </div>
                 </div>
 
-                <!-- Card 4: Rata-rata Terisi -->
+                <!-- Card 4: Rata-rata Mahasiswa -->
                 <div class="group relative bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
                     <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     
                     <div class="relative flex items-start justify-between">
                         <div class="flex-1">
-                            <p class="text-orange-100 text-xs font-medium uppercase tracking-wider">Rata-rata Terisi</p>
-                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['average_fill'] }}%</p>
-                            <p class="text-xs text-orange-100 mt-2">Kapasitas kelas</p>
+                            <p class="text-orange-100 text-xs font-medium uppercase tracking-wider">Rata-rata per Kelas</p>
+                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $stats['average_students'] }}</p>
+                            <p class="text-xs text-orange-100 mt-2">Mahasiswa per kelas</p>
                         </div>
                         <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
                             <i class="fa-solid fa-chart-line text-2xl"></i>
@@ -192,7 +192,7 @@
                                             <i class="fas fa-book mr-1"></i>Mata Kuliah
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <i class="fas fa-users mr-1"></i>Kelompok
+                                            <i class="fas fa-user-graduate mr-1"></i>Mahasiswa
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             <i class="fas fa-toggle-on mr-1"></i>Status
@@ -224,8 +224,8 @@
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $classRoom->groups_count >= $classRoom->max_groups ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }}">
-                                                    <i class="fas fa-users mr-1"></i>{{ $classRoom->groups_count }}/{{ $classRoom->max_groups }}
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                                    <i class="fas fa-user-graduate mr-1"></i>{{ $classRoom->students_count }} Mahasiswa
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
@@ -235,10 +235,10 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                                 <div class="flex items-center justify-center space-x-2">
-                                                    <a href="{{ route('groups.index', ['classroom' => $classRoom->id]) }}" 
-                                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 bg-blue-100 hover:bg-blue-200 hover:text-blue-900 rounded-lg transition duration-200 ease-in-out">
-                                                        <i class="fas fa-users mr-1.5"></i>
-                                                        Kelompok
+                                                    <a href="{{ route('classrooms.show', $classRoom->id) }}" 
+                                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-green-600 bg-green-100 hover:bg-green-200 hover:text-green-900 rounded-lg transition duration-200 ease-in-out">
+                                                        <i class="fas fa-user-graduate mr-1.5"></i>
+                                                        Lihat Mahasiswa
                                                     </a>
                                                     @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
                                                     <a href="{{ url('/classrooms/' . $classRoom->id . '/edit') }}" 

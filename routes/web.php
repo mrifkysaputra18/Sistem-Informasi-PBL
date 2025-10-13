@@ -185,6 +185,13 @@ Route::middleware(['auth'])->group(function () {
         // Class Rooms
         Route::resource('classrooms', ClassRoomController::class);
         
+        // Student Management in Class Rooms
+        Route::get('classrooms/{classRoom}/students/create', [ClassRoomController::class, 'createStudent'])->name('classrooms.students.create');
+        Route::post('classrooms/{classRoom}/students', [ClassRoomController::class, 'storeStudent'])->name('classrooms.students.store');
+        Route::get('classrooms/{classRoom}/students/{student}/edit', [ClassRoomController::class, 'editStudent'])->name('classrooms.students.edit');
+        Route::put('classrooms/{classRoom}/students/{student}', [ClassRoomController::class, 'updateStudent'])->name('classrooms.students.update');
+        Route::delete('classrooms/{classRoom}/students/{student}', [ClassRoomController::class, 'destroyStudent'])->name('classrooms.students.destroy');
+        
         // Groups (CRUD) - IMPORTANT: groups/create must come before groups/{group}
         Route::get('groups', [GroupController::class, 'index'])->name('groups.index');
         Route::get('groups/create', [GroupController::class, 'create'])->name('groups.create');

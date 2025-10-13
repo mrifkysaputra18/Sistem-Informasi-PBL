@@ -12,7 +12,7 @@ class ClassRoomController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ClassRoom::withCount('groups');
+        $query = ClassRoom::withCount('students');
 
         // Filter by subject
         if ($request->has('subject_id') && $request->subject_id != '') {
@@ -45,32 +45,34 @@ class ClassRoomController extends Controller
         $subjects = Subject::orderBy('name')->get() ?? collect(); // Semua mata kuliah aktif
         $semesters = ClassRoom::distinct()->pluck('semester')->sort();
 
-        // Calculate lightweight statistics for UX cues
+        // Calculate statistics for students, not groups
         $totalClasses = $statsCollection->count();
         $totalActiveClasses = $statsCollection->where('is_active', true)->count();
-        $totalGroups = $statsCollection->sum('groups_count');
-        $totalMaxGroups = $statsCollection->sum('max_groups');
-        $averageFill = $totalMaxGroups > 0 
-            ? round(($totalGroups / $totalMaxGroups) * 100)
+        $totalStudents = $statsCollection->sum('students_count');
+        $averageStudents = $totalClasses > 0 
+            ? round($totalStudents / $totalClasses)
             : 0;
         $stats = [
             'total_classes' => $totalClasses,
             'active_classes' => $totalActiveClasses,
-            'total_groups' => $totalGroups,
-            'average_fill' => $averageFill,
+            'total_students' => $totalStudents,
+            'average_students' => $averageStudents,
         ];
             
         return view('classrooms.index', compact('classRooms', 'subjects', 'semesters', 'stats'));
     }
 
     /**
-     * Show groups for a specific class
+     * Show students in a specific class
      */
     public function show(ClassRoom $classRoom)
     {
-        $classRoom->load(['groups.members.user', 'groups.leader']);
+        // Load students yang terdaftar di kelas ini
+        $students = $classRoom->students()
+            ->orderBy('name')
+            ->get();
         
-        return view('classrooms.show', compact('classRoom'));
+        return view('classrooms.show', compact('classRoom', 'students'));
     }
 
     /**
@@ -183,5 +185,131 @@ class ClassRoomController extends Controller
         return redirect()
             ->route('classrooms.index')
             ->with('success', 'Kelas berhasil dihapus!');
+    }
+
+    /**
+     * Show form to add student to class
+     */
+    public function createStudent(ClassRoom $classRoom)
+    {
+        // Only admin and dosen can add students
+        if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        return view('classrooms.students.create', compact('classRoom'));
+    }
+
+    /**
+     * Store student in class
+     */
+    public function storeStudent(Request $request, ClassRoom $classRoom)
+    {
+        // Only admin and dosen can add students
+        if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'politala_id' => 'required|string|max:20|unique:users,politala_id',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'nullable|string|max:20',
+            'password' => 'required|string|min:8',
+        ]);
+
+        $validated['role'] = 'mahasiswa';
+        $validated['program_studi'] = $classRoom->program_studi;
+        $validated['class_room_id'] = $classRoom->id;
+        $validated['is_active'] = true;
+        $validated['password'] = \Hash::make($validated['password']);
+
+        \App\Models\User::create($validated);
+
+        return redirect()
+            ->route('classrooms.show', $classRoom)
+            ->with('success', 'Mahasiswa berhasil ditambahkan ke kelas!');
+    }
+
+    /**
+     * Show form to edit student
+     */
+    public function editStudent(ClassRoom $classRoom, \App\Models\User $student)
+    {
+        // Only admin and dosen can edit students
+        if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Make sure student belongs to this class
+        if ($student->class_room_id !== $classRoom->id) {
+            abort(404, 'Mahasiswa tidak ditemukan di kelas ini.');
+        }
+
+        return view('classrooms.students.edit', compact('classRoom', 'student'));
+    }
+
+    /**
+     * Update student
+     */
+    public function updateStudent(Request $request, ClassRoom $classRoom, \App\Models\User $student)
+    {
+        // Only admin and dosen can update students
+        if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Make sure student belongs to this class
+        if ($student->class_room_id !== $classRoom->id) {
+            abort(404, 'Mahasiswa tidak ditemukan di kelas ini.');
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'politala_id' => 'required|string|max:20|unique:users,politala_id,' . $student->id,
+            'email' => 'required|email|unique:users,email,' . $student->id,
+            'phone' => 'nullable|string|max:20',
+            'is_active' => 'boolean',
+        ]);
+
+        // Update password if provided
+        if ($request->filled('password')) {
+            $request->validate(['password' => 'string|min:8']);
+            $validated['password'] = \Hash::make($request->password);
+        }
+
+        $student->update($validated);
+
+        return redirect()
+            ->route('classrooms.show', $classRoom)
+            ->with('success', 'Data mahasiswa berhasil diupdate!');
+    }
+
+    /**
+     * Remove student from class
+     */
+    public function destroyStudent(ClassRoom $classRoom, \App\Models\User $student)
+    {
+        // Only admin and dosen can remove students
+        if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Make sure student belongs to this class
+        if ($student->class_room_id !== $classRoom->id) {
+            abort(404, 'Mahasiswa tidak ditemukan di kelas ini.');
+        }
+
+        // Check if student is in any group
+        if ($student->groupMembers()->count() > 0) {
+            return back()->with('error', 'Tidak dapat menghapus mahasiswa yang masih terdaftar di kelompok! Hapus dari kelompok terlebih dahulu.');
+        }
+
+        // Remove student from class (set class_room_id to null)
+        $student->update(['class_room_id' => null]);
+
+        return redirect()
+            ->route('classrooms.show', $classRoom)
+            ->with('success', 'Mahasiswa berhasil dihapus dari kelas!');
     }
 }
