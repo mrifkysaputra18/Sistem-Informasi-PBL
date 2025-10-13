@@ -264,6 +264,7 @@ class WeeklyTarget extends Model
 
     /**
      * Reopen target (oleh dosen)
+     * Reset review status agar mahasiswa bisa submit ulang
      */
     public function reopenTarget($dosenId): void
     {
@@ -271,6 +272,10 @@ class WeeklyTarget extends Model
             'is_open' => true,
             'reopened_by' => $dosenId,
             'reopened_at' => now(),
+            // Reset review status agar mahasiswa bisa submit ulang
+            'is_reviewed' => false,
+            'reviewed_at' => null,
+            'reviewer_id' => null,
         ]);
     }
 
