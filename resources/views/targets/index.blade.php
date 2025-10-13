@@ -274,12 +274,11 @@
                         <table class="min-w-full divide-y divide-gray-200 table-fixed">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">Target</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">Kelompok</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Minggu</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-28">Deadline</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-max">Aksi</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelompok</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Minggu</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deadline</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -295,28 +294,14 @@
                                     };
                                 @endphp
                                 <tr class="{{ $rowClass }}">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            @if(in_array($target->submission_status, ['submitted', 'approved', 'revision']))
-                                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                            @elseif($target->submission_status === 'late')
-                                                <i class="fas fa-exclamation-triangle text-orange-500 mr-2"></i>
-                                            @else
-                                                <i class="fas fa-clock text-gray-400 mr-2"></i>
-                                            @endif
-                                            <div>
-                                                <div class="text-sm font-medium text-gray-900">{{ $target->title }}</div>
-                                                <div class="text-sm text-gray-500">{{ Str::limit($target->description, 50) }}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-6 py-4">
                                         <div>
                                             <div class="text-sm font-semibold text-gray-900">{{ $target->group->name }}</div>
-                                            <div class="text-sm text-gray-500">{{ $target->group->classRoom->name }}</div>
+                                            <div class="text-xs text-gray-500">{{ $target->group->classRoom->name }}</div>
+                                            <div class="text-sm text-gray-700 mt-1">{{ $target->title }}</div>
                                             @if($target->completedByUser)
                                                 <div class="text-xs text-primary-600 mt-1">
-                                                    <i class="fas fa-user text-xs"></i> Submit oleh: {{ $target->completedByUser->name }}
+                                                    <i class="fas fa-user text-xs"></i> {{ $target->completedByUser->name }}
                                                 </div>
                                             @endif
                                         </div>

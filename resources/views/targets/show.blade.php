@@ -178,30 +178,53 @@
 
             <!-- Actions -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="flex justify-between items-center">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <a href="{{ route('targets.index') }}" 
-                       class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded">
-                        Kembali
+                       class="inline-flex items-center px-6 py-2.5 bg-gray-500 hover:bg-gray-700 text-white font-semibold rounded-lg transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>Kembali
                     </a>
                     
-                    <div class="flex space-x-2">
+                    <div class="flex flex-wrap gap-2">
+                        <!-- Edit Button (Always show for dosen who created or admin) -->
                         @if($target->created_by === auth()->id() || auth()->user()->isAdmin())
-                        @if($target->isPending())
                         <a href="{{ route('targets.edit', $target->id) }}" 
-                           class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-6 rounded">
+                           class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105">
                             <i class="fas fa-edit mr-2"></i>Edit Target
                         </a>
-                        @endif
+                        
+                        <!-- Delete Button (Always show for dosen who created or admin) -->
+                        @php
+                            $deleteMessage = "⚠️ PERHATIAN!\n\nYakin ingin menghapus target ini?\n\n";
+                            $deleteMessage .= "Target: {$target->title}\n";
+                            $deleteMessage .= "Kelompok: {$target->group->name}\n";
+                            $deleteMessage .= "Status: {$target->getStatusLabel()}\n\n";
+                            if ($target->isSubmitted()) {
+                                $deleteMessage .= "⚠️ Target ini sudah disubmit mahasiswa!\n\n";
+                            }
+                            $deleteMessage .= "Lanjutkan hapus?";
+                        @endphp
+                        <form action="{{ route('targets.destroy', $target->id) }}" 
+                              method="POST" 
+                              class="inline"
+                              onsubmit="return confirm({{ json_encode($deleteMessage) }})">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" 
+                                    class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105">
+                                <i class="fas fa-trash mr-2"></i>Hapus Target
+                            </button>
+                        </form>
                         @endif
                         
+                        <!-- Review Button (If submitted and not reviewed) -->
                         @if($target->isSubmitted() && !$target->isReviewed())
                         <a href="{{ route('targets.review', $target->id) }}" 
-                           class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-6 rounded">
+                           class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105">
                             <i class="fas fa-check-circle mr-2"></i>Review Submission
                         </a>
                         @endif
                         
-                        <!-- Reopen/Close Target Buttons (Only for dosen/admin and not reviewed yet) -->
+                        <!-- Reopen/Close Target Buttons -->
                         @if(in_array(auth()->user()->role, ['dosen', 'admin', 'koordinator']) && !$target->isReviewed())
                             @if($target->isClosed())
                                 <!-- Reopen Button -->

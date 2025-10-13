@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\Group;
 use App\Models\User;
-use App\Exports\GroupRankingExport;
-use App\Exports\StudentRankingExport;
+// use App\Exports\GroupRankingExport;  // Temporary disabled
+// use App\Exports\StudentRankingExport;  // Temporary disabled
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Facades\Excel;
+// use Maatwebsite\Excel\Facades\Excel;  // Temporary disabled
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportController extends Controller
@@ -87,6 +87,12 @@ class ReportController extends Controller
         
         $filename = "{$project->title}_{$type}_" . now()->format('Y-m-d');
         
+        // Temporary workaround: Excel export disabled due to composer issue
+        if (in_array($type, ['groups', 'students'])) {
+            return redirect()->back()->with('error', 'Export Excel sedang dalam perbaikan. Silakan gunakan Export PDF untuk sementara.');
+        }
+        
+        /* Original Excel export code (uncomment when composer fixed):
         if ($type === 'groups') {
             return Excel::download(
                 new GroupRankingExport($project), 
@@ -98,6 +104,9 @@ class ReportController extends Controller
                 $filename . '.xlsx'
             );
         } elseif ($type === 'pdf') {
+        */
+        
+        if ($type === 'pdf') {
             $groups = $project->groups()
                 ->with(['members', 'leader', 'weeklyProgress.review'])
                 ->orderBy('ranking')

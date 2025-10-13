@@ -97,6 +97,11 @@ Route::middleware(['auth'])->group(function () {
         Route::put('targets/{target}', [WeeklyTargetController::class, 'update'])->name('targets.update');
         Route::delete('targets/{target}', [WeeklyTargetController::class, 'destroy'])->name('targets.destroy');
     });
+    
+    // Admin Only - Force Delete
+    Route::middleware(['role:admin'])->group(function () {
+        Route::delete('targets/{target}/force', [WeeklyTargetController::class, 'forceDestroy'])->name('targets.force-destroy');
+    });
 
     // ========================================
     // DOSEN PROGRESS MONITORING ROUTES
