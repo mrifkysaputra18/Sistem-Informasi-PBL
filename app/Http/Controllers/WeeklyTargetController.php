@@ -516,7 +516,7 @@ class WeeklyTargetController extends Controller
 
     /**
      * Reopen target (membuka kembali target yang sudah ditutup)
-     * Hanya dosen yang bisa melakukan ini
+     * Dosen bisa membuka target bahkan yang sudah direview
      */
     public function reopen(WeeklyTarget $target)
     {
@@ -526,23 +526,24 @@ class WeeklyTargetController extends Controller
             abort(403, 'Hanya dosen yang dapat membuka kembali target.');
         }
 
-        // Cannot reopen if already reviewed
-        if ($target->is_reviewed) {
-            return redirect()->back()
-                ->with('error', 'Target yang sudah direview tidak dapat dibuka kembali.');
-        }
+        // Allow reopen even if reviewed (removed restriction)
+        // Dosen has full control to reopen "kantong tugas"
 
         // Reopen the target
         $target->reopenTarget(auth()->id());
 
-        \Log::info('Target Reopened', [
+        \Log::warning('Target Reopened by Dosen', [
             'target_id' => $target->id,
+            'title' => $target->title,
             'reopened_by' => auth()->id(),
+            'reopener_name' => auth()->user()->name,
             'group_id' => $target->group_id,
+            'was_reviewed' => $target->is_reviewed,
+            'was_submitted' => $target->isSubmitted(),
         ]);
 
         return redirect()->back()
-            ->with('success', 'Target berhasil dibuka kembali. Mahasiswa sekarang dapat mensubmit target ini.');
+            ->with('success', 'Target berhasil dibuka kembali. Mahasiswa sekarang dapat mensubmit ulang target ini.');
     }
 
     /**
