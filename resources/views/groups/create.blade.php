@@ -194,8 +194,7 @@
             console.log('Form loaded');
             
             function loadStudents(classRoomId) {
-                console.log('🔍 Loading students for class:', classRoomId);
-                alert('Memuat mahasiswa untuk kelas ID: ' + classRoomId);
+                console.log('Loading students for class:', classRoomId);
                 
                 if (!classRoomId) {
                     studentsList.innerHTML = '<div class="text-gray-400 text-center py-12"><i class="fas fa-users text-5xl mb-3"></i><p class="text-sm font-medium">Pilih Kelas Terlebih Dahulu</p><p class="text-xs mt-1">Daftar mahasiswa akan muncul di sini</p></div>';
@@ -208,21 +207,18 @@
                 
                 // Fetch available students for this classroom
                 const url = `{{ route('groups.available-students') }}?class_room_id=${classRoomId}`;
-                console.log('🌐 Fetching from:', url);
-                alert('Requesting URL: ' + url);
+                console.log('Fetching from:', url);
                 
                 fetch(url)
                     .then(response => {
-                        console.log('✅ Response status:', response.status);
-                        alert('Response status: ' + response.status);
+                        console.log('Response status:', response.status);
                         if (!response.ok) {
                             throw new Error('HTTP error! status: ' + response.status);
                         }
                         return response.json();
                     })
                     .then(data => {
-                        console.log('📦 Data received:', data);
-                        alert('Jumlah mahasiswa diterima: ' + (data.students ? data.students.length : 0));
+                        console.log('Data received:', data.students.length, 'students');
                     if (data.students.length === 0) {
                         studentsList.innerHTML = `
                             <div class="text-center py-8">
