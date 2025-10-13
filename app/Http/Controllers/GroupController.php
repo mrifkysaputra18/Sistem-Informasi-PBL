@@ -79,6 +79,16 @@ class GroupController extends Controller
         // Add members if provided
         if ($request->has('members') && is_array($request->members)) {
             foreach ($request->members as $userId) {
+                // Validate that member is from the same class
+                $user = User::find($userId);
+                if (!$user || $user->class_room_id != $group->class_room_id) {
+                    $group->delete(); // Rollback group creation
+                    return redirect()
+                        ->back()
+                        ->withInput()
+                        ->with('error', 'Semua anggota kelompok harus dari kelas yang sama!');
+                }
+                
                 $group->members()->create([
                     'user_id' => $userId,
                     'role' => 'member'
@@ -89,11 +99,14 @@ class GroupController extends Controller
         // Set leader if provided
         if ($request->has('leader_id') && $request->leader_id) {
             $group->update(['leader_id' => $request->leader_id]);
+            
+            // Update is_leader flag for the leader
+            $group->members()->where('user_id', $request->leader_id)->update(['is_leader' => true]);
         }
         
         return redirect()
-            ->route('groups.show', $group)
-            ->with('success', 'Kelompok berhasil dibuat!');
+            ->route('groups.index')
+            ->with('success', 'Kelompok "' . $group->name . '" berhasil dibuat!');
     }
 
     /**
@@ -102,9 +115,14 @@ class GroupController extends Controller
     public function show(Group $group)
     {
         $group->load(['classRoom', 'leader', 'members.user']);
+        
+        // Get available students from the SAME classroom only
         $availableStudents = User::where('role', 'mahasiswa')
+            ->where('class_room_id', $group->class_room_id) // Filter by same class
             ->whereDoesntHave('groupMembers', function($q) use ($group) {
-                $q->where('group_id', $group->id);
+                $q->whereHas('group', function($subQ) use ($group) {
+                    $subQ->where('class_room_id', $group->class_room_id);
+                });
             })
             ->orderBy('name')
             ->get();
@@ -120,10 +138,13 @@ class GroupController extends Controller
         $group->load(['classRoom', 'leader', 'members.user', 'weeklyTargets.completedByUser']);
         $classRooms = ClassRoom::orderBy('name')->get();
         
-        // Get available students (not already in this group)
+        // Get available students from the SAME classroom only (not already in any group in this class)
         $availableStudents = User::where('role', 'mahasiswa')
+            ->where('class_room_id', $group->class_room_id) // Filter by same class
             ->whereDoesntHave('groupMembers', function($q) use ($group) {
-                $q->where('group_id', $group->id);
+                $q->whereHas('group', function($subQ) use ($group) {
+                    $subQ->where('class_room_id', $group->class_room_id);
+                });
             })
             ->orderBy('name')
             ->get();
@@ -164,14 +185,22 @@ class GroupController extends Controller
             'is_leader' => 'boolean'
         ]);
         
+        // Cek apakah mahasiswa dari kelas yang sama
+        $user = User::findOrFail($request->user_id);
+        if ($user->class_room_id !== $group->class_room_id) {
+            return back()->with('error', 'Mahasiswa harus dari kelas yang sama dengan kelompok!');
+        }
+        
         // Cek apakah sudah mencapai maksimal 5 anggota
         if ($group->members()->count() >= 5) {
             return back()->with('error', 'Kelompok sudah mencapai maksimal 5 anggota!');
         }
         
-        // Cek apakah user sudah menjadi anggota
-        if ($group->members()->where('user_id', $request->user_id)->exists()) {
-            return back()->with('error', 'Mahasiswa sudah menjadi anggota kelompok ini!');
+        // Cek apakah user sudah menjadi anggota kelompok lain di kelas ini
+        if ($user->groupMembers()->whereHas('group', function($q) use ($group) {
+            $q->where('class_room_id', $group->class_room_id);
+        })->exists()) {
+            return back()->with('error', 'Mahasiswa sudah menjadi anggota kelompok lain di kelas ini!');
         }
         
         // Jika ini akan jadi ketua, update ketua lama
