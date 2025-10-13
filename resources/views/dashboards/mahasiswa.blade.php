@@ -448,20 +448,11 @@
                                             
                                             <!-- Right Section: Actions -->
                                             <div class="flex lg:flex-col gap-2 pt-2 lg:pt-0">
-                                                @if($target->submission_status === 'pending' || $target->submission_status === 'revision')
-                                                <!-- Upload Progress Button (Primary Action) -->
-                                                <a href="{{ route('weekly-progress.upload', ['group_id' => $myGroup->id, 'week_number' => $target->week_number, 'target_id' => $target->id]) }}" 
-                                                   class="flex-1 lg:flex-none inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl transition-all duration-200 text-sm font-bold shadow-lg shadow-green-200 hover:shadow-xl hover:-translate-y-0.5">
-                                                    <i class="fas fa-upload"></i>
-                                                    <span>Upload Progress</span>
-                                                </a>
-                                                @endif
-                                                
-                                                <!-- Detail Button (Secondary Action) -->
+                                                <!-- Lihat Detail Button - Navigate to Target Mingguan page -->
                                                 <a href="{{ route('targets.submissions.show', $target->id) }}" 
-                                                   class="flex-1 lg:flex-none inline-flex items-center justify-center gap-2 px-5 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all duration-200 text-sm font-semibold">
-                                                    <i class="fas fa-eye"></i>
-                                                    <span>Detail</span>
+                                                   class="flex-1 lg:flex-none inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl transition-all duration-200 text-sm font-bold shadow-lg shadow-blue-200 hover:shadow-xl hover:-translate-y-0.5">
+                                                    <i class="fas fa-arrow-right"></i>
+                                                    <span>Lihat Detail</span>
                                                 </a>
                                             </div>
                                         </div>

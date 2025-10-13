@@ -107,30 +107,55 @@ class WeeklyProgressController extends Controller
         if ($request->hasFile('evidence') && !$request->is_checked_only) {
             foreach ($request->file('evidence') as $file) {
                 try {
-                    // Upload ke Google Drive
-                    $fileId = $this->googleDriveService->uploadFile(
-                        $file,
-                        config('services.google_drive.folder_id')
-                    );
-                    
-                    // Simpan file ID dan URL
-                    $evidencePaths[] = [
-                        'file_id' => $fileId,
-                        'file_name' => $file->getClientOriginalName(),
-                        'file_url' => $this->googleDriveService->getFileUrl($fileId),
-                        'uploaded_at' => now()->toDateTimeString(),
-                    ];
+                    // Check if Google Drive is configured
+                    if ($this->googleDriveService->isConfigured()) {
+                        // Upload ke Google Drive
+                        $fileId = $this->googleDriveService->uploadFile(
+                            $file,
+                            config('services.google_drive.folder_id')
+                        );
+                        
+                        // Simpan file ID dan URL
+                        $evidencePaths[] = [
+                            'storage_type' => 'google_drive',
+                            'file_id' => $fileId,
+                            'file_name' => $file->getClientOriginalName(),
+                            'file_url' => $this->googleDriveService->getFileUrl($fileId),
+                            'file_size' => $file->getSize(),
+                            'mime_type' => $file->getMimeType(),
+                            'uploaded_at' => now()->toDateTimeString(),
+                        ];
+                        
+                        \Log::info('File uploaded to Google Drive successfully', [
+                            'file_name' => $file->getClientOriginalName(),
+                            'file_id' => $fileId,
+                        ]);
+                    } else {
+                        throw new \Exception('Google Drive is not configured');
+                    }
                 } catch (\Exception $e) {
-                    \Log::error('Google Drive upload error: ' . $e->getMessage());
+                    \Log::error('Google Drive upload error: ' . $e->getMessage(), [
+                        'file_name' => $file->getClientOriginalName(),
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
+                    ]);
                     
                     // Fallback: simpan ke local storage jika Google Drive gagal
                     $path = $file->store('weekly-progress/evidence', 'public');
                     $evidencePaths[] = [
+                        'storage_type' => 'local',
                         'local_path' => $path,
                         'file_name' => $file->getClientOriginalName(),
                         'file_url' => asset('storage/' . $path),
+                        'file_size' => $file->getSize(),
+                        'mime_type' => $file->getMimeType(),
                         'uploaded_at' => now()->toDateTimeString(),
                     ];
+                    
+                    \Log::info('File saved to local storage as fallback', [
+                        'file_name' => $file->getClientOriginalName(),
+                        'path' => $path,
+                    ]);
                 }
             }
         }
@@ -141,6 +166,7 @@ class WeeklyProgressController extends Controller
             'week_number' => $validated['week_number'],
             'title' => $validated['title'],
             'description' => $validated['description'] ?? '',
+            'activities' => $validated['description'] ?? 'Progress telah disubmit', // Use description as activities or default text
             'documents' => $evidencePaths,
             'is_checked_only' => $request->is_checked_only ?? false,
             'status' => 'submitted',
@@ -154,6 +180,18 @@ class WeeklyProgressController extends Controller
                 $target->update([
                     'submission_status' => 'submitted',
                     'submitted_at' => now(),
+                    'is_completed' => true,  // Set is_completed untuk review dosen
+                    'completed_at' => now(),
+                    'completed_by' => auth()->id(),
+                    'evidence_files' => $evidencePaths,  // Save evidence files reference
+                    'submission_notes' => $validated['description'] ?? null,
+                    'is_checked_only' => $request->is_checked_only ?? false,
+                ]);
+                
+                \Log::info('Weekly target updated with submission', [
+                    'target_id' => $target->id,
+                    'group_id' => $group->id,
+                    'user_id' => auth()->id(),
                 ]);
             }
         }

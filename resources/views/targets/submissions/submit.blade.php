@@ -97,23 +97,23 @@
                             <label for="evidence" class="block text-sm font-medium text-gray-700 mb-2">
                                 Upload File Bukti/Tugas
                             </label>
-                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+                            <div id="drop-zone" class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary-400 transition-colors">
                                 <input type="file" name="evidence[]" id="evidence" multiple
                                        accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
                                        class="hidden"
                                        onchange="handleFileSelect(this)">
-                                <label for="evidence" class="cursor-pointer">
-                                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                <label for="evidence" class="cursor-pointer block">
+                                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
                                     <div class="text-sm text-gray-600">
                                         <span class="font-medium text-primary-600 hover:text-primary-500">Klik untuk upload</span>
-                                        atau drag & drop file
+                                        atau drag & drop file di sini
                                     </div>
-                                    <div class="text-xs text-gray-500 mt-1">
+                                    <div class="text-xs text-gray-500 mt-2">
                                         JPG, PNG, PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX (Max 10MB per file)
                                     </div>
                                 </label>
                             </div>
-                            <div id="file-list" class="mt-2"></div>
+                            <div id="file-list" class="mt-3"></div>
                             @error('evidence.*')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -193,16 +193,40 @@
                 fileList.innerHTML = '<div class="text-sm font-medium text-gray-700 mb-2">File yang dipilih:</div>';
                 
                 Array.from(files).forEach((file, index) => {
+                    // Get file extension icon
+                    const ext = file.name.split('.').pop().toLowerCase();
+                    let iconClass = 'fa-file';
+                    let iconColor = 'text-gray-500';
+                    
+                    if (['pdf'].includes(ext)) {
+                        iconClass = 'fa-file-pdf';
+                        iconColor = 'text-red-600';
+                    } else if (['doc', 'docx'].includes(ext)) {
+                        iconClass = 'fa-file-word';
+                        iconColor = 'text-blue-600';
+                    } else if (['xls', 'xlsx'].includes(ext)) {
+                        iconClass = 'fa-file-excel';
+                        iconColor = 'text-green-600';
+                    } else if (['ppt', 'pptx'].includes(ext)) {
+                        iconClass = 'fa-file-powerpoint';
+                        iconColor = 'text-orange-600';
+                    } else if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) {
+                        iconClass = 'fa-file-image';
+                        iconColor = 'text-purple-600';
+                    }
+                    
                     const fileItem = document.createElement('div');
-                    fileItem.className = 'flex items-center justify-between bg-gray-50 rounded-lg p-2 mb-2';
+                    fileItem.className = 'flex items-center justify-between bg-gray-50 rounded-lg p-3 mb-2 border border-gray-200 hover:border-primary-300 transition-colors';
                     fileItem.innerHTML = `
-                        <div class="flex items-center">
-                            <i class="fas fa-file mr-2 text-gray-500"></i>
-                            <span class="text-sm text-gray-700">${file.name}</span>
-                            <span class="text-xs text-gray-500 ml-2">(${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                        <div class="flex items-center min-w-0 flex-1">
+                            <i class="fas ${iconClass} ${iconColor} mr-3 text-lg flex-shrink-0"></i>
+                            <div class="min-w-0 flex-1">
+                                <div class="text-sm text-gray-700 font-medium truncate">${file.name}</div>
+                                <div class="text-xs text-gray-500">${(file.size / 1024 / 1024).toFixed(2)} MB</div>
+                            </div>
                         </div>
-                        <button type="button" onclick="removeFile(${index})" class="text-red-500 hover:text-red-700">
-                            <i class="fas fa-times"></i>
+                        <button type="button" onclick="removeFile(${index})" class="ml-3 text-red-500 hover:text-red-700 transition-colors flex-shrink-0">
+                            <i class="fas fa-times-circle text-lg"></i>
                         </button>
                     `;
                     fileList.appendChild(fileItem);
@@ -224,9 +248,62 @@
             handleFileSelect(input);
         }
 
-        // Set default submission type
+        // Drag and Drop functionality
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('evidence');
+            
+            if (!dropZone || !fileInput) return;
+            
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            // Highlight drop zone when item is dragged over it
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+            
+            // Handle dropped files
+            dropZone.addEventListener('drop', handleDrop, false);
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            function highlight(e) {
+                dropZone.classList.add('border-primary-500', 'bg-primary-50');
+                dropZone.classList.remove('border-gray-300');
+            }
+            
+            function unhighlight(e) {
+                dropZone.classList.remove('border-primary-500', 'bg-primary-50');
+                dropZone.classList.add('border-gray-300');
+            }
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                
+                // Set files to input
+                fileInput.files = files;
+                
+                // Trigger change event
+                handleFileSelect(fileInput);
+            }
+        }
+
+        // Set default submission type and setup drag-drop
         document.addEventListener('DOMContentLoaded', function() {
             toggleSubmissionType('file');
+            setupDragAndDrop();
         });
     </script>
 </x-app-layout>
