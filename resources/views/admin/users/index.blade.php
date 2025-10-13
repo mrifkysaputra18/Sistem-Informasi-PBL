@@ -54,7 +54,7 @@
                                 <i class="fa-solid fa-magnifying-glass mr-1"></i>Cari
                             </label>
                             <input type="text" name="search" value="{{ request('search') }}" 
-                                   placeholder="Nama, email, atau ID..." 
+                                   placeholder="Nama, email, atau NIM..." 
                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
                         </div>
 
@@ -257,11 +257,6 @@
                                                             <div class="ml-4">
                                                                 <div class="text-base font-bold text-gray-900">{{ $user->name }}</div>
                                                                 <div class="text-sm text-gray-600">{{ $user->email }}</div>
-                                                                @if($user->politala_id)
-                                                                    <div class="text-xs text-gray-400 mt-0.5">
-                                                                        <i class="fas fa-id-card mr-1"></i>{{ $user->politala_id }}
-                                                                    </div>
-                                                                @endif
                                                                 @if($roleType === 'mahasiswa' && $user->nim)
                                                                     <div class="text-xs text-blue-600 mt-0.5 font-medium">
                                                                         <i class="fas fa-graduation-cap mr-1"></i>NIM: {{ $user->nim }}
@@ -369,9 +364,6 @@
                                                     <div class="ml-4">
                                                         <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
                                                         <div class="text-sm text-gray-500">{{ $user->email }}</div>
-                                                        @if($user->politala_id)
-                                                            <div class="text-xs text-gray-400">ID: {{ $user->politala_id }}</div>
-                                                        @endif
                                                         @if($user->role === 'mahasiswa' && $user->nim)
                                                             <div class="text-xs text-blue-600 font-medium">
                                                                 <i class="fas fa-graduation-cap mr-1"></i>NIM: {{ $user->nim }}

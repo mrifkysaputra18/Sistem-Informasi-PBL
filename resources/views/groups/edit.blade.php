@@ -1,413 +1,324 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center">
-            <a href="{{ route('groups.index') }}" 
-               class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
+            <a href="{{ route('groups.index') }}" class="mr-4 text-gray-600 hover:text-gray-800">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
             <h2 class="font-semibold text-xl text-white leading-tight">
-                {{ __('Edit Kelompok') }}
+                {{ __('Edit Kelompok: ') }} {{ $group->name }}
             </h2>
         </div>
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                <div class="p-8">
-                    <form action="{{ route('groups.update', $group) }}" method="POST">
+        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6">
+                    <form method="POST" action="{{ route('groups.update', $group) }}" id="editGroupForm">
                         @csrf
                         @method('PATCH')
 
-                        <!-- Pilih Kelas (Locked saat edit) -->
-                        <div class="mb-4">
-                            <label for="class_room_id_display" class="block text-sm font-medium text-gray-700 mb-2">
-                                Kelas <span class="text-red-500">*</span>
-                                <span class="ml-2 text-xs text-gray-500 font-normal">
-                                    <i class="fa-solid fa-lock mr-1"></i>Tidak dapat diubah
-                                </span>
-                            </label>
-                            <!-- Hidden input untuk mengirim nilai asli -->
-                            <input type="hidden" name="class_room_id" value="{{ $group->class_room_id }}">
-                            
-                            <!-- Select yang di-disable hanya untuk tampilan -->
-                            <select id="class_room_id_display" disabled
-                                class="w-full rounded-md border-gray-300 bg-gray-100 text-gray-600 shadow-sm cursor-not-allowed">
-                                @foreach($classRooms as $classRoom)
-                                <option value="{{ $classRoom->id }}" 
-                                    {{ $group->class_room_id == $classRoom->id ? 'selected' : '' }}>
-                                    {{ $classRoom->name }}
-                                </option>
-                                @endforeach
-                            </select>
-                            <p class="mt-1 text-xs text-gray-500">
-                                <i class="fa-solid fa-info-circle mr-1"></i>
-                                Kelas tidak dapat dipindahkan setelah kelompok dibuat. Jika ingin memindahkan, silakan buat kelompok baru.
-                            </p>
-                            @error('class_room_id')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Nama Kelompok -->
-                        <div class="mb-4">
-                            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                                Nama Kelompok <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" name="name" id="name" required
-                                value="{{ old('name', $group->name) }}"
-                                placeholder="Contoh: Kelompok 1, Tim A, dll"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
-                            @error('name')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Maksimal Anggota -->
-                        <div class="mb-6">
-                            <label for="max_members" class="block text-sm font-medium text-gray-700 mb-2">
-                                Maksimal Anggota
-                            </label>
-                            <input type="number" name="max_members" id="max_members" 
-                                value="{{ old('max_members', $group->max_members) }}"
-                                min="1" max="10"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('max_members') border-red-500 @enderror">
-                            <p class="mt-1 text-xs text-gray-500">Maksimal anggota yang bisa bergabung</p>
-                            @error('max_members')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Kelola Anggota -->
-                        @if(auth()->user()->isKoordinator() || auth()->user()->isAdmin())
-                            <!-- Only Koordinator & Admin can manage members -->
-                            <div class="mb-6">
-                                <div class="bg-secondary-50 border-l-4 border-secondary-500 p-4 mb-4">
-                                    <div class="flex">
-                                        <div class="flex-shrink-0">
-                                            <i class="fas fa-user-shield text-secondary-600"></i>
-                                        </div>
-                                        <div class="ml-3">
-                                            <p class="text-sm text-secondary-700">
-                                                <strong>Koordinator/Admin:</strong> Anda dapat mengelola anggota kelompok
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Kelola Anggota Kelompok</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- LEFT COLUMN: Group Info -->
+                            <div>
+                                <h3 class="text-lg font-semibold mb-4 text-gray-800">📋 Informasi Kelompok</h3>
                                 
-                                <!-- Daftar Anggota Saat Ini -->
+                                <!-- Pilih Kelas (Disabled/Readonly) -->
                                 <div class="mb-4">
-                                    <h4 class="text-sm font-medium text-gray-700 mb-2">Anggota Saat Ini ({{ $group->members->count() }}/{{ $group->max_members }})</h4>
-                                    @if($group->members->count() > 0)
-                                    <div class="space-y-2">
-                                        @foreach($group->members as $member)
-                                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                            <div class="flex items-center">
-                                                <div class="flex-shrink-0">
-                                                    <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                                                        {{ substr($member->user->name, 0, 1) }}
-                                                    </div>
-                                                </div>
-                                                <div class="ml-3">
-                                                    <p class="text-sm font-medium text-gray-900">
-                                                        {{ $member->user->name }}
-                                                        @if($member->is_leader)
-                                                        <span class="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                            Ketua
-                                                        </span>
-                                                        @endif
-                                                    </p>
-                                                    <p class="text-xs text-gray-500">{{ $member->user->email }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="flex items-center space-x-2">
-                                                @if(!$member->is_leader)
-                                                <form action="{{ route('groups.set-leader', $group) }}" method="POST" class="inline">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <input type="hidden" name="member_id" value="{{ $member->id }}">
-                                                    <button type="submit" 
-                                                            class="text-xs bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded"
-                                                            onclick="return confirm('Jadikan {{ $member->user->name }} sebagai ketua?')">
-                                                        Jadikan Ketua
-                                                    </button>
-                                                </form>
-                                                @endif
-                                                <form action="{{ route('groups.remove-member', [$group, $member->id]) }}" method="POST" class="inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" 
-                                                            class="text-xs bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
-                                                            onclick="return confirm('Hapus {{ $member->user->name }} dari kelompok?')">
-                                                        Hapus
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                    @else
-                                    <div class="text-center py-4 text-gray-500">
-                                        <p class="text-sm">Belum ada anggota di kelompok ini.</p>
-                                    </div>
-                                    @endif
+                                    <label for="class_room_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Kelas <span class="text-red-500">*</span>
+                                        <span class="text-xs text-gray-500 ml-2">
+                                            <i class="fas fa-lock"></i> Tidak bisa diubah
+                                        </span>
+                                    </label>
+                                    <input type="hidden" name="class_room_id" value="{{ $group->class_room_id }}">
+                                    <input type="text" 
+                                           value="{{ $group->classRoom->name ?? '-' }}" 
+                                           disabled
+                                           class="w-full rounded-md border-gray-300 bg-gray-100 text-gray-600 cursor-not-allowed">
                                 </div>
 
-                                <!-- Tambah Anggota Baru -->
-                                @if($group->members->count() < $group->max_members)
-                                <div class="border-t pt-4">
-                                    <h4 class="text-sm font-medium text-gray-700 mb-2">Tambah Anggota Baru</h4>
-                                    <form action="{{ route('groups.add-member', $group) }}" method="POST" class="flex gap-2">
-                                        @csrf
-                                        <select name="user_id" required
-                                                class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
-                                            <option value="">-- Pilih Mahasiswa --</option>
-                                            @foreach($availableStudents as $student)
-                                            <option value="{{ $student->id }}">{{ $student->name }} ({{ $student->email }})</option>
-                                            @endforeach
-                                        </select>
-                                        <label class="flex items-center">
-                                            <input type="checkbox" name="is_leader" value="1" class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-500 focus:ring-blue-500">
-                                            <span class="ml-2 text-sm text-gray-700">Jadikan Ketua</span>
-                                        </label>
-                                        <button type="submit" 
-                                                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-sm">
-                                            Tambah
+                                <!-- Nama Kelompok -->
+                                <div class="mb-4">
+                                    <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Nama Kelompok <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" name="name" id="name" required
+                                        value="{{ old('name', $group->name) }}"
+                                        placeholder="Contoh: Kelompok 1, Tim A, dll"
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('name') border-red-500 @enderror">
+                                    @error('name')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Maksimal Anggota -->
+                                <div class="mb-4">
+                                    <label for="max_members" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Maksimal Anggota
+                                    </label>
+                                    <input type="number" name="max_members" id="max_members" 
+                                        value="{{ old('max_members', $group->max_members) }}"
+                                        min="1" max="10"
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('max_members') border-red-500 @enderror">
+                                    <p class="mt-1 text-xs text-gray-500">Maksimal anggota yang bisa bergabung (default: 5)</p>
+                                    @error('max_members')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- RIGHT COLUMN: Members Selection -->
+                            <div>
+                                <h3 class="text-lg font-semibold mb-4 text-gray-800">👥 Kelola Anggota Kelompok</h3>
+                                
+                                <!-- Current Members Info -->
+                                <div class="bg-blue-50 border-l-4 border-blue-400 p-3 mb-3 rounded-r">
+                                    <p class="text-xs text-blue-800">
+                                        <i class="fas fa-info-circle"></i>
+                                        <strong>Anggota saat ini:</strong> {{ $group->members->count() }} mahasiswa
+                                    </p>
+                                </div>
+
+                                <div class="mb-4">
+                                    <p class="text-xs text-gray-600 mb-2">
+                                        <i class="fas fa-hand-pointer text-blue-500"></i>
+                                        Centang untuk menambahkan mahasiswa, atau hilangkan centang untuk menghapus
+                                    </p>
+                                    
+                                    <div class="flex gap-2 mb-3">
+                                        <input type="text" id="searchMember" placeholder="🔍 Cari mahasiswa..." 
+                                            class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
+                                        <button type="button" id="selectAllBtn" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md text-xs font-medium transition-colors">
+                                            <i class="fas fa-check-double mr-1"></i>Pilih Semua
                                         </button>
-                                    </form>
-                                </div>
-                                @else
-                                <div class="border-t pt-4">
-                                    <div class="text-center py-4 text-gray-500">
-                                        <p class="text-sm">Kelompok sudah mencapai maksimal anggota.</p>
                                     </div>
-                                </div>
-                                @endif
-                            </div>
-                        @else
-                            <!-- Dosen: View-only member list -->
-                            <div class="mb-6">
-                                <div class="bg-primary-50 border-l-4 border-primary-500 p-4 mb-4">
-                                    <div class="flex">
-                                        <div class="flex-shrink-0">
-                                            <i class="fas fa-info-circle text-primary-600"></i>
-                                        </div>
-                                        <div class="ml-3">
-                                            <p class="text-sm text-primary-700">
-                                                <strong>Info:</strong> Hanya koordinator dan admin yang dapat mengelola anggota kelompok
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Anggota Kelompok (View Only)</h3>
-                                
-                                <!-- Daftar Anggota Saat Ini (Read-only) -->
-                                <div class="mb-4">
-                                    <h4 class="text-sm font-medium text-gray-700 mb-2">Anggota Saat Ini ({{ $group->members->count() }}/{{ $group->max_members }})</h4>
-                                    @if($group->members->count() > 0)
-                                    <div class="space-y-2">
-                                        @foreach($group->members as $member)
-                                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                                            <div class="flex-shrink-0">
-                                                <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                                                    {{ substr($member->user->name, 0, 1) }}
-                                                </div>
-                                            </div>
-                                            <div class="ml-3">
-                                                <p class="text-sm font-medium text-gray-900">
-                                                    {{ $member->user->name }}
-                                                    @if($member->is_leader)
-                                                    <span class="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                        <i class="fas fa-star mr-1"></i>Ketua
-                                                    </span>
-                                                    @endif
-                                                </p>
-                                                <p class="text-xs text-gray-500">{{ $member->user->email }}</p>
-                                            </div>
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                    @else
-                                    <div class="text-center py-4 text-gray-500">
-                                        <p class="text-sm">Belum ada anggota di kelompok ini.</p>
-                                    </div>
-                                    @endif
-                                </div>
-                            </div>
-                        @endif
-
-                        <!-- Weekly Targets Section -->
-                        <div class="mb-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-lg font-semibold text-gray-800">
-                                    <i class="fas fa-tasks mr-2 text-primary-600"></i>
-                                    Target Mingguan
-                                </h3>
-                                @if(auth()->user()->isMahasiswa())
-                                    <a href="{{ route('groups.targets.create', $group) }}" 
-                                       class="bg-primary-500 hover:bg-primary-600 text-white text-sm font-bold py-2 px-4 rounded">
-                                        <i class="fas fa-plus mr-1"></i>Tambah Target
-                                    </a>
-                                @endif
-                            </div>
-
-                            @if($group->weeklyTargets->count() > 0)
-                                <div class="space-y-3">
-                                    @foreach($group->weeklyTargets->sortBy('week_number') as $target)
-                                    <div class="p-4 border rounded-lg {{ $target->is_completed ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200' }}">
-                                        <div class="flex items-start justify-between">
-                                            <div class="flex items-start flex-1">
-                                                <div class="mt-1 mr-3">
-                                                    @if($target->is_completed)
-                                                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
-                                                    @else
-                                                    <i class="far fa-circle text-gray-400 text-xl"></i>
-                                                    @endif
-                                                </div>
-                                                <div class="flex-1">
-                                                    <div class="flex items-center gap-2 mb-1">
-                                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
-                                                            Minggu {{ $target->week_number }}
-                                                        </span>
-                                                        @if($target->is_completed)
-                                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                            <i class="fas fa-check mr-1"></i>Selesai
-                                                        </span>
-                                                        @endif
-                                                    </div>
-                                                    <p class="font-medium text-gray-900 {{ $target->is_completed ? 'line-through text-gray-500' : '' }}">
-                                                        {{ $target->title }}
-                                                    </p>
-                                                    @if($target->description)
-                                                    <p class="text-sm text-gray-600 mt-1">{{ $target->description }}</p>
-                                                    @endif
-                                                    @if($target->is_completed && $target->completed_at)
-                                                    <p class="text-xs text-gray-500 mt-2">
-                                                        <i class="fas fa-check mr-1"></i>
-                                                        Diselesaikan oleh {{ $target->completedByUser->name ?? 'Unknown' }} 
-                                                        pada {{ $target->completed_at->format('d M Y, H:i') }}
-                                                    </p>
-                                                    @endif
-                                                    @if($target->evidence_file)
-                                                    <p class="text-xs text-primary-600 mt-1">
-                                                        <i class="fas fa-paperclip mr-1"></i>
-                                                        <a href="{{ asset('storage/' . $target->evidence_file) }}" target="_blank" class="hover:underline">
-                                                            Lihat Bukti
-                                                        </a>
-                                                    </p>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                            <div class="flex items-center gap-2 ml-4">
-                                                @if(auth()->user()->isMahasiswa())
-                                                    @if(!$target->is_completed)
-                                                    <form action="{{ route('targets.complete', $target) }}" method="POST" class="inline">
-                                                        @csrf
-                                                        <button type="submit" 
-                                                                class="text-xs bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
-                                                                title="Tandai Selesai">
-                                                            <i class="fas fa-check"></i>
-                                                        </button>
-                                                    </form>
-                                                    @else
-                                                    <form action="{{ route('targets.uncomplete', $target) }}" method="POST" class="inline">
-                                                        @csrf
-                                                        <button type="submit" 
-                                                                class="text-xs bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded"
-                                                                title="Batal Selesai">
-                                                            <i class="fas fa-undo"></i>
-                                                        </button>
-                                                    </form>
-                                                    @endif
-                                                    <a href="{{ route('groups.targets.edit', [$group, $target]) }}" 
-                                                       class="text-xs bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded"
-                                                       title="Edit">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <form action="{{ route('groups.targets.destroy', [$group, $target]) }}" method="POST" class="inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" 
-                                                                class="text-xs bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                                                                onclick="return confirm('Hapus target ini?')"
-                                                                title="Hapus">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                @else
-                                                    <!-- Read-only view for non-mahasiswa -->
-                                                    <span class="text-xs text-gray-500 px-3 py-1 rounded bg-gray-100">
-                                                        <i class="fas fa-eye mr-1"></i>View Only
-                                                    </span>
-                                                @endif
+                                    
+                                    <div class="border-2 border-gray-300 rounded-lg p-3 max-h-96 overflow-y-auto bg-white shadow-inner">
+                                        <div id="studentsList">
+                                            <div class="text-center py-8">
+                                                <i class="fas fa-spinner fa-spin text-blue-500 text-3xl mb-3"></i>
+                                                <p class="text-sm text-gray-600">Memuat daftar mahasiswa...</p>
                                             </div>
                                         </div>
                                     </div>
-                                    @endforeach
-                                </div>
-
-                                <!-- Completion Stats -->
-                                <div class="mt-4 p-4 bg-primary-50 rounded-lg">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <span class="text-sm font-medium text-gray-700">Tingkat Penyelesaian</span>
-                                        @php
-                                            $totalTargets = $group->weeklyTargets->count();
-                                            $completedTargets = $group->weeklyTargets->where('is_completed', true)->count();
-                                            $completionRate = $totalTargets > 0 ? ($completedTargets / $totalTargets) * 100 : 0;
-                                        @endphp
-                                        <span class="text-sm font-bold text-gray-900">{{ round($completionRate, 1) }}%</span>
-                                    </div>
-                                    @php
-                                        $progressWidth = min(100, max(0, round($completionRate, 1)));
-                                        $widthStyle = 'width: ' . $progressWidth . '%';
-                                    @endphp
-                                    <div class="w-full bg-gray-200 rounded-full h-3">
-                                        <div class="bg-gradient-to-r from-blue-400 to-blue-600 h-3 rounded-full transition-all duration-500" 
-                                             style="{{ $widthStyle }}">
-                                        </div>
-                                    </div>
-                                    <div class="mt-2 text-xs text-gray-600">
-                                        {{ $completedTargets }} dari {{ $totalTargets }} target selesai
-                                    </div>
-                                </div>
-                            @else
-                                <div class="text-center py-8 bg-gray-50 rounded-lg">
-                                    <div class="text-gray-400 mb-3">
-                                        <i class="fas fa-tasks text-4xl"></i>
-                                    </div>
-                                    <p class="text-gray-600 mb-3">Belum ada target mingguan</p>
-                                    @if(auth()->user()->isMahasiswa())
-                                        <a href="{{ route('groups.targets.create', $group) }}" 
-                                           class="inline-flex items-center bg-primary-500 hover:bg-primary-600 text-white text-sm px-4 py-2 rounded">
-                                            <i class="fas fa-plus mr-2"></i>Tambah Target Pertama
-                                        </a>
-                                    @else
-                                        <p class="text-sm text-gray-500">
-                                            <i class="fas fa-info-circle mr-1"></i>
-                                            Hanya mahasiswa yang dapat menambah target mingguan
+                                    
+                                    <div class="mt-3 flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-2">
+                                        <p class="text-sm text-blue-800">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span class="font-semibold"><span id="selectedCount">0</span> mahasiswa</span> dipilih
                                         </p>
-                                    @endif
+                                    </div>
                                 </div>
-                            @endif
+
+                                <!-- Leader Selection -->
+                                <div class="mb-4" id="leaderSection">
+                                    <label for="leader_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Pilih Ketua Kelompok <span class="text-red-500">*</span>
+                                    </label>
+                                    <select name="leader_id" id="leader_id"
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
+                                        <option value="">-- Pilih Ketua --</option>
+                                    </select>
+                                    <p class="mt-1 text-xs text-gray-500">Ketua dipilih dari anggota yang sudah ditandai</p>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Action Buttons -->
-                        <div class="flex items-center justify-between pt-6 border-t border-gray-200">
-                            <a href="{{ route('groups.index') }}" 
-                               class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition duration-200">
+                        <!-- Buttons -->
+                        <div class="flex gap-2 mt-6 pt-6 border-t">
+                            <a href="{{ route('groups.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded">
                                 <i class="fas fa-times mr-2"></i>Batal
                             </a>
-                            <button type="submit" 
-                                    class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition duration-200">
+                            <button type="submit" class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-6 rounded">
                                 <i class="fas fa-save mr-2"></i>Update Kelompok
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
+
+            <!-- Info Box -->
+            <div class="mt-6 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg p-4">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-lightbulb text-blue-500 text-2xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h4 class="font-semibold text-blue-900 mb-2">💡 Panduan Edit Kelompok</h4>
+                        <ul class="text-sm text-blue-800 space-y-1 list-disc list-inside">
+                            <li>Centang mahasiswa untuk menambahkan atau menghapus dari kelompok</li>
+                            <li>Pilih ketua dari anggota yang sudah dicentang</li>
+                            <li>Kelas tidak dapat diubah setelah kelompok dibuat</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const studentsList = document.getElementById('studentsList');
+            const selectAllBtn = document.getElementById('selectAllBtn');
+            const searchMemberInput = document.getElementById('searchMember');
+            const leaderSelect = document.getElementById('leader_id');
+            const selectedCountSpan = document.getElementById('selectedCount');
+            
+            const groupId = {{ $group->id }};
+            const classRoomId = {{ $group->class_room_id }};
+            
+            console.log('Loading students for class:', classRoomId);
+            
+            // Load all students from this class
+            const url = `{{ route('groups.available-students') }}?class_room_id=${classRoomId}`;
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    // Get current members
+                    const currentMembers = @json($group->members->pluck('user_id')->toArray());
+                    const currentLeaderId = {{ $group->leader_id ?? 'null' }};
+                    
+                    console.log('Current members:', currentMembers);
+                    console.log('Current leader:', currentLeaderId);
+                    
+                    // Add current members to available students if not already there
+                    const currentMembersData = {!! json_encode($group->members->map(function($m) {
+                        return [
+                            'id' => $m->user->id,
+                            'name' => $m->user->name,
+                            'email' => $m->user->email,
+                            'politala_id' => $m->user->politala_id
+                        ];
+                    })->values()) !!};
+                    
+                    // Merge current members with available students
+                    const allStudents = [...currentMembersData];
+                    data.students.forEach(student => {
+                        if (!currentMembers.includes(student.id)) {
+                            allStudents.push(student);
+                        }
+                    });
+                    
+                    // Sort by name
+                    allStudents.sort((a, b) => a.name.localeCompare(b.name));
+                    
+                    if (allStudents.length === 0) {
+                        studentsList.innerHTML = '<div class="text-center py-8"><i class="fas fa-user-slash text-gray-300 text-4xl mb-3"></i><p class="text-sm font-medium text-gray-600">Tidak Ada Mahasiswa</p></div>';
+                        return;
+                    }
+                    
+                    // Build students list HTML
+                    let html = '';
+                    allStudents.forEach((student, index) => {
+                        const isChecked = currentMembers.includes(student.id) ? 'checked' : '';
+                        html += `
+                            <label class="flex items-start p-3 mb-2 hover:bg-blue-50 border border-transparent hover:border-blue-300 rounded-lg cursor-pointer transition-all duration-200 student-item" data-name="${student.name.toLowerCase()}">
+                                <input type="checkbox" name="members[]" value="${student.id}" ${isChecked}
+                                    class="mt-1 rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 member-checkbox w-4 h-4">
+                                <div class="ml-3 flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-semibold text-gray-800">${student.name}</span>
+                                        <span class="text-xs text-gray-400 ml-2">#${index + 1}</span>
+                                    </div>
+                                    <div class="mt-0.5 flex items-center gap-2">
+                                        <span class="text-xs text-blue-600 font-medium">${student.politala_id || 'N/A'}</span>
+                                        <span class="text-xs text-gray-400">•</span>
+                                        <span class="text-xs text-gray-500">${student.email}</span>
+                                    </div>
+                                </div>
+                            </label>
+                        `;
+                    });
+                    
+                    studentsList.innerHTML = html;
+                    
+                    // Attach event listeners
+                    attachCheckboxListeners();
+                    
+                    // Initial update of leader options
+                    updateLeaderOptions();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    studentsList.innerHTML = '<div class="text-center py-8"><i class="fas fa-exclamation-triangle text-red-500 text-3xl mb-3"></i><p class="text-sm text-red-600">Error loading students</p></div>';
+                });
+            
+            function attachCheckboxListeners() {
+                const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+                memberCheckboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', updateLeaderOptions);
+                });
+                updateLeaderOptions();
+            }
+            
+            // Select All functionality
+            selectAllBtn.addEventListener('click', function() {
+                const visibleCheckboxes = Array.from(document.querySelectorAll('.student-item'))
+                    .filter(item => item.style.display !== 'none')
+                    .map(item => item.querySelector('.member-checkbox'));
+                
+                const allChecked = visibleCheckboxes.every(cb => cb.checked);
+                
+                visibleCheckboxes.forEach(checkbox => {
+                    checkbox.checked = !allChecked;
+                });
+                
+                this.innerHTML = allChecked 
+                    ? '<i class="fas fa-check-double mr-1"></i>Pilih Semua'
+                    : '<i class="fas fa-times mr-1"></i>Batal Pilih';
+                
+                updateLeaderOptions();
+            });
+            
+            // Search functionality
+            searchMemberInput.addEventListener('keyup', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const students = document.querySelectorAll('.student-item');
+                let visibleCount = 0;
+                
+                students.forEach(student => {
+                    const name = student.getAttribute('data-name');
+                    if (name.includes(searchTerm)) {
+                        student.style.display = 'flex';
+                        visibleCount++;
+                    } else {
+                        student.style.display = 'none';
+                    }
+                });
+                
+                selectAllBtn.style.display = visibleCount > 0 ? 'block' : 'none';
+            });
+
+            function updateLeaderOptions() {
+                const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+                const checked = Array.from(memberCheckboxes).filter(cb => cb.checked);
+                const currentLeaderId = {{ $group->leader_id ?? 'null' }};
+                
+                selectedCountSpan.textContent = checked.length;
+                
+                leaderSelect.innerHTML = '<option value="">-- Pilih Ketua --</option>';
+                
+                if (checked.length > 0) {
+                    checked.forEach(checkbox => {
+                        const label = checkbox.closest('.student-item');
+                        const studentName = label.querySelector('.text-sm.font-semibold').textContent;
+                        const option = document.createElement('option');
+                        option.value = checkbox.value;
+                        option.textContent = studentName;
+                        
+                        // Select current leader
+                        if (currentLeaderId && checkbox.value == currentLeaderId) {
+                            option.selected = true;
+                        }
+                        
+                        leaderSelect.appendChild(option);
+                    });
+                }
+            }
+        });
+    </script>
+    @endpush
 </x-app-layout>

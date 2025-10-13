@@ -135,21 +135,9 @@ class GroupController extends Controller
      */
     public function edit(Group $group)
     {
-        $group->load(['classRoom', 'leader', 'members.user', 'weeklyTargets.completedByUser']);
-        $classRooms = ClassRoom::orderBy('name')->get();
+        $group->load(['classRoom', 'leader', 'members.user']);
         
-        // Get available students from the SAME classroom only (not already in any group in this class)
-        $availableStudents = User::where('role', 'mahasiswa')
-            ->where('class_room_id', $group->class_room_id) // Filter by same class
-            ->whereDoesntHave('groupMembers', function($q) use ($group) {
-                $q->whereHas('group', function($subQ) use ($group) {
-                    $subQ->where('class_room_id', $group->class_room_id);
-                });
-            })
-            ->orderBy('name')
-            ->get();
-            
-        return view('groups.edit', compact('group', 'classRooms', 'availableStudents'));
+        return view('groups.edit', compact('group'));
     }
 
     /**
@@ -157,11 +145,68 @@ class GroupController extends Controller
      */
     public function update(UpdateGroupRequest $request, Group $group)
     {
+        // Update basic group info
         $group->update($request->validated());
+        
+        // Handle members update
+        if ($request->has('members')) {
+            $newMemberIds = $request->members;
+            
+            // Validate all members are from the same class
+            foreach ($newMemberIds as $userId) {
+                $user = User::find($userId);
+                if (!$user || $user->class_room_id != $group->class_room_id) {
+                    return redirect()
+                        ->back()
+                        ->withInput()
+                        ->with('error', 'Semua anggota kelompok harus dari kelas yang sama!');
+                }
+            }
+            
+            // Get current member IDs
+            $currentMemberIds = $group->members->pluck('user_id')->toArray();
+            
+            // Find members to remove (unchecked)
+            $toRemove = array_diff($currentMemberIds, $newMemberIds);
+            
+            // Find members to add (newly checked)
+            $toAdd = array_diff($newMemberIds, $currentMemberIds);
+            
+            // Remove unchecked members
+            if (!empty($toRemove)) {
+                $group->members()->whereIn('user_id', $toRemove)->delete();
+            }
+            
+            // Add new members
+            foreach ($toAdd as $userId) {
+                $group->members()->create([
+                    'user_id' => $userId,
+                    'role' => 'member',
+                    'is_leader' => false,
+                ]);
+            }
+        } else {
+            // No members selected - remove all
+            $group->members()->delete();
+        }
+        
+        // Update leader
+        if ($request->has('leader_id') && $request->leader_id) {
+            // Reset all is_leader flags
+            $group->members()->update(['is_leader' => false]);
+            
+            // Set new leader
+            $group->members()->where('user_id', $request->leader_id)->update(['is_leader' => true]);
+            $group->update(['leader_id' => $request->leader_id]);
+        } else {
+            // No leader selected
+            $group->members()->update(['is_leader' => false]);
+            $group->update(['leader_id' => null]);
+        }
         
         return redirect()
             ->route('groups.index')
-            ->with('success', 'Kelompok berhasil diupdate.');
+            ->with('success', 'Kelompok "' . $group->name . '" berhasil diupdate!');
     }
 
     /**

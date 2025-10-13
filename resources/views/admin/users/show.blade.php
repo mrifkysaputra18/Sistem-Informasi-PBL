@@ -41,8 +41,10 @@
                                 </div>
                                 <h3 class="text-xl font-bold text-center">{{ $user->name }}</h3>
                                 <p class="text-sm text-primary-100 mt-1">{{ $user->email }}</p>
-                                @if($user->politala_id)
-                                    <p class="text-xs text-primary-100 mt-1 font-mono">ID: {{ $user->politala_id }}</p>
+                                @if($user->role === 'mahasiswa' && $user->nim)
+                                    <p class="text-xs text-primary-100 mt-1 font-mono">
+                                        <i class="fas fa-graduation-cap mr-1"></i>NIM: {{ $user->nim }}
+                                    </p>
                                 @endif
                             </div>
                         </div>
