@@ -113,7 +113,7 @@ class WeeklyTargetSubmissionController extends Controller
         $validated = $request->validate([
             'submission_notes' => 'nullable|string',
             'is_checked_only' => 'nullable|boolean',
-            'evidence.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120', // 5MB max
+            'evidence.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx,ppt,pptx|max:10240', // 10MB max
         ]);
 
         $evidencePaths = $target->evidence_files ?? [];

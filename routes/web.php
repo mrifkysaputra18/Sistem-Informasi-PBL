@@ -6,6 +6,7 @@ use App\Http\Controllers\{
     KoordinatorDashboardController,
     DosenDashboardController,
     MahasiswaDashboardController,
+    DosenProgressController,
     GroupController,
     ClassRoomController,
     CriterionController,
@@ -95,6 +96,23 @@ Route::middleware(['auth'])->group(function () {
         Route::get('targets/{target}/edit', [WeeklyTargetController::class, 'edit'])->name('targets.edit');
         Route::put('targets/{target}', [WeeklyTargetController::class, 'update'])->name('targets.update');
         Route::delete('targets/{target}', [WeeklyTargetController::class, 'destroy'])->name('targets.destroy');
+    });
+
+    // ========================================
+    // DOSEN PROGRESS MONITORING ROUTES
+    // ========================================
+    Route::middleware(['role:dosen'])->group(function () {
+        // Progress monitoring untuk kelas yang diampu
+        Route::get('dosen/progress', [DosenProgressController::class, 'index'])->name('dosen.progress.index');
+        Route::get('dosen/progress/class/{classRoom}', [DosenProgressController::class, 'showClass'])->name('dosen.progress.show-class');
+        Route::get('dosen/progress/class/{classRoom}/group/{group}', [DosenProgressController::class, 'showGroup'])->name('dosen.progress.show-group');
+        Route::get('dosen/progress/class/{classRoom}/group/{group}/download/{targetId}/{fileName}', [DosenProgressController::class, 'downloadFile'])
+            ->name('dosen.progress.download-file')
+            ->where('fileName', '.*');
+        
+        // API endpoint for dropdowns
+        Route::get('dosen/api/classroom/{classRoom}/groups', [DosenProgressController::class, 'getGroupsByClassroom'])
+            ->name('dosen.api.classroom-groups');
     });
 
     // ========================================

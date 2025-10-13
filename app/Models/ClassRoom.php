@@ -13,6 +13,7 @@ class ClassRoom extends Model
         'code',
         'subject_id',
         'academic_period_id',
+        'dosen_id',
         'semester', // Keep for backward compatibility
         'program_studi',
         'max_groups',
@@ -38,6 +39,14 @@ class ClassRoom extends Model
     public function academicPeriod(): BelongsTo
     {
         return $this->belongsTo(AcademicPeriod::class);
+    }
+
+    /**
+     * Get the dosen assigned to this class
+     */
+    public function dosen(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'dosen_id');
     }
 
     /**

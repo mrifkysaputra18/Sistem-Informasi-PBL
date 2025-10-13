@@ -99,7 +99,7 @@
                             </label>
                             <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
                                 <input type="file" name="evidence[]" id="evidence" multiple
-                                       accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
+                                       accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
                                        class="hidden"
                                        onchange="handleFileSelect(this)">
                                 <label for="evidence" class="cursor-pointer">
@@ -109,7 +109,7 @@
                                         atau drag & drop file
                                     </div>
                                     <div class="text-xs text-gray-500 mt-1">
-                                        JPG, PNG, PDF, DOC, DOCX (Max 5MB per file)
+                                        JPG, PNG, PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX (Max 10MB per file)
                                     </div>
                                 </label>
                             </div>
