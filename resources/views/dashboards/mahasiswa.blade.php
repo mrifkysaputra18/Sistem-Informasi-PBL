@@ -30,10 +30,10 @@
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @if($myGroup)
-                <!-- Statistics Cards - Laws of UX: Visual Hierarchy, Aesthetic-Usability Effect -->
+                <!-- Statistics Cards - Enhanced Material Design -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
                     <!-- Total Targets -->
-                    <div class="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-blue-200 hover:-translate-y-1">
+                    <div class="group bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 hover:border-blue-300 cursor-pointer">
                         <div class="p-5">
                             <div class="flex items-start justify-between mb-4">
                                 <div class="flex-1">
@@ -52,7 +52,7 @@
                     </div>
 
                     <!-- Submitted Targets -->
-                    <div class="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-green-200 hover:-translate-y-1">
+                    <div class="group bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 hover:border-green-300 cursor-pointer">
                         <div class="p-5">
                             <div class="flex items-start justify-between mb-4">
                                 <div class="flex-1">
@@ -72,7 +72,7 @@
                     </div>
 
                     <!-- Completion Rate -->
-                    <div class="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-purple-200 hover:-translate-y-1">
+                    <div class="group bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 hover:border-purple-300 cursor-pointer">
                         <div class="p-5">
                             <div class="flex items-start justify-between mb-4">
                                 <div class="flex-1">
@@ -92,7 +92,7 @@
                     </div>
 
                     <!-- Pending Targets -->
-                    <div class="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-orange-200 hover:-translate-y-1">
+                    <div class="group bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 hover:border-orange-300 cursor-pointer">
                         <div class="p-5">
                             <div class="flex items-start justify-between mb-4">
                                 <div class="flex-1">
@@ -120,15 +120,15 @@
                 </div>
 
                 <!-- Group Info Card - Laws of UX: Progressive Disclosure, Law of Common Region -->
-                <div class="bg-white rounded-2xl shadow-md overflow-hidden mb-6 border border-gray-100">
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-6 border border-gray-100 hover:shadow-md transition-shadow duration-300">
                     <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-6 py-5">
                         <div class="flex items-center justify-between">
                             <h3 class="font-bold text-white text-lg flex items-center gap-2">
                                 <div class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
                                     <i class="fas fa-users"></i>
                                 </div>
-                                Informasi Kelompok
-                            </h3>
+                            Informasi Kelompok
+                        </h3>
                             <button onclick="toggleGroupDetails()" class="text-white hover:bg-white/20 px-3 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 text-sm font-semibold">
                                 <span id="toggleText">Lihat Detail</span>
                                 <i id="toggleIcon" class="fas fa-chevron-down transition-transform duration-300"></i>
@@ -156,13 +156,13 @@
                                 <div class="flex-1 min-w-0">
                                     <p class="text-xs text-gray-500 font-medium uppercase">Kelas</p>
                                     <p class="font-bold text-gray-900 truncate">
-                                        @if($myGroup->classRoom)
-                                        {{ $myGroup->classRoom->name }}
-                                        @else
-                                        -
-                                        @endif
-                                    </p>
-                                </div>
+                                    @if($myGroup->classRoom)
+                                    {{ $myGroup->classRoom->name }}
+                                    @else
+                                    -
+                                    @endif
+                                </p>
+                            </div>
                             </div>
                             
                             <div class="flex items-center gap-3 p-3 bg-white rounded-xl shadow-sm border border-gray-100">
@@ -172,15 +172,15 @@
                                 <div class="flex-1 min-w-0">
                                     <p class="text-xs text-gray-500 font-medium uppercase">Ketua</p>
                                     <p class="font-bold text-gray-900 truncate">
-                                        @if($myGroup->leader)
-                                        {{ $myGroup->leader->name }}
-                                        @if($myGroup->leader->id === auth()->id())
+                                    @if($myGroup->leader)
+                                    {{ $myGroup->leader->name }}
+                                    @if($myGroup->leader->id === auth()->id())
                                         <span class="text-xs text-yellow-600">(Anda)</span>
-                                        @endif
-                                        @else
+                                    @endif
+                                    @else
                                         Belum ada
-                                        @endif
-                                    </p>
+                                    @endif
+                                </p>
                                 </div>
                             </div>
                             
@@ -195,8 +195,8 @@
                                     </p>
                                 </div>
                             </div>
+                            </div>
                         </div>
-                    </div>
 
                     <!-- Detailed Members List (Progressive Disclosure) -->
                     <div id="groupDetails" class="hidden border-t border-gray-200">
@@ -249,7 +249,7 @@
                 </div>
 
                 <!-- Weekly Targets Section - Laws of UX: Visual Hierarchy, Fitts's Law, Feedback -->
-                <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100">
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow duration-300">
                     <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-6 py-5">
                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                             <div class="flex items-center gap-3">
@@ -273,7 +273,7 @@
                     <div class="p-6 bg-gradient-to-br from-gray-50 to-white">
                         @if($weeklyTargets->count() > 0)
                             <div class="space-y-4">
-                                @foreach($weeklyTargets as $target)
+                                        @foreach($weeklyTargets as $target)
                                 @php
                                     $statusConfig = [
                                         'pending' => [
@@ -311,7 +311,7 @@
                                 @endphp
                                 
                                 <!-- Target Card -->
-                                <div class="bg-white rounded-xl border-2 {{ $status['border'] }} hover:shadow-lg transition-all duration-300 overflow-hidden group {{ $target->isOverdue() && $target->submission_status === 'pending' ? 'ring-2 ring-orange-300' : '' }}">
+                                <div class="bg-white rounded-xl border-2 {{ $status['border'] }} shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group {{ $target->isOverdue() && $target->submission_status === 'pending' ? 'ring-2 ring-orange-300' : '' }} cursor-pointer">
                                     <div class="p-5">
                                         <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                                             <!-- Left Section: Info -->
@@ -354,7 +354,7 @@
                                                         <i class="fas {{ $status['icon'] }} {{ $status['text'] }} text-sm"></i>
                                                         <span class="text-xs font-bold {{ $status['text'] }} uppercase">
                                                             {{ $target->getStatusLabel() }}
-                                                        </span>
+                                                </span>
                                                     </div>
                                                     
                                                     <!-- Warning Badges -->
@@ -419,7 +419,7 @@
                                     </div>
                                     @endif
                                 </div>
-                                @endforeach
+                                        @endforeach
                             </div>
                         @else
                             <!-- Empty State -->
