@@ -296,12 +296,12 @@
                                                                 <i class="fas fa-edit mr-1.5"></i>Edit
                                                             </a>
                                                             @if($user->id !== auth()->id())
-                                                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline">
+                                                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline delete-form">
                                                                     @csrf
                                                                     @method('DELETE')
-                                                                    <button type="submit" 
-                                                                            onclick="return confirm('Yakin ingin menghapus user ini?')"
-                                                                            class="inline-flex items-center px-3 py-2 text-sm font-semibold text-red-700 bg-red-100 hover:bg-red-200 rounded-lg transition shadow-sm hover:shadow-md">
+                                                                    <button type="button" 
+                                                                            class="delete-btn inline-flex items-center px-3 py-2 text-sm font-semibold text-red-700 bg-red-100 hover:bg-red-200 rounded-lg transition shadow-sm hover:shadow-md"
+                                                                            data-name="{{ $user->name }}">
                                                                         <i class="fas fa-trash mr-1.5"></i>Hapus
                                                                     </button>
                                                                 </form>
@@ -411,12 +411,12 @@
                                                         <i class="fas fa-edit mr-1.5"></i>Edit
                                                     </a>
                                                     @if($user->id !== auth()->id())
-                                                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline">
+                                                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline delete-form">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" 
-                                                                    onclick="return confirm('Yakin ingin menghapus user ini?')"
-                                                                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-100 hover:bg-red-200 hover:text-red-900 rounded-lg transition">
+                                                            <button type="button" 
+                                                                    class="delete-btn inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-100 hover:bg-red-200 hover:text-red-900 rounded-lg transition"
+                                                                    data-name="{{ $user->name }}">
                                                                 <i class="fas fa-trash mr-1.5"></i>Hapus
                                                             </button>
                                                         </form>
@@ -495,4 +495,28 @@
             background-color: rgba(59, 130, 246, 0.05);
         }
     </style>
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle delete button clicks
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const userName = this.getAttribute('data-name');
+                    const form = this.closest('.delete-form');
+                    
+                    confirmDelete(
+                        'Hapus User?',
+                        `Apakah Anda yakin ingin menghapus user <strong>"${userName}"</strong>?<br><small class="text-gray-500">Tindakan ini tidak dapat dibatalkan.</small>`,
+                        form
+                    );
+                });
+            });
+        });
+    </script>
+    @endpush
 </x-app-layout>
