@@ -62,7 +62,16 @@ class StudentSeeder extends Seeder
                     $nim = sprintf('24%02d%02d%04d', $classRoom->id, date('y'), rand(1000, 9999));
                 }
                 
-                $email = strtolower(str_replace(' ', '.', $name)) . $i . '@mhs.politala.ac.id';
+                // Generate unique email
+                $emailBase = strtolower(str_replace(' ', '.', $name));
+                $email = $emailBase . $i . '@mhs.politala.ac.id';
+                
+                // Check if email already exists
+                $emailCounter = $i;
+                while (User::where('email', $email)->exists()) {
+                    $emailCounter++;
+                    $email = $emailBase . $emailCounter . rand(10, 99) . '@mhs.politala.ac.id';
+                }
                 
                 User::create([
                     'nim' => $nim,

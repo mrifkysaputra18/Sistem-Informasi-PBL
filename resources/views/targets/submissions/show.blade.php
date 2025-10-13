@@ -93,10 +93,11 @@
                         </div>
                         <div class="mt-3">
                             <form action="{{ route('targets.submissions.cancel', $target->id) }}" method="POST" class="inline"
-                                  onsubmit="return confirm('⚠️ PERHATIAN!\n\nApakah Anda yakin ingin membatalkan submission ini?\n\n❌ Yang akan terjadi:\n- File yang diupload akan DIHAPUS\n- Status kembali ke Belum Dikerjakan\n- Anda harus upload ulang dari awal\n\n✅ Lanjutkan batalkan submission?')">
+                                  id="cancel-form-top">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" 
+                                <button type="button"
+                                        onclick="cancelSubmission('{{ addslashes($target->title) }}', 'cancel-form-top')"
                                         class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-sm font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
                                     <i class="fas fa-times-circle mr-2"></i>
                                     Batalkan Submission & Upload Ulang
@@ -236,10 +237,11 @@
                         <!-- Cancel Submission Button (if can cancel) - ENHANCED -->
                         @if($target->canCancelSubmission())
                         <form action="{{ route('targets.submissions.cancel', $target->id) }}" method="POST" class="inline"
-                              onsubmit="return confirm('⚠️ PERHATIAN!\n\nApakah Anda yakin ingin membatalkan submission ini?\n\n❌ Yang akan terjadi:\n- File yang diupload akan DIHAPUS\n- Status kembali ke Belum Dikerjakan\n- Anda harus upload ulang dari awal\n\n✅ Lanjutkan batalkan submission?')">
+                              id="cancel-form-bottom">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" 
+                            <button type="button"
+                                    onclick="cancelSubmission('{{ addslashes($target->title) }}', 'cancel-form-bottom')"
                                     class="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5 animate-pulse hover:animate-none">
                                 <i class="fas fa-times-circle mr-2"></i>Batalkan Submission
                             </button>
@@ -262,4 +264,54 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function cancelSubmission(targetTitle, formId) {
+            const form = document.getElementById(formId);
+            
+            Swal.fire({
+                title: '⚠️ PERHATIAN!',
+                html: `
+                    <div class="text-left">
+                        <p class="mb-3">Apakah Anda yakin ingin membatalkan submission untuk target <strong>"${targetTitle}"</strong>?</p>
+                        <div class="bg-red-50 border-l-4 border-red-500 p-3 mb-3">
+                            <p class="font-semibold text-red-800 mb-2">❌ Yang akan terjadi:</p>
+                            <ul class="list-disc list-inside text-sm text-red-700 space-y-1">
+                                <li>File yang diupload akan <strong>DIHAPUS</strong></li>
+                                <li>Status kembali ke <strong>Belum Dikerjakan</strong></li>
+                                <li>Anda harus <strong>upload ulang dari awal</strong></li>
+                            </ul>
+                        </div>
+                        <p class="text-sm text-gray-600">Tindakan ini tidak dapat dibatalkan.</p>
+                    </div>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '<i class="fas fa-times-circle mr-2"></i>Ya, Batalkan Submission!',
+                cancelButtonText: '<i class="fas fa-arrow-left mr-2"></i>Tidak, Kembali',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rounded-2xl shadow-2xl',
+                    title: 'text-2xl font-bold text-gray-800',
+                    htmlContainer: 'text-gray-600',
+                    confirmButton: 'rounded-lg px-6 py-3 font-semibold shadow-lg hover:shadow-xl transition-all',
+                    cancelButton: 'rounded-lg px-6 py-3 font-semibold shadow-md hover:shadow-lg transition-all'
+                },
+                buttonsStyling: true,
+                showClass: {
+                    popup: 'animate__animated animate__shakeX animate__faster'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp animate__faster'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading('Membatalkan Submission...', 'Mohon tunggu sebentar');
+                    form.submit();
+                }
+            });
+        }
+    </script>
 </x-app-layout>

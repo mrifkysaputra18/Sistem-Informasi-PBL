@@ -43,9 +43,11 @@ class GroupSeeder extends Seeder
             
             $this->command->info("  Ditemukan {$students->count()} mahasiswa");
             
-            // Calculate number of groups (5 students per group)
-            $numberOfGroups = ceil($students->count() / 5);
-            $this->command->info("  Akan membuat {$numberOfGroups} kelompok");
+            // Fixed: 5 groups per class
+            $numberOfGroups = 5;
+            $membersPerGroup = 5;
+            
+            $this->command->info("  Akan membuat {$numberOfGroups} kelompok dengan {$membersPerGroup} anggota per kelompok");
             
             // Shuffle students for random distribution
             $shuffledStudents = $students->shuffle();
@@ -60,10 +62,15 @@ class GroupSeeder extends Seeder
                     'name' => $groupName,
                     'class_room_id' => $classRoom->id,
                     'leader_id' => null, // Will be set later
+                    'max_members' => $membersPerGroup,
                 ]);
                 
-                // Get 5 students for this group (or remaining students if less than 5)
-                $groupStudents = $shuffledStudents->splice(0, 5);
+                // Get exactly 5 students for this group
+                $groupStudents = $shuffledStudents->splice(0, $membersPerGroup);
+                
+                if ($groupStudents->count() < $membersPerGroup) {
+                    $this->command->warn("  ⚠️ Kelompok {$groupNumber} hanya memiliki {$groupStudents->count()} anggota (kurang dari {$membersPerGroup})");
+                }
                 
                 // Add members to group
                 $memberCount = 0;
@@ -81,6 +88,7 @@ class GroupSeeder extends Seeder
                     
                     if ($isLeader) {
                         $leaderId = $student->id;
+                        $leaderName = $student->name;
                     }
                     
                     $memberCount++;
@@ -93,7 +101,7 @@ class GroupSeeder extends Seeder
                 }
                 
                 $totalGroups++;
-                $this->command->info("  ✅ {$groupName} dibuat dengan {$memberCount} anggota");
+                $this->command->info("  ✅ {$groupName} dibuat dengan {$memberCount} anggota (Ketua: {$leaderName})");
             }
         }
         

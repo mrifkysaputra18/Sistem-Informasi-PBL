@@ -116,10 +116,11 @@
                                             <form action="{{ route('semesters.destroy', $semester) }}" 
                                                   method="POST" 
                                                   class="inline"
-                                                  onsubmit="return confirm('Yakin ingin menghapus semester \'{{ $semester->name }}\'?')">
+                                                  id="delete-form-{{ $semester->id }}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" 
+                                                <button type="button"
+                                                        onclick="deleteSemester({{ $semester->id }}, '{{ addslashes($semester->name) }}')"
                                                         class="inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-100 hover:bg-red-200 hover:text-red-900 rounded-lg transition duration-200 ease-in-out"
                                                         title="Hapus Semester">
                                                     <i class="fas fa-trash mr-1"></i>
@@ -153,4 +154,16 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function deleteSemester(semesterId, semesterName) {
+            const form = document.getElementById('delete-form-' + semesterId);
+            
+            confirmDelete(
+                'Hapus Semester?',
+                `Apakah Anda yakin ingin menghapus semester <strong>"${semesterName}"</strong>?<br><small class="text-gray-500">Tindakan ini tidak dapat dibatalkan.</small>`,
+                form
+            );
+        }
+    </script>
 </x-app-layout>

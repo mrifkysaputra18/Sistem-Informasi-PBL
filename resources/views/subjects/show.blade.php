@@ -21,10 +21,11 @@
                 <form action="{{ route('projects.destroy', $subject) }}" 
                       method="POST" 
                       class="inline"
-                      onsubmit="return confirm('Yakin ingin menghapus mata kuliah ini?')">
+                      id="delete-form-subject">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" 
+                    <button type="button"
+                            onclick="deleteSubject('{{ addslashes($subject->title) }}')"
                             class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
                         <i class="fas fa-trash mr-2"></i>Hapus
                     </button>
@@ -214,6 +215,18 @@
             @endif
         </div>
     </div>
+
+    <script>
+        function deleteSubject(subjectTitle) {
+            const form = document.getElementById('delete-form-subject');
+            
+            confirmDelete(
+                'Hapus Mata Kuliah?',
+                `Apakah Anda yakin ingin menghapus mata kuliah <strong>"${subjectTitle}"</strong>?<br><small class="text-gray-500">Tindakan ini tidak dapat dibatalkan.</small>`,
+                form
+            );
+        }
+    </script>
 </x-app-layout>
 
 

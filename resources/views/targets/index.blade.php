@@ -398,10 +398,11 @@
                                                     <form action="{{ route('targets.destroy', $target->id) }}" 
                                                           method="POST" 
                                                           class="inline"
-                                                          onsubmit="return confirm('Yakin ingin menghapus target ini?\n\nTarget: {{ $target->title }}\nKelompok: {{ $target->group->name }}')">
+                                                          id="delete-form-{{ $target->id }}">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" 
+                                                        <button type="button"
+                                                                onclick="deleteTarget({{ $target->id }}, '{{ addslashes($target->title) }}', '{{ addslashes($target->group->name) }}')"
                                                                 class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 rounded transition duration-200"
                                                                 title="Hapus Target">
                                                             <i class="fas fa-trash mr-1"></i>
@@ -434,9 +435,10 @@
                                                     <form action="{{ route('targets.reopen', $target->id) }}" 
                                                           method="POST" 
                                                           class="inline"
-                                                          onsubmit="return confirm('Yakin ingin membuka kembali target ini?\n\nMahasiswa akan dapat mensubmit target yang sudah tertutup.')">
+                                                          id="reopen-form-{{ $target->id }}">
                                                         @csrf
-                                                        <button type="submit" 
+                                                        <button type="button"
+                                                                onclick="reopenTarget({{ $target->id }}, '{{ addslashes($target->title) }}')"
                                                                 class="inline-flex items-center px-3 py-1.5 bg-secondary-100 text-secondary-700 hover:bg-secondary-200 rounded transition duration-200"
                                                                 title="Buka Kembali Target">
                                                             <i class="fas fa-unlock mr-1"></i>
@@ -448,9 +450,10 @@
                                                     <form action="{{ route('targets.close', $target->id) }}" 
                                                           method="POST" 
                                                           class="inline"
-                                                          onsubmit="return confirm('Yakin ingin menutup target ini?\n\nMahasiswa tidak akan dapat mensubmit target ini.')">
+                                                          id="close-form-{{ $target->id }}">
                                                         @csrf
-                                                        <button type="submit" 
+                                                        <button type="button"
+                                                                onclick="closeTarget({{ $target->id }}, '{{ addslashes($target->title) }}')"
                                                                 class="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded transition duration-200"
                                                                 title="Tutup Target">
                                                             <i class="fas fa-lock mr-1"></i>
@@ -491,4 +494,48 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function deleteTarget(targetId, targetTitle, groupName) {
+            const form = document.getElementById('delete-form-' + targetId);
+            
+            confirmDelete(
+                'Hapus Target?',
+                `Apakah Anda yakin ingin menghapus target ini?<br><strong>Target:</strong> ${targetTitle}<br><strong>Kelompok:</strong> ${groupName}<br><small class="text-gray-500">Tindakan ini tidak dapat dibatalkan.</small>`,
+                form
+            );
+        }
+
+        function reopenTarget(targetId, targetTitle) {
+            const form = document.getElementById('reopen-form-' + targetId);
+            
+            confirmAction(
+                'Buka Kembali Target?',
+                `Yakin ingin membuka kembali target <strong>"${targetTitle}"</strong>?<br><small class="text-gray-500">Mahasiswa akan dapat mensubmit target yang sudah tertutup.</small>`,
+                '<i class="fas fa-unlock mr-2"></i>Ya, Buka Kembali!',
+                '#0891b2'
+            ).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading('Membuka Target...', 'Mohon tunggu sebentar');
+                    form.submit();
+                }
+            });
+        }
+
+        function closeTarget(targetId, targetTitle) {
+            const form = document.getElementById('close-form-' + targetId);
+            
+            confirmAction(
+                'Tutup Target?',
+                `Yakin ingin menutup target <strong>"${targetTitle}"</strong>?<br><small class="text-gray-500">Mahasiswa tidak akan dapat mensubmit target ini.</small>`,
+                '<i class="fas fa-lock mr-2"></i>Ya, Tutup!',
+                '#6b7280'
+            ).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading('Menutup Target...', 'Mohon tunggu sebentar');
+                    form.submit();
+                }
+            });
+        }
+    </script>
 </x-app-layout>

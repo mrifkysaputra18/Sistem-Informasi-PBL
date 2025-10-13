@@ -124,11 +124,13 @@
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <form action="{{ route('classrooms.students.destroy', [$classRoom->id, $student->id]) }}" 
-                                                  method="POST" 
-                                                  onsubmit="return confirm('Yakin ingin menghapus mahasiswa {{ $student->name }} dari kelas ini?');">
+                                                  method="POST"
+                                                  id="remove-student-form-{{ $student->id }}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-900">
+                                                <button type="button"
+                                                        onclick="removeStudent({{ $student->id }}, '{{ addslashes($student->name) }}')"
+                                                        class="text-red-600 hover:text-red-900">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>
@@ -145,4 +147,16 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function removeStudent(studentId, studentName) {
+            const form = document.getElementById('remove-student-form-' + studentId);
+            
+            confirmDelete(
+                'Hapus Mahasiswa?',
+                `Apakah Anda yakin ingin menghapus mahasiswa <strong>"${studentName}"</strong> dari kelas ini?<br><small class="text-gray-500">Tindakan ini tidak dapat dibatalkan.</small>`,
+                form
+            );
+        }
+    </script>
 </x-app-layout>

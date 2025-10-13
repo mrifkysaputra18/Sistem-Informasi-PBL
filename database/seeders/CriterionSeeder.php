@@ -25,8 +25,9 @@ class CriterionSeeder extends Seeder
         );
 
         $student = [
-            ['nama' => 'Nilai PBL Mahasiswa', 'bobot' => 0.6, 'tipe' => 'benefit', 'segment' => 'student'],
-            ['nama' => 'Penilaian Teman Sekelompok', 'bobot' => 0.4, 'tipe' => 'benefit', 'segment' => 'student'],
+            ['nama' => 'Nilai PBL Mahasiswa', 'bobot' => 0.5, 'tipe' => 'benefit', 'segment' => 'student'],
+            ['nama' => 'Penilaian Teman Sekelompok', 'bobot' => 0.3, 'tipe' => 'benefit', 'segment' => 'student'],
+            ['nama' => 'Kehadiran', 'bobot' => 0.2, 'tipe' => 'benefit', 'segment' => 'student'],
         ];
         foreach ($student as $c) \App\Models\Criterion::updateOrCreate(
             ['nama' => $c['nama'], 'segment' => 'student'],

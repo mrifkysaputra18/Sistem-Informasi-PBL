@@ -293,11 +293,14 @@
 
     <script>
         function deleteClass(classId, className) {
-            if (confirm('Yakin ingin menghapus kelas "' + className + '"?')) {
-                const form = document.getElementById('delete-form');
-                form.action = '/classrooms/' + classId;
-                form.submit();
-            }
+            const form = document.getElementById('delete-form');
+            form.action = '/classrooms/' + classId;
+            
+            confirmDelete(
+                'Hapus Kelas?',
+                `Apakah Anda yakin ingin menghapus kelas <strong>"${className}"</strong>?<br><small class="text-gray-500">Tindakan ini tidak dapat dibatalkan.</small>`,
+                form
+            );
         }
     </script>
 </x-app-layout>

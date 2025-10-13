@@ -208,9 +208,10 @@
                                 <form action="{{ route('targets.reopen', $target->id) }}" 
                                       method="POST" 
                                       class="inline"
-                                      onsubmit="return confirm('Yakin ingin membuka kembali target ini?\n\nMahasiswa akan dapat mensubmit target yang sudah tertutup.')">
+                                      id="reopen-form-target">
                                     @csrf
-                                    <button type="submit" 
+                                    <button type="button"
+                                            onclick="reopenTargetShow('{{ addslashes($target->title) }}')"
                                             class="bg-secondary-500 hover:bg-secondary-700 text-white font-bold py-2 px-6 rounded">
                                         <i class="fas fa-unlock mr-2"></i>Buka Kembali Target
                                     </button>
@@ -220,9 +221,10 @@
                                 <form action="{{ route('targets.close', $target->id) }}" 
                                       method="POST" 
                                       class="inline"
-                                      onsubmit="return confirm('Yakin ingin menutup target ini?\n\nMahasiswa tidak akan dapat mensubmit target ini.')">
+                                      id="close-form-target">
                                     @csrf
-                                    <button type="submit" 
+                                    <button type="button"
+                                            onclick="closeTargetShow('{{ addslashes($target->title) }}')"
                                             class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded">
                                         <i class="fas fa-lock mr-2"></i>Tutup Target
                                     </button>
@@ -234,4 +236,38 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function reopenTargetShow(targetTitle) {
+            const form = document.getElementById('reopen-form-target');
+            
+            confirmAction(
+                'Buka Kembali Target?',
+                `Yakin ingin membuka kembali target <strong>"${targetTitle}"</strong>?<br><small class="text-gray-500">Mahasiswa akan dapat mensubmit target yang sudah tertutup.</small>`,
+                '<i class="fas fa-unlock mr-2"></i>Ya, Buka Kembali!',
+                '#0891b2'
+            ).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading('Membuka Target...', 'Mohon tunggu sebentar');
+                    form.submit();
+                }
+            });
+        }
+
+        function closeTargetShow(targetTitle) {
+            const form = document.getElementById('close-form-target');
+            
+            confirmAction(
+                'Tutup Target?',
+                `Yakin ingin menutup target <strong>"${targetTitle}"</strong>?<br><small class="text-gray-500">Mahasiswa tidak akan dapat mensubmit target ini.</small>`,
+                '<i class="fas fa-lock mr-2"></i>Ya, Tutup!',
+                '#6b7280'
+            ).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading('Menutup Target...', 'Mohon tunggu sebentar');
+                    form.submit();
+                }
+            });
+        }
+    </script>
 </x-app-layout>
