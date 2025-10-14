@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{ClassRoom, Subject, AcademicYear, Semester};
+use App\Models\{ClassRoom, Subject, AcademicYear, Semester, AcademicPeriod};
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ClassRoomController extends Controller
 {
@@ -113,11 +114,32 @@ class ClassRoomController extends Controller
             'max_groups' => 'required|integer|min:1|max:10',
         ]);
 
+        // Auto-sync academic_period_id based on semester
+        $academicPeriod = AcademicPeriod::where('semester_number', $validated['semester'])
+            ->where('is_active', true)
+            ->first();
+
+        if ($academicPeriod) {
+            $validated['academic_period_id'] = $academicPeriod->id;
+            
+            Log::info('Auto-synced academic period for new class', [
+                'class_code' => $validated['code'],
+                'semester' => $validated['semester'],
+                'academic_period_id' => $academicPeriod->id,
+                'academic_period_name' => $academicPeriod->name
+            ]);
+        } else {
+            Log::warning('No active academic period found for new class', [
+                'class_code' => $validated['code'],
+                'semester' => $validated['semester']
+            ]);
+        }
+
         ClassRoom::create($validated);
 
         return redirect()
             ->route('classrooms.index')
-            ->with('success', 'Kelas berhasil dibuat!');
+            ->with('success', 'Kelas berhasil dibuat!' . ($academicPeriod ? ' (Periode akademik: ' . $academicPeriod->name . ')' : ''));
     }
 
     /**
@@ -158,6 +180,33 @@ class ClassRoomController extends Controller
             'max_groups' => 'required|integer|min:1|max:10',
             'is_active' => 'boolean',
         ]);
+
+        // Check if semester changed, auto-update academic_period_id
+        if (isset($validated['semester']) && $validated['semester'] != $classRoom->semester) {
+            $academicPeriod = AcademicPeriod::where('semester_number', $validated['semester'])
+                ->where('is_active', true)
+                ->first();
+
+            if ($academicPeriod) {
+                $validated['academic_period_id'] = $academicPeriod->id;
+                
+                Log::info('Auto-updated academic period for class', [
+                    'class_code' => $classRoom->code,
+                    'old_semester' => $classRoom->semester,
+                    'new_semester' => $validated['semester'],
+                    'academic_period_id' => $academicPeriod->id,
+                    'academic_period_name' => $academicPeriod->name
+                ]);
+            } else {
+                // Clear academic_period_id if no matching period found
+                $validated['academic_period_id'] = null;
+                
+                Log::warning('No active academic period found, cleared academic_period_id', [
+                    'class_code' => $classRoom->code,
+                    'semester' => $validated['semester']
+                ]);
+            }
+        }
 
         $classRoom->update($validated);
 

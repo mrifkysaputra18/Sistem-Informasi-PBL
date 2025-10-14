@@ -15,6 +15,10 @@
                    class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
                     <i class="fa-solid fa-user-xmark mr-2"></i>Mahasiswa Tanpa Kelompok
                 </a>
+                <a href="{{ route('users.import.form') }}" 
+                   class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                    <i class="fa-solid fa-file-excel mr-2"></i>Import Excel
+                </a>
                 <a href="{{ route('admin.users.create') }}" 
                    class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
                     <i class="fa-solid fa-circle-plus mr-2"></i>Tambah User
