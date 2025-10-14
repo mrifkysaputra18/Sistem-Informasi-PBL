@@ -80,7 +80,6 @@ class UsersImport implements ToCollection, WithHeadingRow, WithValidation, Skips
                     'politala_id' => $politalaId,
                     'program_studi' => $row['program_studi'],
                     'class_room_id' => $classRoom->id,  // AUTO SYNC!
-                    'phone' => $row['phone'] ?? null,
                     'role' => 'mahasiswa',
                     'is_active' => true,
                     'password' => null, // SSO - no password needed
@@ -116,7 +115,6 @@ class UsersImport implements ToCollection, WithHeadingRow, WithValidation, Skips
             'email_sso' => 'required|email|max:255',
             'program_studi' => 'required|string|max:255',
             'kelas' => 'required|string',
-            'phone' => 'nullable|string|max:20',
         ];
     }
 
