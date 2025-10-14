@@ -7,79 +7,85 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class GroupTemplateExport implements FromArray, WithHeadings, WithStyles, WithColumnWidths
 {
-    /**
-     * Return example data
-     */
+    public function headings(): array
+    {
+        return [
+            'nama_kelompok',
+            'ketua_nim_atau_email',
+            'anggota_1_nim_atau_email',
+            'anggota_2_nim_atau_email',
+            'anggota_3_nim_atau_email',
+            'anggota_4_nim_atau_email',
+        ];
+    }
+
     public function array(): array
     {
         return [
             [
                 'Kelompok 1',
-                'mahasiswa1@politala.ac.id',
-                'mahasiswa2@politala.ac.id',
-                'mahasiswa3@politala.ac.id',
-                'mahasiswa4@politala.ac.id',
-                'mahasiswa5@politala.ac.id',
+                '2401301001', // Bisa NIM atau email
+                '2401301002',
+                '2401301003',
+                'mahasiswa4@mhs.politala.ac.id', // Atau bisa email
+                'mahasiswa5@mhs.politala.ac.id',
             ],
             [
                 'Kelompok 2',
-                'mahasiswa6@politala.ac.id',
-                'mahasiswa7@politala.ac.id',
-                'mahasiswa8@politala.ac.id',
-                'mahasiswa9@politala.ac.id',
-                'mahasiswa10@politala.ac.id',
+                'mahasiswa6@mhs.politala.ac.id',
+                '2401301007',
+                '2401301008',
+                '2401301009',
+                '2401301010',
+            ],
+            [
+                'Kelompok 3',
+                '2401301011',
+                '2401301012',
+                '2401301013',
+                '', // Anggota opsional
+                '', // Anggota opsional
             ],
         ];
     }
 
-    /**
-     * Define headings
-     */
-    public function headings(): array
-    {
-        return [
-            'nama_kelompok',
-            'ketua_email',
-            'anggota_1_email',
-            'anggota_2_email',
-            'anggota_3_email',
-            'anggota_4_email',
-        ];
-    }
-
-    /**
-     * Apply styles
-     */
     public function styles(Worksheet $sheet)
     {
         return [
+            // Style header row
             1 => [
-                'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+                'font' => [
+                    'bold' => true,
+                    'size' => 12,
+                    'color' => ['rgb' => 'FFFFFF']
+                ],
                 'fill' => [
-                    'fillType' => Fill::FILL_SOLID,
-                    'startColor' => ['rgb' => '4472C4']
+                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => '4F46E5']
+                ],
+                'alignment' => [
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
                 ],
             ],
+            // Style data rows
+            2 => ['fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => 'E0E7FF']]],
+            3 => ['fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => 'F0F9FF']]],
+            4 => ['fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => 'E0E7FF']]],
         ];
     }
 
-    /**
-     * Define column widths
-     */
     public function columnWidths(): array
     {
         return [
-            'A' => 20,
-            'B' => 30,
-            'C' => 30,
-            'D' => 30,
-            'E' => 30,
-            'F' => 30,
+            'A' => 20, // nama_kelompok
+            'B' => 30, // ketua
+            'C' => 30, // anggota_1
+            'D' => 30, // anggota_2
+            'E' => 30, // anggota_3
+            'F' => 30, // anggota_4
         ];
     }
 }
-

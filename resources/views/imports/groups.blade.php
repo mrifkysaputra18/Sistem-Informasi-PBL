@@ -126,13 +126,16 @@
                             <div class="text-sm text-gray-600 space-y-2">
                                 <p class="font-medium">Kolom yang diperlukan:</p>
                                 <ol class="list-decimal list-inside space-y-1 text-xs">
-                                    <li>nama_kelompok</li>
-                                    <li>ketua_email</li>
-                                    <li>anggota_1_email</li>
-                                    <li>anggota_2_email</li>
-                                    <li>anggota_3_email</li>
-                                    <li>anggota_4_email</li>
+                                    <li><strong>nama_kelompok</strong> (wajib)</li>
+                                    <li><strong>ketua_nim_atau_email</strong> (wajib)</li>
+                                    <li>anggota_1_nim_atau_email</li>
+                                    <li>anggota_2_nim_atau_email</li>
+                                    <li>anggota_3_nim_atau_email</li>
+                                    <li>anggota_4_nim_atau_email</li>
                                 </ol>
+                                <p class="text-xs text-gray-500 mt-2">
+                                    ℹ️ Bisa gunakan <strong>NIM</strong> atau <strong>Email</strong>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -146,8 +149,10 @@
                             <div class="ml-3">
                                 <h4 class="text-sm font-semibold text-yellow-800 mb-2">Penting!</h4>
                                 <ul class="text-xs text-yellow-700 space-y-1">
-                                    <li>• Email harus sudah terdaftar</li>
-                                    <li>• Max 5 anggota per kelompok</li>
+                                    <li>• Mahasiswa harus dari kelas yang dipilih</li>
+                                    <li>• Mahasiswa belum boleh punya kelompok</li>
+                                    <li>• Bisa pakai NIM atau Email mahasiswa</li>
+                                    <li>• Max 5 anggota (1 ketua + 4 anggota)</li>
                                     <li>• Nama kelompok harus unik</li>
                                 </ul>
                             </div>

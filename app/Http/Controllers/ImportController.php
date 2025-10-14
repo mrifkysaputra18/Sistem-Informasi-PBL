@@ -6,8 +6,9 @@ use App\Models\ClassRoom;
 use App\Models\Group;
 use App\Models\User;
 use App\Models\GroupMember;
+use App\Imports\GroupsImport;
 use Illuminate\Http\Request;
-// use Maatwebsite\Excel\Facades\Excel; // Temporary disabled - using CSV workaround
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 
 class ImportController extends Controller
@@ -33,90 +34,62 @@ class ImportController extends Controller
 
         try {
             $classRoomId = $request->class_room_id;
-            $rows = Excel::toArray([], $request->file('file'))[0];
+            $classRoom = ClassRoom::findOrFail($classRoomId);
             
-            // Skip header row
-            array_shift($rows);
+            // Import using GroupsImport class
+            $import = new GroupsImport($classRoomId);
+            Excel::import($import, $request->file('file'));
             
-            $imported = 0;
-            $errors = [];
+            $imported = $import->getImportedCount();
+            $skipped = $import->getSkippedCount();
+            $errors = $import->getErrors();
 
-            foreach ($rows as $index => $row) {
-                DB::beginTransaction();
-                
-                try {
-                    // Validate row structure
-                    if (count($row) < 2) {
-                        throw new \Exception('Format baris tidak lengkap');
-                    }
+            \Log::info('Group import completed', [
+                'class_room_id' => $classRoomId,
+                'imported' => $imported,
+                'skipped' => $skipped,
+                'errors_count' => count($errors)
+            ]);
 
-                    $namaKelompok = $row[0];
-                    $ketuaEmail = $row[1];
-                    
-                    if (empty($namaKelompok) || empty($ketuaEmail)) {
-                        continue; // Skip empty rows
-                    }
-
-                    // Create group
-                    $group = Group::create([
-                        'name' => $namaKelompok,
-                        'class_room_id' => $classRoomId,
-                        'max_members' => 5,
-                    ]);
-
-                    // Add leader
-                    $leader = User::where('email', $ketuaEmail)->first();
-                    if ($leader) {
-                        $group->members()->create([
-                            'user_id' => $leader->id,
-                            'is_leader' => true,
-                            'status' => 'active',
-                        ]);
-                        $group->update(['leader_id' => $leader->id]);
-                    } else {
-                        throw new \Exception("Email ketua tidak ditemukan: {$ketuaEmail}");
-                    }
-
-                    // Add members (columns 2-5)
-                    for ($i = 2; $i <= 5; $i++) {
-                        if (isset($row[$i]) && !empty($row[$i])) {
-                            $member = User::where('email', $row[$i])->first();
-                            if ($member) {
-                                if (!$group->members()->where('user_id', $member->id)->exists()) {
-                                    $group->members()->create([
-                                        'user_id' => $member->id,
-                                        'is_leader' => false,
-                                        'status' => 'active',
-                                    ]);
-                                }
-                            }
-                        }
-                    }
-
-                    DB::commit();
-                    $imported++;
-                    
-                } catch (\Exception $e) {
-                    DB::rollback();
-                    $errors[] = "Baris " . ($index + 2) . ": " . $e->getMessage();
-                }
+            // Build response message
+            if ($imported > 0 && count($errors) === 0) {
+                return redirect()
+                    ->route('groups.index')
+                    ->with('success', "✅ Berhasil import {$imported} kelompok ke kelas {$classRoom->name}!");
             }
 
-            if (count($errors) > 0) {
+            if ($imported > 0 && count($errors) > 0) {
+                $errorMessages = implode(' | ', array_slice($errors, 0, 5));
+                if (count($errors) > 5) {
+                    $errorMessages .= " ... dan " . (count($errors) - 5) . " error lainnya";
+                }
+                
+                return redirect()
+                    ->route('groups.index')
+                    ->with('warning', "⚠️ Import selesai sebagian. Berhasil: {$imported}, Gagal: {$skipped}. Error: {$errorMessages}");
+            }
+
+            if ($imported === 0) {
+                $errorMessages = implode(' | ', array_slice($errors, 0, 3));
                 return redirect()
                     ->back()
-                    ->with('warning', "Import selesai. Berhasil: {$imported}, Gagal: " . count($errors) . ". Error: " . implode(', ', array_slice($errors, 0, 3)));
+                    ->with('error', "❌ Import gagal. Tidak ada kelompok yang berhasil diimport. Error: {$errorMessages}");
             }
 
             return redirect()
-                ->route('classrooms.show', $classRoomId)
-                ->with('success', "Berhasil import {$imported} kelompok!");
+                ->back()
+                ->with('error', '❌ Import gagal. Silakan periksa format file Excel Anda.');
                 
         } catch (\Exception $e) {
+            \Log::error('Group import exception', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
             return redirect()
                 ->back()
                 ->withInput()
-                ->with('error', 'Import gagal: ' . $e->getMessage());
+                ->with('error', '❌ Import gagal: ' . $e->getMessage());
         }
     }
 
@@ -125,29 +98,7 @@ class ImportController extends Controller
      */
     public function downloadGroupTemplate()
     {
-        // Temporary workaround: Generate CSV instead of Excel
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="Template_Import_Kelompok.csv"',
-        ];
-
-        $callback = function() {
-            $file = fopen('php://output', 'w');
-            
-            // Header
-            fputcsv($file, ['nama_kelompok', 'ketua_email', 'anggota_1_email', 'anggota_2_email', 'anggota_3_email', 'anggota_4_email']);
-            
-            // Example data
-            fputcsv($file, ['Kelompok 1', 'mahasiswa1@politala.ac.id', 'mahasiswa2@politala.ac.id', 'mahasiswa3@politala.ac.id', 'mahasiswa4@politala.ac.id', 'mahasiswa5@politala.ac.id']);
-            fputcsv($file, ['Kelompok 2', 'mahasiswa6@politala.ac.id', 'mahasiswa7@politala.ac.id', 'mahasiswa8@politala.ac.id', 'mahasiswa9@politala.ac.id', 'mahasiswa10@politala.ac.id']);
-            
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
-        
-        // Original Excel download (uncomment when composer issue is fixed):
-        // return Excel::download(new \App\Exports\GroupTemplateExport, 'Template_Import_Kelompok.xlsx');
+        return Excel::download(new \App\Exports\GroupTemplateExport, 'Template_Import_Kelompok.xlsx');
     }
 }
 
