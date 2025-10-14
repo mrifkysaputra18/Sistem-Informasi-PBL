@@ -26,14 +26,22 @@ class UsersImport implements ToCollection, WithHeadingRow, WithValidation, Skips
 
     public function collection(Collection $rows)
     {
-        // Debug: Log available keys from first row
-        if ($rows->isNotEmpty()) {
-            $firstRow = $rows->first();
-            Log::info('Excel Import - Available columns', [
-                'keys' => array_keys($firstRow->toArray()),
-                'sample_data' => $firstRow->toArray()
-            ]);
+        $rowsArray = $rows->toArray();
+        
+        Log::info('Excel Import - Collection called', [
+            'total_rows' => $rows->count(),
+            'is_empty' => $rows->isEmpty(),
+            'first_3_rows' => array_slice($rowsArray, 0, 3)
+        ]);
+
+        if ($rows->isEmpty()) {
+            Log::warning('Excel Import - No rows found!');
+            return;
         }
+
+        Log::info('Excel Import - Processing started', [
+            'total_rows_to_process' => $rows->count()
+        ]);
 
         foreach ($rows as $index => $row) {
             try {
@@ -121,6 +129,12 @@ class UsersImport implements ToCollection, WithHeadingRow, WithValidation, Skips
                 ]);
             }
         }
+
+        Log::info('Excel Import - Processing completed', [
+            'imported' => $this->importedCount,
+            'skipped' => $this->skippedCount,
+            'errors' => count($this->errors)
+        ]);
     }
 
     public function rules(): array

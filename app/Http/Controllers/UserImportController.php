@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Imports\UsersImport;
+use App\Imports\UsersMultiSheetImport;
 use App\Models\ClassRoom;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -33,10 +34,20 @@ class UserImportController extends Controller
         ]);
 
         try {
-            $import = new UsersImport();
+            $file = $request->file('file');
+            
+            Log::info('Starting Excel import', [
+                'filename' => $file->getClientOriginalName(),
+                'size' => $file->getSize(),
+                'mime' => $file->getMimeType(),
+                'extension' => $file->getClientOriginalExtension()
+            ]);
+            
+            // Use multi-sheet importer to handle Excel with multiple sheets
+            $import = new UsersMultiSheetImport();
             
             // Import Excel file
-            Excel::import($import, $request->file('file'));
+            Excel::import($import, $file);
             
             // Get statistics
             $importedCount = $import->getImportedCount();
