@@ -139,18 +139,31 @@
                                 @enderror
                             </div>
 
-                            <div class="flex justify-end gap-3">
+                            <!-- Buttons: UX Laws Applied -->
+                            <div class="flex items-center justify-end gap-4 pt-4">
+                                <!-- Secondary Action (Batal) - Low Visual Weight -->
                                 <a href="{{ route('admin.users.index') }}" 
-                                   class="px-6 py-3 bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold rounded-lg transition-colors">
-                                    <i class="fas fa-times mr-2"></i>Batal
+                                   class="inline-flex items-center justify-center min-w-[120px] px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-lg border-2 border-gray-300 hover:border-gray-400 transition-all duration-200 shadow-sm hover:shadow">
+                                    <i class="fas fa-times mr-2"></i>
+                                    Batal
                                 </a>
+                                
+                                <!-- Primary Action (Import) - High Visual Weight -->
                                 <button type="submit" 
                                         id="submit-btn"
-                                        class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-                                    <i class="fas fa-upload mr-2"></i>
-                                    <span id="submit-text">Import Mahasiswa</span>
+                                        class="inline-flex items-center justify-center min-w-[180px] px-8 py-3.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 active:from-emerald-700 active:to-emerald-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                                    <i class="fas fa-file-import mr-2 text-lg"></i>
+                                    <span id="submit-text">Import Data</span>
                                     <i class="fas fa-spinner fa-spin ml-2 hidden" id="loading-icon"></i>
                                 </button>
+                            </div>
+                            
+                            <!-- Visual Hierarchy Hint -->
+                            <div class="mt-3 text-right">
+                                <p class="text-xs text-gray-500 italic">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    Pastikan file sudah sesuai template
+                                </p>
                             </div>
                         </form>
                     </div>

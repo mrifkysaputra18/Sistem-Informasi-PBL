@@ -81,16 +81,29 @@
                                     </p>
                                 </div>
 
-                                <!-- Action Buttons -->
-                                <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+                                <!-- Action Buttons: UX Laws Applied -->
+                                <div class="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">
+                                    <!-- Secondary Action (Batal) - Low Visual Weight -->
                                     <a href="{{ route('classrooms.index') }}" 
-                                       class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50">
-                                        <i class="fas fa-times mr-2"></i>Batal
+                                       class="inline-flex items-center justify-center min-w-[120px] px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-lg border-2 border-gray-300 hover:border-gray-400 transition-all duration-200 shadow-sm hover:shadow">
+                                        <i class="fas fa-times mr-2"></i>
+                                        Batal
                                     </a>
+                                    
+                                    <!-- Primary Action (Import) - High Visual Weight -->
                                     <button type="submit" 
-                                            class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700">
-                                        <i class="fas fa-file-import mr-2"></i>Import Data
+                                            class="inline-flex items-center justify-center min-w-[180px] px-8 py-3.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 active:from-emerald-700 active:to-emerald-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
+                                        <i class="fas fa-file-import mr-2 text-lg"></i>
+                                        Import Data
                                     </button>
+                                </div>
+                                
+                                <!-- Visual Hierarchy Hint -->
+                                <div class="mt-3 text-right">
+                                    <p class="text-xs text-gray-500 italic">
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                        Pastikan file Excel sudah sesuai template
+                                    </p>
                                 </div>
                             </form>
                         </div>
