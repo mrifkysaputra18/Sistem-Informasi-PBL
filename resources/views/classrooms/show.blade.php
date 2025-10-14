@@ -97,7 +97,7 @@
                                         {{ $index + 1 }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-600">
-                                        {{ $student->politala_id ?? $student->nim ?? '-' }}
+                                        {{ $student->nim ?? '-' }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         {{ $student->name }}
