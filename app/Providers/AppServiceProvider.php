@@ -13,8 +13,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Register Laravel Excel
-        $this->app->register(\Maatwebsite\Excel\ExcelServiceProvider::class);
+        // Fast Excel auto-registers via Laravel package discovery
     }
 
     /**

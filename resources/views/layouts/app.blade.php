@@ -26,6 +26,12 @@
             nav a:hover { background: rgba(255,255,255,0.1) !important; }
             .fas, .fa, [class*="fa-"] { font-family: "Font Awesome 6 Free", "Font Awesome 6 Pro", FontAwesome !important; font-weight: 900 !important; }
             button { display: inline-flex !important; align-items: center !important; cursor: pointer !important; }
+            
+            /* CRITICAL: Hide mobile menu by default and on desktop */
+            .mobile-menu { display: none !important; }
+            @media (min-width: 1024px) {
+                .mobile-menu { display: none !important; }
+            }
         </style>
 
         <!-- Font Awesome 6 -->
