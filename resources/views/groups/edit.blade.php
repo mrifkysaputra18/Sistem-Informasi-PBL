@@ -60,6 +60,7 @@
                                     <input type="number" name="max_members" id="max_members" 
                                         value="{{ old('max_members', $group->max_members) }}"
                                         min="1" max="10"
+                                        onchange="checkMaxMembers()"
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('max_members') border-red-500 @enderror">
                                     <p class="mt-1 text-xs text-gray-500">Maksimal anggota yang bisa bergabung (default: 5)</p>
                                     @error('max_members')
@@ -103,10 +104,10 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="mt-3 flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-2">
+                                    <div class="mt-3 flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-2 transition-colors">
                                         <p class="text-sm text-blue-800">
                                             <i class="fas fa-check-circle"></i>
-                                            <span class="font-semibold"><span id="selectedCount">0</span> mahasiswa</span> dipilih
+                                            <span class="font-semibold"><span id="selectedCount">0</span>/{{ $group->max_members }} mahasiswa</span> dipilih
                                         </p>
                                     </div>
                                 </div>
@@ -249,27 +250,104 @@
             function attachCheckboxListeners() {
                 const memberCheckboxes = document.querySelectorAll('.member-checkbox');
                 memberCheckboxes.forEach(checkbox => {
-                    checkbox.addEventListener('change', updateLeaderOptions);
+                    checkbox.addEventListener('change', function() {
+                        checkMaxMembers();
+                        updateLeaderOptions();
+                    });
                 });
                 updateLeaderOptions();
+                checkMaxMembers();
+            }
+            
+            function checkMaxMembers() {
+                const maxMembers = parseInt(document.getElementById('max_members').value) || 5;
+                const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+                const checked = Array.from(memberCheckboxes).filter(cb => cb.checked);
+                
+                // Update counter dengan warna
+                selectedCountSpan.textContent = checked.length;
+                const counterContainer = selectedCountSpan.closest('.bg-blue-50');
+                
+                if (checked.length > maxMembers) {
+                    // Over limit - red warning
+                    counterContainer.classList.remove('bg-blue-50', 'border-blue-200');
+                    counterContainer.classList.add('bg-red-50', 'border-red-300');
+                    selectedCountSpan.closest('p').classList.remove('text-blue-800');
+                    selectedCountSpan.closest('p').classList.add('text-red-800');
+                    selectedCountSpan.closest('p').innerHTML = `<i class="fas fa-exclamation-triangle"></i> <span class="font-semibold"><span id="selectedCount">${checked.length}</span>/${maxMembers} mahasiswa</span> - <strong>Melebihi batas!</strong>`;
+                    
+                    // Disable unchecked checkboxes
+                    memberCheckboxes.forEach(cb => {
+                        if (!cb.checked) {
+                            cb.disabled = true;
+                            cb.closest('.student-item').classList.add('opacity-50', 'cursor-not-allowed');
+                        }
+                    });
+                } else if (checked.length === maxMembers) {
+                    // At limit - yellow warning
+                    counterContainer.classList.remove('bg-blue-50', 'border-blue-200', 'bg-red-50', 'border-red-300');
+                    counterContainer.classList.add('bg-yellow-50', 'border-yellow-300');
+                    selectedCountSpan.closest('p').classList.remove('text-blue-800', 'text-red-800');
+                    selectedCountSpan.closest('p').classList.add('text-yellow-800');
+                    selectedCountSpan.closest('p').innerHTML = `<i class="fas fa-check-circle"></i> <span class="font-semibold"><span id="selectedCount">${checked.length}</span>/${maxMembers} mahasiswa</span> - <strong>Penuh!</strong>`;
+                    
+                    // Disable unchecked checkboxes
+                    memberCheckboxes.forEach(cb => {
+                        if (!cb.checked) {
+                            cb.disabled = true;
+                            cb.closest('.student-item').classList.add('opacity-50', 'cursor-not-allowed');
+                        }
+                    });
+                } else {
+                    // Under limit - normal
+                    counterContainer.classList.remove('bg-yellow-50', 'border-yellow-300', 'bg-red-50', 'border-red-300');
+                    counterContainer.classList.add('bg-blue-50', 'border-blue-200');
+                    selectedCountSpan.closest('p').classList.remove('text-yellow-800', 'text-red-800');
+                    selectedCountSpan.closest('p').classList.add('text-blue-800');
+                    selectedCountSpan.closest('p').innerHTML = `<i class="fas fa-check-circle"></i> <span class="font-semibold"><span id="selectedCount">${checked.length}</span>/${maxMembers} mahasiswa</span> dipilih`;
+                    
+                    // Enable all checkboxes
+                    memberCheckboxes.forEach(cb => {
+                        cb.disabled = false;
+                        cb.closest('.student-item').classList.remove('opacity-50', 'cursor-not-allowed');
+                    });
+                }
             }
             
             // Select All functionality
             selectAllBtn.addEventListener('click', function() {
+                const maxMembers = parseInt(document.getElementById('max_members').value) || 5;
                 const visibleCheckboxes = Array.from(document.querySelectorAll('.student-item'))
                     .filter(item => item.style.display !== 'none')
                     .map(item => item.querySelector('.member-checkbox'));
                 
                 const allChecked = visibleCheckboxes.every(cb => cb.checked);
                 
-                visibleCheckboxes.forEach(checkbox => {
-                    checkbox.checked = !allChecked;
-                });
+                if (!allChecked) {
+                    // Check only up to max_members
+                    let count = Array.from(document.querySelectorAll('.member-checkbox:checked')).length;
+                    visibleCheckboxes.forEach(checkbox => {
+                        if (!checkbox.checked && count < maxMembers) {
+                            checkbox.checked = true;
+                            count++;
+                        }
+                    });
+                    
+                    if (count >= maxMembers) {
+                        alert(`⚠️ Maksimal ${maxMembers} anggota. Tidak bisa menambah lebih banyak.`);
+                    }
+                } else {
+                    visibleCheckboxes.forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                }
                 
-                this.innerHTML = allChecked 
-                    ? '<i class="fas fa-check-double mr-1"></i>Pilih Semua'
-                    : '<i class="fas fa-times mr-1"></i>Batal Pilih';
+                const anyChecked = visibleCheckboxes.some(cb => cb.checked);
+                this.innerHTML = anyChecked 
+                    ? '<i class="fas fa-times mr-1"></i>Batal Pilih'
+                    : '<i class="fas fa-check-double mr-1"></i>Pilih Semua';
                 
+                checkMaxMembers();
                 updateLeaderOptions();
             });
             

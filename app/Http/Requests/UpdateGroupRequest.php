@@ -18,7 +18,34 @@ class UpdateGroupRequest extends FormRequest
             'class_room_id' => ['required', 'exists:class_rooms,id'],
             'project_id' => ['nullable', 'exists:projects,id'],
             'max_members' => ['integer', 'min:1', 'max:10'],
+            'members' => ['array'],
+            'members.*' => ['exists:users,id'],
         ];
+    }
+    
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            // Validate members count doesn't exceed max_members
+            if ($this->has('members') && $this->has('max_members')) {
+                $membersCount = count($this->members);
+                $maxMembers = (int) $this->max_members;
+                
+                if ($membersCount > $maxMembers) {
+                    $validator->errors()->add(
+                        'members',
+                        "Jumlah anggota ($membersCount) melebihi batas maksimal ($maxMembers). Silakan kurangi anggota atau tingkatkan batas maksimal."
+                    );
+                }
+            }
+            
+            // Validate leader is part of members
+            if ($this->has('leader_id') && $this->has('members')) {
+                if (!in_array($this->leader_id, $this->members)) {
+                    $validator->errors()->add('leader_id', 'Ketua harus menjadi salah satu anggota kelompok.');
+                }
+            }
+        });
     }
     
     public function messages(): array
