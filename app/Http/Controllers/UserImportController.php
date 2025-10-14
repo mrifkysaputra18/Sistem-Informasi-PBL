@@ -21,83 +21,144 @@ class UserImportController extends Controller
     }
 
     /**
-     * Process Excel import
+     * Process Excel import - Support MULTIPLE FILES
      */
     public function import(Request $request)
     {
+        // Validate multiple files
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv|max:5120' // Max 5MB
+            'files' => 'required|array|min:1|max:10', // Max 10 files
+            'files.*' => 'required|mimes:xlsx,xls,csv|max:5120' // Each max 5MB
         ], [
-            'file.required' => 'File Excel wajib diupload',
-            'file.mimes' => 'File harus berformat .xlsx, .xls, atau .csv',
-            'file.max' => 'Ukuran file maksimal 5MB'
+            'files.required' => 'File Excel wajib diupload',
+            'files.array' => 'Format upload tidak valid',
+            'files.min' => 'Minimal 1 file harus diupload',
+            'files.max' => 'Maksimal 10 file dapat diupload sekaligus',
+            'files.*.mimes' => 'File harus berformat .xlsx, .xls, atau .csv',
+            'files.*.max' => 'Ukuran setiap file maksimal 5MB'
         ]);
 
         try {
-            $file = $request->file('file');
+            $files = $request->file('files');
+            $totalFiles = count($files);
             
-            Log::info('Starting Excel import', [
-                'filename' => $file->getClientOriginalName(),
-                'size' => $file->getSize(),
-                'mime' => $file->getMimeType(),
-                'extension' => $file->getClientOriginalExtension()
+            // Initialize counters
+            $totalImported = 0;
+            $totalSkipped = 0;
+            $allErrors = [];
+            $fileResults = [];
+            
+            Log::info('Starting multiple files import', [
+                'total_files' => $totalFiles
             ]);
             
-            // Use multi-sheet importer to handle Excel with multiple sheets
-            $import = new UsersMultiSheetImport();
+            // Process each file
+            foreach ($files as $index => $file) {
+                $fileNumber = $index + 1;
+                $filename = $file->getClientOriginalName();
+                
+                Log::info("Processing file {$fileNumber}/{$totalFiles}", [
+                    'filename' => $filename,
+                    'size' => $file->getSize()
+                ]);
+                
+                try {
+                    // Use multi-sheet importer
+                    $import = new UsersMultiSheetImport();
+                    
+                    // Import this file
+                    Excel::import($import, $file);
+                    
+                    // Get statistics for this file
+                    $importedCount = $import->getImportedCount();
+                    $skippedCount = $import->getSkippedCount();
+                    $errors = $import->getErrors();
+                    
+                    // Accumulate totals
+                    $totalImported += $importedCount;
+                    $totalSkipped += $skippedCount;
+                    
+                    // Store result for this file
+                    $fileResults[] = [
+                        'filename' => $filename,
+                        'status' => $importedCount > 0 ? 'success' : 'warning',
+                        'imported' => $importedCount,
+                        'skipped' => $skippedCount,
+                        'errors' => $errors
+                    ];
+                    
+                    // Collect errors with file context
+                    if (!empty($errors)) {
+                        foreach ($errors as $error) {
+                            $allErrors[] = "[{$filename}] {$error}";
+                        }
+                    }
+                    
+                    Log::info("File {$fileNumber} processed", [
+                        'filename' => $filename,
+                        'imported' => $importedCount,
+                        'skipped' => $skippedCount
+                    ]);
+                    
+                } catch (\Exception $fileError) {
+                    // Error on specific file
+                    $fileResults[] = [
+                        'filename' => $filename,
+                        'status' => 'error',
+                        'imported' => 0,
+                        'skipped' => 0,
+                        'errors' => [$fileError->getMessage()]
+                    ];
+                    
+                    $allErrors[] = "[{$filename}] Error: " . $fileError->getMessage();
+                    
+                    Log::error("File {$fileNumber} failed", [
+                        'filename' => $filename,
+                        'error' => $fileError->getMessage()
+                    ]);
+                }
+            }
             
-            // Import Excel file
-            Excel::import($import, $file);
-            
-            // Get statistics
-            $importedCount = $import->getImportedCount();
-            $skippedCount = $import->getSkippedCount();
-            $errors = $import->getErrors();
-            
-            // Log import result
-            Log::info('Excel import completed', [
-                'imported' => $importedCount,
-                'skipped' => $skippedCount,
-                'total_errors' => count($errors)
+            // Log final result
+            Log::info('Multiple files import completed', [
+                'total_files' => $totalFiles,
+                'total_imported' => $totalImported,
+                'total_skipped' => $totalSkipped,
+                'total_errors' => count($allErrors)
             ]);
             
-            // Prepare result message
-            $message = "Import selesai! ";
-            $message .= "✅ Berhasil: {$importedCount} mahasiswa";
+            // Store file results in session
+            session()->flash('file_results', $fileResults);
             
-            if ($skippedCount > 0) {
-                $message .= " | ⚠️ Dilewati: {$skippedCount} baris";
+            // Store errors if any
+            if (!empty($allErrors)) {
+                session()->flash('import_errors', $allErrors);
             }
             
-            // Store errors in session for display
-            if (!empty($errors)) {
-                session()->flash('import_errors', $errors);
+            // Prepare summary message
+            $message = "Import {$totalFiles} file selesai! ";
+            $message .= "✅ Total berhasil: {$totalImported} mahasiswa";
+            
+            if ($totalSkipped > 0) {
+                $message .= " | ⚠️ Total dilewati: {$totalSkipped} baris";
             }
             
-            if ($importedCount > 0) {
+            if ($totalImported > 0) {
                 return redirect()->route('admin.users.index')
                     ->with('success', $message);
             } else {
                 return redirect()->back()
-                    ->with('warning', 'Tidak ada data yang berhasil diimport. Periksa file Excel Anda.')
+                    ->with('warning', 'Tidak ada data yang berhasil diimport dari semua file. Periksa file Excel Anda.')
                     ->withInput();
             }
             
-        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
-            $failures = $e->failures();
-            $errorMessages = [];
-            
-            foreach ($failures as $failure) {
-                $errorMessages[] = "Baris {$failure->row()}: " . implode(', ', $failure->errors());
-            }
-            
+        } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()
-                ->with('error', 'Validasi gagal! Periksa format data Excel.')
-                ->with('import_errors', $errorMessages)
+                ->withErrors($e->validator)
                 ->withInput();
                 
         } catch (\Exception $e) {
-            Log::error('Import Excel failed', [
+            Log::error('Multiple files import failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
