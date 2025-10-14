@@ -26,12 +26,28 @@ class UsersImport implements ToCollection, WithHeadingRow, WithValidation, Skips
 
     public function collection(Collection $rows)
     {
+        // Debug: Log available keys from first row
+        if ($rows->isNotEmpty()) {
+            $firstRow = $rows->first();
+            Log::info('Excel Import - Available columns', [
+                'keys' => array_keys($firstRow->toArray()),
+                'sample_data' => $firstRow->toArray()
+            ]);
+        }
+
         foreach ($rows as $index => $row) {
             try {
-                // Skip empty rows
-                if (empty($row['nim']) || empty($row['email_sso'])) {
+                // Skip empty rows - check both nim AND nama_lengkap
+                if (empty($row['nim']) && empty($row['nama_lengkap'])) {
                     $this->skippedCount++;
-                    $this->errors[] = "Baris " . ($index + 2) . ": Data NIM atau Email kosong";
+                    $this->errors[] = "Baris " . ($index + 2) . ": Baris kosong dilewati";
+                    continue;
+                }
+
+                // Validate required fields
+                if (empty($row['email_sso'])) {
+                    $this->skippedCount++;
+                    $this->errors[] = "Baris " . ($index + 2) . ": Email SSO wajib diisi";
                     continue;
                 }
 
