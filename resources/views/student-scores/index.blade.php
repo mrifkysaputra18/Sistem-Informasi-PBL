@@ -265,12 +265,12 @@
                                                             $totalScore = $studentRanking ? $studentRanking['total_score'] : 0;
                                                         @endphp
                                                         <span class="text-lg font-bold 
-                                                            @if($totalScore >= 80) text-green-600
-                                                            @elseif($totalScore >= 70) text-primary-600
-                                                            @elseif($totalScore >= 60) text-yellow-600
+                                                            @if($totalScore >= 0.8) text-green-600
+                                                            @elseif($totalScore >= 0.7) text-primary-600
+                                                            @elseif($totalScore >= 0.6) text-yellow-600
                                                             @else text-red-600
                                                             @endif">
-                                                            {{ number_format($totalScore, 1) }}
+                                                            {{ number_format($totalScore, 4) }}
                                                         </span>
                                                     </td>
                                                 </tr>
@@ -339,12 +339,12 @@
                                             </div>
                                             <div class="text-right ml-3">
                                                 <div class="text-lg font-bold 
-                                                    @if($rank['total_score'] >= 80) text-green-600
-                                                    @elseif($rank['total_score'] >= 70) text-primary-600
-                                                    @elseif($rank['total_score'] >= 60) text-yellow-600
+                                                    @if($rank['total_score'] >= 0.8) text-green-600
+                                                    @elseif($rank['total_score'] >= 0.7) text-primary-600
+                                                    @elseif($rank['total_score'] >= 0.6) text-yellow-600
                                                     @else text-red-600
                                                     @endif">
-                                                    {{ number_format($rank['total_score'], 1) }}
+                                                    {{ number_format($rank['total_score'], 4) }}
                                                 </div>
                                                 <div class="text-xs text-gray-500">poin</div>
                                             </div>
@@ -410,12 +410,12 @@
                                                     </div>
                                                     <div class="text-right ml-2">
                                                         <div class="text-sm font-bold 
-                                                            @if($studentData['total_score'] >= 80) text-green-600
-                                                            @elseif($studentData['total_score'] >= 70) text-primary-600
-                                                            @elseif($studentData['total_score'] >= 60) text-yellow-600
+                                                            @if($studentData['total_score'] >= 0.8) text-green-600
+                                                            @elseif($studentData['total_score'] >= 0.7) text-primary-600
+                                                            @elseif($studentData['total_score'] >= 0.6) text-yellow-600
                                                             @else text-red-600
                                                             @endif">
-                                                            {{ number_format($studentData['total_score'], 1) }}
+                                                            {{ number_format($studentData['total_score'], 4) }}
                                                         </div>
                                                     </div>
                                                 </div>

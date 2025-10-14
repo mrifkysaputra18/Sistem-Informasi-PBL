@@ -67,10 +67,10 @@ class RankingService
             }
         }
         
-        // Konversi ke skala 0-100 dan bulatkan
+        // Nilai SAW dalam skala 0-1 (tidak perlu dikali 100)
         $totals = [];
         foreach ($preferences as $groupId => $preference) {
-            $totals[$groupId] = round($preference * 100, 2);
+            $totals[$groupId] = round($preference, 4);
         }
         
         return $totals;
@@ -135,10 +135,10 @@ class RankingService
             }
         }
         
-        // Konversi ke skala 0-100 dan bulatkan
+        // Nilai SAW dalam skala 0-1 (tidak perlu dikali 100)
         $totals = [];
         foreach ($preferences as $studentId => $preference) {
-            $totals[$studentId] = round($preference * 100, 2);
+            $totals[$studentId] = round($preference, 4);
         }
         
         return $totals;
