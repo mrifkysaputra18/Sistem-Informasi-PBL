@@ -21,11 +21,14 @@
             <!-- Fitts's Law: Larger, accessible action buttons -->
             <div class="flex flex-wrap gap-2">
                 @if(auth()->user()->isDosen() || auth()->user()->isAdmin())
-                    <form action="{{ route('student-scores.recalc') }}" method="POST" class="inline">
+                    <a href="{{ route('student-scores.create') }}" 
+                       class="bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 inline-flex items-center">
+                        <i class="fas fa-plus mr-2"></i>Input Nilai Mahasiswa
+                    </a>
+                    <form action="{{ route('student-scores.recalc') }}" method="POST" class="inline recalc-form">
                         @csrf
-                        <button type="submit" 
-                                onclick="return confirm('Hitung ulang ranking untuk semua mahasiswa?')"
-                                class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                        <button type="button" 
+                                class="recalc-btn bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
                             <i class="fas fa-calculator mr-2"></i>Hitung Ulang Ranking
                         </button>
                     </form>
@@ -427,5 +430,34 @@
             @endif
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle recalculate button clicks
+            const recalcButtons = document.querySelectorAll('.recalc-btn');
+            
+            recalcButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const form = this.closest('.recalc-form');
+                    
+                    confirmAction(
+                        'Hitung Ulang Ranking?',
+                        'Apakah Anda yakin ingin menghitung ulang ranking untuk semua mahasiswa?<br><small class="text-gray-500">Proses ini akan memperbarui ranking berdasarkan nilai terbaru.</small>',
+                        '<i class="fas fa-calculator mr-2"></i>Ya, Hitung Ulang!',
+                        '#f97316'
+                    ).then((result) => {
+                        if (result.isConfirmed) {
+                            showLoading('Menghitung Ranking...', 'Mohon tunggu sebentar');
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+    @endpush
 </x-app-layout>
 

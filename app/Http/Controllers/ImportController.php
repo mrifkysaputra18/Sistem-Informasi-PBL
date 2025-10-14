@@ -7,7 +7,7 @@ use App\Models\Group;
 use App\Models\User;
 use App\Models\GroupMember;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
+// use Maatwebsite\Excel\Facades\Excel; // Temporary disabled - using CSV workaround
 use Illuminate\Support\Facades\DB;
 
 class ImportController extends Controller
@@ -125,7 +125,29 @@ class ImportController extends Controller
      */
     public function downloadGroupTemplate()
     {
-        return Excel::download(new \App\Exports\GroupTemplateExport, 'Template_Import_Kelompok.xlsx');
+        // Temporary workaround: Generate CSV instead of Excel
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="Template_Import_Kelompok.csv"',
+        ];
+
+        $callback = function() {
+            $file = fopen('php://output', 'w');
+            
+            // Header
+            fputcsv($file, ['nama_kelompok', 'ketua_email', 'anggota_1_email', 'anggota_2_email', 'anggota_3_email', 'anggota_4_email']);
+            
+            // Example data
+            fputcsv($file, ['Kelompok 1', 'mahasiswa1@politala.ac.id', 'mahasiswa2@politala.ac.id', 'mahasiswa3@politala.ac.id', 'mahasiswa4@politala.ac.id', 'mahasiswa5@politala.ac.id']);
+            fputcsv($file, ['Kelompok 2', 'mahasiswa6@politala.ac.id', 'mahasiswa7@politala.ac.id', 'mahasiswa8@politala.ac.id', 'mahasiswa9@politala.ac.id', 'mahasiswa10@politala.ac.id']);
+            
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+        
+        // Original Excel download (uncomment when composer issue is fixed):
+        // return Excel::download(new \App\Exports\GroupTemplateExport, 'Template_Import_Kelompok.xlsx');
     }
 }
 

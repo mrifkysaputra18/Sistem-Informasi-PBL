@@ -73,10 +73,61 @@
                 </div>
             </div>
 
+            <!-- Cancel Info Box (if can cancel) -->
+            @if($target->canCancelSubmission())
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-lg shadow-sm">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-info-circle text-yellow-600 text-xl"></i>
+                    </div>
+                    <div class="ml-3 flex-1">
+                        <h3 class="text-sm font-medium text-yellow-800">
+                            Anda dapat membatalkan submission ini
+                        </h3>
+                        <div class="mt-2 text-sm text-yellow-700">
+                            <p>Jika Anda salah upload file atau ingin mengubah submission, Anda dapat membatalkan dan submit ulang sebelum:</p>
+                            <ul class="list-disc list-inside mt-2 space-y-1">
+                                <li>Deadline: <strong>{{ $target->deadline->format('d/m/Y H:i') }}</strong></li>
+                                <li>Target direview oleh dosen</li>
+                            </ul>
+                        </div>
+                        <div class="mt-3">
+                            <form action="{{ route('targets.submissions.cancel', $target->id) }}" method="POST" class="inline"
+                                  id="cancel-form-top">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button"
+                                        onclick="cancelSubmission('{{ addslashes($target->title) }}', 'cancel-form-top')"
+                                        class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-sm font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
+                                    <i class="fas fa-times-circle mr-2"></i>
+                                    Batalkan Submission & Upload Ulang
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- My Submission -->
             @if($target->isSubmitted())
             <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                <h3 class="text-lg font-semibold mb-4">Submission Saya</h3>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold">Submission Saya</h3>
+                    @if($target->canCancelSubmission())
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        <i class="fas fa-clock mr-1"></i>Dapat dibatalkan
+                    </span>
+                    @elseif($target->isReviewed())
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <i class="fas fa-check-circle mr-1"></i>Sudah direview
+                    </span>
+                    @else
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        <i class="fas fa-lock mr-1"></i>Tidak dapat dibatalkan
+                    </span>
+                    @endif
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <div class="text-sm text-gray-600">Tanggal Submit</div>
@@ -157,37 +208,53 @@
 
             <!-- Actions -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="flex justify-between items-center">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <a href="{{ route('targets.submissions.index') }}" 
-                       class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded">
-                        Kembali
+                       class="inline-flex items-center px-6 py-2.5 bg-gray-500 hover:bg-gray-700 text-white font-semibold rounded-lg transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>Kembali
                     </a>
                     
-                    <div class="flex space-x-2">
+                    <div class="flex flex-wrap gap-2">
                         @if($target->canAcceptSubmission())
                             @if($target->isPending())
                             <a href="{{ route('targets.submissions.submit', $target->id) }}" 
-                               class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-6 rounded">
+                               class="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all">
                                 <i class="fas fa-upload mr-2"></i>Submit Target
                             </a>
                             @elseif($target->submission_status === 'revision')
                             <a href="{{ route('targets.submissions.edit', $target->id) }}" 
-                               class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-6 rounded">
-                                <i class="fas fa-edit mr-2"></i>Revisi
+                               class="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all">
+                                <i class="fas fa-edit mr-2"></i>Revisi Submission
                             </a>
                             @elseif($target->isSubmitted() && !$target->isReviewed())
                             <a href="{{ route('targets.submissions.edit', $target->id) }}" 
-                               class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-6 rounded">
+                               class="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all">
                                 <i class="fas fa-edit mr-2"></i>Edit Submission
                             </a>
                             @endif
-                        @else
+                        @endif
+                        
+                        <!-- Cancel Submission Button (if can cancel) - ENHANCED -->
+                        @if($target->canCancelSubmission())
+                        <form action="{{ route('targets.submissions.cancel', $target->id) }}" method="POST" class="inline"
+                              id="cancel-form-bottom">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button"
+                                    onclick="cancelSubmission('{{ addslashes($target->title) }}', 'cancel-form-bottom')"
+                                    class="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5 animate-pulse hover:animate-none">
+                                <i class="fas fa-times-circle mr-2"></i>Batalkan Submission
+                            </button>
+                        </form>
+                        @endif
+                        
+                        @if(!$target->canAcceptSubmission() && !$target->canCancelSubmission())
                             @if($target->isClosed())
-                            <div class="text-red-600 text-sm bg-red-50 px-4 py-2 rounded border border-red-200">
+                            <div class="inline-flex items-center text-red-600 text-sm bg-red-50 px-4 py-2 rounded-lg border border-red-200">
                                 <i class="fas fa-lock mr-2"></i>Target sudah tertutup. Tidak dapat mensubmit lagi.
                             </div>
                             @elseif($target->isReviewed())
-                            <div class="text-gray-600 text-sm bg-gray-50 px-4 py-2 rounded border border-gray-200">
+                            <div class="inline-flex items-center text-gray-600 text-sm bg-gray-50 px-4 py-2 rounded-lg border border-gray-200">
                                 <i class="fas fa-check-circle mr-2"></i>Target sudah direview dosen.
                             </div>
                             @endif
@@ -197,4 +264,54 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function cancelSubmission(targetTitle, formId) {
+            const form = document.getElementById(formId);
+            
+            Swal.fire({
+                title: '⚠️ PERHATIAN!',
+                html: `
+                    <div class="text-left">
+                        <p class="mb-3">Apakah Anda yakin ingin membatalkan submission untuk target <strong>"${targetTitle}"</strong>?</p>
+                        <div class="bg-red-50 border-l-4 border-red-500 p-3 mb-3">
+                            <p class="font-semibold text-red-800 mb-2">❌ Yang akan terjadi:</p>
+                            <ul class="list-disc list-inside text-sm text-red-700 space-y-1">
+                                <li>File yang diupload akan <strong>DIHAPUS</strong></li>
+                                <li>Status kembali ke <strong>Belum Dikerjakan</strong></li>
+                                <li>Anda harus <strong>upload ulang dari awal</strong></li>
+                            </ul>
+                        </div>
+                        <p class="text-sm text-gray-600">Tindakan ini tidak dapat dibatalkan.</p>
+                    </div>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '<i class="fas fa-times-circle mr-2"></i>Ya, Batalkan Submission!',
+                cancelButtonText: '<i class="fas fa-arrow-left mr-2"></i>Tidak, Kembali',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rounded-2xl shadow-2xl',
+                    title: 'text-2xl font-bold text-gray-800',
+                    htmlContainer: 'text-gray-600',
+                    confirmButton: 'rounded-lg px-6 py-3 font-semibold shadow-lg hover:shadow-xl transition-all',
+                    cancelButton: 'rounded-lg px-6 py-3 font-semibold shadow-md hover:shadow-lg transition-all'
+                },
+                buttonsStyling: true,
+                showClass: {
+                    popup: 'animate__animated animate__shakeX animate__faster'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp animate__faster'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading('Membatalkan Submission...', 'Mohon tunggu sebentar');
+                    form.submit();
+                }
+            });
+        }
+    </script>
 </x-app-layout>

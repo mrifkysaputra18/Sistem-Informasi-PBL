@@ -129,11 +129,13 @@
                                         </div>
                                     </div>
                                     
-                                    <form method="POST" action="{{ route('groups.remove-member', [$group, $member->id]) }}" 
-                                          onsubmit="return confirm('Yakin ingin menghapus anggota ini?');">
+                                    <form method="POST" action="{{ route('groups.remove-member', [$group, $member->id]) }}"
+                                          id="remove-member-form-{{ $member->id }}">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-800 font-semibold text-sm">
+                                        <button type="button"
+                                                onclick="removeMember({{ $member->id }}, '{{ addslashes($member->user->name) }}')"
+                                                class="text-red-600 hover:text-red-800 font-semibold text-sm">
                                             Hapus
                                         </button>
                                     </form>
@@ -207,4 +209,16 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function removeMember(memberId, memberName) {
+            const form = document.getElementById('remove-member-form-' + memberId);
+            
+            confirmDelete(
+                'Hapus Anggota?',
+                `Apakah Anda yakin ingin menghapus <strong>"${memberName}"</strong> dari kelompok ini?<br><small class="text-gray-500">Tindakan ini tidak dapat dibatalkan.</small>`,
+                form
+            );
+        }
+    </script>
 </x-app-layout>

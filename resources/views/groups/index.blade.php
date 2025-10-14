@@ -17,7 +17,7 @@
                     <i class="fas fa-file-excel mr-2"></i>Import Excel
                 </a>
                 @endif
-                <a href="{{ route('groups.create') }}" 
+                <a href="{{ route('groups.create', ['classroom' => request('classroom')]) }}" 
                    class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
                     <i class="fas fa-plus mr-2"></i>Tambah Kelompok
                 </a>
@@ -209,12 +209,12 @@
                                                         <i class="fas fa-edit mr-1.5"></i>
                                                         Edit
                                                     </a>
-                                                    <form action="{{ route('groups.destroy', $group) }}" method="POST" class="inline">
+                                                    <form action="{{ route('groups.destroy', $group) }}" method="POST" class="inline delete-form">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" 
-                                                                onclick="return confirm('Yakin ingin menghapus kelompok ini?')"
-                                                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-100 hover:bg-red-200 hover:text-red-900 rounded-lg transition duration-200 ease-in-out">
+                                                        <button type="button" 
+                                                                class="delete-btn inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-100 hover:bg-red-200 hover:text-red-900 rounded-lg transition duration-200 ease-in-out"
+                                                                data-group-name="{{ $group->name }}">
                                                             <i class="fas fa-trash mr-1.5"></i>
                                                             Hapus
                                                         </button>
@@ -229,7 +229,16 @@
 
                         <!-- Pagination -->
                         <div class="mt-6">
-                            {{ $groups->links() }}
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                <div class="text-sm text-gray-700 font-medium">
+                                    Menampilkan <span class="font-semibold text-primary-600">{{ $groups->firstItem() ?? 0 }}</span> 
+                                    sampai <span class="font-semibold text-primary-600">{{ $groups->lastItem() ?? 0 }}</span> 
+                                    dari <span class="font-semibold text-primary-600">{{ $groups->total() }}</span> kelompok
+                                </div>
+                                <div>
+                                    {{ $groups->links('pagination::tailwind') }}
+                                </div>
+                            </div>
                         </div>
                     @else
                         <div class="text-center py-12">
@@ -238,7 +247,7 @@
                             </div>
                             <h3 class="text-lg font-medium text-gray-900 mb-2">Belum ada kelompok</h3>
                             <p class="text-gray-500 mb-4">Mulai dengan menambahkan kelompok pertama Anda.</p>
-                            <a href="{{ route('groups.create') }}" 
+                            <a href="{{ route('groups.create', ['classroom' => request('classroom')]) }}" 
                                class="inline-flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-700 text-white font-bold rounded-lg shadow-md transition duration-300">
                                 <i class="fas fa-plus mr-2"></i>Tambah Kelompok Pertama
                             </a>
@@ -248,4 +257,103 @@
             </div>
         </div>
     </div>
+
+    @push('styles')
+    <style>
+        /* Custom Pagination Styling - Fix spacing and color */
+        nav[role="navigation"] {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 0.75rem !important;
+        }
+        
+        nav[role="navigation"] > span,
+        nav[role="navigation"] > a {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-width: 2.75rem !important;
+            height: 2.75rem !important;
+            padding: 0.5rem !important;
+            margin: 0 !important;
+            font-size: 0.875rem !important;
+            font-weight: 600 !important;
+            border-radius: 0.5rem !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+        
+        /* Pagination links - BLUE COLOR */
+        nav[role="navigation"] > a {
+            background-color: #ffffff !important;
+            color: #3b82f6 !important;
+            border: 2px solid #3b82f6 !important;
+            text-decoration: none !important;
+        }
+        
+        /* Hover state */
+        nav[role="navigation"] > a:hover:not([aria-disabled="true"]) {
+            background-color: #3b82f6 !important;
+            color: #ffffff !important;
+            border-color: #3b82f6 !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 12px -2px rgba(59, 130, 246, 0.4) !important;
+        }
+        
+        /* Active page - BLUE BACKGROUND */
+        nav[role="navigation"] > span[aria-current="page"] {
+            background-color: #3b82f6 !important;
+            color: #ffffff !important;
+            border: 2px solid #3b82f6 !important;
+            font-weight: 700 !important;
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4) !important;
+        }
+        
+        /* Disabled state */
+        nav[role="navigation"] > a[aria-disabled="true"],
+        nav[role="navigation"] > span[aria-disabled="true"] {
+            opacity: 0.4 !important;
+            cursor: not-allowed !important;
+            background-color: #f3f4f6 !important;
+            color: #9ca3af !important;
+            border-color: #e5e7eb !important;
+        }
+        
+        /* Remove negative margins from pagination wrapper */
+        nav[role="navigation"] .flex {
+            gap: 0.75rem !important;
+        }
+        
+        /* Ensure proper spacing */
+        nav[role="navigation"] span:not([aria-current]):not([aria-disabled]),
+        nav[role="navigation"] a:not([aria-disabled]) {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+    </style>
+    @endpush
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle delete button clicks
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const groupName = this.getAttribute('data-group-name');
+                    const form = this.closest('.delete-form');
+                    
+                    confirmDelete(
+                        'Hapus Kelompok?',
+                        `Apakah Anda yakin ingin menghapus kelompok <strong>"${groupName}"</strong>?<br><small class="text-gray-500">Tindakan ini tidak dapat dibatalkan.</small>`,
+                        form
+                    );
+                });
+            });
+        });
+    </script>
+    @endpush
 </x-app-layout>

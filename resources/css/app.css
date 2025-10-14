@@ -1,6 +1,8 @@
+/* stylelint-disable at-rule-no-unknown */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* stylelint-enable at-rule-no-unknown */
 
 /* ========================================
    CUSTOM BACKGROUND STYLES
@@ -29,14 +31,6 @@
     background-repeat: no-repeat;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .app-background,
-    .app-background.with-image {
-        background-attachment: scroll;
-    }
-}
-
 /* Background Overlay - Minimal untuk gambar SANGAT JELAS */
 .app-background::before {
     content: '';
@@ -49,7 +43,6 @@
     background: rgba(255, 255, 255, 0.10);
     backdrop-filter: blur(0px); /* TIDAK ADA BLUR - gambar tajam! */
 }
-
 
 /* Content wrapper untuk ensure readability */
 .content-wrapper {
@@ -83,7 +76,8 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .app-background {
+    .app-background,
+    .app-background.with-image {
         background-attachment: scroll;
     }
 }
@@ -91,34 +85,6 @@
 /* ========================================
    LOGO STYLES
    ======================================== */
-
-/* Navigation Logo */
-.app-logo {
-    height: 40px;
-    width: auto;
-    max-width: 40px;
-    object-fit: contain;
-    transition: transform 0.2s ease;
-    /* Background putih untuk logo agar terlihat jelas */
-    background: white;
-    padding: 4px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-}
-
-/* Logo hover effect */
-.app-logo:hover {
-    transform: scale(1.05);
-}
-
-/* Mobile logo - slightly smaller */
-@media (max-width: 640px) {
-    .app-logo {
-        height: 42px;
-        max-width: 42px;
-    }
-}
 
 /* Logo fade-in animation */
 @keyframes logoFadeIn {
@@ -132,13 +98,30 @@
     }
 }
 
+/* Navigation Logo */
 .app-logo {
-    animation: logoFadeIn 0.5s ease-in-out;
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 40px;
+    width: auto;
+    max-width: 40px;
+    object-fit: contain;
+    /* Background putih untuk logo agar terlihat jelas */
+    background: white;
+    padding: 6px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.8);
 }
 
 .app-logo:hover {
     transform: scale(1.05);
+}
+
+/* Mobile logo - slightly smaller */
+@media (max-width: 640px) {
+    .app-logo {
+        height: 42px;
+        max-width: 42px;
+    }
 }
 
 /* ========================================
@@ -444,4 +427,80 @@ button {
 
 .animate-slide-in {
     animation: slide-in 0.4s ease-out;
+}
+
+/* ========================================
+   PAGINATION STYLES - FIX SPACING
+   ======================================== */
+
+/* Pagination container */
+nav[role="navigation"] {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+}
+
+/* All pagination elements */
+nav[role="navigation"] > span,
+nav[role="navigation"] > a {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 2.5rem !important;
+    height: 2.5rem !important;
+    padding: 0.5rem !important;
+    margin: 0 !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    border-radius: 0.5rem !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Pagination links */
+nav[role="navigation"] > a {
+    background-color: #ffffff !important;
+    color: #3b82f6 !important;
+    border: 1px solid #3b82f6 !important;
+    text-decoration: none !important;
+}
+
+/* Hover state */
+nav[role="navigation"] > a:hover:not([aria-disabled="true"]) {
+    background-color: #3b82f6 !important;
+    color: #ffffff !important;
+    border-color: #3b82f6 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Active page */
+nav[role="navigation"] > span[aria-current="page"] {
+    background-color: #3b82f6 !important;
+    color: #ffffff !important;
+    border: 1px solid #3b82f6 !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Disabled state */
+nav[role="navigation"] > a[aria-disabled="true"],
+nav[role="navigation"] > span[aria-disabled="true"] {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    background-color: #f3f4f6 !important;
+    color: #9ca3af !important;
+}
+
+/* Remove any flex container negative margins */
+nav[role="navigation"] .flex {
+    gap: 0.5rem !important;
+    margin: 0 !important;
+}
+
+/* Ensure proper spacing for inner elements */
+nav[role="navigation"] span:not([aria-current]):not([aria-disabled]),
+nav[role="navigation"] a:not([aria-disabled]) {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
 }

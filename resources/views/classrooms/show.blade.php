@@ -11,9 +11,9 @@
                 <a href="{{ route('classrooms.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
                     ← Kembali
                 </a>
-                @if(!$classRoom->isFull())
-                <a href="{{ route('groups.create', ['class_room_id' => $classRoom->id]) }}" class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded">
-                    + Buat Kelompok Baru
+                @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
+                <a href="{{ route('classrooms.students.create', $classRoom->id) }}" class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded">
+                    + Tambah Mahasiswa
                 </a>
                 @endif
             </div>
@@ -39,91 +39,124 @@
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="text-center p-4 bg-primary-50 rounded">
-                            <div class="text-3xl font-bold text-primary-600">{{ $classRoom->groups->count() }}</div>
-                            <div class="text-sm text-gray-600">Total Kelompok</div>
+                            <div class="text-3xl font-bold text-primary-600">{{ $students->count() }}</div>
+                            <div class="text-sm text-gray-600">Total Mahasiswa</div>
                         </div>
                         <div class="text-center p-4 bg-green-50 rounded">
-                            <div class="text-3xl font-bold text-green-600">{{ $classRoom->max_groups }}</div>
-                            <div class="text-sm text-gray-600">Maksimal Kelompok</div>
+                            <div class="text-3xl font-bold text-green-600">{{ $classRoom->code }}</div>
+                            <div class="text-sm text-gray-600">Kode Kelas</div>
                         </div>
                         <div class="text-center p-4 bg-secondary-50 rounded">
-                            <div class="text-3xl font-bold text-secondary-600">{{ $classRoom->groups->sum(fn($g) => $g->members->count()) }}</div>
-                            <div class="text-sm text-gray-600">Total Mahasiswa</div>
+                            <div class="text-3xl font-bold text-secondary-600">{{ $classRoom->program_studi }}</div>
+                            <div class="text-sm text-gray-600">Program Studi</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Daftar Kelompok -->
+            <!-- Daftar Mahasiswa -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    <h3 class="text-lg font-semibold mb-4">Daftar Kelompok</h3>
+                    <h3 class="text-lg font-semibold mb-4">Daftar Mahasiswa</h3>
                     
-                    @if($classRoom->groups->isEmpty())
+                    @if($students->isEmpty())
                     <div class="text-center py-8 text-gray-500">
-                        <p class="mb-4">Belum ada kelompok di kelas ini.</p>
-                        <a href="{{ route('groups.create', ['class_room_id' => $classRoom->id]) }}" class="inline-block bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-6 rounded">
-                            Buat Kelompok Pertama
-                        </a>
+                        <p class="mb-4">Belum ada mahasiswa terdaftar di kelas ini.</p>
                     </div>
                     @else
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        @foreach($classRoom->groups as $group)
-                        <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                            <div class="flex justify-between items-start mb-3">
-                                <div>
-                                    <h4 class="text-lg font-bold text-gray-800">{{ $group->name }}</h4>
-                                    @if($group->leader)
-                                    <p class="text-sm text-gray-600">
-                                        <span class="font-semibold">Ketua:</span> {{ $group->leader->name }}
-                                    </p>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        No
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        NIM
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Nama Mahasiswa
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Email
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status
+                                    </th>
+                                    @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
+                                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Aksi
+                                    </th>
                                     @endif
-                                </div>
-                                <span class="px-2 py-1 text-xs rounded-full {{ $group->isFull() ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }}">
-                                    {{ $group->members->count() }}/{{ $group->max_members }} Anggota
-                                </span>
-                            </div>
-
-                            <div class="mb-3">
-                                <div class="text-xs text-gray-600 mb-1">Anggota:</div>
-                                @if($group->members->count() > 0)
-                                <div class="flex flex-wrap gap-1">
-                                    @foreach($group->members->take(3) as $member)
-                                    <span class="px-2 py-1 bg-gray-100 text-xs rounded">
-                                        {{ $member->user->name }}
-                                        @if($member->user->nim)
-                                        <span class="text-blue-600 font-medium"> ({{ $member->user->nim }})</span>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @foreach($students as $index => $student)
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ $index + 1 }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-600">
+                                        {{ $student->politala_id ?? $student->nim ?? '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ $student->name }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ $student->email }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($student->is_active)
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Aktif
+                                        </span>
+                                        @else
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                            Tidak Aktif
+                                        </span>
                                         @endif
-                                        @if($member->is_leader)
-                                        <span class="text-primary-600">★</span>
-                                        @endif
-                                    </span>
-                                    @endforeach
-                                    @if($group->members->count() > 3)
-                                    <span class="px-2 py-1 text-xs text-gray-600">
-                                        +{{ $group->members->count() - 3 }} lainnya
-                                    </span>
+                                    </td>
+                                    @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            <a href="{{ route('classrooms.students.edit', [$classRoom->id, $student->id]) }}" 
+                                               class="text-yellow-600 hover:text-yellow-900">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form action="{{ route('classrooms.students.destroy', [$classRoom->id, $student->id]) }}" 
+                                                  method="POST"
+                                                  id="remove-student-form-{{ $student->id }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button"
+                                                        onclick="removeStudent({{ $student->id }}, '{{ addslashes($student->name) }}')"
+                                                        class="text-red-600 hover:text-red-900">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
                                     @endif
-                                </div>
-                                @else
-                                <p class="text-xs text-gray-500 italic">Belum ada anggota</p>
-                                @endif
-                            </div>
-
-                            <div class="flex gap-2">
-                                <a href="{{ route('groups.show', $group) }}" class="flex-1 text-center bg-primary-500 hover:bg-primary-700 text-white text-sm font-bold py-2 px-4 rounded">
-                                    Kelola Anggota
-                                </a>
-                                <a href="{{ route('groups.edit', $group) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white text-sm font-bold py-2 px-3 rounded">
-                                    Edit
-                                </a>
-                            </div>
-                        </div>
-                        @endforeach
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
                     @endif
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        function removeStudent(studentId, studentName) {
+            const form = document.getElementById('remove-student-form-' + studentId);
+            
+            confirmDelete(
+                'Hapus Mahasiswa?',
+                `Apakah Anda yakin ingin menghapus mahasiswa <strong>"${studentName}"</strong> dari kelas ini?<br><small class="text-gray-500">Tindakan ini tidak dapat dibatalkan.</small>`,
+                form
+            );
+        }
+    </script>
 </x-app-layout>

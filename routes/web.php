@@ -97,6 +97,11 @@ Route::middleware(['auth'])->group(function () {
         Route::put('targets/{target}', [WeeklyTargetController::class, 'update'])->name('targets.update');
         Route::delete('targets/{target}', [WeeklyTargetController::class, 'destroy'])->name('targets.destroy');
     });
+    
+    // Admin Only - Force Delete
+    Route::middleware(['role:admin'])->group(function () {
+        Route::delete('targets/{target}/force', [WeeklyTargetController::class, 'forceDestroy'])->name('targets.force-destroy');
+    });
 
     // ========================================
     // DOSEN PROGRESS MONITORING ROUTES
@@ -153,10 +158,12 @@ Route::middleware(['auth'])->group(function () {
         Route::post('targets/{target}/submit', [WeeklyTargetSubmissionController::class, 'storeSubmission'])->name('targets.submissions.store');
         Route::get('targets/{target}/edit-submission', [WeeklyTargetSubmissionController::class, 'editSubmission'])->name('targets.submissions.edit');
         Route::put('targets/{target}/submit', [WeeklyTargetSubmissionController::class, 'updateSubmission'])->name('targets.submissions.update');
+        Route::delete('targets/{target}/cancel', [WeeklyTargetSubmissionController::class, 'cancelSubmission'])->name('targets.submissions.cancel');
         
         // Weekly Progress Upload (Flexible)
         Route::get('weekly-progress/upload', [WeeklyProgressController::class, 'upload'])->name('weekly-progress.upload');
         Route::post('weekly-progress/store', [WeeklyProgressController::class, 'store'])->name('weekly-progress.store');
+        Route::delete('weekly-progress/{weeklyProgress}/cancel', [WeeklyProgressController::class, 'cancel'])->name('weekly-progress.cancel');
     });
 
     // ========================================
@@ -184,6 +191,13 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:koordinator,admin'])->group(function () {
         // Class Rooms
         Route::resource('classrooms', ClassRoomController::class);
+        
+        // Student Management in Class Rooms
+        Route::get('classrooms/{classRoom}/students/create', [ClassRoomController::class, 'createStudent'])->name('classrooms.students.create');
+        Route::post('classrooms/{classRoom}/students', [ClassRoomController::class, 'storeStudent'])->name('classrooms.students.store');
+        Route::get('classrooms/{classRoom}/students/{student}/edit', [ClassRoomController::class, 'editStudent'])->name('classrooms.students.edit');
+        Route::put('classrooms/{classRoom}/students/{student}', [ClassRoomController::class, 'updateStudent'])->name('classrooms.students.update');
+        Route::delete('classrooms/{classRoom}/students/{student}', [ClassRoomController::class, 'destroyStudent'])->name('classrooms.students.destroy');
         
         // Groups (CRUD) - IMPORTANT: groups/create must come before groups/{group}
         Route::get('groups', [GroupController::class, 'index'])->name('groups.index');
@@ -214,6 +228,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('target-reviews/{weeklyTarget}', [WeeklyTargetReviewController::class, 'store'])->name('target-reviews.store');
         Route::get('target-reviews/{weeklyTarget}/edit', [WeeklyTargetReviewController::class, 'edit'])->name('target-reviews.edit');
         Route::put('target-reviews/{weeklyTarget}', [WeeklyTargetReviewController::class, 'update'])->name('target-reviews.update');
+        Route::get('target-reviews/{weeklyTarget}/download/{fileIndex}', [WeeklyTargetReviewController::class, 'downloadFile'])->name('target-reviews.download-file');
+        Route::get('target-reviews/{weeklyTarget}/download-all', [WeeklyTargetReviewController::class, 'downloadAllFiles'])->name('target-reviews.download-all');
     });
     
     // ========================================

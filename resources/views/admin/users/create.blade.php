@@ -37,17 +37,18 @@
                                 @enderror
                             </div>
 
-                            <!-- Politala ID -->
-                            <div>
-                                <label for="politala_id" class="block text-sm font-medium text-gray-700 mb-1">
-                                    ID Politala <span class="text-red-500">*</span>
+                            <!-- NIM (Only for students) -->
+                            <div id="nim-field">
+                                <label for="nim" class="block text-sm font-medium text-gray-700 mb-1">
+                                    NIM <span class="text-red-500" id="nim-required">*</span>
                                 </label>
-                                <input type="text" name="politala_id" id="politala_id" value="{{ old('politala_id') }}" required
+                                <input type="text" name="nim" id="nim" value="{{ old('nim') }}"
                                        placeholder="Contoh: 2341080001"
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('politala_id') border-red-500 @enderror">
-                                @error('politala_id')
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('nim') border-red-500 @enderror">
+                                @error('nim')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
+                                <p class="mt-1 text-xs text-gray-500">Wajib untuk mahasiswa</p>
                             </div>
 
                             <!-- Email -->
@@ -220,17 +221,25 @@
 
     @push('scripts')
     <script>
-        // Show/hide class field based on role
+        // Show/hide class field and NIM field based on role
         document.getElementById('role').addEventListener('change', function() {
             const classField = document.getElementById('class-field');
             const classRoomSelect = document.getElementById('class_room_id');
+            const nimField = document.getElementById('nim-field');
+            const nimInput = document.getElementById('nim');
+            const nimRequired = document.getElementById('nim-required');
             
             if (this.value === 'mahasiswa') {
                 classField.style.display = 'block';
                 classRoomSelect.required = true;
+                nimField.style.display = 'block';
+                nimInput.required = true;
+                nimRequired.style.display = 'inline';
             } else {
                 classField.style.display = 'block'; // Still show but not required
                 classRoomSelect.required = false;
+                nimField.style.display = 'none';
+                nimInput.required = false;
             }
         });
 

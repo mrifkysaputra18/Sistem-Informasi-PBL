@@ -11,6 +11,7 @@
         "laravel/framework": "^12.0",
         "laravel/socialite": "^5.23",
         "laravel/tinker": "^2.10.1",
+        "maatwebsite/excel": "^3.1",
         "rap2hpoutre/fast-excel": "*"
     },
     "require-dev": {
@@ -61,7 +62,9 @@
             "dev-master": "12.x-dev"
         },
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+                "maatwebsite/excel"
+            ]
         }
     },
     "config": {

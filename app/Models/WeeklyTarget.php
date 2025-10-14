@@ -196,6 +196,39 @@ class WeeklyTarget extends Model
     }
 
     /**
+     * Check if submission can be cancelled by student
+     * Kondisi bisa cancel:
+     * 1. Sudah submit (status: submitted/late)
+     * 2. Belum direview oleh dosen
+     * 3. Deadline belum lewat
+     * 4. Target masih terbuka (is_open = true)
+     */
+    public function canCancelSubmission(): bool
+    {
+        // Hanya bisa cancel jika sudah submit tapi belum direview
+        if (!in_array($this->submission_status, ['submitted', 'late'])) {
+            return false;
+        }
+
+        // Tidak bisa cancel jika sudah direview
+        if ($this->is_reviewed) {
+            return false;
+        }
+
+        // Tidak bisa cancel jika target sudah ditutup
+        if ($this->isClosed()) {
+            return false;
+        }
+
+        // Tidak bisa cancel jika deadline sudah lewat
+        if ($this->deadline && now()->gt($this->deadline)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Check if target is closed (tertutup)
      */
     public function isClosed(): bool
@@ -231,6 +264,7 @@ class WeeklyTarget extends Model
 
     /**
      * Reopen target (oleh dosen)
+     * Reset review status agar mahasiswa bisa submit ulang
      */
     public function reopenTarget($dosenId): void
     {
@@ -238,6 +272,10 @@ class WeeklyTarget extends Model
             'is_open' => true,
             'reopened_by' => $dosenId,
             'reopened_at' => now(),
+            // Reset review status agar mahasiswa bisa submit ulang
+            'is_reviewed' => false,
+            'reviewed_at' => null,
+            'reviewer_id' => null,
         ]);
     }
 

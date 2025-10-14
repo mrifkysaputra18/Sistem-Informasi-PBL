@@ -33,13 +33,13 @@ class UserController extends Controller
             $query->where('is_active', $request->is_active);
         }
         
-        // Search by name or email
+        // Search by name, email, or nim
         if ($request->has('search') && $request->search !== '') {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('politala_id', 'like', "%{$search}%");
+                  ->orWhere('nim', 'like', "%{$search}%");
             });
         }
         
@@ -84,7 +84,7 @@ class UserController extends Controller
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('politala_id', 'like', "%{$search}%");
+                  ->orWhere('nim', 'like', "%{$search}%");
             });
         }
         
@@ -117,7 +117,12 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'politala_id' => 'required|string|unique:users,politala_id',
+            'nim' => [
+                Rule::requiredIf($request->role === 'mahasiswa'),
+                'nullable',
+                'string',
+                'unique:users,nim'
+            ],
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
@@ -161,7 +166,12 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
-            'politala_id' => ['required', 'string', Rule::unique('users', 'politala_id')->ignore($user->id)],
+            'nim' => [
+                Rule::requiredIf($request->role === 'mahasiswa'),
+                'nullable',
+                'string',
+                Rule::unique('users', 'nim')->ignore($user->id)
+            ],
             'name' => 'required|string|max:255',
             'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)],
             'password' => 'nullable|string|min:8|confirmed',
