@@ -246,7 +246,7 @@
                                         <span class="text-xs text-gray-400 ml-2">#${index + 1}</span>
                                     </div>
                                     <div class="mt-0.5 flex items-center gap-2">
-                                        <span class="text-xs text-blue-600 font-medium">${student.politala_id || 'N/A'}</span>
+                                        <span class="text-xs text-blue-600 font-medium">${student.nim || 'N/A'}</span>
                                         <span class="text-xs text-gray-400">•</span>
                                         <span class="text-xs text-gray-500">${student.email}</span>
                                     </div>

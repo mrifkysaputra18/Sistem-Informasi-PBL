@@ -78,9 +78,6 @@
                                                     <h3 class="text-lg font-bold text-gray-900">
                                                         {{ $rank['student']->name }}
                                                     </h3>
-                                                    <p class="text-sm text-gray-600">
-                                                        <i class="fas fa-id-card mr-1"></i>{{ $rank['student']->politala_id }}
-                                                    </p>
                                                     @if($rank['student']->nim)
                                                     <p class="text-sm text-blue-600 font-medium">
                                                         <i class="fas fa-graduation-cap mr-1"></i>NIM: {{ $rank['student']->nim }}

@@ -53,7 +53,7 @@
                                 <option value="">Pilih Mahasiswa</option>
                                 @foreach($students as $student)
                                     <option value="{{ $student->id }}" {{ old('user_id') == $student->id ? 'selected' : '' }}>
-                                        {{ $student->politala_id }} - {{ $student->name }} 
+                                        {{ $student->nim ?? $student->politala_id }} - {{ $student->name }} 
                                         @if($student->classRoom) 
                                             ({{ $student->classRoom->name }})
                                         @endif

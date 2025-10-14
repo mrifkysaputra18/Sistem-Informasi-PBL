@@ -261,7 +261,7 @@ class ClassRoomController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'politala_id' => 'required|string|max:20|unique:users,politala_id',
+            'nim' => 'required|string|max:20|unique:users,nim',
             'email' => 'required|email|unique:users,email',
             'phone' => 'nullable|string|max:20',
             'password' => 'required|string|min:8',
@@ -315,7 +315,7 @@ class ClassRoomController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'politala_id' => 'required|string|max:20|unique:users,politala_id,' . $student->id,
+            'nim' => 'required|string|max:20|unique:users,nim,' . $student->id,
             'email' => 'required|email|unique:users,email,' . $student->id,
             'phone' => 'nullable|string|max:20',
             'is_active' => 'boolean',

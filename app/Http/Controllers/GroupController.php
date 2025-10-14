@@ -63,7 +63,7 @@ class GroupController extends Controller
                 });
             })
             ->orderBy('name')
-            ->get(['id', 'name', 'email', 'politala_id']);
+            ->get(['id', 'name', 'email', 'nim']);
         
         return response()->json(['students' => $students]);
     }

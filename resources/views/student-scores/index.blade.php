@@ -229,9 +229,8 @@
                                                         <div class="flex items-center">
                                                             <div>
                                                                 <div class="text-sm font-medium text-gray-900">{{ $student->name }}</div>
-                                                                <div class="text-sm text-gray-500">{{ $student->politala_id }}</div>
                                                                 @if($student->nim)
-                                                                    <div class="text-xs text-blue-600 font-medium">NIM: {{ $student->nim }}</div>
+                                                                    <div class="text-sm text-blue-600 font-medium">NIM: {{ $student->nim }}</div>
                                                                 @endif
                                                                 @if($student->classRoom)
                                                                     <div class="text-xs text-primary-600">{{ $student->classRoom->name }}</div>
@@ -326,7 +325,6 @@
                                                     <div class="text-sm font-medium text-gray-900 truncate">
                                                         {{ $rank['student']->name }}
                                                     </div>
-                                                    <div class="text-xs text-gray-500">{{ $rank['student']->politala_id }}</div>
                                                     @if($rank['student']->nim)
                                                         <div class="text-xs text-blue-600 font-medium">NIM: {{ $rank['student']->nim }}</div>
                                                     @endif
@@ -402,7 +400,9 @@
                                                             <div class="text-sm font-medium text-gray-900 truncate">
                                                                 {{ $studentData['student']->name }}
                                                             </div>
-                                                            <div class="text-xs text-gray-500">{{ $studentData['student']->politala_id }}</div>
+                                                            @if($studentData['student']->nim)
+                                                            <div class="text-xs text-blue-600 font-medium">NIM: {{ $studentData['student']->nim }}</div>
+                                                            @endif
                                                             @if($studentData['student']->nim)
                                                                 <div class="text-xs text-blue-600 font-medium">NIM: {{ $studentData['student']->nim }}</div>
                                                             @endif

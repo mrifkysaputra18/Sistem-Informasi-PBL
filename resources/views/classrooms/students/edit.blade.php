@@ -38,19 +38,19 @@
                                 @enderror
                             </div>
 
-                            <!-- NIM/Politala ID -->
+                            <!-- NIM -->
                             <div>
-                                <label for="politala_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                <label for="nim" class="block text-sm font-medium text-gray-700 mb-2">
                                     NIM <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" 
-                                       name="politala_id" 
-                                       id="politala_id" 
-                                       value="{{ old('politala_id', $student->politala_id) }}"
-                                       placeholder="contoh: 2341080001"
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 @error('politala_id') border-red-500 @enderror"
+                                       name="nim" 
+                                       id="nim" 
+                                       value="{{ old('nim', $student->nim) }}"
+                                       placeholder="contoh: 2401301001"
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 @error('nim') border-red-500 @enderror"
                                        required>
-                                @error('politala_id')
+                                @error('nim')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
