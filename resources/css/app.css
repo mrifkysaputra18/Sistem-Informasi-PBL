@@ -100,9 +100,9 @@
 
 /* Navigation Logo */
 .app-logo {
-    height: 50px;
+    height: 40px;
     width: auto;
-    max-width: 50px;
+    max-width: 40px;
     object-fit: contain;
     /* Background putih untuk logo agar terlihat jelas */
     background: white;
@@ -110,8 +110,6 @@
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     border: 2px solid rgba(255, 255, 255, 0.8);
-    animation: logoFadeIn 0.5s ease-in-out;
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .app-logo:hover {
@@ -130,63 +128,60 @@
    MODERN NAVIGATION BAR
    ======================================== */
 
-/* Main Navigation - Gradient Biru Laut & Maroon */
+/* Main Navigation - Clean Blue Design */
 .modern-navbar {
     background: linear-gradient(135deg, 
-        #001f3f 0%,     /* Navy blue - darkest */
-        #003366 25%,    /* Navy blue */
-        #0056b3 50%,    /* Blue */
-        #004080 75%,    /* Navy blue - medium */
-        #800000 100%    /* Maroon accent */
+        #1e40af 0%,     /* Blue-700 */
+        #2563eb 50%,    /* Blue-600 */
+        #3b82f6 100%    /* Blue-500 */
     );
-    border-bottom: 3px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 51, 102, 0.4),
-                0 4px 16px rgba(128, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
     position: sticky;
     top: 0;
     z-index: 50;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(8px);
 }
 
 /* Logo Text */
 .logo-text-main {
     display: block;
-    font-size: 1.125rem;
-    font-weight: 700;
+    font-size: 1rem;
+    font-weight: 600;
     color: #ffffff;
     line-height: 1.2;
     letter-spacing: -0.01em;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .logo-text-sub {
     display: block;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.85);
     line-height: 1.2;
     margin-top: 1px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* User Profile Button */
 .user-profile-btn {
     display: flex;
     align-items: center;
-    padding: 8px 14px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.25);
-    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
+    transition: all 0.2s ease;
+    backdrop-filter: blur(8px);
 }
 
 .user-profile-btn:hover {
-    background: rgba(255, 255, 255, 0.35);
-    border-color: rgba(255, 255, 255, 0.6);
-    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* User Avatar */
@@ -293,66 +288,91 @@ div[class*="rounded-md"] a:hover {
 }
 
 /* ========================================
-   NAVIGATION LINKS WITH ACTIVE INDICATOR
+   NAVIGATION LINKS - CLEAN DESIGN
    ======================================== */
 
-/* Base navigation link styling */
-nav a[href] {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    padding: 0.75rem 1.25rem;
-    font-size: 0.938rem;
-    font-weight: 600;
-    color: #ffffff;
-    transition: all 0.3s ease;
-    border-radius: 10px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+/* Navigation links inherit styling from nav-link component */
+/* Active states and hover effects are handled by the Blade components */
+
+/* CSS Fallback - Ensure navigation is always visible */
+nav a {
+    color: white !important;
+    text-decoration: none !important;
 }
 
-nav a[href]:hover {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
+nav a:hover {
+    color: white !important;
+    opacity: 0.9 !important;
 }
 
-/* Active navigation link with rectangle indicator */
-nav a[href].active,
-nav a[href][aria-current="page"] {
-    color: #ffffff;
-    font-weight: 700;
-    background: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
+/* FORCE NAVIGATION VISIBILITY - CRITICAL FALLBACK */
+.modern-navbar {
+    background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%) !important;
+    min-height: 64px !important;
+    display: block !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 50 !important;
 }
 
-/* Top rectangle indicator for active link */
-nav a[href].active::before,
-nav a[href][aria-current="page"]::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 10%;
-    right: 10%;
-    height: 4px;
-    background: linear-gradient(90deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%);
-    border-radius: 0 0 4px 4px;
-    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.5);
+.modern-navbar * {
+    color: white !important;
 }
 
-/* Mobile responsive nav links */
-@media (max-width: 640px) {
-    /* Side rectangle indicator for mobile */
-    nav a[href].active::before,
-    nav a[href][aria-current="page"]::before {
-        top: 10%;
-        bottom: 10%;
-        left: 0;
-        right: auto;
-        width: 4px;
-        height: auto;
-        border-radius: 0 4px 4px 0;
-    }
+.modern-navbar a {
+    color: white !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 8px 16px !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+}
+
+.modern-navbar a:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+}
+
+/* Force Font Awesome icons to be visible */
+.fas, .fa, [class*="fa-"] {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900 !important;
+    display: inline-block !important;
+    font-style: normal !important;
+    font-variant: normal !important;
+    text-rendering: auto !important;
+    line-height: 1 !important;
+}
+
+/* Ensure buttons are visible */
+button {
+    display: inline-flex !important;
+    align-items: center !important;
+    cursor: pointer !important;
+}
+
+/* Force dropdown visibility */
+[x-show="open"] {
+    display: block !important;
+}
+
+/* Mobile menu fallback */
+.mobile-menu {
+    background: rgba(255, 255, 255, 0.98) !important;
+    display: block !important;
+}
+
+.mobile-menu a {
+    color: #1f2937 !important;
+    display: block !important;
+    padding: 12px 16px !important;
+    border-left: 4px solid transparent !important;
+}
+
+.mobile-menu a:hover {
+    background: #f3f4f6 !important;
+    border-left-color: #3b82f6 !important;
 }
 
 /* ========================================
@@ -361,14 +381,14 @@ nav a[href][aria-current="page"]::before {
 
 .page-header {
     background: linear-gradient(135deg, 
-        rgba(0, 51, 102, 0.95) 0%,
-        rgba(0, 86, 179, 0.95) 50%,
-        rgba(128, 0, 0, 0.95) 100%
+        rgba(30, 64, 175, 0.95) 0%,     /* Blue-700 */
+        rgba(37, 99, 235, 0.95) 50%,    /* Blue-600 */
+        rgba(59, 130, 246, 0.95) 100%   /* Blue-500 */
     );
-    border-bottom: 3px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 16px rgba(0, 51, 102, 0.4);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 0;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(8px);
 }
 
 .page-header h2 {
