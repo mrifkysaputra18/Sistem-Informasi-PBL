@@ -322,12 +322,12 @@
                                                     </div>
                                                     <div class="text-right ml-2">
                                                         <div class="text-sm font-bold 
-                                                            @if($groupData['total_score'] >= 80) text-green-600
-                                                            @elseif($groupData['total_score'] >= 70) text-blue-600
-                                                            @elseif($groupData['total_score'] >= 60) text-yellow-600
+                                                            @if($groupData['total_score'] >= 0.8) text-green-600
+                                                            @elseif($groupData['total_score'] >= 0.7) text-blue-600
+                                                            @elseif($groupData['total_score'] >= 0.6) text-yellow-600
                                                             @else text-red-600
                                                             @endif">
-                                                            {{ number_format($groupData['total_score'], 1) }}
+                                                            {{ number_format($groupData['total_score'], 4) }}
                                                         </div>
                                                         <div class="text-xs text-gray-500">poin</div>
                                                     </div>
@@ -501,12 +501,12 @@
                                             </div>
                                             <div class="text-right">
                                                 <div class="text-lg font-bold 
-                                                    @if($rank['total_score'] >= 80) text-green-600
-                                                    @elseif($rank['total_score'] >= 70) text-primary-600
-                                                    @elseif($rank['total_score'] >= 60) text-yellow-600
+                                                    @if($rank['total_score'] >= 0.8) text-green-600
+                                                    @elseif($rank['total_score'] >= 0.7) text-blue-600
+                                                    @elseif($rank['total_score'] >= 0.6) text-yellow-600
                                                     @else text-red-600
                                                     @endif">
-                                                    {{ number_format($rank['total_score'], 1) }}
+                                                    {{ number_format($rank['total_score'], 4) }}
                                                 </div>
                                                 <div class="text-xs text-gray-500">SAW</div>
                                             </div>

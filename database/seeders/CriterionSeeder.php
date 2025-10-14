@@ -13,10 +13,10 @@ class CriterionSeeder extends Seeder
     public function run(): void
     {
         $group = [
-            ['nama' => 'Kecepatan Progres', 'bobot' => 0.25, 'tipe' => 'benefit', 'segment' => 'group'],
-            ['nama' => 'Hasil Review Dosen', 'bobot' => 0.35, 'tipe' => 'benefit', 'segment' => 'group'],
-            ['nama' => 'Ketepatan Waktu', 'bobot' => 0.20, 'tipe' => 'benefit', 'segment' => 'group'],
-            ['nama' => 'Kolaborasi Anggota', 'bobot' => 0.20, 'tipe' => 'benefit', 'segment' => 'group'],
+            ['nama' => 'Kecepatan Progres', 'bobot' => 0.244465446, 'tipe' => 'benefit', 'segment' => 'group'],
+            ['nama' => 'Nilai Akhir PBL', 'bobot' => 0.530599135, 'tipe' => 'benefit', 'segment' => 'group'],
+            ['nama' => 'Ketepatan Waktu', 'bobot' => 0.153145735, 'tipe' => 'benefit', 'segment' => 'group'],
+            ['nama' => 'Penilaian Teman Kelompok', 'bobot' => 0.071789684, 'tipe' => 'benefit', 'segment' => 'group'],
         ];
 
         foreach ($group as $c) \App\Models\Criterion::updateOrCreate(
