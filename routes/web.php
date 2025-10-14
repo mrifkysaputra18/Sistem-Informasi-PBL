@@ -18,6 +18,7 @@ use App\Http\Controllers\{
     WeeklyProgressController,
     WeeklyTargetReviewController,
     ImportController,
+    UserImportController,
     AcademicYearController,
     SemesterController,
     AcademicPeriodController
@@ -66,6 +67,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('admin/users/without-group', [\App\Http\Controllers\Admin\UserController::class, 'studentsWithoutGroup'])->name('admin.users.without-group');
         Route::post('admin/users/{user}/toggle-active', [\App\Http\Controllers\Admin\UserController::class, 'toggleActive'])->name('admin.users.toggle-active');
         Route::resource('admin/users', \App\Http\Controllers\Admin\UserController::class)->names('admin.users');
+        
+        // User Import (Admin only)
+        Route::get('users/import', [\App\Http\Controllers\UserImportController::class, 'showImportForm'])->name('users.import.form');
+        Route::post('users/import/process', [\App\Http\Controllers\UserImportController::class, 'import'])->name('users.import');
+        Route::get('users/import/template', [\App\Http\Controllers\UserImportController::class, 'downloadTemplate'])->name('users.download-template');
         
         // Import Excel
         Route::get('import/groups', [ImportController::class, 'showGroupsImport'])->name('import.groups');
