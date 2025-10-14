@@ -43,7 +43,6 @@ class DosenSeeder extends Seeder
                     'email' => $dosen['email'],
                     'password' => Hash::make('password123'),
                     'role' => 'dosen',
-                    'phone' => '08' . rand(1000000000, 9999999999),
                     'is_active' => true,
                 ]
             );

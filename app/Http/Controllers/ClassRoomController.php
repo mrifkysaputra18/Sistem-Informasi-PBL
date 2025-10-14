@@ -263,7 +263,6 @@ class ClassRoomController extends Controller
             'name' => 'required|string|max:255',
             'nim' => 'required|string|max:20|unique:users,nim',
             'email' => 'required|email|unique:users,email',
-            'phone' => 'nullable|string|max:20',
             'password' => 'required|string|min:8',
         ]);
 
@@ -317,7 +316,6 @@ class ClassRoomController extends Controller
             'name' => 'required|string|max:255',
             'nim' => 'required|string|max:20|unique:users,nim,' . $student->id,
             'email' => 'required|email|unique:users,email,' . $student->id,
-            'phone' => 'nullable|string|max:20',
             'is_active' => 'boolean',
         ]);
 

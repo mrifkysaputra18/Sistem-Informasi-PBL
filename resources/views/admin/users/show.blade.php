@@ -72,13 +72,6 @@
                             </div>
 
                             <div class="border-t pt-4 space-y-3">
-                                @if($user->phone)
-                                <div class="flex items-center text-sm">
-                                    <i class="fas fa-phone text-gray-400 w-5"></i>
-                                    <span class="ml-2 text-gray-700">{{ $user->phone }}</span>
-                                </div>
-                                @endif
-
                                 @if($user->program_studi)
                                 <div class="flex items-center text-sm">
                                     <i class="fas fa-graduation-cap text-gray-400 w-5"></i>

@@ -72,22 +72,6 @@
                                 @enderror
                             </div>
 
-                            <!-- Phone -->
-                            <div>
-                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
-                                    No. Telepon
-                                </label>
-                                <input type="text" 
-                                       name="phone" 
-                                       id="phone" 
-                                       value="{{ old('phone', $student->phone) }}"
-                                       placeholder="contoh: 081234567890"
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 @error('phone') border-red-500 @enderror">
-                                @error('phone')
-                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-
                             <!-- Status -->
                             <div>
                                 <label for="is_active" class="block text-sm font-medium text-gray-700 mb-2">
