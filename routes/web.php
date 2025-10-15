@@ -19,8 +19,6 @@ use App\Http\Controllers\{
     WeeklyTargetReviewController,
     ImportController,
     UserImportController,
-    AcademicYearController,
-    SemesterController,
     AcademicPeriodController
 };
 use App\Http\Controllers\Auth\GoogleAuthController;
