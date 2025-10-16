@@ -128,7 +128,17 @@ class LoginRequest extends FormRequest
             return 'mahasiswa';
         }
         
-        // Default untuk @politala.ac.id
+        // Check untuk email khusus admin
+        if ($email === 'admin@politala.ac.id') {
+            return 'admin';
+        }
+        
+        // Check untuk email khusus koordinator
+        if ($email === 'koordinator@politala.ac.id') {
+            return 'koordinator';
+        }
+        
+        // Default untuk @politala.ac.id lainnya
         return 'dosen';
     }
     

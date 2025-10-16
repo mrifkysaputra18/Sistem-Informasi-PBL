@@ -20,9 +20,9 @@ class DatabaseSeeder extends Seeder
             CriterionSeeder::class,          // Kriteria penilaian
             ClassRoomSeeder::class,          // Kelas TI-3A sampai TI-3E
             DosenSeeder::class,              // Dosen real Politala
+            UserSeeder::class,               // Admin dan Koordinator
             
             // ❌ DUMMY SEEDER - DINONAKTIFKAN
-            // UserSeeder::class,            // Mahasiswa dummy 1-10 + admin dummy
             // StudentSeeder::class,         // Generate 25 mahasiswa dummy per kelas
             // GroupSeeder::class,           // Generate kelompok dummy
             // CompletePBLDataSeeder::class, // Generate 125 mahasiswa + kelompok dummy
