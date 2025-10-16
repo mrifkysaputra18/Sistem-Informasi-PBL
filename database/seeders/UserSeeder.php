@@ -17,7 +17,7 @@ class UserSeeder extends Seeder
             'email' => 'admin@politala.ac.id',
             'password' => Hash::make('password'),
             'role' => 'admin',
-            'program_studi' => 'Sistem Informasi',
+            'program_studi' => 'Teknologi Informasi',
             'is_active' => true,
             'email_verified_at' => now(),
         ]);
@@ -29,7 +29,7 @@ class UserSeeder extends Seeder
             'email' => 'koordinator@politala.ac.id',
             'password' => Hash::make('password'),
             'role' => 'koordinator',
-            'program_studi' => 'Sistem Informasi',
+            'program_studi' => 'Teknologi Informasi',
             'is_active' => true,
             'email_verified_at' => now(),
         ]);

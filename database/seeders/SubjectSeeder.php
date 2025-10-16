@@ -20,13 +20,7 @@ class SubjectSeeder extends Seeder
                 'is_pbl_related' => true,
                 'is_active' => true,
             ],
-            [
-                'code' => 'SI',
-                'name' => 'Sistem Informasi',
-                'description' => 'Mata kuliah sistem informasi',
-                'is_pbl_related' => true,
-                'is_active' => true,
-            ],
+           
         ];
 
         foreach ($subjects as $subject) {
