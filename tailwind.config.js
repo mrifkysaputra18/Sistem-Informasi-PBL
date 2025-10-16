@@ -15,31 +15,31 @@ export default {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
             colors: {
-                // Warna Primary - Biru Laut
+                // Warna Primary - Biru Laut Gelap (Dark Ocean Blue)
                 primary: {
-                    50: '#e6f0ff',
-                    100: '#b3d1ff',
-                    200: '#80b3ff',
-                    300: '#4d94ff',
+                    50: '#e0f2ff',
+                    100: '#b3daff',
+                    200: '#80c1ff',
+                    300: '#4da8ff',
                     400: '#1a75ff',
-                    500: '#0056b3',  // Base - Biru Laut
-                    600: '#004080',
-                    700: '#003366',  // Darker
-                    800: '#002952',
-                    900: '#001f3f',  // Darkest
+                    500: '#004080',  // Base - Biru Laut Gelap
+                    600: '#003366',
+                    700: '#002952',  // Darker
+                    800: '#001f3d',
+                    900: '#001529',  // Darkest
                 },
-                // Warna Secondary - Merah Maroon
+                // Warna Secondary - Maroon
                 secondary: {
-                    50: '#ffe6e6',
-                    100: '#ffb3b3',
-                    200: '#ff8080',
-                    300: '#ff4d4d',
-                    400: '#cc0000',
-                    500: '#990000',  // Base - Merah Maroon
-                    600: '#800000',  // Maroon
-                    700: '#660000',
-                    800: '#4d0000',
-                    900: '#330000',
+                    50: '#fef2f2',
+                    100: '#fde8e8',
+                    200: '#fbd5d5',
+                    300: '#f8b4b4',
+                    400: '#f98080',
+                    500: '#800020',  // Base - Maroon
+                    600: '#6b001a',
+                    700: '#590016',
+                    800: '#470012',
+                    900: '#35000d',
                 },
             },
         },
