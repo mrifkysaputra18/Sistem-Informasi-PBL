@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test SweetAlert - No Deny Button</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 50px;
+            background: #f5f5f5;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 16px;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #b91c1c;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test SweetAlert Delete Confirmation</h1>
+    <p>Klik tombol di bawah untuk test modal hapus. Seharusnya HANYA ada 2 button: Batal dan Ya, Hapus!</p>
+    
+    <button onclick="testDelete()">🗑️ Test Hapus Kelas</button>
+
+    <form id="test-form" style="display:none;">
+        <input type="hidden" name="test" value="1">
+    </form>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- SweetAlert Helper -->
+    <script src="js/sweetalert-helper.js"></script>
+    
+    <script>
+        function testDelete() {
+            const form = document.getElementById('test-form');
+            confirmDelete(
+                'Hapus Kelas?',
+                'Apakah Anda yakin ingin menghapus kelas <strong>"TI-3B"</strong>?<br><small class="text-gray-500">Tindakan ini tidak dapat dibatalkan.</small>',
+                form
+            );
+        }
+
+        // Override form submit untuk test
+        document.getElementById('test-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Form submitted! (prevented for testing)');
+        });
+    </script>
+</body>
+</html>
