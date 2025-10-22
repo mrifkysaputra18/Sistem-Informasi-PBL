@@ -224,9 +224,9 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ========================================
-    // DOSEN + KOORDINATOR ROUTES (Input Nilai)
+    // DOSEN + KOORDINATOR + ADMIN ROUTES (Input Nilai)
     // ========================================
-    Route::middleware(['role:dosen,koordinator'])->group(function () {
+    Route::middleware(['role:dosen,koordinator,admin'])->group(function () {
         // Group Scores (Input Nilai Kelompok)
         Route::get('scores/create', [GroupScoreController::class, 'create'])->name('scores.create');
         Route::post('scores', [GroupScoreController::class, 'store'])->name('scores.store');
