@@ -168,8 +168,8 @@
         <!-- SweetAlert2 -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         
-        <!-- SweetAlert Helper -->
-        <script src="{{ asset('js/sweetalert-helper.js') }}"></script>
+        <!-- SweetAlert Helper - FORCE RELOAD -->
+        <script src="{{ asset('js/sweetalert-helper.js') }}?v={{ md5_file(public_path('js/sweetalert-helper.js')) }}"></script>
         
         <!-- Scripts Stack -->
         @stack('scripts')
