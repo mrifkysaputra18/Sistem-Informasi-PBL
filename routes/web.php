@@ -12,6 +12,7 @@ use App\Http\Controllers\{
     CriterionController,
     GroupScoreController,
     StudentScoreController,
+    StudentScoreInputController,
     SubjectController,
     WeeklyTargetController,
     WeeklyTargetSubmissionController,
@@ -100,6 +101,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('targets/{target}/edit', [WeeklyTargetController::class, 'edit'])->name('targets.edit');
         Route::put('targets/{target}', [WeeklyTargetController::class, 'update'])->name('targets.update');
         Route::delete('targets/{target}', [WeeklyTargetController::class, 'destroy'])->name('targets.destroy');
+        
+        // Input Nilai Mahasiswa (Form dengan perhitungan otomatis)
+        Route::get('scores/student-input', [StudentScoreInputController::class, 'index'])->name('scores.student-input');
+        Route::get('scores/students-by-class', [StudentScoreInputController::class, 'getStudentsByClass'])->name('scores.students-by-class');
+        Route::post('scores/student-input/store', [StudentScoreInputController::class, 'store'])->name('scores.student-input.store');
+        Route::post('scores/student-input/calculate', [StudentScoreInputController::class, 'calculate'])->name('scores.student-input.calculate');
+        Route::delete('scores/student-input/delete-student', [StudentScoreInputController::class, 'deleteStudentScores'])->name('scores.student-input.delete-student');
+        Route::delete('scores/student-input/delete-score', [StudentScoreInputController::class, 'deleteScore'])->name('scores.student-input.delete-score');
     });
     
     // Admin Only - Force Delete

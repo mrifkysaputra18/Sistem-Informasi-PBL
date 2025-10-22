@@ -66,6 +66,13 @@
                         </x-nav-link>
                     @endif
 
+                    @if(auth()->user()->isDosen() || auth()->user()->isAdmin())
+                        <!-- Dosen, Admin - Input Nilai Mahasiswa -->
+                        <x-nav-link :href="route('scores.student-input')" :active="request()->routeIs('scores.student-input*')">
+                            {{ __('Input Nilai') }}
+                        </x-nav-link>
+                    @endif
+
                     @if(auth()->user()->isDosen() || auth()->user()->isKoordinator())
                         <!-- Dosen, Koordinator - Review Target -->
                         <x-nav-link :href="route('target-reviews.index')" :active="request()->routeIs('target-reviews.*')">
@@ -75,7 +82,7 @@
 
                     @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
                         <!-- Dosen, Koordinator, Admin - Group Scores -->
-                        <x-nav-link :href="route('scores.index')" :active="request()->routeIs('scores.*') && !request()->routeIs('student-scores.*')">
+                        <x-nav-link :href="route('scores.index')" :active="request()->routeIs('scores.index') || request()->routeIs('scores.show') || request()->routeIs('scores.create') || request()->routeIs('scores.edit')">
                             {{ __('Ranking Kelompok') }}
                         </x-nav-link>
                         
@@ -190,6 +197,13 @@
                 </x-responsive-nav-link>
             @endif
 
+            @if(auth()->user()->isDosen() || auth()->user()->isAdmin())
+                <!-- Dosen, Admin - Input Nilai Mahasiswa -->
+                <x-responsive-nav-link :href="route('scores.student-input')" :active="request()->routeIs('scores.student-input*')">
+                    {{ __('Input Nilai') }}
+                </x-responsive-nav-link>
+            @endif
+
             @if(auth()->user()->isDosen() || auth()->user()->isKoordinator())
                 <!-- Dosen, Koordinator - Review Target -->
                 <x-responsive-nav-link :href="route('target-reviews.index')" :active="request()->routeIs('target-reviews.*')">
@@ -199,7 +213,7 @@
 
             @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
                 <!-- Dosen, Koordinator, Admin - Group Scores -->
-                <x-responsive-nav-link :href="route('scores.index')" :active="request()->routeIs('scores.*') && !request()->routeIs('student-scores.*')">
+                <x-responsive-nav-link :href="route('scores.index')" :active="request()->routeIs('scores.index') || request()->routeIs('scores.show') || request()->routeIs('scores.create') || request()->routeIs('scores.edit')">
                     {{ __('Ranking Kelompok') }}
                 </x-responsive-nav-link>
                 
