@@ -60,3 +60,12 @@ storage/logs/*
 # OS files
 Thumbs.db
 .DS_Store
+
+# Documentation & Presentation (optional - keep locally)
+# /docs/*.html
+# /docs/*.pdf
+
+# Testing & Demo files
+test-*.php
+*_test.php
+set_top_performers.php
