@@ -278,7 +278,6 @@ Route::middleware(['auth'])->group(function () {
     // ========================================
     Route::middleware(['role:mahasiswa'])->group(function () {
         // Weekly Targets (mahasiswa can manage their group's targets)
-        Route::resource('groups.targets', WeeklyTargetController::class)->except(['index', 'show']);
         Route::post('targets/{target}/complete', [WeeklyTargetController::class, 'complete'])->name('targets.complete');
         Route::post('targets/{target}/uncomplete', [WeeklyTargetController::class, 'uncomplete'])->name('targets.uncomplete');
     });
@@ -286,16 +285,6 @@ Route::middleware(['auth'])->group(function () {
     // ========================================
     // SHARED ROUTES (All authenticated users)
     // ========================================
-    Route::post('groups', [GroupController::class, 'store'])->name('groups.store');
-    Route::get('groups/{group}/edit', [GroupController::class, 'edit'])->name('groups.edit');
-    Route::patch('groups/{group}', [GroupController::class, 'update'])->name('groups.update');
-    Route::delete('groups/{group}', [GroupController::class, 'destroy'])->name('groups.destroy');
-    
-    // Weekly Targets & Progress (Mahasiswa dapat akses)
-    Route::resource('weekly-targets', WeeklyTargetController::class);
-    Route::post('weekly-targets/{weeklyTarget}/complete', [WeeklyTargetController::class, 'complete'])->name('weekly-targets.complete');
-    Route::post('weekly-targets/{weeklyTarget}/uncomplete', [WeeklyTargetController::class, 'uncomplete'])->name('weekly-targets.uncomplete');
-    
     // Weekly Progress
     Route::resource('weekly-progress', WeeklyProgressController::class);
     
