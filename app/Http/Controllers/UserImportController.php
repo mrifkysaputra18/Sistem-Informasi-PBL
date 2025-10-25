@@ -171,17 +171,27 @@ class UserImportController extends Controller
 
     /**
      * Download Excel template
+     * Support 2 methods: static file or dynamic generation
      */
     public function downloadTemplate()
     {
+        // Method 1: Try static file first (if exists)
         $filePath = storage_path('app/templates/template-import-mahasiswa.xlsx');
         
-        if (!file_exists($filePath)) {
-            return redirect()->back()
-                ->with('error', 'Template file tidak ditemukan. Silakan hubungi administrator.');
+        if (file_exists($filePath)) {
+            return response()->download($filePath, 'Template-Import-Mahasiswa.xlsx');
         }
         
-        return response()->download($filePath, 'Template-Import-Mahasiswa.xlsx');
+        // Method 2: Generate template dynamically
+        try {
+            return Excel::download(
+                new \App\Exports\UserTemplateExport(), 
+                'Template-Import-Mahasiswa.xlsx'
+            );
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Gagal generate template: ' . $e->getMessage());
+        }
     }
 
     /**
