@@ -12,11 +12,12 @@ class CriterionSeeder extends Seeder
      */
     public function run(): void
     {
+        // Kriteria Kelompok (Group) - Hasil perhitungan AHP
         $group = [
             ['nama' => 'Kecepatan Progres', 'bobot' => 0.244465446, 'tipe' => 'benefit', 'segment' => 'group'],
             ['nama' => 'Nilai Akhir PBL', 'bobot' => 0.530599135, 'tipe' => 'benefit', 'segment' => 'group'],
             ['nama' => 'Ketepatan Waktu', 'bobot' => 0.153145735, 'tipe' => 'benefit', 'segment' => 'group'],
-            ['nama' => 'Penilaian Teman Kelompok', 'bobot' => 0.071789684, 'tipe' => 'benefit', 'segment' => 'group'],
+            ['nama' => 'Penilaian Teman (Group)', 'bobot' => 0.071789684, 'tipe' => 'benefit', 'segment' => 'group'],
         ];
 
         foreach ($group as $c) \App\Models\Kriteria::updateOrCreate(
@@ -24,10 +25,11 @@ class CriterionSeeder extends Seeder
             $c
         );
 
+        // Kriteria Mahasiswa (Student) - Hasil perhitungan AHP
         $student = [
-            ['nama' => 'Nilai PBL Mahasiswa', 'bobot' => 0.5, 'tipe' => 'benefit', 'segment' => 'student'],
-            ['nama' => 'Penilaian Teman Sekelompok', 'bobot' => 0.3, 'tipe' => 'benefit', 'segment' => 'student'],
-            ['nama' => 'Kehadiran', 'bobot' => 0.2, 'tipe' => 'benefit', 'segment' => 'student'],
+            ['nama' => 'Nilai Akhir PBL', 'bobot' => 0.63334572, 'tipe' => 'benefit', 'segment' => 'student'],
+            ['nama' => 'Penilaian Teman', 'bobot' => 0.260497956, 'tipe' => 'benefit', 'segment' => 'student'],
+            ['nama' => 'Kehadiran', 'bobot' => 0.106156324, 'tipe' => 'benefit', 'segment' => 'student'],
         ];
         foreach ($student as $c) \App\Models\Kriteria::updateOrCreate(
             ['nama' => $c['nama'], 'segment' => 'student'],

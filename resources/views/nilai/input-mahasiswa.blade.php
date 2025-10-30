@@ -326,7 +326,7 @@
 
             inputs.forEach(input => {
                 const value = parseFloat(input.value);
-                if (value >= 0 && value <= 100) {
+                if (!isNaN(value) && value >= 0 && value <= 100) {
                     scores.push({
                         user_id: input.dataset.studentId,
                         criterion_id: input.dataset.criterionId,
@@ -336,8 +336,8 @@
             });
 
             if (scores.length === 0) {
-                alert('Tidak ada nilai yang valid untuk disimpan!');
-                return;
+                showNotification('Peringatan!', 'Tidak ada nilai yang valid untuk disimpan!', 'warning');
+                return false;
             }
 
             try {
@@ -355,12 +355,15 @@
 
                 if (data.success) {
                     showNotification('Berhasil!', 'Nilai berhasil disimpan', 'success');
+                    return true;
                 } else {
                     showNotification('Gagal!', data.message, 'error');
+                    return false;
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showNotification('Error!', 'Gagal menyimpan nilai', 'error');
+                showNotification('Error!', 'Gagal menyimpan nilai: ' + error.message, 'error');
+                return false;
             }
         }
 
@@ -369,12 +372,15 @@
             const classRoomId = document.getElementById('class_room_id').value;
 
             if (!classRoomId) {
-                alert('Pilih kelas terlebih dahulu!');
+                showNotification('Peringatan!', 'Pilih kelas terlebih dahulu!', 'warning');
                 return;
             }
 
             // Simpan nilai dulu
-            await saveScores();
+            const saved = await saveScores();
+            if (!saved) {
+                return; // Jika gagal simpan, jangan lanjut hitung ranking
+            }
 
             try {
                 const response = await fetch('/scores/student-input/calculate', {
@@ -387,6 +393,10 @@
                     body: JSON.stringify({ class_room_id: classRoomId })
                 });
 
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const data = await response.json();
 
                 if (data.success) {
@@ -397,10 +407,12 @@
                     document.getElementById('ranking-result').scrollIntoView({ behavior: 'smooth' });
                     
                     showNotification('Berhasil!', 'Ranking berhasil dihitung', 'success');
+                } else {
+                    showNotification('Gagal!', data.message || 'Gagal menghitung ranking', 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showNotification('Error!', 'Gagal menghitung ranking', 'error');
+                showNotification('Error!', 'Gagal menghitung ranking: ' + error.message, 'error');
             }
         }
 

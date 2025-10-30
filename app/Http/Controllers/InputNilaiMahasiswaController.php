@@ -92,68 +92,115 @@ class InputNilaiMahasiswaController extends Controller
      */
     public function calculate(Request $request)
     {
-        $request->validate([
-            'class_room_id' => 'required|exists:ruang_kelas,id',
-        ]);
-        
-        $classRoomId = $request->class_room_id;
-        
-        // Get mahasiswa dari kelas tersebut
-        $students = Pengguna::where('role', 'mahasiswa')
-            ->where('class_room_id', $classRoomId)
-            ->with(['studentScores.criterion'])
-            ->get();
-        
-        // Get kriteria
-        $criteria = Kriteria::where('segment', 'student')->get();
-        
-        // Hitung ranking dengan metode SAW
-        $rankings = [];
-        foreach ($students as $student) {
-            $totalScore = 0;
-            $criteriaScores = [];
+        try {
+            $request->validate([
+                'class_room_id' => 'required|exists:ruang_kelas,id',
+            ]);
             
+            $classRoomId = $request->class_room_id;
+            
+            // Get mahasiswa dari kelas tersebut
+            $students = Pengguna::where('role', 'mahasiswa')
+                ->where('class_room_id', $classRoomId)
+                ->with(['studentScores.criterion'])
+                ->get();
+            
+            if ($students->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tidak ada mahasiswa di kelas ini'
+                ], 404);
+            }
+            
+            // Get kriteria
+            $criteria = Kriteria::where('segment', 'student')->get();
+            
+            if ($criteria->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Kriteria mahasiswa belum diatur'
+                ], 404);
+            }
+            
+            // Hitung ranking dengan metode SAW (Simple Additive Weighting)
+            // Step 1: Kumpulkan semua nilai per kriteria untuk normalisasi
+            $allScores = [];
             foreach ($criteria as $criterion) {
-                $score = NilaiMahasiswa::where('user_id', $student->id)
-                    ->where('criterion_id', $criterion->id)
-                    ->value('skor') ?? 0;
+                $allScores[$criterion->id] = [];
+                foreach ($students as $student) {
+                    $score = NilaiMahasiswa::where('user_id', $student->id)
+                        ->where('criterion_id', $criterion->id)
+                        ->value('skor') ?? 0;
+                    $allScores[$criterion->id][$student->id] = (float) $score;
+                }
+            }
+            
+            // Step 2: Hitung nilai maksimum per kriteria untuk normalisasi SAW
+            $maxScores = [];
+            foreach ($criteria as $criterion) {
+                $scores = array_filter($allScores[$criterion->id], function($v) { return $v > 0; });
+                $maxScores[$criterion->id] = !empty($scores) ? max($scores) : 1;
+            }
+            
+            // Step 3: Hitung ranking untuk setiap mahasiswa
+            $rankings = [];
+            foreach ($students as $student) {
+                $totalScore = 0;
+                $criteriaScores = [];
                 
-                // Normalisasi (benefit: nilai/max)
-                $normalized = $score / 100;
-                $weighted = $normalized * $criterion->bobot;
+                foreach ($criteria as $criterion) {
+                    $rawScore = $allScores[$criterion->id][$student->id];
+                    
+                    // Normalisasi SAW (benefit: nilai/max)
+                    $maxScore = $maxScores[$criterion->id];
+                    $normalized = $maxScore > 0 ? $rawScore / $maxScore : 0;
+                    $weighted = $normalized * $criterion->bobot;
+                    
+                    $totalScore += $weighted;
+                    $criteriaScores[] = [
+                        'criterion_name' => $criterion->nama,
+                        'raw_score' => $rawScore,
+                        'weight' => (float) $criterion->bobot,
+                        'weighted_score' => (float) $weighted,
+                    ];
+                }
                 
-                $totalScore += $weighted;
-                $criteriaScores[] = [
-                    'criterion_name' => $criterion->nama,
-                    'raw_score' => $score,
-                    'weight' => $criterion->bobot,
-                    'weighted_score' => $weighted,
+                $rankings[] = [
+                    'student_id' => $student->id,
+                    'student_name' => $student->name,
+                    'student_nim' => $student->nim,
+                    'total_score' => (float) $totalScore,
+                    'criteria_scores' => $criteriaScores,
                 ];
             }
             
-            $rankings[] = [
-                'student_id' => $student->id,
-                'student_name' => $student->name,
-                'student_nim' => $student->nim,
-                'total_score' => $totalScore,
-                'criteria_scores' => $criteriaScores,
-            ];
+            // Sort by total_score descending
+            usort($rankings, function($a, $b) {
+                return $b['total_score'] <=> $a['total_score'];
+            });
+            
+            // Add rank
+            foreach ($rankings as $index => &$ranking) {
+                $ranking['rank'] = $index + 1;
+            }
+            
+            return response()->json([
+                'success' => true,
+                'rankings' => $rankings
+            ]);
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal: ' . implode(', ', $e->errors())
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Error calculating student ranking: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
         }
-        
-        // Sort by total_score descending
-        usort($rankings, function($a, $b) {
-            return $b['total_score'] <=> $a['total_score'];
-        });
-        
-        // Add rank
-        foreach ($rankings as $index => &$ranking) {
-            $ranking['rank'] = $index + 1;
-        }
-        
-        return response()->json([
-            'success' => true,
-            'rankings' => $rankings
-        ]);
     }
     
     /**

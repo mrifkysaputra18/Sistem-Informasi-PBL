@@ -9,7 +9,7 @@
                 <h3 class="text-lg font-semibold mb-4">Groups Data</h3>
                 @php 
                     $groups = \App\Models\Kelompok::with('term')->get();
-                    $criteria = \App\Models\Criterion::all();
+                    $criteria = \App\Models\Kriteria::all();
                     $scores = \App\Models\KelompokScore::all();
                 @endphp
                 

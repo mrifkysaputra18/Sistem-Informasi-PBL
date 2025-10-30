@@ -37,7 +37,7 @@ class KriteriaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Criterion $criterion)
+    public function show(Kriteria $criterion)
     {
         //
     }
@@ -45,7 +45,7 @@ class KriteriaController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Criterion $criterion)
+    public function edit(Kriteria $criterion)
     {
         return view('kriteria.ubah', compact('criterion'));
     }
@@ -53,7 +53,7 @@ class KriteriaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCriterionRequest $request, Criterion $criterion)
+    public function update(UpdateCriterionRequest $request, Kriteria $criterion)
     {
         $criterion->update($request->validated());
         return redirect()->route('criteria.index')->with('ok', 'Kriteria diupdate.');
@@ -62,7 +62,7 @@ class KriteriaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Criterion $criterion)
+    public function destroy(Kriteria $criterion)
     {
         $criterion->delete();
         return back()->with('ok', 'Kriteria dihapus.');

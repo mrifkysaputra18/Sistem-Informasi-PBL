@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\{Criterion, AhpComparison};
+use App\Models\{Kriteria, AhpComparison};
 
 class AhpService
 {

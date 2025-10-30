@@ -58,7 +58,7 @@
                                         <i class="fas fa-users-rectangle mr-2"></i>Kriteria Kelompok
                                     </div>
                                     <div class="text-sm text-gray-600">
-                                        {{ \App\Models\Criterion::where('segment', 'group')->count() }} kriteria
+                                        {{ \App\Models\Kriteria::where('segment', 'group')->count() }} kriteria
                                     </div>
                                 </div>
                                 @if($segment == 'group')
@@ -74,7 +74,7 @@
                                         <i class="fas fa-user-graduate mr-2"></i>Kriteria Mahasiswa
                                     </div>
                                     <div class="text-sm text-gray-600">
-                                        {{ \App\Models\Criterion::where('segment', 'student')->count() }} kriteria
+                                        {{ \App\Models\Kriteria::where('segment', 'student')->count() }} kriteria
                                     </div>
                                 </div>
                                 @if($segment == 'student')
