@@ -126,7 +126,7 @@
                         <div class="relative flex items-start justify-between">
                             <div class="flex-1">
                                 <p class="text-orange-100 text-xs font-medium uppercase tracking-wider">Rata-rata Skor</p>
-                                <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ number_format($averageScore, 1) }}</p>
+                                <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ number_format($averageScore, 1, ',', '.') }}</p>
                                 <p class="text-xs text-orange-100 mt-2">Skor keseluruhan</p>
                             </div>
                             <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
@@ -210,7 +210,7 @@
                                                     <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                         <div class="flex flex-col items-center">
                                                             <span>{{ Str::limit($criterion->nama, 15) }}</span>
-                                                            <span class="text-xs text-gray-400">({{ number_format($criterion->bobot * 100, 0) }}%)</span>
+                                                            <span class="text-xs text-gray-400">({{ number_format($criterion->bobot * 100, 0, ',', '.') }}%)</span>
                                                             <span class="text-xs {{ $criterion->tipe == 'benefit' ? 'text-green-600' : 'text-red-600' }}">
                                                                 {{ ucfirst($criterion->tipe) }}
                                                             </span>
@@ -251,7 +251,7 @@
                                                                     @elseif($skor >= 60) bg-yellow-100 text-yellow-800
                                                                     @else bg-red-100 text-red-800
                                                                     @endif">
-                                                                    {{ number_format($skor, 1) }}
+                                                                    {{ number_format($skor, 1, ',', '.') }}
                                                                 </span>
                                                             @else
                                                                 <span class="text-gray-400 text-sm">-</span>
@@ -269,7 +269,7 @@
                                                             @elseif($totalScore >= 0.6) text-yellow-600
                                                             @else text-red-600
                                                             @endif">
-                                                            {{ number_format($totalScore, 4) }}
+                                                            {{ number_format($totalScore, 4, ',', '.') }}
                                                         </span>
                                                     </td>
                                                 </tr>
@@ -342,7 +342,7 @@
                                                     @elseif($rank['total_score'] >= 0.6) text-yellow-600
                                                     @else text-red-600
                                                     @endif">
-                                                    {{ number_format($rank['total_score'], 4) }}
+                                                    {{ number_format($rank['total_score'], 4, ',', '.') }}
                                                 </div>
                                                 <div class="text-xs text-gray-500">poin</div>
                                             </div>
@@ -415,7 +415,7 @@
                                                             @elseif($studentData['total_score'] >= 0.6) text-yellow-600
                                                             @else text-red-600
                                                             @endif">
-                                                            {{ number_format($studentData['total_score'], 4) }}
+                                                            {{ number_format($studentData['total_score'], 4, ',', '.') }}
                                                         </div>
                                                     </div>
                                                 </div>
