@@ -85,7 +85,7 @@ class Pengguna extends Authenticatable
      */
     public function groupMembers()
     {
-        return $this->hasMany(AnggotaKelompok::class, 'group_id');
+        return $this->hasMany(AnggotaKelompok::class, 'user_id');
     }
     
     /**
@@ -93,7 +93,7 @@ class Pengguna extends Authenticatable
      */
     public function groups()
     {
-        return $this->belongsToMany(Kelompok::class, 'group_members')->withTimestamps();
+        return $this->belongsToMany(Kelompok::class, 'anggota_kelompok', 'user_id', 'group_id')->withTimestamps();
     }
     
     /**

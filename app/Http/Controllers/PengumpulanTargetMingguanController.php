@@ -45,7 +45,7 @@ class PengumpulanTargetMingguanController extends Controller
     /**
      * Show detail target (untuk mahasiswa lihat detail sebelum submit)
      */
-    public function show(WeeklyTarget $target)
+    public function show(TargetMingguan $target)
     {
         // Check if user is member of the group
         $user = auth()->user();
@@ -63,7 +63,7 @@ class PengumpulanTargetMingguanController extends Controller
     /**
      * Form untuk submit target
      */
-    public function submitForm(WeeklyTarget $target)
+    public function submitForm(TargetMingguan $target)
     {
         // Check if user is member
         $user = auth()->user();
@@ -86,7 +86,7 @@ class PengumpulanTargetMingguanController extends Controller
     /**
      * Store submission dari mahasiswa
      */
-    public function storeSubmission(Request $request, WeeklyTarget $target)
+    public function storeSubmission(Request $request, TargetMingguan $target)
     {
         // Check if user is member
         $user = auth()->user();
@@ -189,7 +189,7 @@ class PengumpulanTargetMingguanController extends Controller
     /**
      * Form edit submission (sebelum direview dosen)
      */
-    public function editSubmission(WeeklyTarget $target)
+    public function editSubmission(TargetMingguan $target)
     {
         // Check if user is member
         $user = auth()->user();
@@ -218,7 +218,7 @@ class PengumpulanTargetMingguanController extends Controller
     /**
      * Update submission dari mahasiswa
      */
-    public function updateSubmission(Request $request, WeeklyTarget $target)
+    public function updateSubmission(Request $request, TargetMingguan $target)
     {
         // Check if user is member
         $user = auth()->user();
@@ -295,7 +295,7 @@ class PengumpulanTargetMingguanController extends Controller
     /**
      * Cancel submission yang sudah di-submit (sebelum deadline & belum direview)
      */
-    public function cancelSubmission(WeeklyTarget $target)
+    public function cancelSubmission(TargetMingguan $target)
     {
         // Check if user is member
         $user = auth()->user();

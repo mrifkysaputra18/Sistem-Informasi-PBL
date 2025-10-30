@@ -90,7 +90,7 @@ class TargetMingguan extends Model
      */
     public function review(): HasOne
     {
-        return $this->hasOne(UlasanTargetMingguan::class);
+        return $this->hasOne(UlasanTargetMingguan::class, 'weekly_target_id');
     }
 
     /**

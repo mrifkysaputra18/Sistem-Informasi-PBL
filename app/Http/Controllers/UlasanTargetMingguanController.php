@@ -34,7 +34,7 @@ class UlasanTargetMingguanController extends Controller
     /**
      * Show the form for reviewing a specific target
      */
-    public function show(WeeklyTarget $weeklyTarget)
+    public function show(TargetMingguan $weeklyTarget)
     {
         $target = $weeklyTarget->load(['group.members', 'group.classRoom', 'completedByUser', 'review']);
         
@@ -49,7 +49,7 @@ class UlasanTargetMingguanController extends Controller
     /**
      * Store a newly created review
      */
-    public function store(Request $request, WeeklyTarget $weeklyTarget)
+    public function store(Request $request, TargetMingguan $weeklyTarget)
     {
         $target = $weeklyTarget;
         
@@ -104,7 +104,7 @@ class UlasanTargetMingguanController extends Controller
     /**
      * Show the form for editing the specified review
      */
-    public function edit(WeeklyTarget $weeklyTarget)
+    public function edit(TargetMingguan $weeklyTarget)
     {
         $target = $weeklyTarget->load(['group.members', 'group.classRoom', 'review']);
         
@@ -120,7 +120,7 @@ class UlasanTargetMingguanController extends Controller
     /**
      * Update the specified review
      */
-    public function update(Request $request, WeeklyTarget $weeklyTarget)
+    public function update(Request $request, TargetMingguan $weeklyTarget)
     {
         $target = $weeklyTarget;
         $review = $target->review;
@@ -154,7 +154,7 @@ class UlasanTargetMingguanController extends Controller
     /**
      * Download single evidence file from target submission
      */
-    public function downloadFile(WeeklyTarget $weeklyTarget, $fileIndex)
+    public function downloadFile(TargetMingguan $weeklyTarget, $fileIndex)
     {
         $target = $weeklyTarget;
         
@@ -209,7 +209,7 @@ class UlasanTargetMingguanController extends Controller
     /**
      * Download all evidence files as ZIP
      */
-    public function downloadAllFiles(WeeklyTarget $weeklyTarget)
+    public function downloadAllFiles(TargetMingguan $weeklyTarget)
     {
         $target = $weeklyTarget;
         

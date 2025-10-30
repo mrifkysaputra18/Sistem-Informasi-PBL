@@ -38,17 +38,17 @@ class TargetMingguanController extends Controller
             }
         }
 
-        $query = TargetMingguan::with(['Kelompok.RuangKelas', 'creator', 'completedByUser']);
+        $query = TargetMingguan::with(['group.classRoom', 'creator', 'completedByUser']);
 
         // Base query untuk statistik (sebelum pagination)
         $statsQuery = clone $query;
 
         // Auto filter untuk dosen - Hanya dari kelas yang diampu
         if ($user->isDosen() && count($myClassRoomIds) > 0) {
-            $query->whereHas('Kelompok', function($q) use ($myClassRoomIds) {
+            $query->whereHas('group', function($q) use ($myClassRoomIds) {
                 $q->whereIn('class_room_id', $myClassRoomIds);
             });
-            $statsQuery->whereHas('Kelompok', function($q) use ($myClassRoomIds) {
+            $statsQuery->whereHas('group', function($q) use ($myClassRoomIds) {
                 $q->whereIn('class_room_id', $myClassRoomIds);
             });
         }
@@ -60,10 +60,10 @@ class TargetMingguanController extends Controller
                 abort(403, 'You are not assigned to this class.');
             }
             
-            $query->whereHas('Kelompok', function($q) use ($request) {
+            $query->whereHas('group', function($q) use ($request) {
                 $q->where('class_room_id', $request->class_room_id);
             });
-            $statsQuery->whereHas('Kelompok', function($q) use ($request) {
+            $statsQuery->whereHas('group', function($q) use ($request) {
                 $q->where('class_room_id', $request->class_room_id);
             });
         }
@@ -274,7 +274,7 @@ class TargetMingguanController extends Controller
      */
     public function show(TargetMingguan $target)
     {
-        $target->load(['Kelompok.RuangKelas', 'Kelompok.members.user', 'creator', 'completedByUser', 'reviewer']);
+        $target->load(['group.classRoom', 'group.members.user', 'creator', 'completedByUser', 'reviewer']);
 
         return view('target.tampil', compact('target'));
     }
@@ -399,7 +399,7 @@ class TargetMingguanController extends Controller
                 ->with('error', 'Target ini belum disubmit oleh mahasiswa.');
         }
 
-        $target->load(['Kelompok.RuangKelas', 'Kelompok.members.user', 'creator', 'completedByUser']);
+        $target->load(['group.classRoom', 'group.members.user', 'creator', 'completedByUser']);
 
         return view('target.ulasan', compact('target'));
     }

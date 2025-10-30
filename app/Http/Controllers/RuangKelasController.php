@@ -66,7 +66,7 @@ class RuangKelasController extends Controller
     /**
      * Show students in a specific class
      */
-    public function show(ClassRoom $classRoom)
+    public function show(RuangKelas $classRoom)
     {
         // Load students yang terdaftar di kelas ini
         $students = $classRoom->students()
@@ -145,7 +145,7 @@ class RuangKelasController extends Controller
     /**
      * Show form to edit class room
      */
-    public function edit(ClassRoom $classRoom)
+    public function edit(RuangKelas $classRoom)
     {
         // Only admin can edit class rooms
         if (!auth()->user()->isAdmin()) {
@@ -162,7 +162,7 @@ class RuangKelasController extends Controller
     /**
      * Update class room
      */
-    public function update(Request $request, ClassRoom $classRoom)
+    public function update(Request $request, RuangKelas $classRoom)
     {
         // Only admin can update class rooms
         if (!auth()->user()->isAdmin()) {
@@ -218,7 +218,7 @@ class RuangKelasController extends Controller
     /**
      * Delete class room
      */
-    public function destroy(ClassRoom $classRoom)
+    public function destroy(RuangKelas $classRoom)
     {
         // Only admin can delete class rooms
         if (!auth()->user()->isAdmin()) {
@@ -239,7 +239,7 @@ class RuangKelasController extends Controller
     /**
      * Show form to add student to class
      */
-    public function createStudent(ClassRoom $classRoom)
+    public function createStudent(RuangKelas $classRoom)
     {
         // Only admin and dosen can add students
         if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
@@ -252,7 +252,7 @@ class RuangKelasController extends Controller
     /**
      * Store student in class
      */
-    public function storeStudent(Request $request, ClassRoom $classRoom)
+    public function storeStudent(Request $request, RuangKelas $classRoom)
     {
         // Only admin and dosen can add students
         if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
@@ -282,7 +282,7 @@ class RuangKelasController extends Controller
     /**
      * Show form to edit student
      */
-    public function editStudent(ClassRoom $classRoom, \App\Models\Pengguna $student)
+    public function editStudent(RuangKelas $classRoom, \App\Models\Pengguna $student)
     {
         // Only admin and dosen can edit students
         if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
@@ -300,7 +300,7 @@ class RuangKelasController extends Controller
     /**
      * Update student
      */
-    public function updateStudent(Request $request, ClassRoom $classRoom, \App\Models\Pengguna $student)
+    public function updateStudent(Request $request, RuangKelas $classRoom, \App\Models\Pengguna $student)
     {
         // Only admin and dosen can update students
         if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
@@ -335,7 +335,7 @@ class RuangKelasController extends Controller
     /**
      * Remove student from class
      */
-    public function destroyStudent(ClassRoom $classRoom, \App\Models\Pengguna $student)
+    public function destroyStudent(RuangKelas $classRoom, \App\Models\Pengguna $student)
     {
         // Only admin and dosen can remove students
         if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {

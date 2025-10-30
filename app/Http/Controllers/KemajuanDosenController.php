@@ -18,7 +18,7 @@ class KemajuanDosenController extends Controller
             ->where('dosen_id', $user->id)
             ->where('is_active', true)
             ->withCount(['groups', 'groups as group_members_count' => function($query) {
-                $query->join('group_members', 'groups.id', 'group_members.group_id')
+                $query->join('anggota_kelompok', 'kelompok.id', 'anggota_kelompok.group_id')
                       ->count();
             }])
             ->get();
@@ -39,7 +39,7 @@ class KemajuanDosenController extends Controller
     /**
      * Tampilkan detail progress kelas tertentu
      */
-    public function showClass(ClassRoom $classRoom)
+    public function showClass(RuangKelas $classRoom)
     {
         $user = auth()->user();
         
@@ -79,7 +79,7 @@ class KemajuanDosenController extends Controller
     /**
      * Tampilkan detail kelompok dengan semua submission files
      */
-    public function showGroup(ClassRoom $classRoom, Group $group)
+    public function showGroup(RuangKelas $classRoom, Kelompok $group)
     {
         $user = auth()->user();
         
@@ -143,7 +143,7 @@ class KemajuanDosenController extends Controller
     /**
      * Download file submission mahasiswa
      */
-    public function downloadFile(ClassRoom $classRoom, Group $group, $targetId, $fileName)
+    public function downloadFile(RuangKelas $classRoom, Kelompok $group, $targetId, $fileName)
     {
         $user = auth()->user();
         
@@ -176,7 +176,7 @@ class KemajuanDosenController extends Controller
     /**
      * API untuk get groups by classroom (untuk dropdown)
      */
-    public function getGroupsByClassroom(ClassRoom $classRoom)
+    public function getGroupsByClassroom(RuangKelas $classRoom)
     {
         $user = auth()->user();
         

@@ -112,7 +112,7 @@ class KelompokController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Group $group)
+    public function show(Kelompok $group)
     {
         $group->load(['classRoom', 'leader', 'members.user']);
         
@@ -133,7 +133,7 @@ class KelompokController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Group $group)
+    public function edit(Kelompok $group)
     {
         $group->load(['classRoom', 'leader', 'members.user']);
         
@@ -143,7 +143,7 @@ class KelompokController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateGroupRequest $request, Group $group)
+    public function update(UpdateGroupRequest $request, Kelompok $group)
     {
         // Update basic group info
         $group->update($request->validated());
@@ -212,7 +212,7 @@ class KelompokController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Group $group)
+    public function destroy(Kelompok $group)
     {
         $group->delete();
         return redirect()
@@ -223,7 +223,7 @@ class KelompokController extends Controller
     /**
      * Add member to group
      */
-    public function addMember(Request $request, Group $group)
+    public function addMember(Request $request, Kelompok $group)
     {
         $request->validate([
             'user_id' => 'required|exists:pengguna,id',
@@ -267,7 +267,7 @@ class KelompokController extends Controller
     /**
      * Remove member from group
      */
-    public function removeMember(Group $group, $memberId)
+    public function removeMember(Kelompok $group, $memberId)
     {
         $member = $group->members()->findOrFail($memberId);
         
@@ -284,10 +284,10 @@ class KelompokController extends Controller
     /**
      * Set a member as group leader
      */
-    public function setLeader(Request $request, Group $group)
+    public function setLeader(Request $request, Kelompok $group)
     {
         $request->validate([
-            'member_id' => 'required|exists:group_members,id'
+            'member_id' => 'required|exists:anggota_kelompok,id'
         ]);
         
         $member = $group->members()->findOrFail($request->member_id);

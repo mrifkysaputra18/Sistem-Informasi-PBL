@@ -17,7 +17,7 @@ class KemajuanMingguanController extends Controller
         $this->googleDriveService = $googleDriveService;
     }
 
-    public function index(Group $group)
+    public function index(Kelompok $group)
     {
         $this->authorize('view', $group);
         
@@ -200,7 +200,7 @@ class KemajuanMingguanController extends Controller
             ->with('success', 'Progress mingguan berhasil diupload! Dosen akan segera mereview progress Anda.');
     }
 
-    public function show(Group $group, WeeklyProgress $weeklyProgress)
+    public function show(Kelompok $group, KemajuanMingguan $weeklyProgress)
     {
         $this->authorize('view', $group);
         
@@ -209,7 +209,7 @@ class KemajuanMingguanController extends Controller
         return view('kemajuan-mingguan.tampil', compact('group', 'weeklyProgress'));
     }
 
-    public function edit(Group $group, WeeklyProgress $weeklyProgress)
+    public function edit(Kelompok $group, KemajuanMingguan $weeklyProgress)
     {
         $this->authorize('update', $group);
         
@@ -220,7 +220,7 @@ class KemajuanMingguanController extends Controller
         return view('kemajuan-mingguan.ubah', compact('group', 'weeklyProgress'));
     }
 
-    public function update(Request $request, Group $group, WeeklyProgress $weeklyProgress)
+    public function update(Request $request, Kelompok $group, KemajuanMingguan $weeklyProgress)
     {
         $this->authorize('update', $group);
         
@@ -265,7 +265,7 @@ class KemajuanMingguanController extends Controller
             ->with('success', 'Progress mingguan berhasil diperbarui.');
     }
 
-    public function submit(Group $group, WeeklyProgress $weeklyProgress)
+    public function submit(Kelompok $group, KemajuanMingguan $weeklyProgress)
     {
         $this->authorize('update', $group);
         
@@ -282,7 +282,7 @@ class KemajuanMingguanController extends Controller
             ->with('success', 'Progress mingguan berhasil disubmit untuk direview.');
     }
 
-    private function calculateDeadline(Group $group, int $weekNumber)
+    private function calculateDeadline(Kelompok $group, int $weekNumber)
     {
         $project = $group->project;
         $startDate = $project->start_date;
