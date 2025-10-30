@@ -9,7 +9,7 @@
         <tr class="border-t">
           <td class="p-3">{{ $i++ }}</td>
           <td class="p-3">{{ $groups[$gid] ?? ('#'.$gid) }}</td>
-          <td class="p-3">{{ $total }}</td>
+          <td class="p-3">{{ number_format($total, 4, ',', '.') }}</td>
         </tr>
         @endforeach
       </tbody>
