@@ -9,6 +9,12 @@ class AcademicTerm extends Model
     protected $fillable = ['tahun_akademik', 'semester', 'is_active'];
     public function groups()
     {
-        return $this->hasMany(Group::class);
+        return $this->hasMany(Kelompok::class, 'project_id');
     }
 }
+
+
+
+
+
+

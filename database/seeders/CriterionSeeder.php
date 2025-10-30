@@ -19,7 +19,7 @@ class CriterionSeeder extends Seeder
             ['nama' => 'Penilaian Teman Kelompok', 'bobot' => 0.071789684, 'tipe' => 'benefit', 'segment' => 'group'],
         ];
 
-        foreach ($group as $c) \App\Models\Criterion::updateOrCreate(
+        foreach ($group as $c) \App\Models\Kriteria::updateOrCreate(
             ['nama' => $c['nama'], 'segment' => 'group'],
             $c
         );
@@ -29,9 +29,10 @@ class CriterionSeeder extends Seeder
             ['nama' => 'Penilaian Teman Sekelompok', 'bobot' => 0.3, 'tipe' => 'benefit', 'segment' => 'student'],
             ['nama' => 'Kehadiran', 'bobot' => 0.2, 'tipe' => 'benefit', 'segment' => 'student'],
         ];
-        foreach ($student as $c) \App\Models\Criterion::updateOrCreate(
+        foreach ($student as $c) \App\Models\Kriteria::updateOrCreate(
             ['nama' => $c['nama'], 'segment' => 'student'],
             $c
         );
     }
 }
+

@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\Pengguna;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -11,7 +11,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Admin utama
-        User::create([
+        Pengguna::create([
             'politala_id' => 'ADMIN_001',
             'name' => 'Administrator',
             'email' => 'admin@politala.ac.id',
@@ -23,7 +23,7 @@ class UserSeeder extends Seeder
         ]);
 
         // Koordinator (opsional)
-        User::create([
+        Pengguna::create([
             'politala_id' => 'KOORD_001',
             'name' => 'Koordinator PBL',
             'email' => 'koordinator@politala.ac.id',
@@ -35,3 +35,5 @@ class UserSeeder extends Seeder
         ]);
     }
 }
+
+

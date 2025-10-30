@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
-use App\Models\ClassRoom;
+use App\Models\RuangKelas;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,7 +23,9 @@ class AppServiceProvider extends ServiceProvider
     {
         // Explicit route model binding untuk ClassRoom
         Route::bind('classroom', function ($value) {
-            return ClassRoom::findOrFail($value);
+            return RuangKelas::findOrFail($value);
         });
     }
 }
+
+

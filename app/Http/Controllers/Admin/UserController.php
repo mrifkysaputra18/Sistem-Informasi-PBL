@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\ClassRoom;
+use App\Models\Pengguna;
+use App\Models\RuangKelas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -16,7 +16,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::with('classRoom');
+        $query = Pengguna::with('classRoom');
         
         // Filter by role
         if ($request->has('role') && $request->role !== '') {
@@ -45,23 +45,23 @@ class UserController extends Controller
         
         // Group by role untuk tampilan
         $usersByRole = [
-            'admin' => User::where('role', 'admin')->with('classRoom')->latest()->get(),
-            'koordinator' => User::where('role', 'koordinator')->with('classRoom')->latest()->get(),
-            'dosen' => User::where('role', 'dosen')->with('classRoom')->latest()->get(),
-            'mahasiswa' => User::where('role', 'mahasiswa')->with('classRoom')->latest()->get(),
+            'admin' => Pengguna::where('role', 'admin')->with('classRoom')->latest()->get(),
+            'koordinator' => Pengguna::where('role', 'koordinator')->with('classRoom')->latest()->get(),
+            'dosen' => Pengguna::where('role', 'dosen')->with('classRoom')->latest()->get(),
+            'mahasiswa' => Pengguna::where('role', 'mahasiswa')->with('classRoom')->latest()->get(),
         ];
         
         // Apply filters ke grouped data jika ada filter
         if ($request->hasAny(['role', 'class_room_id', 'is_active', 'search'])) {
             $users = $query->latest()->paginate(15);
-            $classRooms = ClassRoom::orderBy('name')->get();
-            return view('admin.users.index', compact('users', 'classRooms', 'usersByRole'));
+            $classRooms = RuangKelas::orderBy('name')->get();
+            return view('admin.pengguna.daftar', compact('users', 'classRooms', 'usersByRole'));
         }
         
         $users = $query->latest()->paginate(15);
-        $classRooms = ClassRoom::orderBy('name')->get();
+        $classRooms = RuangKelas::orderBy('name')->get();
         
-        return view('admin.users.index', compact('users', 'classRooms', 'usersByRole'));
+        return view('admin.pengguna.daftar', compact('users', 'classRooms', 'usersByRole'));
     }
 
     /**
@@ -69,7 +69,7 @@ class UserController extends Controller
      */
     public function studentsWithoutGroup(Request $request)
     {
-        $query = User::where('role', 'mahasiswa')
+        $query = Pengguna::where('role', 'mahasiswa')
             ->with('classRoom')
             ->whereDoesntHave('groupMembers');
         
@@ -89,17 +89,17 @@ class UserController extends Controller
         }
         
         $students = $query->latest()->paginate(15);
-        $classRooms = ClassRoom::orderBy('name')->get();
+        $classRooms = RuangKelas::orderBy('name')->get();
         
         // Get statistics per class
-        $statsPerClass = ClassRoom::withCount([
+        $statsPerClass = RuangKelas::withCount([
             'students as total_students',
             'students as students_without_group' => function($q) {
                 $q->whereDoesntHave('groupMembers');
             }
         ])->get();
         
-        return view('admin.users.without-group', compact('students', 'classRooms', 'statsPerClass'));
+        return view('admin.pengguna.tanpa-kelompok', compact('students', 'classRooms', 'statsPerClass'));
     }
 
     /**
@@ -107,8 +107,8 @@ class UserController extends Controller
      */
     public function create()
     {
-        $classRooms = ClassRoom::orderBy('name')->get();
-        return view('admin.users.create', compact('classRooms'));
+        $classRooms = RuangKelas::orderBy('name')->get();
+        return view('admin.pengguna.tambah', compact('classRooms'));
     }
 
     /**
@@ -121,20 +121,20 @@ class UserController extends Controller
                 Rule::requiredIf($request->role === 'mahasiswa'),
                 'nullable',
                 'string',
-                'unique:users,nim'
+                'unique:pengguna,nim'
             ],
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|unique:pengguna,email',
             'password' => 'required|string|min:8|confirmed',
             'role' => ['required', Rule::in(['mahasiswa', 'dosen', 'admin', 'koordinator'])],
             'program_studi' => 'nullable|string|max:255',
-            'class_room_id' => 'nullable|exists:class_rooms,id',
+            'class_room_id' => 'nullable|exists:ruang_kelas,id',
             'is_active' => 'boolean',
         ]);
         
         $validated['password'] = Hash::make($validated['password']);
         
-        User::create($validated);
+        Pengguna::create($validated);
         
         return redirect()
             ->route('admin.users.index')
@@ -144,39 +144,39 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show(Pengguna $user)
     {
         $user->load(['classRoom', 'groups.classRoom', 'ledGroups']);
-        return view('admin.users.show', compact('user'));
+        return view('admin.pengguna.tampil', compact('user'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(User $user)
+    public function edit(Pengguna $user)
     {
-        $classRooms = ClassRoom::orderBy('name')->get();
-        return view('admin.users.edit', compact('user', 'classRooms'));
+        $classRooms = RuangKelas::orderBy('name')->get();
+        return view('admin.pengguna.ubah', compact('user', 'classRooms'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, Pengguna $user)
     {
         $validated = $request->validate([
             'nim' => [
                 Rule::requiredIf($request->role === 'mahasiswa'),
                 'nullable',
                 'string',
-                Rule::unique('users', 'nim')->ignore($user->id)
+                Rule::unique('pengguna', 'nim')->ignore($user->id)
             ],
             'name' => 'required|string|max:255',
-            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)],
+            'email' => ['required', 'email', Rule::unique('pengguna', 'email')->ignore($user->id)],
             'password' => 'nullable|string|min:8|confirmed',
             'role' => ['required', Rule::in(['mahasiswa', 'dosen', 'admin', 'koordinator'])],
             'program_studi' => 'nullable|string|max:255',
-            'class_room_id' => 'nullable|exists:class_rooms,id',
+            'class_room_id' => 'nullable|exists:ruang_kelas,id',
             'is_active' => 'boolean',
         ]);
         
@@ -197,7 +197,7 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user)
+    public function destroy(Pengguna $user)
     {
         // Prevent deleting own account
         if ($user->id === auth()->id()) {
@@ -214,7 +214,7 @@ class UserController extends Controller
     /**
      * Toggle user active status
      */
-    public function toggleActive(User $user)
+    public function toggleActive(Pengguna $user)
     {
         $user->update([
             'is_active' => !$user->is_active

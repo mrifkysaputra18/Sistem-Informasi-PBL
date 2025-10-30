@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\User;
+use App\Models\Pengguna;
 use Illuminate\Support\Facades\Hash;
 
 class DosenSeeder extends Seeder
@@ -36,7 +36,7 @@ class DosenSeeder extends Seeder
         $this->command->info("Menambahkan {$total} dosen...");
 
         foreach ($dosens as $dosen) {
-            User::updateOrCreate(
+            Pengguna::updateOrCreate(
                 ['email' => $dosen['email']],
                 [
                     'name' => $dosen['name'],
@@ -54,3 +54,5 @@ class DosenSeeder extends Seeder
         $this->command->info("Default password untuk semua dosen: password123");
     }
 }
+
+

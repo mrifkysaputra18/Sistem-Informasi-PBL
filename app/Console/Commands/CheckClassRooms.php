@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\ClassRoom;
+use App\Models\RuangKelas;
 use Illuminate\Console\Command;
 
 class CheckClassRooms extends Command
@@ -28,7 +28,7 @@ class CheckClassRooms extends Command
     {
         $this->info('Checking class rooms...');
         
-        $classRooms = ClassRoom::withCount('groups')->get();
+        $classRooms = RuangKelas::withCount('groups')->get();
         
         if ($classRooms->isEmpty()) {
             $this->warn('No class rooms found in database.');
@@ -54,3 +54,5 @@ class CheckClassRooms extends Command
         $this->info("Total class rooms: {$classRooms->count()}");
     }
 }
+
+

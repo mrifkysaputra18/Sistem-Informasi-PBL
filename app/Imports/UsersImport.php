@@ -2,9 +2,9 @@
 
 namespace App\Imports;
 
-use App\Models\User;
-use App\Models\ClassRoom;
-use App\Models\AcademicPeriod;
+use App\Models\Pengguna;
+use App\Models\RuangKelas;
+use App\Models\PeriodeAkademik;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -67,7 +67,7 @@ class UsersImport implements ToCollection, WithHeadingRow, WithValidation, Skips
                 }
 
                 // Find class room by code
-                $classRoom = ClassRoom::where('code', trim($row['kelas']))->first();
+                $classRoom = RuangKelas::where('code', trim($row['kelas']))->first();
                 
                 if (!$classRoom) {
                     $this->skippedCount++;
@@ -76,7 +76,7 @@ class UsersImport implements ToCollection, WithHeadingRow, WithValidation, Skips
                 }
 
                 // Check if email already exists
-                $existingUser = User::where('email', $row['email_sso'])->first();
+                $existingUser = Pengguna::where('email', $row['email_sso'])->first();
                 if ($existingUser) {
                     $this->skippedCount++;
                     $this->errors[] = "Baris " . ($index + 2) . ": Email {$row['email_sso']} sudah terdaftar";
@@ -85,7 +85,7 @@ class UsersImport implements ToCollection, WithHeadingRow, WithValidation, Skips
 
                 // Check if NIM already exists
                 if (!empty($row['nim'])) {
-                    $existingNim = User::where('nim', $row['nim'])->first();
+                    $existingNim = Pengguna::where('nim', $row['nim'])->first();
                     if ($existingNim) {
                         $this->skippedCount++;
                         $this->errors[] = "Baris " . ($index + 2) . ": NIM {$row['nim']} sudah terdaftar";
@@ -97,7 +97,7 @@ class UsersImport implements ToCollection, WithHeadingRow, WithValidation, Skips
                 $politalaId = $this->generatePolitalaId($row['nama_lengkap']);
 
                 // Create user
-                User::create([
+                Pengguna::create([
                     'nim' => $row['nim'] ?? null,
                     'name' => $row['nama_lengkap'],
                     'email' => $row['email_sso'],
@@ -172,7 +172,7 @@ class UsersImport implements ToCollection, WithHeadingRow, WithValidation, Skips
         do {
             $random = rand(1000, 9999);
             $politalaId = 'MHS_' . $firstName . '_' . $random;
-        } while (User::where('politala_id', $politalaId)->exists());
+        } while (Pengguna::where('politala_id', $politalaId)->exists());
         
         return $politalaId;
     }
@@ -195,3 +195,7 @@ class UsersImport implements ToCollection, WithHeadingRow, WithValidation, Skips
         return $this->errors;
     }
 }
+
+
+
+

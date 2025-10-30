@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\Pengguna;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -36,7 +36,7 @@ class GoogleAuthController extends Controller
             }
 
             // Cari atau buat user
-            $user = User::where('email', $googleUser->getEmail())->first();
+            $user = Pengguna::where('email', $googleUser->getEmail())->first();
 
             if (!$user) {
                 // Auto-register user baru dari Google
@@ -69,7 +69,7 @@ class GoogleAuthController extends Controller
         $role = $this->determineRole($email);
         $politalaId = $this->generatePolitalaId($email, $role);
 
-        return User::create([
+        return Pengguna::create([
             'politala_id' => $politalaId,
             'name' => $googleUser->getName(),
             'email' => $email,

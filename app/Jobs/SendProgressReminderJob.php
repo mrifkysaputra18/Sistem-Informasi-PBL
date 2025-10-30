@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Models\Group;
-use App\Models\Project;
+use App\Models\Kelompok;
+use App\Models\Proyek;
 use App\Notifications\ProgressReminderNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -42,3 +42,5 @@ class SendProgressReminderJob implements ShouldQueue
         }
     }
 }
+
+

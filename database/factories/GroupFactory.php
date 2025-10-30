@@ -5,7 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Group>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Kelompok>
  */
 class GroupFactory extends Factory
 {
@@ -21,3 +21,4 @@ class GroupFactory extends Factory
         ];
     }
 }
+

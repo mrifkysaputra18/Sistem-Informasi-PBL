@@ -3,9 +3,9 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\WeeklyTarget;
-use App\Models\Group;
-use App\Models\User;
+use App\Models\TargetMingguan;
+use App\Models\Kelompok;
+use App\Models\Pengguna;
 
 class CreateTestTargetPending extends Command
 {
@@ -18,21 +18,21 @@ class CreateTestTargetPending extends Command
         $this->newLine();
 
         // Get first group
-        $group = Group::first();
+        $group = Kelompok::first();
         if (!$group) {
             $this->error('❌ No group found! Please create a group first.');
             return 1;
         }
 
         // Get dosen user
-        $dosen = User::where('role', 'dosen')->first();
+        $dosen = Pengguna::where('role', 'dosen')->first();
         if (!$dosen) {
             $this->error('❌ No dosen user found!');
             return 1;
         }
 
         // Create target with PENDING status (not submitted yet)
-        $target = WeeklyTarget::create([
+        $target = TargetMingguan::create([
             'group_id' => $group->id,
             'week_number' => 5,
             'title' => 'TEST TARGET - BELUM DISUBMIT (untuk test Edit/Hapus)',
@@ -77,3 +77,6 @@ class CreateTestTargetPending extends Command
         return 0;
     }
 }
+
+
+

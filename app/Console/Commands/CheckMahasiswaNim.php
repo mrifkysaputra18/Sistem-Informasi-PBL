@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\User;
+use App\Models\Pengguna;
 use Illuminate\Console\Command;
 
 class CheckMahasiswaNim extends Command
@@ -28,7 +28,7 @@ class CheckMahasiswaNim extends Command
     {
         $this->info('Checking mahasiswa users and their NIM...');
         
-        $mahasiswaUsers = User::where('role', 'mahasiswa')->get(['name', 'nim', 'email']);
+        $mahasiswaUsers = Pengguna::where('role', 'mahasiswa')->get(['name', 'nim', 'email']);
         
         if ($mahasiswaUsers->isEmpty()) {
             $this->warn('No mahasiswa users found.');
@@ -51,3 +51,5 @@ class CheckMahasiswaNim extends Command
         $this->info("Without NIM: {$withoutNim}");
     }
 }
+
+

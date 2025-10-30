@@ -15,11 +15,11 @@ class UpdateGroupRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:100'],
-            'class_room_id' => ['required', 'exists:class_rooms,id'],
-            'project_id' => ['nullable', 'exists:projects,id'],
+            'class_room_id' => ['required', 'exists:ruang_kelas,id'],
+            'project_id' => ['nullable', 'exists:proyek,id'],
             'max_members' => ['integer', 'min:1', 'max:10'],
             'members' => ['array'],
-            'members.*' => ['exists:users,id'],
+            'members.*' => ['exists:pengguna,id'],
         ];
     }
     
@@ -57,3 +57,4 @@ class UpdateGroupRequest extends FormRequest
         ];
     }
 }
+

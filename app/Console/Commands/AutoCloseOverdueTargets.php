@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\WeeklyTarget;
+use App\Models\TargetMingguan;
 use Illuminate\Console\Command;
 
 class AutoCloseOverdueTargets extends Command
@@ -30,7 +30,7 @@ class AutoCloseOverdueTargets extends Command
 
         // Get all targets that should be closed
         // Termasuk yang sudah disubmit tapi belum direview
-        $targets = WeeklyTarget::where('is_open', true)
+        $targets = TargetMingguan::where('is_open', true)
             ->where('is_reviewed', false)
             ->whereNotNull('deadline')
             ->where('deadline', '<', now())
@@ -66,3 +66,6 @@ class AutoCloseOverdueTargets extends Command
         return Command::SUCCESS;
     }
 }
+
+
+

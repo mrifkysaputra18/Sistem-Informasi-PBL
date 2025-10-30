@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\Pengguna;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,7 +19,7 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        return view('auth.daftar');
     }
 
     /**
@@ -32,13 +32,13 @@ class RegisteredUserController extends Controller
         $validationRules = [
             'name' => ['required', 'string', 'max:255'],
             'role' => ['required', 'in:mahasiswa,dosen'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.Pengguna::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ];
 
         // Add NIM validation only for mahasiswa
         if ($request->role === 'mahasiswa') {
-            $validationRules['nim'] = ['required', 'string', 'max:20', 'unique:'.User::class];
+            $validationRules['nim'] = ['required', 'string', 'max:20', 'unique:'.Pengguna::class];
         }
 
         $request->validate($validationRules);
@@ -55,7 +55,7 @@ class RegisteredUserController extends Controller
             $userData['nim'] = $request->nim;
         }
 
-        $user = User::create($userData);
+        $user = Pengguna::create($userData);
 
         event(new Registered($user));
 

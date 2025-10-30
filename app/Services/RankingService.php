@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\{Group, Criterion, User, GroupScore, StudentScore};
+use App\Models\{Kelompok, Kriteria, Pengguna, NilaiKelompok, NilaiMahasiswa};
 
 class RankingService
 {
@@ -20,14 +20,14 @@ class RankingService
     public function computeGroupTotals(): array
     {
         // Ambil semua kriteria untuk kelompok
-        $criteria = Criterion::where('segment', 'group')->get();
+        $criteria = Kriteria::where('segment', 'group')->get();
         
         if ($criteria->isEmpty()) {
             return [];
         }
         
         // Ambil semua kelompok dengan skor mereka
-        $groups = Group::with(['scores' => function($q) use ($criteria) {
+        $groups = Kelompok::with(['scores' => function($q) use ($criteria) {
             $q->whereIn('criterion_id', $criteria->pluck('id'));
         }, 'weeklyTargets'])->get();
         
@@ -85,14 +85,14 @@ class RankingService
     public function computeStudentTotals($classRoomId = null): array
     {
         // Ambil semua kriteria untuk mahasiswa
-        $criteria = Criterion::where('segment', 'student')->get();
+        $criteria = Kriteria::where('segment', 'student')->get();
         
         if ($criteria->isEmpty()) {
             return [];
         }
         
         // Query mahasiswa
-        $studentsQuery = User::where('role', 'mahasiswa')
+        $studentsQuery = Pengguna::where('role', 'mahasiswa')
             ->with(['studentScores' => function($q) use ($criteria) {
                 $q->whereIn('criterion_id', $criteria->pluck('id'));
             }]);
@@ -193,7 +193,7 @@ class RankingService
      */
     public function getProgressSpeedScores(): array
     {
-        $groups = Group::with('weeklyTargets')->get();
+        $groups = Kelompok::with('weeklyTargets')->get();
         $scores = [];
         
         foreach ($groups as $group) {
@@ -224,7 +224,7 @@ class RankingService
         $rank = 1;
         
         foreach ($totals as $groupId => $totalScore) {
-            $group = Group::with(['classRoom', 'leader', 'members'])->find($groupId);
+            $group = Kelompok::with(['classRoom', 'leader', 'members'])->find($groupId);
             
             if ($group) {
                 $ranking[] = [
@@ -262,7 +262,7 @@ class RankingService
         $rank = 1;
         
         foreach ($totals as $studentId => $totalScore) {
-            $student = User::with(['groups.classRoom'])->find($studentId);
+            $student = Pengguna::with(['groups.classRoom'])->find($studentId);
             
             if ($student) {
                 $ranking[] = [
@@ -287,7 +287,7 @@ class RankingService
         $totals = $this->computeGroupTotals();
         
         foreach ($totals as $groupId => $totalScore) {
-            Group::where('id', $groupId)->update(['total_score' => $totalScore]);
+            Kelompok::where('id', $groupId)->update(['total_score' => $totalScore]);
         }
     }
     
@@ -300,11 +300,11 @@ class RankingService
         $this->updateGroupTotalScores();
         
         // Get all class rooms
-        $classRooms = \App\Models\ClassRoom::all();
+        $classRooms = \App\Models\RuangKelas::all();
         
         foreach ($classRooms as $classRoom) {
             // Get groups in this class, sorted by total_score
-            $groups = Group::where('class_room_id', $classRoom->id)
+            $groups = Kelompok::where('class_room_id', $classRoom->id)
                 ->orderBy('total_score', 'desc')
                 ->get();
             
@@ -316,3 +316,5 @@ class RankingService
         }
     }
 }
+
+

@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\User;
+use App\Models\Pengguna;
 use Illuminate\Console\Command;
 
 class UpdateMahasiswaNim extends Command
@@ -28,7 +28,7 @@ class UpdateMahasiswaNim extends Command
     {
         $this->info('Updating mahasiswa users with NIM...');
 
-        $mahasiswaUsers = User::where('role', 'mahasiswa')
+        $mahasiswaUsers = Pengguna::where('role', 'mahasiswa')
             ->whereNull('nim')
             ->get();
 
@@ -42,7 +42,7 @@ class UpdateMahasiswaNim extends Command
             do {
                 $nim = '2024' . str_pad($counter, 6, '0', STR_PAD_LEFT);
                 $counter++;
-            } while (User::where('nim', $nim)->exists());
+            } while (Pengguna::where('nim', $nim)->exists());
             
             $user->update(['nim' => $nim]);
             $this->line("Updated {$user->name} with NIM: {$nim}");
@@ -51,3 +51,5 @@ class UpdateMahasiswaNim extends Command
         $this->info("Successfully updated {$mahasiswaUsers->count()} mahasiswa users with NIM.");
     }
 }
+
+

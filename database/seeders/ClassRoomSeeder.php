@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\ClassRoom;
+use App\Models\RuangKelas;
 use Illuminate\Database\Seeder;
 
 class ClassRoomSeeder extends Seeder
@@ -53,7 +53,8 @@ class ClassRoomSeeder extends Seeder
         ];
 
         foreach ($classes as $class) {
-            ClassRoom::create($class);
+            RuangKelas::create($class);
         }
     }
 }
+

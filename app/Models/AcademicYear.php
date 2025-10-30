@@ -38,7 +38,7 @@ class AcademicYear extends Model
      */
     public function classrooms(): HasMany
     {
-        return $this->hasMany(ClassRoom::class);
+        return $this->hasMany(RuangKelas::class, 'subject_id');
     }
 
     /**
@@ -66,3 +66,8 @@ class AcademicYear extends Model
         return $now->between($this->start_date, $this->end_date);
     }
 }
+
+
+
+
+

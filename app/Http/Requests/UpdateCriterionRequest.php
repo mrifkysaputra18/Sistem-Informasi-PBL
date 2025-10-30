@@ -29,3 +29,4 @@ class UpdateCriterionRequest extends FormRequest
         ];
     }
 }
+

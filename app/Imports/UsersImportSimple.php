@@ -2,8 +2,8 @@
 
 namespace App\Imports;
 
-use App\Models\User;
-use App\Models\ClassRoom;
+use App\Models\Pengguna;
+use App\Models\RuangKelas;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -70,7 +70,7 @@ class UsersImportSimple implements ToCollection, WithStartRow
                 }
 
                 // Find class
-                $classRoom = ClassRoom::where('code', trim($kelas))->first();
+                $classRoom = RuangKelas::where('code', trim($kelas))->first();
                 
                 if (!$classRoom) {
                     $this->skippedCount++;
@@ -79,14 +79,14 @@ class UsersImportSimple implements ToCollection, WithStartRow
                 }
 
                 // Check duplicate email
-                if (User::where('email', $emailSSO)->exists()) {
+                if (Pengguna::where('email', $emailSSO)->exists()) {
                     $this->skippedCount++;
                     $this->errors[] = "Baris " . ($index + 2) . ": Email {$emailSSO} sudah terdaftar";
                     continue;
                 }
 
                 // Check duplicate NIM
-                if (!empty($nim) && User::where('nim', $nim)->exists()) {
+                if (!empty($nim) && Pengguna::where('nim', $nim)->exists()) {
                     $this->skippedCount++;
                     $this->errors[] = "Baris " . ($index + 2) . ": NIM {$nim} sudah terdaftar";
                     continue;
@@ -96,7 +96,7 @@ class UsersImportSimple implements ToCollection, WithStartRow
                 $politalaId = $this->generatePolitalaId($namaLengkap);
 
                 // Create user
-                User::create([
+                Pengguna::create([
                     'nim' => $nim,
                     'name' => $namaLengkap,
                     'email' => $emailSSO,
@@ -162,3 +162,5 @@ class UsersImportSimple implements ToCollection, WithStartRow
         return $this->errors;
     }
 }
+
+

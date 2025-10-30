@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\Project;
+use App\Models\Proyek;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -64,3 +64,5 @@ class GroupRankingExport implements FromCollection, WithHeadings, WithMapping, W
         return 'Ranking Grup - ' . $this->project->title;
     }
 }
+
+

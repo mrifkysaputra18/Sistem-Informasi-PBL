@@ -36,12 +36,12 @@ class ProgressReview extends Model
     // Relationships
     public function weeklyProgress()
     {
-        return $this->belongsTo(WeeklyProgress::class);
+        return $this->belongsTo(KemajuanMingguan::class, 'weekly_progress_id');
     }
 
     public function reviewer()
     {
-        return $this->belongsTo(User::class, 'reviewer_id');
+        return $this->belongsTo(Pengguna::class, 'reviewer_id');
     }
 
     // Helper methods
@@ -70,3 +70,8 @@ class ProgressReview extends Model
         return $this->status === 'rejected';
     }
 }
+
+
+
+
+

@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\User;
-use App\Models\WeeklyTarget;
+use App\Models\Pengguna;
+use App\Models\TargetMingguan;
 use Illuminate\Support\Facades\Route;
 
 class VerifyDosenTargetCRUD extends Command
@@ -19,7 +19,7 @@ class VerifyDosenTargetCRUD extends Command
 
         // Check User
         $this->info('1️⃣  Checking Dosen User...');
-        $dosen = User::where('email', 'dosen@politala.ac.id')->first();
+        $dosen = Pengguna::where('email', 'dosen@politala.ac.id')->first();
         
         if (!$dosen) {
             $this->error('   ❌ Dosen user not found!');
@@ -112,12 +112,12 @@ class VerifyDosenTargetCRUD extends Command
 
         // Check Targets
         $this->info('6️⃣  Checking Existing Targets...');
-        $targetCount = WeeklyTarget::count();
+        $targetCount = TargetMingguan::count();
         
         $this->info('   📊 Total targets in database: ' . $targetCount);
         
         if ($targetCount > 0) {
-            $recentTarget = WeeklyTarget::latest()->first();
+            $recentTarget = TargetMingguan::latest()->first();
             $this->info('   📌 Latest target: ' . $recentTarget->title);
             $this->info('   👤 Created by: ' . ($recentTarget->creator->name ?? 'Unknown'));
         } else {
@@ -146,3 +146,6 @@ class VerifyDosenTargetCRUD extends Command
         return 0;
     }
 }
+
+
+

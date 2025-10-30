@@ -8,9 +8,9 @@
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
                 <h3 class="text-lg font-semibold mb-4">Groups Data</h3>
                 @php 
-                    $groups = \App\Models\Group::with('term')->get();
+                    $groups = \App\Models\Kelompok::with('term')->get();
                     $criteria = \App\Models\Criterion::all();
-                    $scores = \App\Models\GroupScore::all();
+                    $scores = \App\Models\KelompokScore::all();
                 @endphp
                 
                 <p>Total Groups: {{ $groups->count() }}</p>
@@ -38,3 +38,4 @@
         </div>
     </div>
 </x-app-layout>
+

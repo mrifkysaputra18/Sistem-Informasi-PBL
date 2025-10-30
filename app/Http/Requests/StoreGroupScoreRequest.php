@@ -22,9 +22,11 @@ class StoreGroupScoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'group_id' => ['required', 'exists:groups,id'],
-            'criterion_id' => ['required', 'exists:criteria,id'],
+            'group_id' => ['required', 'exists:kelompok,id'],
+            'criterion_id' => ['required', 'exists:kriteria,id'],
             'skor' => ['required', 'numeric', 'min:0', 'max:100'],
         ];
     }
 }
+
+

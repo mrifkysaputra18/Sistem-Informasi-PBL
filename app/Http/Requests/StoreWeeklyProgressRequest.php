@@ -26,3 +26,4 @@ class StoreWeeklyProgressRequest extends FormRequest
         ];
     }
 }
+

@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
-use App\Models\User;
+use App\Models\Pengguna;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -75,7 +75,7 @@ class LoginRequest extends FormRequest
             }
             
             // Cek apakah user sudah ada
-            if (User::where('email', $email)->exists()) {
+            if (Pengguna::where('email', $email)->exists()) {
                 \Log::info('User already exists');
                 return;
             }
@@ -92,7 +92,7 @@ class LoginRequest extends FormRequest
                 'politala_id' => $politalaId,
             ]);
             
-            $user = User::create([
+            $user = Pengguna::create([
                 'politala_id' => $politalaId,
                 'name' => $name,
                 'email' => $email,

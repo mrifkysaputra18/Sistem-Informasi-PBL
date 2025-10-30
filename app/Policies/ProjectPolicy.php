@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Project;
-use App\Models\User;
+use App\Models\Proyek;
+use App\Models\Pengguna;
 
 class ProjectPolicy
 {
@@ -71,3 +71,5 @@ class ProjectPolicy
         return false;
     }
 }
+
+

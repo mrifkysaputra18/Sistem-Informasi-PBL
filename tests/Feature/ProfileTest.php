@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
+use App\Models\Pengguna;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -97,3 +97,4 @@ class ProfileTest extends TestCase
         $this->assertNotNull($user->fresh());
     }
 }
+

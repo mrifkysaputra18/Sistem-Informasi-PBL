@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Auth;
 
-use App\Models\User;
+use App\Models\Pengguna;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -52,3 +52,4 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect('/');
     }
 }
+

@@ -8,3 +8,8 @@ class Attendance extends Pivot
 {
     //
 }
+
+
+
+
+

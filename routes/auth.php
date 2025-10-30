@@ -9,7 +9,7 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProfilController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -55,11 +55,11 @@ Route::middleware('auth')->group(function () {
 
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
 
-    Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::post('profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
-    Route::delete('profile/photo', [ProfileController::class, 'deletePhoto'])->name('profile.photo.delete');
-    Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('profile', [ProfilController::class, 'edit'])->name('profile.edit');
+    Route::patch('profile', [ProfilController::class, 'update'])->name('profile.update');
+    Route::post('profile/photo', [ProfilController::class, 'updatePhoto'])->name('profile.photo.update');
+    Route::delete('profile/photo', [ProfilController::class, 'deletePhoto'])->name('profile.photo.delete');
+    Route::delete('profile', [ProfilController::class, 'destroy'])->name('profile.destroy');
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');

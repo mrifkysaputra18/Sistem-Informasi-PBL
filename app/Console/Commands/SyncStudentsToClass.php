@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Models\User;
-use App\Models\GroupMember;
-use App\Models\ClassRoom;
-use App\Models\AcademicPeriod;
+use App\Models\Pengguna;
+use App\Models\AnggotaKelompok;
+use App\Models\RuangKelas;
+use App\Models\PeriodeAkademik;
 use Illuminate\Console\Command;
 
 class SyncStudentsToClass extends Command
@@ -102,7 +102,7 @@ class SyncStudentsToClass extends Command
             $this->newLine();
             $this->info('🔍 Verification:');
             
-            $nullClassStudents = User::where('role', 'mahasiswa')
+            $nullClassStudents = Pengguna::where('role', 'mahasiswa')
                 ->whereNull('class_room_id')
                 ->whereHas('groupMemberships')
                 ->count();
@@ -126,7 +126,7 @@ class SyncStudentsToClass extends Command
         $this->info('🔄 Syncing class rooms to academic periods...');
         $this->newLine();
 
-        $classRooms = ClassRoom::whereNull('academic_period_id')->get();
+        $classRooms = RuangKelas::whereNull('academic_period_id')->get();
 
         if ($classRooms->isEmpty()) {
             $this->info('✅ All class rooms already have academic periods assigned!');
@@ -166,3 +166,7 @@ class SyncStudentsToClass extends Command
         $this->info('═══════════════════════════════════');
     }
 }
+
+
+
+

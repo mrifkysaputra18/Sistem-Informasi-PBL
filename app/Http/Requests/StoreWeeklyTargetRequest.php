@@ -42,3 +42,4 @@ class StoreWeeklyTargetRequest extends FormRequest
         ];
     }
 }
+

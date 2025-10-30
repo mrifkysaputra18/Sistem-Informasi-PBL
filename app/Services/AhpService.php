@@ -29,7 +29,7 @@ class AhpService
     public function calculateWeights(string $segment): array
     {
         // Get criteria for this segment
-        $criteria = Criterion::where('segment', $segment)->orderBy('id')->get();
+        $criteria = Kriteria::where('segment', $segment)->orderBy('id')->get();
         
         if ($criteria->count() < 2) {
             throw new \Exception('Minimal 2 kriteria diperlukan untuk perhitungan AHP');
@@ -215,7 +215,7 @@ class AhpService
      */
     public function getComparisons(string $segment): array
     {
-        $criteria = Criterion::where('segment', $segment)->orderBy('id')->get();
+        $criteria = Kriteria::where('segment', $segment)->orderBy('id')->get();
         $comparisons = [];
 
         for ($i = 0; $i < $criteria->count(); $i++) {
@@ -244,7 +244,7 @@ class AhpService
      */
     public function applyWeightsToCriteria(string $segment, array $weights): void
     {
-        $criteria = Criterion::where('segment', $segment)->orderBy('id')->get();
+        $criteria = Kriteria::where('segment', $segment)->orderBy('id')->get();
 
         foreach ($criteria as $index => $criterion) {
             if (isset($weights[$index])) {
@@ -261,4 +261,5 @@ class AhpService
         AhpComparison::where('segment', $segment)->delete();
     }
 }
+
 

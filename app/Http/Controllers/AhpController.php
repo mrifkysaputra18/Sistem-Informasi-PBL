@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Criterion;
+use App\Models\Kriteria;
 use App\Services\AhpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -28,7 +28,7 @@ class AhpController extends Controller
             $segment = 'group';
         }
 
-        $criteria = Criterion::where('segment', $segment)->orderBy('id')->get();
+        $criteria = Kriteria::where('segment', $segment)->orderBy('id')->get();
 
         if ($criteria->count() < 2) {
             return redirect()->route('criteria.index')
@@ -56,7 +56,7 @@ class AhpController extends Controller
             }
         }
 
-        return view('ahp.index', compact('segment', 'criteria', 'comparisons', 'result'));
+        return view('ahp.daftar', compact('segment', 'criteria', 'comparisons', 'result'));
     }
 
     /**
@@ -66,8 +66,8 @@ class AhpController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'segment' => 'required|in:group,student',
-            'criterion_a_id' => 'required|exists:criteria,id',
-            'criterion_b_id' => 'required|exists:criteria,id',
+            'criterion_a_id' => 'required|exists:kriteria,id',
+            'criterion_b_id' => 'required|exists:kriteria,id',
             'value' => 'required|numeric|min:0.111|max:9', // 1/9 sampai 9
         ]);
 
@@ -166,6 +166,8 @@ class AhpController extends Controller
      */
     public function help()
     {
-        return view('ahp.help');
+        return view('ahp.bantuan');
     }
 }
+
+

@@ -2,8 +2,8 @@
 
 namespace App\Exports;
 
-use App\Models\Project;
-use App\Models\User;
+use App\Models\Proyek;
+use App\Models\Pengguna;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -20,7 +20,7 @@ class StudentRankingExport implements FromCollection, WithHeadings, WithMapping,
 
     public function collection()
     {
-        return User::whereHas('groups.project', function ($query) {
+        return Pengguna::whereHas('groups.project', function ($query) {
             $query->where('id', $this->project->id);
         })
         ->with(['groups' => function ($query) {
@@ -84,3 +84,6 @@ class StudentRankingExport implements FromCollection, WithHeadings, WithMapping,
         return min(100, $attendanceScore);
     }
 }
+
+
+

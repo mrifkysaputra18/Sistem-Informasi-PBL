@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Subject;
+use App\Models\MataKuliah;
 use Illuminate\Database\Seeder;
 
 class SubjectSeeder extends Seeder
@@ -24,7 +24,9 @@ class SubjectSeeder extends Seeder
         ];
 
         foreach ($subjects as $subject) {
-            Subject::create($subject);
+            MataKuliah::create($subject);
         }
     }
 }
+
+

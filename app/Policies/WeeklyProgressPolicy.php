@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
-use App\Models\WeeklyProgress;
+use App\Models\Pengguna;
+use App\Models\KemajuanMingguan;
 use Illuminate\Auth\Access\Response;
 
 class WeeklyProgressPolicy
@@ -64,3 +64,5 @@ class WeeklyProgressPolicy
         return false;
     }
 }
+
+

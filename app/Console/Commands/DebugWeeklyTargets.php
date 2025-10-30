@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\WeeklyTarget;
-use App\Models\WeeklyProgress;
+use App\Models\TargetMingguan;
+use App\Models\KemajuanMingguan;
 
 class DebugWeeklyTargets extends Command
 {
@@ -18,7 +18,7 @@ class DebugWeeklyTargets extends Command
 
         // Check WeeklyTargets
         $this->info('📋 WEEKLY TARGETS:');
-        $targets = WeeklyTarget::with(['group', 'completedByUser'])
+        $targets = TargetMingguan::with(['group', 'completedByUser'])
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get();
@@ -74,7 +74,7 @@ class DebugWeeklyTargets extends Command
 
         // Check targets yang sudah submitted tapi belum reviewed
         $this->info('🔔 TARGETS PENDING REVIEW:');
-        $pendingReview = WeeklyTarget::whereIn('submission_status', ['submitted', 'late'])
+        $pendingReview = TargetMingguan::whereIn('submission_status', ['submitted', 'late'])
             ->where('is_reviewed', false)
             ->with(['group', 'completedByUser'])
             ->get();
@@ -104,3 +104,6 @@ class DebugWeeklyTargets extends Command
         return 0;
     }
 }
+
+
+

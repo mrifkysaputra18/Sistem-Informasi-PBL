@@ -2,10 +2,10 @@
 
 namespace App\Imports;
 
-use App\Models\Group;
-use App\Models\User;
-use App\Models\ClassRoom;
-use App\Models\GroupMember;
+use App\Models\Kelompok;
+use App\Models\Pengguna;
+use App\Models\RuangKelas;
+use App\Models\AnggotaKelompok;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -31,7 +31,7 @@ class GroupsImport implements ToCollection, WithHeadingRow, SkipsOnFailure
 
     public function collection(Collection $rows)
     {
-        $classRoom = ClassRoom::find($this->classRoomId);
+        $classRoom = RuangKelas::find($this->classRoomId);
         
         if (!$classRoom) {
             $this->errors[] = "Kelas tidak ditemukan";
@@ -57,7 +57,7 @@ class GroupsImport implements ToCollection, WithHeadingRow, SkipsOnFailure
                 $namaKelompok = trim($row['nama_kelompok']);
                 
                 // Check if group name already exists in this class
-                $existingGroup = Group::where('name', $namaKelompok)
+                $existingGroup = Kelompok::where('name', $namaKelompok)
                     ->where('class_room_id', $this->classRoomId)
                     ->first();
                 
@@ -96,7 +96,7 @@ class GroupsImport implements ToCollection, WithHeadingRow, SkipsOnFailure
                 }
 
                 // Create group
-                $group = Group::create([
+                $group = Kelompok::create([
                     'name' => $namaKelompok,
                     'class_room_id' => $this->classRoomId,
                     'max_members' => 5,
@@ -206,7 +206,7 @@ class GroupsImport implements ToCollection, WithHeadingRow, SkipsOnFailure
     private function findStudent($identifier, $classRoom)
     {
         // Try to find by NIM first
-        $student = User::where('role', 'mahasiswa')
+        $student = Pengguna::where('role', 'mahasiswa')
             ->where('class_room_id', $classRoom->id)
             ->where(function($query) use ($identifier) {
                 $query->where('nim', $identifier)
@@ -245,3 +245,5 @@ class GroupsImport implements ToCollection, WithHeadingRow, SkipsOnFailure
         return $this->errors;
     }
 }
+
+
