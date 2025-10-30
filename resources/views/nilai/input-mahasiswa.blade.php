@@ -13,17 +13,21 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
-            <!-- Info Dosen -->
+            <!-- Info User -->
             <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 mb-6 text-white">
                 <div class="flex items-center gap-4">
                     <div class="bg-white/20 p-4 rounded-full">
-                        <i class="fas fa-user-tie text-3xl"></i>
+                        <i class="fas {{ $dosen->role === 'admin' ? 'fa-user-shield' : 'fa-user-tie' }} text-3xl"></i>
                     </div>
                     <div>
                         <h3 class="text-2xl font-bold">{{ $dosen->name }}</h3>
                         <p class="text-blue-100">{{ $dosen->email }}</p>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-white/20 mt-2">
-                            <i class="fas fa-chalkboard-teacher mr-1"></i> Dosen
+                            @if($dosen->role === 'admin')
+                                <i class="fas fa-user-shield mr-1"></i> Admin
+                            @else
+                                <i class="fas fa-chalkboard-teacher mr-1"></i> Dosen
+                            @endif
                         </span>
                     </div>
                 </div>
