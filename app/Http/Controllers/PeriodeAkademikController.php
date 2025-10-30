@@ -83,7 +83,7 @@ class PeriodeAkademikController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(AcademicPeriod $academicPeriod): View
+    public function show(PeriodeAkademik $academicPeriod): View
     {
         $academicPeriod->load(['subjects', 'classrooms']);
         
@@ -93,7 +93,7 @@ class PeriodeAkademikController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(AcademicPeriod $academicPeriod): View
+    public function edit(PeriodeAkademik $academicPeriod): View
     {
         return view('periode-akademik.ubah', compact('academicPeriod'));
     }
@@ -101,7 +101,7 @@ class PeriodeAkademikController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, AcademicPeriod $academicPeriod): RedirectResponse
+    public function update(Request $request, PeriodeAkademik $academicPeriod): RedirectResponse
     {
         $request->validate([
             'academic_year' => 'required|string|max:20',
@@ -152,7 +152,7 @@ class PeriodeAkademikController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(AcademicPeriod $academicPeriod): RedirectResponse
+    public function destroy(PeriodeAkademik $academicPeriod): RedirectResponse
     {
         // Check if academic period has subjects or classrooms
         if ($academicPeriod->subjects()->count() > 0 || $academicPeriod->classrooms()->count() > 0) {

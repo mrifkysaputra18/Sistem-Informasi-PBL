@@ -56,7 +56,7 @@ class MataKuliahController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Project $project)
+    public function show(MataKuliah $project)
     {
         $project->load(['groups', 'supervisor']);
         
@@ -67,7 +67,7 @@ class MataKuliahController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Project $project)
+    public function edit(MataKuliah $project)
     {
         // Pass as 'subject' to maintain view compatibility
         return view('mata-kuliah.ubah', ['subject' => $project]);
@@ -76,7 +76,7 @@ class MataKuliahController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreSubjectRequest $request, Project $project)
+    public function update(StoreSubjectRequest $request, MataKuliah $project)
     {
         $data = $request->validated();
         $data['status'] = 'active';
@@ -91,7 +91,7 @@ class MataKuliahController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Project $project)
+    public function destroy(MataKuliah $project)
     {
         $project->delete();
 
