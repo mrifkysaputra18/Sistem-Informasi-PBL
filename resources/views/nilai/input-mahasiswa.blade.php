@@ -87,7 +87,7 @@
                                             <th class="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider" title="{{ $criterion->nama }}">
                                                 {{ Str::limit($criterion->nama, 20) }}
                                                 <br>
-                                                <span class="text-indigo-600 font-semibold">({{ number_format($criterion->bobot * 100, 0) }}%)</span>
+                                                <span class="text-indigo-600 font-semibold">({{ number_format($criterion->bobot * 100, 0, ',', '.') }}%)</span>
                                             </th>
                                         @endforeach
                                         <th class="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Aksi</th>
@@ -251,19 +251,21 @@
                 criteria.forEach(criterion => {
                     const existingScore = student.student_scores?.find(s => s.criterion_id === criterion.id);
                     const score = existingScore ? existingScore.skor : '';
+                    // Format score dengan koma untuk tampilan
+                    const formattedScore = score ? String(score).replace('.', ',') : '';
                     
                     html += `
                         <td class="px-4 py-4 whitespace-nowrap text-center">
                             <input 
-                                type="number" 
+                                type="text" 
                                 min="0" 
                                 max="100" 
-                                step="0.01"
-                                value="${score}"
+                                value="${formattedScore}"
                                 data-student-id="${student.id}"
                                 data-criterion-id="${criterion.id}"
                                 class="score-input w-20 text-center rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                 placeholder="0-100"
+                                pattern="[0-9]+([,][0-9]{1,2})?"
                             />
                         </td>
                     `;
@@ -323,13 +325,21 @@
             }
         }
 
+        // Parse angka Indonesia (koma sebagai desimal)
+        function parseIndonesianNumber(value) {
+            if (!value) return null;
+            // Ubah koma menjadi titik untuk parsing
+            const normalized = String(value).replace(',', '.');
+            return parseFloat(normalized);
+        }
+
         // Simpan nilai
         async function saveScores() {
             const inputs = document.querySelectorAll('.score-input');
             const scores = [];
 
             inputs.forEach(input => {
-                const value = parseFloat(input.value);
+                const value = parseIndonesianNumber(input.value);
                 if (!isNaN(value) && value >= 0 && value <= 100) {
                     scores.push({
                         user_id: input.dataset.studentId,
@@ -371,7 +381,7 @@
             }
         }
 
-        // Hitung ranking (tanpa menyimpan nilai)
+        // Hitung ranking (menyimpan nilai terlebih dahulu, lalu menghitung)
         async function calculateRanking() {
             const classRoomId = document.getElementById('class_room_id').value;
 
@@ -395,6 +405,15 @@
             }
 
             try {
+                // Step 1: Simpan nilai terlebih dahulu
+                showNotification('Menyimpan...', 'Menyimpan nilai mahasiswa...', 'info');
+                const saved = await saveScores();
+                
+                if (!saved) {
+                    return; // Jika gagal simpan, stop
+                }
+
+                // Step 2: Hitung ranking setelah nilai tersimpan
                 const response = await fetch('/scores/student-input/calculate', {
                     method: 'POST',
                     headers: {

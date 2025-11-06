@@ -187,11 +187,3 @@ class Pengguna extends Authenticatable
         return "https://ui-avatars.com/api/?name=" . urlencode($this->name) . "&color=0056b3&background=e6f0ff&size=200&bold=true";
     }
 }
-
-
-
-
-
-
-
-
