@@ -199,83 +199,233 @@
                             </div>
 
                             @if($students->count() > 0 && $criteria->count() > 0)
-                                <div class="overflow-x-auto">
-                                    <table class="min-w-full divide-y divide-gray-200">
-                                        <thead class="bg-gray-50">
-                                            <tr>
-                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 bg-gray-50">
-                                                    Mahasiswa
-                                                </th>
-                                                @foreach($criteria as $criterion)
-                                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        <div class="flex flex-col items-center">
-                                                            <span>{{ Str::limit($criterion->nama, 15) }}</span>
-                                                            <span class="text-xs text-gray-400">({{ number_format($criterion->bobot * 100, 0, ',', '.') }}%)</span>
-                                                            <span class="text-xs {{ $criterion->tipe == 'benefit' ? 'text-green-600' : 'text-red-600' }}">
-                                                                {{ ucfirst($criterion->tipe) }}
+                                @php
+                                    // Group students by class
+                                    $studentsByClass = $students->groupBy('class_room_id');
+                                    $hasMultipleClasses = $studentsByClass->count() > 1;
+                                @endphp
+
+                                <!-- Tabs Navigation -->
+                                <div x-data="{ activeTab: 'all' }" class="mb-4">
+                                    <div class="border-b border-gray-200">
+                                        <nav class="-mb-px flex space-x-4 overflow-x-auto" aria-label="Tabs">
+                                            <!-- Tab: Semua Mahasiswa -->
+                                            <button @click="activeTab = 'all'"
+                                                :class="activeTab === 'all' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                                                class="whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm transition duration-200">
+                                                <i class="fas fa-users mr-2"></i>Semua Mahasiswa
+                                                <span class="ml-2 py-0.5 px-2 rounded-full text-xs font-semibold"
+                                                    :class="activeTab === 'all' ? 'bg-primary-100 text-primary-800' : 'bg-gray-100 text-gray-800'">
+                                                    {{ $students->count() }}
+                                                </span>
+                                            </button>
+
+                                            @if($hasMultipleClasses)
+                                                @foreach($studentsByClass as $classRoomId => $classStudents)
+                                                    @php
+                                                        $classRoom = $classStudents->first()->classRoom;
+                                                    @endphp
+                                                    @if($classRoom)
+                                                        <button @click="activeTab = 'class-{{ $classRoomId }}'"
+                                                            :class="activeTab === 'class-{{ $classRoomId }}' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                                                            class="whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm transition duration-200">
+                                                            <i class="fas fa-school mr-2"></i>{{ $classRoom->name }}
+                                                            <span class="ml-2 py-0.5 px-2 rounded-full text-xs font-semibold"
+                                                                :class="activeTab === 'class-{{ $classRoomId }}' ? 'bg-primary-100 text-primary-800' : 'bg-gray-100 text-gray-800'">
+                                                                {{ $classStudents->count() }}
+                                                            </span>
+                                                        </button>
+                                                    @endif
+                                                @endforeach
+                                            @endif
+                                        </nav>
+                                    </div>
+
+                                    <!-- Tab Content: Semua Mahasiswa -->
+                                    <div x-show="activeTab === 'all'" 
+                                         x-transition:enter="transition ease-out duration-200"
+                                         x-transition:enter-start="opacity-0 transform scale-95"
+                                         x-transition:enter-end="opacity-100 transform scale-100"
+                                         class="mt-4">
+                                        <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+                                            <table class="min-w-full divide-y divide-gray-200">
+                                                <thead class="bg-gray-50 sticky top-0 z-10">
+                                                    <tr>
+                                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 bg-gray-50">
+                                                            Mahasiswa
+                                                        </th>
+                                                        @foreach($criteria as $criterion)
+                                                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                                <div class="flex flex-col items-center">
+                                                                    <span>{{ Str::limit($criterion->nama, 15) }}</span>
+                                                                    <span class="text-xs text-gray-400">({{ number_format($criterion->bobot * 100, 0, ',', '.') }}%)</span>
+                                                                    <span class="text-xs {{ $criterion->tipe == 'benefit' ? 'text-green-600' : 'text-red-600' }}">
+                                                                        {{ ucfirst($criterion->tipe) }}
+                                                                    </span>
+                                                                </div>
+                                                            </th>
+                                                        @endforeach
+                                                        <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                            <i class="fas fa-trophy mr-1"></i>Total
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white divide-y divide-gray-200">
+                                                    @foreach($students as $student)
+                                                        <tr class="hover:bg-gray-50 transition duration-200">
+                                                            <td class="px-4 py-4 whitespace-nowrap sticky left-0 bg-white">
+                                                                <div class="flex items-center">
+                                                                    <div>
+                                                                        <div class="text-sm font-medium text-gray-900">{{ $student->name }}</div>
+                                                                        @if($student->nim)
+                                                                            <div class="text-sm text-blue-600 font-medium">NIM: {{ $student->nim }}</div>
+                                                                        @endif
+                                                                        @if($student->classRoom)
+                                                                            <div class="text-xs text-primary-600">{{ $student->classRoom->name }}</div>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            @foreach($criteria as $criterion)
+                                                                @php
+                                                                    $score = $scores->where('user_id', $student->id)->where('criterion_id', $criterion->id)->first();
+                                                                    $skor = $score ? $score->skor : null;
+                                                                @endphp
+                                                                <td class="px-4 py-4 whitespace-nowrap text-center">
+                                                                    @if($skor !== null)
+                                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                                                            @if($skor >= 80) bg-green-100 text-green-800
+                                                                            @elseif($skor >= 70) bg-primary-100 text-primary-800
+                                                                            @elseif($skor >= 60) bg-yellow-100 text-yellow-800
+                                                                            @else bg-red-100 text-red-800
+                                                                            @endif">
+                                                                            {{ number_format($skor, 1, ',', '.') }}
+                                                                        </span>
+                                                                    @else
+                                                                        <span class="text-gray-400 text-sm">-</span>
+                                                                    @endif
+                                                                </td>
+                                                            @endforeach
+                                                            <td class="px-4 py-4 whitespace-nowrap text-center">
+                                                                @php
+                                                                    $studentRanking = collect($ranking)->firstWhere('student_id', $student->id);
+                                                                    $totalScore = $studentRanking ? $studentRanking['total_score'] : 0;
+                                                                @endphp
+                                                                <span class="text-lg font-bold 
+                                                                    @if($totalScore >= 0.8) text-green-600
+                                                                    @elseif($totalScore >= 0.7) text-primary-600
+                                                                    @elseif($totalScore >= 0.6) text-yellow-600
+                                                                    @else text-red-600
+                                                                    @endif">
+                                                                    {{ number_format($totalScore, 4, ',', '.') }}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <!-- Tab Content: Per Kelas -->
+                                    @if($hasMultipleClasses)
+                                        @foreach($studentsByClass as $classRoomId => $classStudents)
+                                            @php
+                                                $classRoom = $classStudents->first()->classRoom;
+                                            @endphp
+                                            @if($classRoom)
+                                                <div x-show="activeTab === 'class-{{ $classRoomId }}'" 
+                                                     x-transition:enter="transition ease-out duration-200"
+                                                     x-transition:enter-start="opacity-0 transform scale-95"
+                                                     x-transition:enter-end="opacity-100 transform scale-100"
+                                                     class="mt-4">
+                                                    <div class="mb-3 p-3 bg-primary-50 border-l-4 border-primary-500 rounded-r">
+                                                        <div class="flex items-center">
+                                                            <i class="fas fa-info-circle text-primary-600 mr-2"></i>
+                                                            <span class="text-sm text-primary-800">
+                                                                Menampilkan <span class="font-bold">{{ $classStudents->count() }} mahasiswa</span> dari kelas {{ $classRoom->name }}
                                                             </span>
                                                         </div>
-                                                    </th>
-                                                @endforeach
-                                                <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    <i class="fas fa-trophy mr-1"></i>Total
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="bg-white divide-y divide-gray-200">
-                                            @foreach($students as $student)
-                                                <tr class="hover:bg-gray-50 transition duration-200">
-                                                    <td class="px-4 py-4 whitespace-nowrap sticky left-0 bg-white">
-                                                        <div class="flex items-center">
-                                                            <div>
-                                                                <div class="text-sm font-medium text-gray-900">{{ $student->name }}</div>
-                                                                @if($student->nim)
-                                                                    <div class="text-sm text-blue-600 font-medium">NIM: {{ $student->nim }}</div>
-                                                                @endif
-                                                                @if($student->classRoom)
-                                                                    <div class="text-xs text-primary-600">{{ $student->classRoom->name }}</div>
-                                                                @endif
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    @foreach($criteria as $criterion)
-                                                        @php
-                                                            $score = $scores->where('user_id', $student->id)->where('criterion_id', $criterion->id)->first();
-                                                            $skor = $score ? $score->skor : null;
-                                                        @endphp
-                                                        <td class="px-4 py-4 whitespace-nowrap text-center">
-                                                            @if($skor !== null)
-                                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                                                    @if($skor >= 80) bg-green-100 text-green-800
-                                                                    @elseif($skor >= 70) bg-primary-100 text-primary-800
-                                                                    @elseif($skor >= 60) bg-yellow-100 text-yellow-800
-                                                                    @else bg-red-100 text-red-800
-                                                                    @endif">
-                                                                    {{ number_format($skor, 1, ',', '.') }}
-                                                                </span>
-                                                            @else
-                                                                <span class="text-gray-400 text-sm">-</span>
-                                                            @endif
-                                                        </td>
-                                                    @endforeach
-                                                    <td class="px-4 py-4 whitespace-nowrap text-center">
-                                                        @php
-                                                            $studentRanking = collect($ranking)->firstWhere('student_id', $student->id);
-                                                            $totalScore = $studentRanking ? $studentRanking['total_score'] : 0;
-                                                        @endphp
-                                                        <span class="text-lg font-bold 
-                                                            @if($totalScore >= 0.8) text-green-600
-                                                            @elseif($totalScore >= 0.7) text-primary-600
-                                                            @elseif($totalScore >= 0.6) text-yellow-600
-                                                            @else text-red-600
-                                                            @endif">
-                                                            {{ number_format($totalScore, 4, ',', '.') }}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                                    </div>
+                                                    <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+                                                        <table class="min-w-full divide-y divide-gray-200">
+                                                            <thead class="bg-gray-50 sticky top-0 z-10">
+                                                                <tr>
+                                                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 bg-gray-50">
+                                                                        Mahasiswa
+                                                                    </th>
+                                                                    @foreach($criteria as $criterion)
+                                                                        <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                                            <div class="flex flex-col items-center">
+                                                                                <span>{{ Str::limit($criterion->nama, 15) }}</span>
+                                                                                <span class="text-xs text-gray-400">({{ number_format($criterion->bobot * 100, 0, ',', '.') }}%)</span>
+                                                                                <span class="text-xs {{ $criterion->tipe == 'benefit' ? 'text-green-600' : 'text-red-600' }}">
+                                                                                    {{ ucfirst($criterion->tipe) }}
+                                                                                </span>
+                                                                            </div>
+                                                                        </th>
+                                                                    @endforeach
+                                                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                                        <i class="fas fa-trophy mr-1"></i>Total
+                                                                    </th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody class="bg-white divide-y divide-gray-200">
+                                                                @foreach($classStudents as $student)
+                                                                    <tr class="hover:bg-gray-50 transition duration-200">
+                                                                        <td class="px-4 py-4 whitespace-nowrap sticky left-0 bg-white">
+                                                                            <div class="flex items-center">
+                                                                                <div>
+                                                                                    <div class="text-sm font-medium text-gray-900">{{ $student->name }}</div>
+                                                                                    @if($student->nim)
+                                                                                        <div class="text-sm text-blue-600 font-medium">NIM: {{ $student->nim }}</div>
+                                                                                    @endif
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+                                                                        @foreach($criteria as $criterion)
+                                                                            @php
+                                                                                $score = $scores->where('user_id', $student->id)->where('criterion_id', $criterion->id)->first();
+                                                                                $skor = $score ? $score->skor : null;
+                                                                            @endphp
+                                                                            <td class="px-4 py-4 whitespace-nowrap text-center">
+                                                                                @if($skor !== null)
+                                                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                                                                        @if($skor >= 80) bg-green-100 text-green-800
+                                                                                        @elseif($skor >= 70) bg-primary-100 text-primary-800
+                                                                                        @elseif($skor >= 60) bg-yellow-100 text-yellow-800
+                                                                                        @else bg-red-100 text-red-800
+                                                                                        @endif">
+                                                                                        {{ number_format($skor, 1, ',', '.') }}
+                                                                                    </span>
+                                                                                @else
+                                                                                    <span class="text-gray-400 text-sm">-</span>
+                                                                                @endif
+                                                                            </td>
+                                                                        @endforeach
+                                                                        <td class="px-4 py-4 whitespace-nowrap text-center">
+                                                                            @php
+                                                                                $studentRanking = collect($ranking)->firstWhere('student_id', $student->id);
+                                                                                $totalScore = $studentRanking ? $studentRanking['total_score'] : 0;
+                                                                            @endphp
+                                                                            <span class="text-lg font-bold 
+                                                                                @if($totalScore >= 0.8) text-green-600
+                                                                                @elseif($totalScore >= 0.7) text-primary-600
+                                                                                @elseif($totalScore >= 0.6) text-yellow-600
+                                                                                @else text-red-600
+                                                                                @endif">
+                                                                                {{ number_format($totalScore, 4, ',', '.') }}
+                                                                            </span>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                    @endif
                                 </div>
                             @else
                                 <div class="text-center py-12">
@@ -299,52 +449,65 @@
                             </h3>
 
                             @if($ranking && count($ranking) > 0)
-                                <div class="space-y-3 max-h-[600px] overflow-y-auto">
+                                <div class="space-y-2 max-h-[600px] overflow-y-auto pr-2">
                                     @foreach($ranking as $rank)
-                                        <div class="flex items-center justify-between p-3 rounded-lg 
-                                            @if($rank['rank'] == 1) bg-yellow-50 border border-yellow-200
-                                            @elseif($rank['rank'] == 2) bg-gray-50 border border-gray-200
-                                            @elseif($rank['rank'] == 3) bg-orange-50 border border-orange-200
-                                            @else bg-primary-50 border border-primary-200
-                                            @endif">
-                                            <div class="flex items-center flex-1">
-                                                <div class="flex-shrink-0 mr-3">
-                                                    @if($rank['rank'] == 1)
-                                                        <i class="fas fa-crown text-yellow-500 text-xl"></i>
-                                                    @elseif($rank['rank'] == 2)
-                                                        <i class="fas fa-medal text-gray-500 text-xl"></i>
-                                                    @elseif($rank['rank'] == 3)
-                                                        <i class="fas fa-medal text-orange-500 text-xl"></i>
-                                                    @else
-                                                        <span class="flex items-center justify-center w-8 h-8 bg-primary-100 text-primary-600 rounded-full text-sm font-bold">
-                                                            {{ $rank['rank'] }}
-                                                        </span>
-                                                    @endif
-                                                </div>
-                                                <div class="flex-1 min-w-0">
-                                                    <div class="text-sm font-medium text-gray-900 truncate">
-                                                        {{ $rank['student']->name }}
+                                        <div class="group hover:shadow-md transition-all duration-200 
+                                            @if($rank['rank'] == 1) bg-gradient-to-r from-yellow-50 to-yellow-100 border-2 border-yellow-300
+                                            @elseif($rank['rank'] == 2) bg-gradient-to-r from-gray-50 to-gray-100 border-2 border-gray-300
+                                            @elseif($rank['rank'] == 3) bg-gradient-to-r from-orange-50 to-orange-100 border-2 border-orange-300
+                                            @else bg-white border border-gray-200 hover:border-primary-300
+                                            @endif
+                                            rounded-xl p-4">
+                                            <div class="flex items-start justify-between">
+                                                <!-- Left: Rank & Info -->
+                                                <div class="flex items-start flex-1 min-w-0">
+                                                    <div class="flex-shrink-0 mr-3">
+                                                        @if($rank['rank'] == 1)
+                                                            <div class="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg">
+                                                                <i class="fas fa-crown text-white text-xl"></i>
+                                                            </div>
+                                                        @elseif($rank['rank'] == 2)
+                                                            <div class="w-12 h-12 bg-gray-400 rounded-full flex items-center justify-center shadow-lg">
+                                                                <i class="fas fa-medal text-white text-xl"></i>
+                                                            </div>
+                                                        @elseif($rank['rank'] == 3)
+                                                            <div class="w-12 h-12 bg-orange-400 rounded-full flex items-center justify-center shadow-lg">
+                                                                <i class="fas fa-medal text-white text-xl"></i>
+                                                            </div>
+                                                        @else
+                                                            <div class="w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center shadow-md">
+                                                                <span class="text-white text-lg font-bold">{{ $rank['rank'] }}</span>
+                                                            </div>
+                                                        @endif
                                                     </div>
-                                                    @if($rank['student']->nim)
-                                                        <div class="text-xs text-blue-600 font-medium">NIM: {{ $rank['student']->nim }}</div>
-                                                    @endif
-                                                    @if($rank['group'])
-                                                        <div class="text-xs text-primary-600 mt-1">
-                                                            <i class="fas fa-users mr-1"></i>{{ $rank['group']->name }}
+                                                    <div class="flex-1 min-w-0 mt-1">
+                                                        <div class="text-base font-bold text-gray-900 truncate mb-1">
+                                                            {{ $rank['student']->name }}
                                                         </div>
-                                                    @endif
+                                                        @if($rank['student']->nim)
+                                                            <div class="text-xs text-gray-600 font-medium mb-1">
+                                                                <i class="fas fa-id-card mr-1 text-gray-400"></i>{{ $rank['student']->nim }}
+                                                            </div>
+                                                        @endif
+                                                        @if($rank['group'])
+                                                            <div class="inline-flex items-center px-2 py-1 rounded-md bg-primary-100 text-primary-700 text-xs font-medium">
+                                                                <i class="fas fa-users mr-1"></i>{{ $rank['group']->name }}
+                                                            </div>
+                                                        @endif
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="text-right ml-3">
-                                                <div class="text-lg font-bold 
-                                                    @if($rank['total_score'] >= 0.8) text-green-600
-                                                    @elseif($rank['total_score'] >= 0.7) text-primary-600
-                                                    @elseif($rank['total_score'] >= 0.6) text-yellow-600
-                                                    @else text-red-600
-                                                    @endif">
-                                                    {{ number_format($rank['total_score'], 4, ',', '.') }}
+                                                <!-- Right: Score -->
+                                                <div class="text-right ml-4 flex-shrink-0">
+                                                    <div class="text-2xl font-black 
+                                                        @if($rank['total_score'] >= 0.8) text-green-600
+                                                        @elseif($rank['total_score'] >= 0.7) text-primary-600
+                                                        @elseif($rank['total_score'] >= 0.6) text-yellow-600
+                                                        @else text-red-600
+                                                        @endif">
+                                                        {{ number_format($rank['total_score'], 4, ',', '.') }}
+                                                    </div>
+                                                    <div class="text-xs text-gray-500 font-medium uppercase">poin</div>
                                                 </div>
-                                                <div class="text-xs text-gray-500">poin</div>
                                             </div>
                                         </div>
                                     @endforeach
@@ -381,41 +544,54 @@
                                         
                                         <div class="space-y-2">
                                             @foreach($classData['top_students'] as $index => $studentData)
-                                                <div class="flex items-center justify-between p-2 rounded-lg 
-                                                    @if($index == 0) bg-yellow-50 border border-yellow-200
-                                                    @elseif($index == 1) bg-gray-50 border border-gray-200
-                                                    @elseif($index == 2) bg-orange-50 border border-orange-200
+                                                <div class="group hover:shadow-md transition-all duration-200 p-3 rounded-xl
+                                                    @if($index == 0) bg-gradient-to-r from-yellow-50 to-yellow-100 border-2 border-yellow-300
+                                                    @elseif($index == 1) bg-gradient-to-r from-gray-50 to-gray-100 border-2 border-gray-300
+                                                    @elseif($index == 2) bg-gradient-to-r from-orange-50 to-orange-100 border-2 border-orange-300
+                                                    @else bg-white border border-gray-200
                                                     @endif">
-                                                    <div class="flex items-center flex-1 min-w-0">
-                                                        <div class="flex-shrink-0 mr-2">
-                                                            @if($index == 0)
-                                                                <i class="fas fa-crown text-yellow-500"></i>
-                                                            @elseif($index == 1)
-                                                                <i class="fas fa-medal text-gray-500"></i>
-                                                            @elseif($index == 2)
-                                                                <i class="fas fa-medal text-orange-500"></i>
-                                                            @endif
-                                                        </div>
-                                                        <div class="flex-1 min-w-0">
-                                                            <div class="text-sm font-medium text-gray-900 truncate">
-                                                                {{ $studentData['student']->name }}
+                                                    <div class="flex items-start justify-between">
+                                                        <div class="flex items-start flex-1 min-w-0">
+                                                            <div class="flex-shrink-0 mr-2">
+                                                                @if($index == 0)
+                                                                    <div class="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center shadow-md">
+                                                                        <i class="fas fa-crown text-white text-sm"></i>
+                                                                    </div>
+                                                                @elseif($index == 1)
+                                                                    <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center shadow-md">
+                                                                        <i class="fas fa-medal text-white text-sm"></i>
+                                                                    </div>
+                                                                @elseif($index == 2)
+                                                                    <div class="w-8 h-8 bg-orange-400 rounded-full flex items-center justify-center shadow-md">
+                                                                        <i class="fas fa-medal text-white text-sm"></i>
+                                                                    </div>
+                                                                @else
+                                                                    <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center shadow-md">
+                                                                        <span class="text-white text-xs font-bold">{{ $index + 1 }}</span>
+                                                                    </div>
+                                                                @endif
                                                             </div>
-                                                            @if($studentData['student']->nim)
-                                                            <div class="text-xs text-blue-600 font-medium">NIM: {{ $studentData['student']->nim }}</div>
-                                                            @endif
-                                                            @if($studentData['student']->nim)
-                                                                <div class="text-xs text-blue-600 font-medium">NIM: {{ $studentData['student']->nim }}</div>
-                                                            @endif
+                                                            <div class="flex-1 min-w-0">
+                                                                <div class="text-sm font-bold text-gray-900 truncate">
+                                                                    {{ $studentData['student']->name }}
+                                                                </div>
+                                                                @if($studentData['student']->nim)
+                                                                    <div class="text-xs text-gray-600 font-medium">
+                                                                        <i class="fas fa-id-card mr-1 text-gray-400"></i>{{ $studentData['student']->nim }}
+                                                                    </div>
+                                                                @endif
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="text-right ml-2">
-                                                        <div class="text-sm font-bold 
-                                                            @if($studentData['total_score'] >= 0.8) text-green-600
-                                                            @elseif($studentData['total_score'] >= 0.7) text-primary-600
-                                                            @elseif($studentData['total_score'] >= 0.6) text-yellow-600
-                                                            @else text-red-600
-                                                            @endif">
-                                                            {{ number_format($studentData['total_score'], 4, ',', '.') }}
+                                                        <div class="text-right ml-2 flex-shrink-0">
+                                                            <div class="text-lg font-black 
+                                                                @if($studentData['total_score'] >= 0.8) text-green-600
+                                                                @elseif($studentData['total_score'] >= 0.7) text-primary-600
+                                                                @elseif($studentData['total_score'] >= 0.6) text-yellow-600
+                                                                @else text-red-600
+                                                                @endif">
+                                                                {{ number_format($studentData['total_score'], 4, ',', '.') }}
+                                                            </div>
+                                                            <div class="text-xs text-gray-500 uppercase">poin</div>
                                                         </div>
                                                     </div>
                                                 </div>
