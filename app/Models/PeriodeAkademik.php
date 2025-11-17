@@ -30,14 +30,6 @@ class PeriodeAkademik extends Model
     ];
 
     /**
-     * Get the subjects for the academic period.
-     */
-    public function subjects(): HasMany
-    {
-        return $this->hasMany(MataKuliah::class, 'academic_period_id');
-    }
-
-    /**
      * Get the classrooms for the academic period.
      */
     public function classrooms(): HasMany

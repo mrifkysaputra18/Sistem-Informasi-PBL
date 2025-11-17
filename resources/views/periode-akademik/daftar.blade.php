@@ -8,12 +8,9 @@
                     </svg>
                     {{ __('Periode Akademik') }}
                 </h2>
-                <p class="text-sm text-white/90">Kelola tahun ajaran, semester, dan mata kuliah PBL</p>
+                <p class="text-sm text-white/90">Kelola tahun ajaran dan semester PBL</p>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('projects.index') }}" class="bg-secondary-500 hover:bg-secondary-700 text-white font-bold py-2 px-4 rounded">
-                    <i class="fa-solid fa-book-open mr-2"></i>Mata Kuliah
-                </a>
                 <a href="{{ route('academic-periods.create') }}" class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded">
                     <i class="fa-solid fa-circle-plus mr-2"></i>Tambah Periode
                 </a>
@@ -100,10 +97,6 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         <div class="text-sm">
-                                            <i class="fa-solid fa-book-open text-gray-400 mr-1"></i>
-                                            {{ $period->subjects_count ?? 0 }} Mata Kuliah
-                                        </div>
-                                        <div class="text-sm text-gray-500">
                                             <i class="fa-solid fa-chalkboard-user text-gray-400 mr-1"></i>
                                             {{ $period->classrooms_count ?? 0 }} Kelas
                                         </div>

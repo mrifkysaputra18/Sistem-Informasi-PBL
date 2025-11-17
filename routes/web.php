@@ -13,7 +13,6 @@ use App\Http\Controllers\{
     NilaiKelompokController,
     NilaiMahasiswaController,
     InputNilaiMahasiswaController,
-    MataKuliahController,
     TargetMingguanController,
     PengumpulanTargetMingguanController,
     KemajuanMingguanController,
@@ -58,9 +57,6 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:admin'])->group(function () {
         // Academic Periods (Periode Akademik - Gabungan: Tahun Ajaran + Semester)
         Route::resource('academic-periods', PeriodeAkademikController::class);
-        
-        // Subjects (Mata Kuliah) - accessible from academic-periods page
-        Route::resource('projects', MataKuliahController::class);
         
         // User Management (Admin only)
         Route::get('admin/users/without-group', [\App\Http\Controllers\Admin\UserController::class, 'studentsWithoutGroup'])->name('admin.users.without-group');

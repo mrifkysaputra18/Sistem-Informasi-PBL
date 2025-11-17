@@ -14,7 +14,7 @@ class PeriodeAkademikController extends Controller
      */
     public function index(): View
     {
-        $academicPeriods = PeriodeAkademik::withCount(['subjects', 'classrooms'])
+        $academicPeriods = PeriodeAkademik::withCount(['classrooms'])
             ->orderBy('academic_year', 'desc')
             ->orderBy('semester_number', 'desc')
             ->paginate(10);

@@ -3,21 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\{HasMany, BelongsTo};
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Kriteria extends Model
 {
     protected $table = 'kriteria';
 
-    protected $fillable = ['subject_id', 'nama', 'bobot', 'tipe', 'segment'];
-    
-    /**
-     * Get the subject
-     */
-    public function subject(): BelongsTo
-    {
-        return $this->belongsTo(MataKuliah::class, 'subject_id');
-    }
+    protected $fillable = ['nama', 'bobot', 'tipe', 'segment'];
     
     /**
      * Get group scores
@@ -27,9 +19,3 @@ class Kriteria extends Model
         return $this->hasMany(NilaiKelompok::class, 'criterion_id');
     }
 }
-
-
-
-
-
-
