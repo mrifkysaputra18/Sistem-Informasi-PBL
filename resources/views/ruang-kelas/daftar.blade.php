@@ -119,17 +119,6 @@
                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-500 focus:ring-secondary-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Mata Kuliah</label>
-                        <select name="subject_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-500 focus:ring-secondary-500">
-                            <option value="">Semua Mata Kuliah</option>
-                            @foreach($subjects as $subject)
-                                <option value="{{ $subject->id }}" {{ request('subject_id') == $subject->id ? 'selected' : '' }}>
-                                    {{ $subject->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Semester</label>
                         <select name="semester" class="w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-500 focus:ring-secondary-500">
                             <option value="">Semua Semester</option>
@@ -152,7 +141,7 @@
                         <button type="submit" class="bg-secondary-500 hover:bg-secondary-600 text-white py-2 px-6 rounded-md">
                             <i class="fas fa-filter mr-2"></i>Filter
                         </button>
-                        @if(request()->hasAny(['search','subject_id','semester','is_active']))
+                        @if(request()->hasAny(['search','semester','is_active']))
                             <a href="{{ route('classrooms.index') }}"
                                class="bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-md transition">
                                 <i class="fas fa-undo"></i>
@@ -189,9 +178,6 @@
                                             <i class="fas fa-code mr-1"></i>Kode
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <i class="fas fa-book mr-1"></i>Mata Kuliah
-                                        </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             <i class="fas fa-user-graduate mr-1"></i>Mahasiswa
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -215,13 +201,6 @@
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                                                     {{ $classRoom->code }}
                                                 </span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                @if($classRoom->subject)
-                                                <span class="text-sm text-gray-900">{{ $classRoom->subject->name }}</span>
-                                                @else
-                                                <span class="text-gray-400">-</span>
-                                                @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">

@@ -42,7 +42,7 @@ class PeriodeAkademik extends Model
      */
     public function classrooms(): HasMany
     {
-        return $this->hasMany(RuangKelas::class, 'subject_id');
+        return $this->hasMany(RuangKelas::class, 'academic_period_id');
     }
 
     /**
@@ -167,10 +167,3 @@ class PeriodeAkademik extends Model
         return "{$this->name} (Semester {$this->semester_number})";
     }
 }
-
-
-
-
-
-
-

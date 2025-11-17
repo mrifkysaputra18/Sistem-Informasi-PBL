@@ -45,28 +45,6 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="subject_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                Mata Kuliah
-                            </label>
-                            <select name="subject_id" id="subject_id"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('subject_id') border-red-500 @enderror">
-                                <option value="">-- Pilih Mata Kuliah (Opsional) --</option>
-                                @foreach($subjects as $subject)
-                                <option value="{{ $subject->id }}" {{ old('subject_id') == $subject->id ? 'selected' : '' }}>
-                                    {{ $subject->code }} - {{ $subject->name }}
-                                </option>
-                                @endforeach
-                            </select>
-                            @error('subject_id')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                            <p class="mt-1 text-xs text-gray-500">
-                                <i class="fas fa-info-circle mr-1"></i>
-                                Pilih mata kuliah yang terkait dengan kelas ini
-                            </p>
-                        </div>
-
-                        <div class="mb-4">
                             <label for="semester" class="block text-sm font-medium text-gray-700 mb-2">
                                 Semester <span class="text-red-500">*</span>
                             </label>

@@ -13,10 +13,9 @@ class RuangKelas extends Model
     protected $fillable = [
         'name',
         'code',
-        'subject_id',
         'academic_period_id',
         'dosen_id',
-        'semester', // Keep for backward compatibility
+        'semester',
         'program_studi',
         'max_groups',
         'is_active'
@@ -26,14 +25,6 @@ class RuangKelas extends Model
         'is_active' => 'boolean',
         'max_groups' => 'integer',
     ];
-
-    /**
-     * Get the subject that owns the class
-     */
-    public function subject(): BelongsTo
-    {
-        return $this->belongsTo(MataKuliah::class, 'subject_id');
-    }
 
     /**
      * Get the academic period that owns the class
@@ -91,9 +82,3 @@ class RuangKelas extends Model
         return $this->groups()->count() >= $this->max_groups;
     }
 }
-
-
-
-
-
-

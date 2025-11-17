@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{RuangKelas, MataKuliah, AcademicYear, Semester, PeriodeAkademik};
+use App\Models\{RuangKelas, PeriodeAkademik};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -14,11 +14,6 @@ class RuangKelasController extends Controller
     public function index(Request $request)
     {
         $query = RuangKelas::withCount('students');
-
-        // Filter by subject
-        if ($request->has('subject_id') && $request->subject_id != '') {
-            $query->where('subject_id', $request->subject_id);
-        }
 
         // Filter by semester
         if ($request->has('semester') && $request->semester != '') {
@@ -43,7 +38,6 @@ class RuangKelasController extends Controller
         $classRooms = $query->orderBy('name')->paginate(10);
 
         // Get filter options
-        $subjects = MataKuliah::orderBy('name')->get() ?? collect(); // Semua mata kuliah aktif
         $semesters = RuangKelas::distinct()->pluck('semester')->sort();
 
         // Calculate statistics for students, not groups
@@ -60,7 +54,7 @@ class RuangKelasController extends Controller
             'average_students' => $averageStudents,
         ];
             
-        return view('ruang-kelas.daftar', compact('classRooms', 'subjects', 'semesters', 'stats'));
+        return view('ruang-kelas.daftar', compact('classRooms', 'semesters', 'stats'));
     }
 
     /**
@@ -85,12 +79,8 @@ class RuangKelasController extends Controller
         if (!auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized action. Hanya admin yang dapat membuat kelas.');
         }
-
-        $subjects = MataKuliah::where('is_active', true)->orderBy('name')->get();
-        $academicYears = AcademicYear::orderBy('start_date', 'desc')->get();
-        $semesters = Semester::with('academicYear')->orderBy('academic_year_id', 'desc')->orderBy('number', 'asc')->get();
         
-        return view('ruang-kelas.tambah', compact('subjects', 'academicYears', 'semesters'));
+        return view('ruang-kelas.tambah');
     }
 
     /**
@@ -106,10 +96,7 @@ class RuangKelasController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:100',
             'code' => 'required|string|max:20|unique:ruang_kelas,code',
-            'subject_id' => 'nullable|exists:mata_kuliah,id',
-            'academic_year_id' => 'nullable|exists:academic_years,id',
-            'semester_id' => 'nullable|exists:semesters,id',
-            'semester' => 'required|string', // Keep for backward compatibility
+            'semester' => 'required|string',
             'program_studi' => 'required|string',
             'max_groups' => 'required|integer|min:1|max:10',
         ]);
@@ -151,12 +138,8 @@ class RuangKelasController extends Controller
         if (!auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized action. Hanya admin yang dapat mengedit kelas.');
         }
-
-        $subjects = MataKuliah::where('is_active', true)->orderBy('name')->get();
-        $academicYears = AcademicYear::orderBy('start_date', 'desc')->get();
-        $semesters = Semester::with('academicYear')->orderBy('academic_year_id', 'desc')->orderBy('number', 'asc')->get();
         
-        return view('ruang-kelas.ubah', compact('classRoom', 'subjects', 'academicYears', 'semesters'));
+        return view('ruang-kelas.ubah', compact('classRoom'));
     }
 
     /**
@@ -172,10 +155,7 @@ class RuangKelasController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:100',
             'code' => 'required|string|max:20|unique:ruang_kelas,code,' . $classRoom->id,
-            'subject_id' => 'nullable|exists:mata_kuliah,id',
-            'academic_year_id' => 'nullable|exists:academic_years,id',
-            'semester_id' => 'nullable|exists:semesters,id',
-            'semester' => 'required|string', // Keep for backward compatibility
+            'semester' => 'required|string',
             'program_studi' => 'required|string',
             'max_groups' => 'required|integer|min:1|max:10',
             'is_active' => 'boolean',
