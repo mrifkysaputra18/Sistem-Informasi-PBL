@@ -80,7 +80,11 @@ class RuangKelasController extends Controller
             abort(403, 'Unauthorized action. Hanya admin yang dapat membuat kelas.');
         }
         
-        return view('ruang-kelas.tambah');
+        $academicPeriods = \App\Models\PeriodeAkademik::orderBy('academic_year', 'desc')
+            ->orderBy('semester_number', 'desc')
+            ->get();
+        
+        return view('ruang-kelas.tambah', compact('academicPeriods'));
     }
 
     /**
@@ -99,27 +103,36 @@ class RuangKelasController extends Controller
             'semester' => 'required|string',
             'program_studi' => 'required|string',
             'max_groups' => 'required|integer|min:1|max:10',
+            'academic_period_id' => 'nullable|exists:periode_akademik,id',
         ]);
 
-        // Auto-sync academic_period_id based on semester
-        $academicPeriod = PeriodeAkademik::where('semester_number', $validated['semester'])
-            ->where('is_active', true)
-            ->first();
-
-        if ($academicPeriod) {
-            $validated['academic_period_id'] = $academicPeriod->id;
-            
-            Log::info('Auto-synced academic period for new class', [
+        // Use selected academic_period_id if provided, otherwise auto-sync based on semester
+        if (!empty($validated['academic_period_id'])) {
+            Log::info('Using selected academic period for new class', [
                 'class_code' => $validated['code'],
-                'semester' => $validated['semester'],
-                'academic_period_id' => $academicPeriod->id,
-                'academic_period_name' => $academicPeriod->name
+                'academic_period_id' => $validated['academic_period_id']
             ]);
         } else {
-            Log::warning('No active academic period found for new class', [
-                'class_code' => $validated['code'],
-                'semester' => $validated['semester']
-            ]);
+            // Auto-sync academic_period_id based on semester
+            $academicPeriod = PeriodeAkademik::where('semester_number', $validated['semester'])
+                ->where('is_active', true)
+                ->first();
+
+            if ($academicPeriod) {
+                $validated['academic_period_id'] = $academicPeriod->id;
+                
+                Log::info('Auto-synced academic period for new class', [
+                    'class_code' => $validated['code'],
+                    'semester' => $validated['semester'],
+                    'academic_period_id' => $academicPeriod->id,
+                    'academic_period_name' => $academicPeriod->name
+                ]);
+            } else {
+                Log::warning('No active academic period found for new class', [
+                    'class_code' => $validated['code'],
+                    'semester' => $validated['semester']
+                ]);
+            }
         }
 
         RuangKelas::create($validated);
@@ -139,7 +152,11 @@ class RuangKelasController extends Controller
             abort(403, 'Unauthorized action. Hanya admin yang dapat mengedit kelas.');
         }
         
-        return view('ruang-kelas.ubah', compact('classRoom'));
+        $academicPeriods = \App\Models\PeriodeAkademik::orderBy('academic_year', 'desc')
+            ->orderBy('semester_number', 'desc')
+            ->get();
+        
+        return view('ruang-kelas.ubah', compact('classRoom', 'academicPeriods'));
     }
 
     /**
@@ -159,6 +176,7 @@ class RuangKelasController extends Controller
             'program_studi' => 'required|string',
             'max_groups' => 'required|integer|min:1|max:10',
             'is_active' => 'boolean',
+            'academic_period_id' => 'nullable|exists:periode_akademik,id',
         ]);
 
         // Check if semester changed, auto-update academic_period_id

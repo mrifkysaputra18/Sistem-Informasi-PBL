@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{Pengguna, MataKuliah, RuangKelas, Kelompok, Kriteria, NilaiKelompok};
+use App\Models\{Pengguna, RuangKelas, Kelompok, Kriteria, NilaiKelompok};
 
 class DasborAdminController extends Controller
 {
@@ -13,7 +13,6 @@ class DasborAdminController extends Controller
             'totalMahasiswa' => Pengguna::where('role', 'mahasiswa')->count(),
             'totalDosen' => Pengguna::where('role', 'dosen')->count(),
             'totalKoordinator' => Pengguna::where('role', 'koordinator')->count(),
-            'totalSubjects' => MataKuliah::count(),
             'totalClassRooms' => RuangKelas::count(),
             'totalGroups' => Kelompok::count(),
             'totalCriteria' => Kriteria::count(),

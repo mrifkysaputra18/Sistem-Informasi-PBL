@@ -56,6 +56,26 @@
                         </div>
 
                         <div class="mb-4">
+                            <label for="academic_period_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                Periode Akademik
+                            </label>
+                            <select name="academic_period_id" id="academic_period_id"
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('academic_period_id') border-red-500 @enderror">
+                                <option value="">-- Auto (berdasarkan semester) --</option>
+                                @foreach($academicPeriods as $period)
+                                    <option value="{{ $period->id }}" 
+                                        {{ old('academic_period_id', $classRoom->academic_period_id) == $period->id ? 'selected' : '' }}>
+                                        {{ $period->name }} (Semester {{ $period->semester_number }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            <p class="mt-1 text-xs text-gray-500">Kosongkan untuk auto-link berdasarkan semester</p>
+                            @error('academic_period_id')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
                             <label for="program_studi" class="block text-sm font-medium text-gray-700 mb-2">
                                 Program Studi <span class="text-red-500">*</span>
                             </label>

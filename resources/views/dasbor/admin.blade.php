@@ -60,24 +60,24 @@
                         </div>
                     </div>
 
-                    <!-- Card 2: Subjects -->
+                    <!-- Card 2: Class Rooms -->
                     <div class="group relative bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
                         <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         
                         <div class="relative flex items-start justify-between">
                             <div class="flex-1">
-                                <p class="text-green-100 text-xs font-medium uppercase tracking-wider">Mata Kuliah</p>
-                                <p class="text-4xl font-black mt-3 mb-3 group-hover:scale-110 transition-transform duration-300">{{ $stats['totalSubjects'] }}</p>
+                                <p class="text-green-100 text-xs font-medium uppercase tracking-wider">Ruang Kelas</p>
+                                <p class="text-4xl font-black mt-3 mb-3 group-hover:scale-110 transition-transform duration-300">{{ $stats['totalClassRooms'] }}</p>
                                 <div class="flex items-center gap-2 text-xs text-green-100">
                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
                                     </svg>
-                                    <span><span class="font-semibold">{{ $stats['totalClassRooms'] }}</span> Kelas Aktif</span>
+                                    <span>Kelas Aktif</span>
                     </div>
                 </div>
                             <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
                                 <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+                                    <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/>
                                 </svg>
                         </div>
                         </div>
