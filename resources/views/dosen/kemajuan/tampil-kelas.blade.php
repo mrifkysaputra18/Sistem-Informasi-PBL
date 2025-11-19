@@ -18,7 +18,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                     <div>
                         <h3 class="text-lg font-semibold mb-1">{{ $classRoom->name }}</h3>
-                        <p class="text-indigo-100 text-sm">{{ $classRoom->subject->name ?? 'Tidak ada subject' }}</p>
+                        <p class="text-indigo-100 text-sm">{{ $classRoom->program_studi }} • Semester {{ $classRoom->semester }}</p>
                         <p class="text-indigo-200 text-xs">{{ $classRoom->academicPeriod->name ?? 'Tidak ada periode' }}</p>
                     </div>
                     

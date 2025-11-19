@@ -14,7 +14,7 @@ class KemajuanDosenController extends Controller
         $user = auth()->user();
         
         // Dosen hanya melihat kelas yang dia ampu
-        $classRooms = RuangKelas::with(['subject', 'groups', 'academicPeriod'])
+        $classRooms = RuangKelas::with(['groups', 'academicPeriod', 'dosen'])
             ->where('dosen_id', $user->id)
             ->where('is_active', true)
             ->withCount(['groups', 'groups as group_members_count' => function($query) {
@@ -55,8 +55,8 @@ class KemajuanDosenController extends Controller
                 $query->with(['creator', 'completedByUser', 'reviewer'])
                       ->orderBy('week_number');
             },
-            'subject',
-            'academicPeriod'
+            'academicPeriod',
+            'dosen'
         ]);
 
         // Stats untuk kelas ini

@@ -51,10 +51,7 @@
                                         <option value="">-- Pilih Kelas --</option>
                                         @foreach($classRooms as $classRoom)
                                         <option value="{{ $classRoom->id }}">
-                                            {{ $classRoom->name }} 
-                                            @if($classRoom->subject)
-                                                - {{ $classRoom->subject->name }}
-                                            @endif
+                                            {{ $classRoom->name }} - {{ $classRoom->program_studi }} (Semester {{ $classRoom->semester }})
                                         </option>
                                         @endforeach
                                     </select>

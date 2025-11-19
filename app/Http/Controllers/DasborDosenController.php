@@ -34,7 +34,7 @@ class DasborDosenController extends Controller
         ];
 
         // Classes assigned to this dosen
-        $classRooms = RuangKelas::with(['groups.members.user', 'subject', 'academicPeriod'])
+        $classRooms = RuangKelas::with(['groups.members.user', 'academicPeriod', 'dosen'])
             ->where('dosen_id', $user->id)
             ->where('is_active', true)
             ->withCount('groups')

@@ -74,7 +74,7 @@
                                         <div class="flex justify-between items-start mb-4">
                                             <div>
                                                 <h4 class="text-lg font-semibold text-gray-900">{{ $classRoom->name }}</h4>
-                                                <p class="text-sm text-gray-600">{{ $classRoom->subject->name ?? 'Tidak ada subject' }}</p>
+                                                <p class="text-sm text-gray-600">{{ $classRoom->program_studi }} • Semester {{ $classRoom->semester }}</p>
                                                 <p class="text-xs text-gray-500 mt-1">{{ $classRoom->academicPeriod->name ?? 'Tidak ada periode' }}</p>
                                             </div>
                                             <a href="{{ route('dosen.progress.show-class', $classRoom) }}" 

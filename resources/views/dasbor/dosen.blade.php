@@ -239,14 +239,12 @@
                                             <div class="flex-1 min-w-0">
                                                 <p class="font-semibold text-gray-900 truncate">{{ $classRoom->name }}</p>
                                                 <p class="text-xs text-gray-600 flex items-center gap-1 mt-1">
-                                                    @if($classRoom->subject)
                                                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                                         <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
                                                     </svg>
-                                                    <span class="truncate">{{ $classRoom->subject->name }}</span>
-                                                    <span class="text-gray-400">•</span>
-                                                    @endif
                                                     <span class="truncate">{{ $classRoom->program_studi }}</span>
+                                                    <span class="text-gray-400">•</span>
+                                                    <span class="text-gray-500">Semester {{ $classRoom->semester }}</span>
                                                 </p>
                                             </div>
                                         </div>

@@ -51,6 +51,27 @@ class TargetMingguan extends Model
     ];
 
     /**
+     * Boot method for auto-closing expired targets
+     */
+    protected static function booted(): void
+    {
+        // Auto-check and close expired targets when loaded from database
+        static::retrieved(function ($target) {
+            if ($target->shouldAutoClose()) {
+                // Update database immediately without triggering events
+                $target->updateQuietly([
+                    'is_open' => false,
+                    'auto_closed_at' => now(),
+                ]);
+                
+                // Update model instance
+                $target->is_open = false;
+                $target->auto_closed_at = now();
+            }
+        });
+    }
+
+    /**
      * Get the group
      */
     public function group(): BelongsTo

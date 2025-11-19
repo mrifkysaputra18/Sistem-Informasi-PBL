@@ -85,7 +85,7 @@ class PeriodeAkademikController extends Controller
      */
     public function show(PeriodeAkademik $academicPeriod): View
     {
-        $academicPeriod->load(['subjects', 'classrooms']);
+        $academicPeriod->load(['classrooms.dosen', 'classrooms.groups']);
         
         return view('periode-akademik.tampil', compact('academicPeriod'));
     }
@@ -154,11 +154,11 @@ class PeriodeAkademikController extends Controller
      */
     public function destroy(PeriodeAkademik $academicPeriod): RedirectResponse
     {
-        // Check if academic period has subjects or classrooms
-        if ($academicPeriod->subjects()->count() > 0 || $academicPeriod->classrooms()->count() > 0) {
+        // Check if academic period has classrooms
+        if ($academicPeriod->classrooms()->count() > 0) {
             return redirect()
                 ->route('academic-periods.index')
-                ->with('error', 'Tidak dapat menghapus periode akademik yang memiliki mata kuliah atau kelas terkait.');
+                ->with('error', 'Tidak dapat menghapus periode akademik yang memiliki kelas terkait.');
         }
 
         $name = $academicPeriod->name;
