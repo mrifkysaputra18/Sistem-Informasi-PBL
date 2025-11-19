@@ -16,15 +16,23 @@ class UlasanTargetMingguanController extends Controller
     {
         $user = Auth::user();
         
-        // Get all submitted targets that haven't been reviewed yet
-        $pendingTargets = TargetMingguan::with(['group.classRoom', 'group.members', 'completedByUser'])
+        // Base query
+        $query = TargetMingguan::with(['group.classRoom', 'group.members', 'completedByUser'])
             ->whereIn('submission_status', ['submitted', 'late'])  // Hanya yang sudah submit
-            ->where('is_reviewed', false)  // Belum direview
-            ->orderBy('completed_at', 'desc')  // Terbaru dulu
-            ->paginate(20);
+            ->where('is_reviewed', false);  // Belum direview
+        
+        // Dosen hanya bisa review target di kelas yang diampu
+        if ($user->isDosen()) {
+            $query->whereHas('group.classRoom', function($q) use ($user) {
+                $q->where('dosen_id', $user->id);
+            });
+        }
+        
+        $pendingTargets = $query->orderBy('completed_at', 'desc')->paginate(20);
 
         \Log::info('Fetching pending targets for review', [
             'user_id' => $user->id,
+            'role' => $user->role,
             'count' => $pendingTargets->total(),
         ]);
 
@@ -36,7 +44,13 @@ class UlasanTargetMingguanController extends Controller
      */
     public function show(TargetMingguan $weeklyTarget)
     {
+        $user = Auth::user();
         $target = $weeklyTarget->load(['group.members', 'group.classRoom', 'completedByUser', 'review']);
+        
+        // Dosen hanya bisa review target di kelas yang diampu
+        if ($user->isDosen() && $target->group->classRoom->dosen_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses untuk mereview target ini. Target ini bukan dari kelas yang Anda ampu.');
+        }
         
         // Check if already reviewed
         if ($target->isReviewed()) {
@@ -51,7 +65,13 @@ class UlasanTargetMingguanController extends Controller
      */
     public function store(Request $request, TargetMingguan $weeklyTarget)
     {
+        $user = Auth::user();
         $target = $weeklyTarget;
+        
+        // Dosen hanya bisa review target di kelas yang diampu
+        if ($user->isDosen() && $target->group->classRoom->dosen_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses untuk mereview target ini. Target ini bukan dari kelas yang Anda ampu.');
+        }
         
         // Check if already reviewed
         if ($target->isReviewed()) {
@@ -106,7 +126,13 @@ class UlasanTargetMingguanController extends Controller
      */
     public function edit(TargetMingguan $weeklyTarget)
     {
+        $user = Auth::user();
         $target = $weeklyTarget->load(['group.members', 'group.classRoom', 'review']);
+        
+        // Dosen hanya bisa edit review target di kelas yang diampu
+        if ($user->isDosen() && $target->group->classRoom->dosen_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses untuk mengedit review ini. Target ini bukan dari kelas yang Anda ampu.');
+        }
         
         if (!$target->isReviewed()) {
             return redirect()
@@ -122,8 +148,14 @@ class UlasanTargetMingguanController extends Controller
      */
     public function update(Request $request, TargetMingguan $weeklyTarget)
     {
+        $user = Auth::user();
         $target = $weeklyTarget;
         $review = $target->review;
+        
+        // Dosen hanya bisa update review target di kelas yang diampu
+        if ($user->isDosen() && $target->group->classRoom->dosen_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses untuk mengupdate review ini. Target ini bukan dari kelas yang Anda ampu.');
+        }
 
         if (!$review) {
             return redirect()

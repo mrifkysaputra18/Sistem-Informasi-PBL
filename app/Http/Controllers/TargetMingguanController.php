@@ -320,7 +320,21 @@ class TargetMingguanController extends Controller
      */
     public function show(TargetMingguan $target)
     {
+        $user = auth()->user();
         $target->load(['group.classRoom', 'group.members.user', 'creator', 'completedByUser', 'reviewer']);
+        
+        // Dosen hanya bisa lihat target di kelas yang diampu
+        if ($user->isDosen() && $target->group->classRoom->dosen_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses untuk melihat target ini. Target ini bukan dari kelas yang Anda ampu.');
+        }
+        
+        // Mahasiswa hanya bisa lihat target kelompoknya sendiri
+        if ($user->isMahasiswa()) {
+            $isMember = $target->group->members()->where('user_id', $user->id)->exists();
+            if (!$isMember) {
+                abort(403, 'Anda tidak memiliki akses untuk melihat target ini. Target ini bukan untuk kelompok Anda.');
+            }
+        }
 
         return view('target.tampil', compact('target'));
     }
@@ -331,8 +345,14 @@ class TargetMingguanController extends Controller
      */
     public function edit(TargetMingguan $target)
     {
-        // Dosen hanya bisa edit target yang dia buat (or admin can edit all)
-        if ($target->created_by !== auth()->id() && !auth()->user()->isAdmin()) {
+        $user = auth()->user();
+        
+        // Check permission: Admin, creator, or dosen pengampu
+        $canEdit = $user->isAdmin() 
+                || $target->created_by === $user->id
+                || ($user->isDosen() && $target->group->classRoom->dosen_id === $user->id);
+        
+        if (!$canEdit) {
             abort(403, 'Anda tidak memiliki akses untuk mengedit target ini.');
         }
 
@@ -350,8 +370,14 @@ class TargetMingguanController extends Controller
      */
     public function update(Request $request, TargetMingguan $target)
     {
-        // Check permission
-        if ($target->created_by !== auth()->id() && !auth()->user()->isAdmin()) {
+        $user = auth()->user();
+        
+        // Check permission: Admin, creator, or dosen pengampu
+        $canEdit = $user->isAdmin() 
+                || $target->created_by === $user->id
+                || ($user->isDosen() && $target->group->classRoom->dosen_id === $user->id);
+        
+        if (!$canEdit) {
             abort(403, 'Anda tidak memiliki akses untuk mengedit target ini.');
         }
 
@@ -382,8 +408,14 @@ class TargetMingguanController extends Controller
      */
     public function destroy(TargetMingguan $target)
     {
-        // Check permission
-        if ($target->created_by !== auth()->id() && !auth()->user()->isAdmin()) {
+        $user = auth()->user();
+        
+        // Check permission: Admin, creator, or dosen pengampu
+        $canDelete = $user->isAdmin() 
+                  || $target->created_by === $user->id
+                  || ($user->isDosen() && $target->group->classRoom->dosen_id === $user->id);
+        
+        if (!$canDelete) {
             abort(403, 'Anda tidak memiliki akses untuk menghapus target ini.');
         }
 

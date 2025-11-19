@@ -185,14 +185,20 @@
                     </a>
                     
                     <div class="flex flex-wrap gap-2">
-                        <!-- Edit Button (Always show for dosen who created or admin) -->
-                        @if($target->created_by === auth()->id() || auth()->user()->isAdmin())
+                        <!-- Edit Button (Dosen can edit targets in their class, Admin can edit all) -->
+                        @php
+                            $canEdit = auth()->user()->isAdmin() 
+                                    || $target->created_by === auth()->id()
+                                    || (auth()->user()->isDosen() && $target->group->classRoom->dosen_id === auth()->id());
+                        @endphp
+                        
+                        @if($canEdit)
                         <a href="{{ route('targets.edit', $target->id) }}" 
                            class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105">
                             <i class="fas fa-edit mr-2"></i>Edit Target
                         </a>
                         
-                        <!-- Delete Button (Always show for dosen who created or admin) -->
+                        <!-- Delete Button (Same permission as edit) -->
                         @php
                             $deleteMessage = "⚠️ PERHATIAN!\n\nYakin ingin menghapus target ini?\n\n";
                             $deleteMessage .= "Target: {$target->title}\n";
