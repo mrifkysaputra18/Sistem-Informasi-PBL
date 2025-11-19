@@ -11,11 +11,6 @@
                 <a href="{{ route('classrooms.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
                     ← Kembali
                 </a>
-                @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
-                <a href="{{ route('classrooms.students.create', $classRoom->id) }}" class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded">
-                    + Tambah Mahasiswa
-                </a>
-                @endif
             </div>
         </div>
     </x-slot>
@@ -83,11 +78,7 @@
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Status
                                     </th>
-                                    @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
-                                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Aksi
-                                    </th>
-                                    @endif
+
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -116,27 +107,7 @@
                                         </span>
                                         @endif
                                     </td>
-                                    @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
-                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                        <div class="flex items-center justify-center space-x-2">
-                                            <a href="{{ route('classrooms.students.edit', [$classRoom->id, $student->id]) }}" 
-                                               class="text-yellow-600 hover:text-yellow-900">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form action="{{ route('classrooms.students.destroy', [$classRoom->id, $student->id]) }}" 
-                                                  method="POST"
-                                                  id="remove-student-form-{{ $student->id }}">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button"
-                                                        onclick="removeStudent({{ $student->id }}, '{{ addslashes($student->name) }}')"
-                                                        class="text-red-600 hover:text-red-900">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                    @endif
+
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -148,15 +119,4 @@
         </div>
     </div>
 
-    <script>
-        function removeStudent(studentId, studentName) {
-            const form = document.getElementById('remove-student-form-' + studentId);
-            
-            confirmDelete(
-                'Hapus Mahasiswa?',
-                `Apakah Anda yakin ingin menghapus mahasiswa <strong>"${studentName}"</strong> dari kelas ini?<br><small class="text-gray-500">Tindakan ini tidak dapat dibatalkan.</small>`,
-                form
-            );
-        }
-    </script>
 </x-app-layout>

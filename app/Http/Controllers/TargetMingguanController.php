@@ -230,9 +230,35 @@ class TargetMingguanController extends Controller
         // Tentukan target groups berdasarkan tipe
         if ($request->target_type === 'single') {
             $targetGroups = [$request->group_id];
+            
+            // Validasi: Dosen hanya bisa create target untuk kelas yang diampu
+            if (auth()->user()->isDosen()) {
+                $group = Kelompok::with('classRoom')->findOrFail($request->group_id);
+                if ($group->classRoom->dosen_id !== auth()->id()) {
+                    abort(403, 'Anda tidak memiliki akses untuk membuat target di kelas ini.');
+                }
+            }
         } elseif ($request->target_type === 'multiple') {
             $targetGroups = $request->group_ids;
+            
+            // Validasi: Dosen hanya bisa create target untuk kelas yang diampu
+            if (auth()->user()->isDosen()) {
+                $groups = Kelompok::with('classRoom')->whereIn('id', $targetGroups)->get();
+                foreach ($groups as $group) {
+                    if ($group->classRoom->dosen_id !== auth()->id()) {
+                        abort(403, 'Anda tidak memiliki akses untuk membuat target di kelas ini.');
+                    }
+                }
+            }
         } elseif ($request->target_type === 'all_class') {
+            // Validasi: Dosen hanya bisa create target untuk kelas yang diampu
+            if (auth()->user()->isDosen()) {
+                $classRoom = RuangKelas::findOrFail($request->class_room_id);
+                if ($classRoom->dosen_id !== auth()->id()) {
+                    abort(403, 'Anda tidak memiliki akses untuk membuat target di kelas ini.');
+                }
+            }
+            
             // Semua groups di kelas ini
             $targetGroups = Kelompok::where('class_room_id', $request->class_room_id)
                 ->pluck('id')
@@ -388,87 +414,11 @@ class TargetMingguanController extends Controller
             ->with('success', "Target '{$targetTitle}' berhasil dihapus (force delete)!");
     }
 
-    /**
-     * Review submission (DOSEN)
-     */
-    public function review(TargetMingguan $target)
-    {
-        // Check if target has been submitted
-        if (!$target->isSubmitted()) {
-            return redirect()->back()
-                ->with('error', 'Target ini belum disubmit oleh mahasiswa.');
-        }
-
-        $target->load(['group.classRoom', 'group.members.user', 'creator', 'completedByUser']);
-
-        return view('target.ulasan', compact('target'));
-    }
-
-    /**
-     * Store review (DOSEN)
-     */
-    public function storeReview(Request $request, TargetMingguan $target)
-    {
-        // Check if target has been submitted
-        if (!$target->isSubmitted()) {
-            return redirect()->back()
-                ->with('error', 'Target ini belum disubmit oleh mahasiswa.');
-        }
-
-        // Check if already reviewed
-        if ($target->isReviewed()) {
-            return redirect()->back()
-                ->with('error', 'Target ini sudah direview.');
-        }
-
-        $validated = $request->validate([
-            'score' => 'required|numeric|min:0|max:100',
-            'status' => 'required|in:approved,needs_revision,rejected',
-            'feedback' => 'required|string',
-            'suggestions' => 'nullable|string',
-        ]);
-
-        // Map status to submission_status
-        $statusMap = [
-            'approved' => 'approved',
-            'needs_revision' => 'revision',
-            'rejected' => 'rejected'
-        ];
-        
-        $newStatus = $statusMap[$request->status];
-
-        $target->update([
-            'submission_status' => $newStatus,
-            'is_reviewed' => true,
-            'reviewed_at' => now(),
-            'reviewer_id' => auth()->id(),
-        ]);
-
-        // Create review record if model exists
-        if (class_exists('App\Models\UlasanTargetMingguan')) {
-            $reviewData = [
-                'reviewer_id' => auth()->id(),
-                'status' => $newStatus,
-                'score' => $request->score,
-                'feedback' => $request->feedback,
-                'suggestions' => $request->suggestions,
-                'notes' => $request->feedback, // Untuk backward compatibility
-            ];
-            
-            $target->review()->create($reviewData);
-        }
-
-        \Log::info('Target Reviewed', [
-            'target_id' => $target->id,
-            'reviewer_id' => auth()->id(),
-            'status' => $newStatus,
-            'score' => $request->score,
-        ]);
-
-        return redirect()->route('targets.index')
-            ->with('success', 'Review berhasil disimpan dengan nilai ' . $request->score . '!');
-    }
-
+    // Review methods removed - use UlasanTargetMingguanController instead
+    // Removed methods: review(), storeReview()
+    // Date: 2025-11-18
+    // Reason: Duplicate functionality with UlasanTargetMingguanController
+    
     /**
      * Download evidence file
      */

@@ -137,10 +137,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('targets', [TargetMingguanController::class, 'index'])->name('targets.index');
         Route::get('targets/{target}/show', [TargetMingguanController::class, 'show'])->name('targets.show');
         
-        // Review targets (dosen & koordinator bisa review)
-        Route::get('targets/{target}/review', [TargetMingguanController::class, 'review'])->name('targets.review');
-        Route::post('targets/{target}/review', [TargetMingguanController::class, 'storeReview'])->name('targets.review.store');
-        
         // Reopen/Close targets (dosen bisa membuka/menutup target)
         Route::post('targets/{target}/reopen', [TargetMingguanController::class, 'reopen'])->name('targets.reopen');
         Route::post('targets/{target}/close', [TargetMingguanController::class, 'close'])->name('targets.close');
@@ -200,13 +196,6 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:koordinator,admin'])->group(function () {
         // Class Rooms
         Route::resource('classrooms', RuangKelasController::class);
-        
-        // Student Management in Class Rooms
-        Route::get('classrooms/{classRoom}/students/create', [RuangKelasController::class, 'createStudent'])->name('classrooms.students.create');
-        Route::post('classrooms/{classRoom}/students', [RuangKelasController::class, 'storeStudent'])->name('classrooms.students.store');
-        Route::get('classrooms/{classRoom}/students/{student}/edit', [RuangKelasController::class, 'editStudent'])->name('classrooms.students.edit');
-        Route::put('classrooms/{classRoom}/students/{student}', [RuangKelasController::class, 'updateStudent'])->name('classrooms.students.update');
-        Route::delete('classrooms/{classRoom}/students/{student}', [RuangKelasController::class, 'destroyStudent'])->name('classrooms.students.destroy');
         
         // Groups (CRUD) - IMPORTANT: groups/create must come before groups/{group}
         Route::get('groups', [KelompokController::class, 'index'])->name('groups.index');

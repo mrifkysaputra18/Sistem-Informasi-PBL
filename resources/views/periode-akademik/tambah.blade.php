@@ -62,14 +62,8 @@
                                     required
                                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('semester_number') border-red-500 @enderror">
                                 <option value="">Pilih Semester</option>
-                                @for($i = 1; $i <= 8; $i++)
-                                <option value="{{ $i }}" {{ old('semester_number') == $i ? 'selected' : '' }}>
-                                    Semester {{ $i }}
-                                    @if(in_array($i, [3, 4, 5]))
-                                        (PBL)
-                                    @endif
-                                </option>
-                                @endfor
+                                <option value="3" {{ old('semester_number') == 3 ? 'selected' : '' }}>Semester 3</option>
+                                <option value="4" {{ old('semester_number') == 4 ? 'selected' : '' }}>Semester 4</option>
                             </select>
                             @error('semester_number')
                             <p class="mt-1 text-sm text-red-600">

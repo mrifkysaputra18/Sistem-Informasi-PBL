@@ -88,6 +88,25 @@
                         </div>
 
                         <div class="mb-4">
+                            <label for="dosen_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                Dosen Pengampu
+                            </label>
+                            <select name="dosen_id" id="dosen_id"
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('dosen_id') border-red-500 @enderror">
+                                <option value="">-- Pilih Dosen (Optional) --</option>
+                                @foreach($dosens as $dosen)
+                                    <option value="{{ $dosen->id }}" {{ old('dosen_id', $classRoom->dosen_id) == $dosen->id ? 'selected' : '' }}>
+                                        {{ $dosen->name }} - {{ $dosen->email }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <p class="mt-1 text-xs text-gray-500">Assign dosen yang akan mengampu kelas ini</p>
+                            @error('dosen_id')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
                             <label for="max_groups" class="block text-sm font-medium text-gray-700 mb-2">
                                 Maksimal Kelompok <span class="text-red-500">*</span>
                             </label>

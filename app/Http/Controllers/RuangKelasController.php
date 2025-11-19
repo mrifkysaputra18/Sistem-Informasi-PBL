@@ -84,7 +84,12 @@ class RuangKelasController extends Controller
             ->orderBy('semester_number', 'desc')
             ->get();
         
-        return view('ruang-kelas.tambah', compact('academicPeriods'));
+        // Get all dosens for assignment
+        $dosens = \App\Models\Pengguna::where('role', 'dosen')
+            ->orderBy('name')
+            ->get();
+        
+        return view('ruang-kelas.tambah', compact('academicPeriods', 'dosens'));
     }
 
     /**
@@ -104,6 +109,7 @@ class RuangKelasController extends Controller
             'program_studi' => 'required|string',
             'max_groups' => 'required|integer|min:1|max:10',
             'academic_period_id' => 'nullable|exists:periode_akademik,id',
+            'dosen_id' => 'nullable|exists:pengguna,id',
         ]);
 
         // Use selected academic_period_id if provided, otherwise auto-sync based on semester
@@ -156,7 +162,12 @@ class RuangKelasController extends Controller
             ->orderBy('semester_number', 'desc')
             ->get();
         
-        return view('ruang-kelas.ubah', compact('classRoom', 'academicPeriods'));
+        // Get all dosens for assignment
+        $dosens = \App\Models\Pengguna::where('role', 'dosen')
+            ->orderBy('name')
+            ->get();
+        
+        return view('ruang-kelas.ubah', compact('classRoom', 'academicPeriods', 'dosens'));
     }
 
     /**
@@ -177,6 +188,7 @@ class RuangKelasController extends Controller
             'max_groups' => 'required|integer|min:1|max:10',
             'is_active' => 'boolean',
             'academic_period_id' => 'nullable|exists:periode_akademik,id',
+            'dosen_id' => 'nullable|exists:pengguna,id',
         ]);
 
         // Check if semester changed, auto-update academic_period_id
@@ -234,130 +246,6 @@ class RuangKelasController extends Controller
             ->with('success', 'Kelas berhasil dihapus!');
     }
 
-    /**
-     * Show form to add student to class
-     */
-    public function createStudent(RuangKelas $classRoom)
-    {
-        // Only admin and dosen can add students
-        if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        return view('ruang-kelas.mahasiswa.tambah', compact('classRoom'));
-    }
-
-    /**
-     * Store student in class
-     */
-    public function storeStudent(Request $request, RuangKelas $classRoom)
-    {
-        // Only admin and dosen can add students
-        if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'nim' => 'required|string|max:20|unique:pengguna,nim',
-            'email' => 'required|email|unique:pengguna,email',
-            'password' => 'required|string|min:8',
-        ]);
-
-        $validated['role'] = 'mahasiswa';
-        $validated['program_studi'] = $classRoom->program_studi;
-        $validated['class_room_id'] = $classRoom->id;
-        $validated['is_active'] = true;
-        $validated['password'] = \Hash::make($validated['password']);
-
-        \App\Models\Pengguna::create($validated);
-
-        return redirect()
-            ->route('classrooms.show', $classRoom)
-            ->with('success', 'Mahasiswa berhasil ditambahkan ke kelas!');
-    }
-
-    /**
-     * Show form to edit student
-     */
-    public function editStudent(RuangKelas $classRoom, \App\Models\Pengguna $student)
-    {
-        // Only admin and dosen can edit students
-        if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        // Make sure student belongs to this class
-        if ($student->class_room_id !== $classRoom->id) {
-            abort(404, 'Mahasiswa tidak ditemukan di kelas ini.');
-        }
-
-        return view('ruang-kelas.mahasiswa.ubah', compact('classRoom', 'student'));
-    }
-
-    /**
-     * Update student
-     */
-    public function updateStudent(Request $request, RuangKelas $classRoom, \App\Models\Pengguna $student)
-    {
-        // Only admin and dosen can update students
-        if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        // Make sure student belongs to this class
-        if ($student->class_room_id !== $classRoom->id) {
-            abort(404, 'Mahasiswa tidak ditemukan di kelas ini.');
-        }
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'nim' => 'required|string|max:20|unique:pengguna,nim,' . $student->id,
-            'email' => 'required|email|unique:pengguna,email,' . $student->id,
-            'is_active' => 'boolean',
-        ]);
-
-        // Update password if provided
-        if ($request->filled('password')) {
-            $request->validate(['password' => 'string|min:8']);
-            $validated['password'] = \Hash::make($request->password);
-        }
-
-        $student->update($validated);
-
-        return redirect()
-            ->route('classrooms.show', $classRoom)
-            ->with('success', 'Data mahasiswa berhasil diupdate!');
-    }
-
-    /**
-     * Remove student from class
-     */
-    public function destroyStudent(RuangKelas $classRoom, \App\Models\Pengguna $student)
-    {
-        // Only admin and dosen can remove students
-        if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        // Make sure student belongs to this class
-        if ($student->class_room_id !== $classRoom->id) {
-            abort(404, 'Mahasiswa tidak ditemukan di kelas ini.');
-        }
-
-        // Check if student is in any group
-        if ($student->groupMembers()->count() > 0) {
-            return back()->with('error', 'Tidak dapat menghapus mahasiswa yang masih terdaftar di kelompok! Hapus dari kelompok terlebih dahulu.');
-        }
-
-        // Remove student from class (set class_room_id to null)
-        $student->update(['class_room_id' => null]);
-
-        return redirect()
-            ->route('classrooms.show', $classRoom)
-            ->with('success', 'Mahasiswa berhasil dihapus dari kelas!');
-    }
+    // Student management methods removed (use " Kelola User\ menu instead)
+ // Methods: createStudent, storeStudent, editStudent, updateStudent, destroyStudent
 }
-
-
-

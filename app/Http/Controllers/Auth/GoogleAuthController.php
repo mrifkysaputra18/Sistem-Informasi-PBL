@@ -16,7 +16,11 @@ class GoogleAuthController extends Controller
      */
     public function redirectToGoogle()
     {
+        // Dynamic redirect URI based on current request
+        $redirectUri = url('/auth/google/callback');
+        
         return Socialite::driver('google')
+            ->redirectUrl($redirectUri)
             ->with(['hd' => 'politala.ac.id']) // Hanya email @politala.ac.id dan subdomain
             ->redirect();
     }
@@ -27,7 +31,12 @@ class GoogleAuthController extends Controller
     public function handleGoogleCallback()
     {
         try {
-            $googleUser = Socialite::driver('google')->user();
+            // Dynamic redirect URI for multiple ports support
+            $redirectUri = url('/auth/google/callback');
+            
+            $googleUser = Socialite::driver('google')
+                ->redirectUrl($redirectUri)
+                ->user();
             
             // Validasi email harus dari domain Politala
             if (!$this->isPolitalaEmail($googleUser->getEmail())) {

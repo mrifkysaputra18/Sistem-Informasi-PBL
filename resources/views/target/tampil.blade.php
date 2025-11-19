@@ -218,7 +218,7 @@
                         
                         <!-- Review Button (If submitted and not reviewed) -->
                         @if($target->isSubmitted() && !$target->isReviewed())
-                        <a href="{{ route('targets.review', $target->id) }}" 
+                        <a href="{{ route('target-reviews.show', $target->id) }}" 
                            class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105">
                             <i class="fas fa-check-circle mr-2"></i>Review Submission
                         </a>
