@@ -28,6 +28,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/auth/google', [GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 
+// API Routes (untuk AJAX)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/api/classrooms/{classroom}/groups', [RuangKelasController::class, 'getGroups'])->name('api.classrooms.groups');
+});
+
 Route::get('/', fn() => redirect()->route('dashboard'));
 
 Route::middleware(['auth'])->group(function () {

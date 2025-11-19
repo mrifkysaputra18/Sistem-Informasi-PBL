@@ -246,6 +246,22 @@ class RuangKelasController extends Controller
             ->with('success', 'Kelas berhasil dihapus!');
     }
 
-    // Student management methods removed (use " Kelola User\ menu instead)
- // Methods: createStudent, storeStudent, editStudent, updateStudent, destroyStudent
+    /**
+     * Get groups for a classroom (API for AJAX)
+     */
+    public function getGroups(RuangKelas $classroom)
+    {
+        // Get groups for this classroom
+        $groups = $classroom->groups()
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return response()->json([
+            'success' => true,
+            'groups' => $groups
+        ]);
+    }
+
+    // Student management methods removed (use "Kelola User" menu instead)
+    // Methods: createStudent, storeStudent, editStudent, updateStudent, destroyStudent
 }
