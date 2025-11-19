@@ -30,7 +30,14 @@
                         <div class="font-medium text-gray-900">
                             @if($target->deadline)
                                 {{ $target->deadline->format('d/m/Y H:i') }}
-                                @if($target->isOverdue())
+                                @if($target->grace_period_minutes > 0)
+                                <span class="text-blue-600 text-xs">(+{{ $target->grace_period_minutes }} menit grace)</span>
+                                @endif
+                                @if($target->isInGracePeriod())
+                                <span class="text-orange-600 font-medium">(Grace Period!)</span>
+                                @elseif($target->isPastFinalDeadline())
+                                <span class="text-red-600 font-medium">(Sudah Ditutup)</span>
+                                @elseif($target->isOverdue())
                                 <span class="text-red-600 font-medium">(Terlambat)</span>
                                 @endif
                             @else
@@ -48,6 +55,43 @@
                     <div class="text-gray-900 mt-1">{{ $target->description }}</div>
                 </div>
             </div>
+
+            <!-- Deadline Warning -->
+            @if($target->deadline)
+                @if($target->isInGracePeriod())
+                <div class="bg-orange-50 border-l-4 border-orange-400 p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle text-orange-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-orange-700">
+                                <strong>Masa Tenggang (Grace Period)!</strong><br>
+                                Deadline sudah lewat, tapi Anda masih bisa submit sampai 
+                                <strong>{{ $target->getFinalDeadline()->format('d/m/Y H:i') }}</strong>
+                                ({{ $target->grace_period_minutes }} menit grace period).
+                                Submit akan tetap dihitung sebagai <strong>"Terlambat"</strong>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                @elseif($target->isOverdue() && !$target->isPastFinalDeadline())
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-clock text-yellow-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-yellow-700">
+                                <strong>Perhatian!</strong><br>
+                                Deadline sudah lewat. Submission ini akan ditandai sebagai <strong>"Terlambat"</strong> 
+                                dan akan mempengaruhi skor Ketepatan Waktu Anda.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                @endif
+            @endif
 
             <!-- Submission Form -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">

@@ -107,7 +107,6 @@
                                     <option value="">Pilih Status</option>
                                     <option value="approved" {{ old('status', $target->review->status) == 'approved' ? 'selected' : '' }}>✓ Diterima (Approved)</option>
                                     <option value="needs_revision" {{ old('status', $target->review->status) == 'needs_revision' ? 'selected' : '' }}>⚠ Perlu Revisi</option>
-                                    <option value="rejected" {{ old('status', $target->review->status) == 'rejected' ? 'selected' : '' }}>✗ Ditolak (Rejected)</option>
                                 </select>
                                 @error('status')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

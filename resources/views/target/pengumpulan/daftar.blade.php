@@ -481,9 +481,17 @@
                                             <!-- Status Indicators (right side) -->
                                             <div class="flex items-center gap-2">
                                                 @if($target->deadline && $target->isPending())
-                                                    @if($target->isClosed())
+                                                    @if($target->isPastFinalDeadline())
+                                                    <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200">
+                                                        <i class="fas fa-lock mr-1.5"></i>DITUTUP
+                                                    </span>
+                                                    @elseif($target->isClosed())
                                                     <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200">
                                                         <i class="fas fa-lock mr-1.5"></i>CLOSED
+                                                    </span>
+                                                    @elseif($target->isInGracePeriod())
+                                                    <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-orange-100 text-orange-700 border border-orange-200 animate-pulse">
+                                                        <i class="fas fa-hourglass-end mr-1.5"></i>GRACE PERIOD
                                                     </span>
                                                     @elseif($target->isOverdue())
                                                     <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200 animate-pulse">

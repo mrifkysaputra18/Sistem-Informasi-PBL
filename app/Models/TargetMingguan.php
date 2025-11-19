@@ -17,6 +17,9 @@ class TargetMingguan extends Model
         'title',
         'description',
         'deadline',             // NEW: Deadline submit
+        'grace_period_minutes', // NEW: Grace period
+        'auto_close',           // NEW: Auto close
+        'auto_closed_at',       // NEW: Auto closed timestamp
         'is_open',              // NEW: Apakah target masih bisa disubmit
         'reopened_by',          // NEW: Dosen yang membuka kembali target
         'reopened_at',          // NEW: Waktu dibuka kembali
@@ -38,11 +41,13 @@ class TargetMingguan extends Model
         'is_checked_only' => 'boolean',
         'is_reviewed' => 'boolean',
         'is_open' => 'boolean',    // NEW
+        'auto_close' => 'boolean', // NEW
         'evidence_files' => 'array',
         'completed_at' => 'datetime',
         'reviewed_at' => 'datetime',
         'deadline' => 'datetime',  // NEW
         'reopened_at' => 'datetime', // NEW
+        'auto_closed_at' => 'datetime', // NEW
     ];
 
     /**
@@ -181,6 +186,7 @@ class TargetMingguan extends Model
      * Target tertutup jika:
      * 1. is_open = false (ditutup manual atau otomatis karena deadline)
      * 2. Sudah direview dosen
+     * 3. Past final deadline (deadline + grace period) if auto_close enabled
      */
     public function canAcceptSubmission(): bool
     {
@@ -191,6 +197,11 @@ class TargetMingguan extends Model
 
         // Jika is_open = false, tidak bisa submit
         if (!$this->is_open) {
+            return false;
+        }
+
+        // Jika auto_close enabled dan sudah lewat final deadline
+        if ($this->auto_close && $this->isPastFinalDeadline()) {
             return false;
         }
 
@@ -295,6 +306,77 @@ class TargetMingguan extends Model
         }
 
         return 'Target ditutup oleh dosen';
+    }
+
+    /**
+     * Check if target is past final deadline (deadline + grace period)
+     */
+    public function isPastFinalDeadline(): bool
+    {
+        if (!$this->deadline) {
+            return false;
+        }
+
+        $finalDeadline = $this->deadline->copy()->addMinutes($this->grace_period_minutes ?? 0);
+        return now()->gt($finalDeadline);
+    }
+
+    /**
+     * Check if target should be auto-closed
+     */
+    public function shouldAutoClose(): bool
+    {
+        return $this->auto_close 
+            && $this->isPastFinalDeadline() 
+            && $this->is_open 
+            && !$this->isSubmitted();
+    }
+
+    /**
+     * Get final deadline including grace period
+     */
+    public function getFinalDeadline()
+    {
+        if (!$this->deadline) {
+            return null;
+        }
+
+        return $this->deadline->copy()->addMinutes($this->grace_period_minutes ?? 0);
+    }
+
+    /**
+     * Check if currently in grace period
+     */
+    public function isInGracePeriod(): bool
+    {
+        if (!$this->deadline || !$this->grace_period_minutes) {
+            return false;
+        }
+
+        return now()->gt($this->deadline) && now()->lte($this->getFinalDeadline());
+    }
+
+    /**
+     * Check if can submit (considering deadline + grace period)
+     */
+    public function canSubmitNow(): bool
+    {
+        // Must be open
+        if (!$this->is_open) {
+            return false;
+        }
+
+        // If auto_close enabled, check deadline
+        if ($this->auto_close && $this->isPastFinalDeadline()) {
+            return false;
+        }
+
+        // If already reviewed, cannot submit
+        if ($this->is_reviewed) {
+            return false;
+        }
+
+        return true;
     }
 }
 
