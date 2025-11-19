@@ -23,7 +23,7 @@ class KelompokController extends Controller
             $query->where('class_room_id', $request->classroom);
         }
         
-        $groups = $query->latest()->paginate(10);
+        $groups = $query->orderBy('name')->paginate(10);
         $classRooms = RuangKelas::orderBy('name')->get();
         
         return view('kelompok.daftar', compact('groups', 'classRooms'));

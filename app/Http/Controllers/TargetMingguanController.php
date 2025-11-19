@@ -106,7 +106,7 @@ class TargetMingguanController extends Controller
                 'week_number' => $firstTarget->week_number,
                 'title' => $firstTarget->title,
                 'deadline' => $firstTarget->deadline,
-                'targets' => $weekTargets,
+                'targets' => $weekTargets->sortBy('group.name')->values(),
                 'stats' => [
                     'total' => $weekTargets->count(),
                     'submitted' => $weekTargets->where('submission_status', 'submitted')->count(),
