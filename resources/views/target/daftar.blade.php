@@ -264,25 +264,66 @@
                 </form>
             </div>
 
-            <!-- Targets List -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h3 class="text-lg font-semibold mb-4">Daftar Target Mingguan</h3>
-                    
-                    @if($targets->count() > 0)
+            <!-- Targets List - Grouped by Week -->
+            <div class="space-y-6">
+                @if($targetsByWeek->count() > 0)
+                @foreach($targetsByWeek as $week)
+                <!-- Week Card -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <!-- Week Header -->
+                    <div class="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    <h3 class="text-xl font-bold text-white">Minggu {{ $week['week_number'] }}</h3>
+                                </div>
+                                <span class="text-sm text-white/90">{{ $week['title'] }}</span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="text-right">
+                                    <div class="text-xs text-white/80 uppercase">Deadline</div>
+                                    <div class="text-sm font-semibold text-white">
+                                        {{ \Carbon\Carbon::parse($week['deadline'])->format('d/m/Y H:i') }}
+                                    </div>
+                                    @if(\Carbon\Carbon::parse($week['deadline'])->isPast())
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 mt-1">
+                                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        </svg>
+                                        Lewat Deadline
+                                    </span>
+                                    @endif
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xs text-white/80 uppercase">Progress</div>
+                                    <div class="text-sm font-semibold text-white">
+                                        {{ $week['stats']['submitted'] + $week['stats']['approved'] + $week['stats']['revision'] }}/{{ $week['stats']['total'] }} Submit
+                                    </div>
+                                    <div class="text-xs text-white/90">
+                                        ({{ round((($week['stats']['submitted'] + $week['stats']['approved'] + $week['stats']['revision']) / $week['stats']['total']) * 100) }}%)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Targets Table -->
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 table-fixed">
+                        <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelompok</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Minggu</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deadline</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelas</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted</th>
+                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach($targets as $target)
+                                @foreach($week['targets'] as $target)
                                 @php
                                     // Highlight row untuk yang sudah submit
                                     $rowClass = match($target->submission_status) {
@@ -297,75 +338,57 @@
                                     <td class="px-6 py-4">
                                         <div>
                                             <div class="text-sm font-semibold text-gray-900">{{ $target->group->name }}</div>
-                                            <div class="text-xs text-gray-500">{{ $target->group->classRoom->name }}</div>
-                                            <div class="text-sm text-gray-700 mt-1">{{ $target->title }}</div>
                                             @if($target->completedByUser)
-                                                <div class="text-xs text-primary-600 mt-1">
-                                                    <i class="fas fa-user text-xs"></i> {{ $target->completedByUser->name }}
+                                                <div class="text-xs text-primary-600 mt-1 flex items-center gap-1">
+                                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                    {{ $target->completedByUser->name }}
                                                 </div>
                                             @endif
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        Minggu {{ $target->week_number }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($target->deadline)
-                                        <div class="text-sm text-gray-900">
-                                            {{ $target->deadline->format('d/m/Y') }}
-                                        </div>
-                                        <div class="text-sm text-gray-500">
-                                            {{ $target->deadline->format('H:i') }}
-                                        </div>
-                                        @if($target->isClosed())
-                                        <div class="mt-1">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
-                                                <i class="fas fa-lock mr-1"></i>Tertutup
-                                            </span>
-                                        </div>
-                                        @elseif($target->isOverdue() && !$target->isSubmitted())
-                                        <div class="mt-1">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">
-                                                <i class="fas fa-exclamation-triangle mr-1"></i>Lewat Deadline
-                                            </span>
-                                        </div>
-                                        @endif
-                                        @else
-                                        <span class="text-sm text-gray-400">-</span>
-                                        @endif
+                                        {{ $target->group->classRoom->name }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @php
                                             $color = match($target->submission_status) {
                                                 'pending' => 'bg-gray-100 text-gray-800',
-                                                'submitted' => 'bg-primary-100 text-primary-800',
+                                                'submitted' => 'bg-blue-100 text-blue-800',
                                                 'late' => 'bg-orange-100 text-orange-800',
                                                 'approved' => 'bg-green-100 text-green-800',
                                                 'revision' => 'bg-yellow-100 text-yellow-800',
                                                 default => 'bg-gray-100 text-gray-800',
                                             };
                                         @endphp
-                                        <div>
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $color }}">
-                                                {{ $target->getStatusLabel() }}
-                                            </span>
-                                            @if($target->completed_at && in_array($target->submission_status, ['submitted', 'approved', 'revision']))
-                                                <div class="text-xs text-gray-500 mt-1">
-                                                    <i class="fas fa-clock text-xs"></i> {{ $target->completed_at->format('d/m/Y H:i') }}
-                                                </div>
-                                                <div class="text-xs text-gray-400">
-                                                    {{ $target->completed_at->diffForHumans() }}
-                                                </div>
-                                            @endif
-                                        </div>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $color }}">
+                                            {{ $target->getStatusLabel() }}
+                                        </span>
                                     </td>
-                                    <td class="px-6 py-4 text-sm font-medium text-center">
-                                        <!-- Only Detail Button -->
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($target->completed_at && in_array($target->submission_status, ['submitted', 'approved', 'revision', 'late']))
+                                            <div class="text-sm text-gray-900">
+                                                {{ $target->completed_at->format('d/m/Y') }}
+                                            </div>
+                                            <div class="text-xs text-gray-500">
+                                                {{ $target->completed_at->format('H:i') }}
+                                            </div>
+                                            <div class="text-xs text-gray-400 mt-1">
+                                                {{ $target->completed_at->diffForHumans() }}
+                                            </div>
+                                        @else
+                                            <span class="text-sm text-gray-400">-</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
                                         <a href="{{ route('targets.show', $target->id) }}" 
-                                           class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105"
-                                           title="Lihat Detail">
-                                            <i class="fas fa-eye mr-2"></i>
-                                            <span>Detail</span>
+                                           class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                            </svg>
+                                            Detail
                                         </a>
                                     </td>
                                 </tr>
@@ -373,28 +396,33 @@
                             </tbody>
                         </table>
                     </div>
-
-                    <!-- Pagination -->
-                    @if($targets->hasPages())
-                    <div class="mt-6">
-                        {{ $targets->links() }}
-                    </div>
-                    @endif
-                    @else
-                    <div class="text-center py-8 text-gray-500">
-                        <i class="fas fa-clipboard-list text-4xl mb-4"></i>
-                        <p class="text-lg mb-2">Belum ada target mingguan</p>
+                </div>
+                @endforeach
+                @else
+                <!-- Empty State -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
+                    <div class="text-center">
+                        <svg class="mx-auto h-24 w-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <h3 class="mt-4 text-lg font-medium text-gray-900">Belum ada target mingguan</h3>
                         @if(in_array(auth()->user()->role, ['dosen', 'admin']))
-                            <p class="text-sm mb-4">Silakan buat target mingguan untuk kelompok</p>
-                            <a href="{{ route('targets.create') }}" class="inline-block bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-6 rounded">
-                                <i class="fas fa-plus mr-2"></i>Buat Target Pertama
-                            </a>
+                            <p class="mt-2 text-sm text-gray-500">Silakan buat target mingguan pertama untuk kelompok Anda</p>
+                            <div class="mt-6">
+                                <a href="{{ route('targets.create') }}" 
+                                   class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                    </svg>
+                                    Buat Target Pertama
+                                </a>
+                            </div>
                         @else
-                            <p class="text-sm">Target mingguan akan dibuat oleh dosen</p>
+                            <p class="mt-2 text-sm text-gray-500">Target mingguan akan dibuat oleh dosen pengampu kelas</p>
                         @endif
                     </div>
-                    @endif
                 </div>
+                @endif
             </div>
         </div>
     </div>

@@ -94,9 +94,29 @@ class TargetMingguanController extends Controller
             ? round(($stats['submitted'] + $stats['approved'] + $stats['revision']) / $stats['total'] * 100) 
             : 0;
 
-        $targets = $query->orderBy('week_number')
+        // Get all targets without pagination untuk grouping
+        $allTargets = $query->orderBy('week_number')
             ->orderBy('deadline')
-            ->paginate(20);
+            ->get();
+
+        // Group targets by week number
+        $targetsByWeek = $allTargets->groupBy('week_number')->map(function($weekTargets) {
+            $firstTarget = $weekTargets->first();
+            return [
+                'week_number' => $firstTarget->week_number,
+                'title' => $firstTarget->title,
+                'deadline' => $firstTarget->deadline,
+                'targets' => $weekTargets,
+                'stats' => [
+                    'total' => $weekTargets->count(),
+                    'submitted' => $weekTargets->where('submission_status', 'submitted')->count(),
+                    'approved' => $weekTargets->where('submission_status', 'approved')->count(),
+                    'revision' => $weekTargets->where('submission_status', 'revision')->count(),
+                    'pending' => $weekTargets->where('submission_status', 'pending')->count(),
+                    'late' => $weekTargets->where('submission_status', 'late')->count(),
+                ]
+            ];
+        });
 
         // Get filter options - Dosen hanya lihat kelas yang diampu
         if ($user->isDosen()) {
@@ -109,7 +129,7 @@ class TargetMingguanController extends Controller
             $classRooms = RuangKelas::with('groups')->orderBy('name')->get();
         }
 
-        return view('target.daftar', compact('targets', 'classRooms', 'stats'));
+        return view('target.daftar', compact('targetsByWeek', 'classRooms', 'stats'));
     }
 
     /**
