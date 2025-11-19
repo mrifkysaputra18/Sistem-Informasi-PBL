@@ -14,8 +14,8 @@ class CriterionSeeder extends Seeder
     {
         // Kriteria Kelompok (Group) - Hasil perhitungan AHP
         $group = [
-            ['nama' => 'Kecepatan Progres', 'bobot' => 0.244465446, 'tipe' => 'benefit', 'segment' => 'group'],
-            ['nama' => 'Nilai Akhir PBL', 'bobot' => 0.530599135, 'tipe' => 'benefit', 'segment' => 'group'],
+            ['nama' => 'Kecepatan Progres', 'bobot' => 0.25, 'tipe' => 'benefit', 'segment' => 'group'],
+            ['nama' => 'Nilai Akhir PBL', 'bobot' => 0.525064581, 'tipe' => 'benefit', 'segment' => 'group'],
             ['nama' => 'Ketepatan Waktu', 'bobot' => 0.153145735, 'tipe' => 'benefit', 'segment' => 'group'],
             ['nama' => 'Penilaian Teman (Group)', 'bobot' => 0.071789684, 'tipe' => 'benefit', 'segment' => 'group'],
         ];

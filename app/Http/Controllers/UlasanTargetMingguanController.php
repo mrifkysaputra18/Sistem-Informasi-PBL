@@ -84,7 +84,7 @@ class UlasanTargetMingguanController extends Controller
             'score' => 'required|numeric|min:0|max:100',
             'feedback' => 'required|string|max:1000',
             'suggestions' => 'nullable|string|max:1000',
-            'status' => 'required|in:approved,needs_revision,rejected',
+            'status' => 'required|in:approved,needs_revision',
         ]);
 
         \Log::info('Creating WeeklyTarget Review', [
@@ -167,7 +167,7 @@ class UlasanTargetMingguanController extends Controller
             'score' => 'required|numeric|min:0|max:100',
             'feedback' => 'required|string|max:1000',
             'suggestions' => 'nullable|string|max:1000',
-            'status' => 'required|in:approved,needs_revision,rejected',
+            'status' => 'required|in:approved,needs_revision',
         ]);
 
         \Log::info('Updating WeeklyTarget Review', [

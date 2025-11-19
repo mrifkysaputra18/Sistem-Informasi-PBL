@@ -75,9 +75,19 @@ class PengumpulanTargetMingguanController extends Controller
 
         // Check if target is still open for submission
         if (!$target->canAcceptSubmission()) {
-            $reason = $target->isClosed() ? $target->getClosureReason() : 'Target ini sudah direview dosen';
-            return redirect()->back()
-                ->with('error', $reason . '. Target tidak dapat disubmit lagi.');
+            if ($target->isPastFinalDeadline()) {
+                $finalDeadline = $target->getFinalDeadline();
+                $message = 'Target sudah ditutup karena melewati batas waktu pengumpulan';
+                if ($target->grace_period_minutes > 0) {
+                    $message .= ' (termasuk grace period ' . $target->grace_period_minutes . ' menit)';
+                }
+                $message .= '. Batas akhir: ' . $finalDeadline->format('d/m/Y H:i');
+            } else {
+                $reason = $target->isClosed() ? $target->getClosureReason() : 'Target ini sudah direview dosen';
+                $message = $reason . '. Target tidak dapat disubmit lagi.';
+            }
+            
+            return redirect()->back()->with('error', $message);
         }
 
         return view('target.pengumpulan.kirim', compact('target'));
@@ -98,9 +108,19 @@ class PengumpulanTargetMingguanController extends Controller
 
         // Check if target is still open for submission
         if (!$target->canAcceptSubmission()) {
-            $reason = $target->isClosed() ? $target->getClosureReason() : 'Target ini sudah direview dosen';
-            return redirect()->back()
-                ->with('error', $reason . '. Target tidak dapat disubmit lagi.');
+            if ($target->isPastFinalDeadline()) {
+                $finalDeadline = $target->getFinalDeadline();
+                $message = 'Target sudah ditutup karena melewati batas waktu pengumpulan';
+                if ($target->grace_period_minutes > 0) {
+                    $message .= ' (termasuk grace period ' . $target->grace_period_minutes . ' menit)';
+                }
+                $message .= '. Batas akhir: ' . $finalDeadline->format('d/m/Y H:i');
+            } else {
+                $reason = $target->isClosed() ? $target->getClosureReason() : 'Target ini sudah direview dosen';
+                $message = $reason . '. Target tidak dapat disubmit lagi.';
+            }
+            
+            return redirect()->back()->with('error', $message);
         }
 
         \Log::info('WeeklyTarget Submission', [
