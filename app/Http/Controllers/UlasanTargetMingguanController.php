@@ -95,25 +95,30 @@ class UlasanTargetMingguanController extends Controller
         ]);
 
         // Create review
-        $review = WeeklyTargetReview::create([
+        $review = UlasanTargetMingguan::create([
             'weekly_target_id' => $target->id,
             'reviewer_id' => Auth::id(),
             'score' => $validated['score'],
             'feedback' => $validated['feedback'],
-            'suggestions' => $validated['suggestions'],
+            'suggestions' => $validated['suggestions'] ?? null,
             'status' => $validated['status'],
         ]);
 
+        // Update target submission status based on review
+        $newSubmissionStatus = $validated['status'] === 'approved' ? 'approved' : 'needs_revision';
+        
         // Update target as reviewed
         $target->update([
             'is_reviewed' => true,
             'reviewed_at' => now(),
             'reviewer_id' => Auth::id(),
+            'submission_status' => $newSubmissionStatus,
         ]);
 
         \Log::info('WeeklyTarget Review Created', [
             'review_id' => $review->id,
             'target_id' => $target->id,
+            'status' => $newSubmissionStatus,
         ]);
 
         return redirect()
