@@ -116,26 +116,61 @@
                             </label>
                             <div class="space-y-2">
                                 @foreach($target->evidence_files as $index => $file)
-                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200 file-item" data-index="{{ $index }}">
                                     <div class="flex items-center min-w-0 flex-1">
-                                        <i class="fas fa-file text-gray-500 mr-3"></i>
-                                        <span class="text-sm text-gray-900 truncate">{{ $file['file_name'] ?? 'File ' . ($index + 1) }}</span>
+                                        <input type="checkbox" 
+                                               name="keep_files[]" 
+                                               value="{{ $index }}" 
+                                               id="keep_file_{{ $index }}"
+                                               checked
+                                               class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 mr-3">
+                                        <label for="keep_file_{{ $index }}" class="flex items-center cursor-pointer">
+                                            @php
+                                                $extension = pathinfo($file['file_name'] ?? '', PATHINFO_EXTENSION);
+                                                $iconClass = match(strtolower($extension)) {
+                                                    'pdf' => 'fa-file-pdf text-red-500',
+                                                    'doc', 'docx' => 'fa-file-word text-blue-500',
+                                                    'xls', 'xlsx' => 'fa-file-excel text-green-500',
+                                                    'ppt', 'pptx' => 'fa-file-powerpoint text-orange-500',
+                                                    'jpg', 'jpeg', 'png', 'gif' => 'fa-file-image text-purple-500',
+                                                    'zip', 'rar' => 'fa-file-archive text-yellow-500',
+                                                    default => 'fa-file text-gray-500',
+                                                };
+                                            @endphp
+                                            <i class="fas {{ $iconClass }} mr-2"></i>
+                                            <span class="text-sm text-gray-900 truncate">{{ $file['file_name'] ?? 'File ' . ($index + 1) }}</span>
+                                            @if(isset($file['size']))
+                                            <span class="text-xs text-gray-500 ml-2">({{ number_format($file['size'] / 1024, 1) }} KB)</span>
+                                            @endif
+                                        </label>
                                     </div>
-                                    <div class="flex items-center space-x-2 ml-4">
-                                        @if(isset($file['local_path']))
+                                    <div class="flex items-center space-x-3 ml-4">
+                                        @if(isset($file['view_url']))
+                                        <a href="{{ $file['view_url'] }}" 
+                                           target="_blank"
+                                           class="text-blue-600 hover:text-blue-800 text-sm" title="Lihat">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @elseif(isset($file['local_path']))
                                         <a href="{{ asset('storage/' . $file['local_path']) }}" 
                                            target="_blank"
-                                           class="text-blue-600 hover:text-blue-800 text-sm">
-                                            <i class="fas fa-download"></i>
+                                           class="text-blue-600 hover:text-blue-800 text-sm" title="Lihat">
+                                            <i class="fas fa-eye"></i>
                                         </a>
                                         @endif
+                                        <button type="button" 
+                                                onclick="toggleFileDelete({{ $index }})"
+                                                class="text-red-500 hover:text-red-700 text-sm delete-btn" 
+                                                title="Hapus file ini">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </div>
                                 </div>
                                 @endforeach
                             </div>
                             <p class="mt-2 text-xs text-gray-500">
                                 <i class="fas fa-info-circle mr-1"></i>
-                                Upload file baru di bawah untuk mengganti file yang ada
+                                Hapus centang atau klik <i class="fas fa-trash text-red-500"></i> untuk menghapus file
                             </p>
                         </div>
                         @endif
@@ -143,14 +178,15 @@
                         <!-- New File Upload -->
                         <div class="mb-6">
                             <label for="evidence" class="block text-sm font-medium text-gray-700 mb-2">
-                                Upload File Baru (Opsional)
+                                <i class="fas fa-plus-circle text-green-500 mr-1"></i>
+                                Tambah File Baru
                             </label>
                             <input 
                                 type="file" 
                                 name="evidence[]" 
                                 id="evidence" 
                                 multiple
-                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.zip,.rar"
+                                accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.zip,.rar"
                                 class="block w-full text-sm text-gray-500
                                     file:mr-4 file:py-2 file:px-4
                                     file:rounded-md file:border-0
@@ -158,8 +194,7 @@
                                     file:bg-primary-50 file:text-primary-700
                                     hover:file:bg-primary-100">
                             <p class="mt-2 text-xs text-gray-500">
-                                Format: PDF, DOC, DOCX, JPG, PNG, ZIP, RAR. Max: 10MB per file. 
-                                <strong>Kosongkan jika tidak ingin mengganti file.</strong>
+                                Format: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, JPG, PNG, ZIP, RAR. Max: 10MB per file.
                             </p>
                             @error('evidence')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -186,4 +221,36 @@
             </div>
         </div>
     </div>
+    <script>
+        function toggleFileDelete(index) {
+            const checkbox = document.getElementById('keep_file_' + index);
+            const fileItem = document.querySelector('.file-item[data-index="' + index + '"]');
+            
+            checkbox.checked = !checkbox.checked;
+            
+            if (checkbox.checked) {
+                fileItem.classList.remove('bg-red-50', 'border-red-300', 'opacity-60');
+                fileItem.classList.add('bg-gray-50', 'border-gray-200');
+            } else {
+                fileItem.classList.remove('bg-gray-50', 'border-gray-200');
+                fileItem.classList.add('bg-red-50', 'border-red-300', 'opacity-60');
+            }
+        }
+
+        // Update visual when checkbox is clicked directly
+        document.querySelectorAll('input[name="keep_files[]"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const index = this.value;
+                const fileItem = document.querySelector('.file-item[data-index="' + index + '"]');
+                
+                if (this.checked) {
+                    fileItem.classList.remove('bg-red-50', 'border-red-300', 'opacity-60');
+                    fileItem.classList.add('bg-gray-50', 'border-gray-200');
+                } else {
+                    fileItem.classList.remove('bg-gray-50', 'border-gray-200');
+                    fileItem.classList.add('bg-red-50', 'border-red-300', 'opacity-60');
+                }
+            });
+        });
+    </script>
 </x-app-layout>

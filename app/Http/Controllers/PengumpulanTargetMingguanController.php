@@ -268,19 +268,46 @@ class PengumpulanTargetMingguanController extends Controller
         $validated = $request->validate([
             'submission_notes' => 'nullable|string',
             'is_checked_only' => 'nullable|boolean',
-            'evidence.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120',
+            'keep_files' => 'nullable|array',
+            'keep_files.*' => 'integer',
+            'evidence.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx,ppt,pptx|max:10240',
         ]);
 
-        $evidencePaths = $target->evidence_files ?? [];
         $isCheckedOnly = $request->has('is_checked_only') && $request->is_checked_only == '1';
+        $oldFiles = $target->evidence_files ?? [];
+        $keepFileIndexes = $request->input('keep_files', []);
+        $evidencePaths = [];
 
-        // Handle new file uploads
+        // 1. Proses file yang dipertahankan vs dihapus
+        foreach ($oldFiles as $index => $oldFile) {
+            if (in_array($index, $keepFileIndexes)) {
+                // File dipertahankan
+                $evidencePaths[] = $oldFile;
+            } else {
+                // File dihapus
+                try {
+                    if (isset($oldFile['file_id'])) {
+                        $this->googleDriveService->deleteFile($oldFile['file_id']);
+                        \Log::info('File deleted from Google Drive', ['file_id' => $oldFile['file_id'], 'file_name' => $oldFile['file_name'] ?? '']);
+                    } elseif (isset($oldFile['local_path'])) {
+                        $fullPath = storage_path('app/public/' . $oldFile['local_path']);
+                        if (file_exists($fullPath)) {
+                            unlink($fullPath);
+                            \Log::info('File deleted from local storage', ['path' => $oldFile['local_path']]);
+                        }
+                    }
+                } catch (\Exception $e) {
+                    \Log::warning('Failed to delete file', ['error' => $e->getMessage()]);
+                }
+            }
+        }
+
+        // 2. Upload file baru (ditambahkan, bukan mengganti)
         if ($request->hasFile('evidence') && !$isCheckedOnly) {
             $group = $target->group;
             
             foreach ($request->file('evidence') as $file) {
                 try {
-                    // Upload ke Google Drive dengan folder otomatis
                     $uploadResult = $this->googleDriveService->uploadFileForGroup(
                         $file,
                         $group,
@@ -297,6 +324,7 @@ class PengumpulanTargetMingguanController extends Controller
                         'size' => $uploadResult['size'],
                         'storage' => 'google_drive',
                     ];
+                    \Log::info('New file uploaded to Google Drive', ['file_id' => $uploadResult['file_id']]);
                 } catch (\Exception $e) {
                     $path = $file->store('evidence', 'public');
                     $evidencePaths[] = [
@@ -304,20 +332,34 @@ class PengumpulanTargetMingguanController extends Controller
                         'file_name' => $file->getClientOriginalName(),
                         'storage' => 'local',
                     ];
+                    \Log::warning('Upload to Google Drive failed, saved locally', ['error' => $e->getMessage()]);
                 }
             }
-
-            $isCheckedOnly = false;
         }
 
-        // If switched to check-only mode, clear files
+        // If switched to check-only mode, clear all files
         if ($isCheckedOnly) {
+            // Hapus semua file yang tersisa
+            foreach ($evidencePaths as $file) {
+                try {
+                    if (isset($file['file_id'])) {
+                        $this->googleDriveService->deleteFile($file['file_id']);
+                    } elseif (isset($file['local_path'])) {
+                        $fullPath = storage_path('app/public/' . $file['local_path']);
+                        if (file_exists($fullPath)) {
+                            unlink($fullPath);
+                        }
+                    }
+                } catch (\Exception $e) {
+                    \Log::warning('Failed to delete file on check-only switch', ['error' => $e->getMessage()]);
+                }
+            }
             $evidencePaths = [];
         }
 
         // Update submission status if needed
         $submissionStatus = $target->submission_status;
-        if ($target->deadline && $target->completed_at && $target->completed_at->gt($target->deadline)) {
+        if ($target->deadline && now()->gt($target->deadline)) {
             $submissionStatus = 'late';
         }
 

@@ -223,14 +223,9 @@
                             <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
                             </svg>
-                            <select name="week_number" class="w-full pl-10 pr-4 py-2.5 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200">
-                                <option value="">Semua Minggu</option>
-                                @for($i = 1; $i <= 16; $i++)
-                                <option value="{{ $i }}" {{ request('week_number') == $i ? 'selected' : '' }}>
-                                    Minggu {{ $i }}
-                                </option>
-                                @endfor
-                            </select>
+                            <input type="number" name="week_number" min="1" placeholder="Semua"
+                                   value="{{ request('week_number') }}"
+                                   class="w-full pl-10 pr-4 py-2.5 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200">
                         </div>
                     </div>
 

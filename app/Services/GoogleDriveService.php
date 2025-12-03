@@ -65,6 +65,7 @@ class GoogleDriveService
             'data' => $content,
             'mimeType' => $file->getMimeType(),
             'uploadType' => 'multipart',
+            'supportsAllDrives' => true,
             'fields' => 'id, webViewLink, webContentLink'
         ]);
 
@@ -101,6 +102,7 @@ class GoogleDriveService
             'data' => $content,
             'mimeType' => $file->getMimeType(),
             'uploadType' => 'multipart',
+            'supportsAllDrives' => true,
             'fields' => 'id, name, webViewLink, webContentLink, mimeType, size'
         ]);
 
@@ -124,15 +126,26 @@ class GoogleDriveService
 
     /**
      * Dapatkan atau buat folder untuk kelompok dengan struktur hierarki
+     * Auto-regenerate jika folder dihapus dari Google Drive
      */
     public function getOrCreateGroupFolder(Kelompok $group): string
     {
-        // Cek apakah kelompok sudah punya folder ID
+        $this->initialize();
+        
+        // Cek apakah kelompok sudah punya folder ID dan masih valid
         if ($group->google_drive_folder_id) {
-            // Verifikasi folder masih ada
             if ($this->folderExists($group->google_drive_folder_id)) {
                 return $group->google_drive_folder_id;
             }
+            
+            // Folder tidak ada lagi, reset dan buat ulang
+            Log::warning('Group folder not found, regenerating...', [
+                'group_id' => $group->id,
+                'old_folder_id' => $group->google_drive_folder_id,
+            ]);
+            
+            $group->update(['google_drive_folder_id' => null]);
+            $this->clearFolderCache();
         }
 
         // Load relasi yang diperlukan
@@ -142,18 +155,23 @@ class GoogleDriveService
 
         // Dapatkan root folder ID dari config
         $rootFolderId = config('services.google_drive.folder_id');
+        
+        // Verifikasi root folder masih ada
+        if (!$this->folderExists($rootFolderId)) {
+            throw new \Exception("Root Google Drive folder not found. Please check GOOGLE_DRIVE_FOLDER_ID in .env");
+        }
 
-        // Buat/dapatkan folder Periode Akademik
+        // Buat/dapatkan folder Periode Akademik (dengan verifikasi)
         $periodFolderName = $this->sanitizeFolderName($academicPeriod->name ?? 'Periode-' . $academicPeriod->id);
-        $periodFolderId = $this->getOrCreateSubFolder($rootFolderId, $periodFolderName);
+        $periodFolderId = $this->getOrCreateSubFolderVerified($rootFolderId, $periodFolderName);
 
-        // Buat/dapatkan folder Kelas
+        // Buat/dapatkan folder Kelas (dengan verifikasi)
         $classFolderName = $this->sanitizeFolderName($classRoom->name ?? 'Kelas-' . $classRoom->id);
-        $classFolderId = $this->getOrCreateSubFolder($periodFolderId, $classFolderName);
+        $classFolderId = $this->getOrCreateSubFolderVerified($periodFolderId, $classFolderName);
 
-        // Buat/dapatkan folder Kelompok
+        // Buat/dapatkan folder Kelompok (dengan verifikasi)
         $groupFolderName = $this->sanitizeFolderName($group->name ?? 'Kelompok-' . $group->id);
-        $groupFolderId = $this->getOrCreateSubFolder($classFolderId, $groupFolderName);
+        $groupFolderId = $this->getOrCreateSubFolderVerified($classFolderId, $groupFolderName);
 
         // Simpan folder ID ke kelompok
         $group->update(['google_drive_folder_id' => $groupFolderId]);
@@ -168,26 +186,93 @@ class GoogleDriveService
     }
 
     /**
-     * Dapatkan atau buat subfolder dalam folder parent
+     * Dapatkan atau buat subfolder dengan verifikasi folder masih ada
+     * Jika folder dari cache sudah dihapus, buat ulang
      */
-    protected function getOrCreateSubFolder(string $parentFolderId, string $folderName): string
+    protected function getOrCreateSubFolderVerified(string $parentFolderId, string $folderName): string
     {
         $this->initialize();
 
-        // Cache key untuk menghindari query berulang
         $cacheKey = "gdrive_folder_{$parentFolderId}_{$folderName}";
         
-        return Cache::remember($cacheKey, 3600, function() use ($parentFolderId, $folderName) {
-            // Cari folder yang sudah ada
-            $existingFolderId = $this->findFolderByName($folderName, $parentFolderId);
-            
-            if ($existingFolderId) {
-                return $existingFolderId;
+        // Cek cache dulu
+        $cachedFolderId = Cache::get($cacheKey);
+        
+        if ($cachedFolderId) {
+            // Verifikasi folder masih ada di Google Drive
+            if ($this->folderExists($cachedFolderId)) {
+                return $cachedFolderId;
             }
+            
+            // Folder tidak ada, hapus dari cache
+            Log::warning('Cached folder not found in Google Drive, recreating...', [
+                'folder_name' => $folderName,
+                'cached_id' => $cachedFolderId,
+            ]);
+            Cache::forget($cacheKey);
+        }
+        
+        // Cari folder yang sudah ada di Google Drive
+        $existingFolderId = $this->findFolderByName($folderName, $parentFolderId);
+        
+        if ($existingFolderId) {
+            // Simpan ke cache
+            Cache::put($cacheKey, $existingFolderId, 3600);
+            return $existingFolderId;
+        }
 
-            // Buat folder baru
-            return $this->createFolder($folderName, $parentFolderId);
-        });
+        // Buat folder baru
+        $newFolderId = $this->createFolder($folderName, $parentFolderId);
+        
+        // Simpan ke cache
+        Cache::put($cacheKey, $newFolderId, 3600);
+        
+        Log::info('Created new folder in Google Drive', [
+            'folder_name' => $folderName,
+            'folder_id' => $newFolderId,
+            'parent_id' => $parentFolderId,
+        ]);
+        
+        return $newFolderId;
+    }
+
+    /**
+     * Dapatkan atau buat subfolder dalam folder parent (legacy, gunakan getOrCreateSubFolderVerified)
+     */
+    protected function getOrCreateSubFolder(string $parentFolderId, string $folderName): string
+    {
+        return $this->getOrCreateSubFolderVerified($parentFolderId, $folderName);
+    }
+    
+    /**
+     * Clear semua cache folder Google Drive
+     */
+    public function clearFolderCache(): void
+    {
+        // Clear all gdrive folder cache keys
+        // Since we can't easily iterate cache keys, we'll use tags if available
+        // For now, we'll clear specific patterns
+        try {
+            Cache::flush(); // Clear all cache (simple approach)
+            Log::info('Google Drive folder cache cleared');
+        } catch (\Exception $e) {
+            Log::warning('Failed to clear folder cache', ['error' => $e->getMessage()]);
+        }
+    }
+    
+    /**
+     * Reset semua folder ID kelompok (untuk regenerasi massal)
+     */
+    public function resetAllGroupFolders(): int
+    {
+        $count = Kelompok::whereNotNull('google_drive_folder_id')
+            ->update(['google_drive_folder_id' => null]);
+        
+        $this->clearFolderCache();
+        
+        Log::info('Reset all group folder IDs', ['count' => $count]);
+        
+        return $count;
     }
 
     /**
@@ -207,6 +292,8 @@ class GoogleDriveService
             'q' => $query,
             'fields' => 'files(id, name)',
             'pageSize' => 1,
+            'supportsAllDrives' => true,
+            'includeItemsFromAllDrives' => true,
         ]);
 
         $files = $response->getFiles();
@@ -221,7 +308,10 @@ class GoogleDriveService
     {
         try {
             $this->initialize();
-            $file = $this->drive->files->get($folderId, ['fields' => 'id, trashed']);
+            $file = $this->drive->files->get($folderId, [
+                'fields' => 'id, trashed',
+                'supportsAllDrives' => true,
+            ]);
             return !$file->getTrashed();
         } catch (\Exception $e) {
             return false;
@@ -242,7 +332,8 @@ class GoogleDriveService
         ]);
 
         $folder = $this->drive->files->create($fileMetadata, [
-            'fields' => 'id'
+            'fields' => 'id',
+            'supportsAllDrives' => true,
         ]);
 
         // Set folder permission agar bisa diakses
@@ -253,6 +344,7 @@ class GoogleDriveService
 
     /**
      * Set permission folder agar bisa diakses oleh siapa saja dengan link
+     * Note: Untuk Shared Drive, permission dikelola di level drive
      */
     protected function setFolderPermission(string $folderId): void
     {
@@ -262,9 +354,13 @@ class GoogleDriveService
                 'role' => 'reader',
             ]);
             
-            $this->drive->permissions->create($folderId, $permission);
+            $this->drive->permissions->create($folderId, $permission, [
+                'supportsAllDrives' => true,
+            ]);
         } catch (\Exception $e) {
-            Log::warning('Failed to set folder permission', [
+            // Untuk Shared Drive, permission mungkin tidak bisa diubah
+            // karena dikelola di level drive
+            Log::warning('Failed to set folder permission (may be expected for Shared Drives)', [
                 'folder_id' => $folderId,
                 'error' => $e->getMessage(),
             ]);
@@ -305,12 +401,14 @@ class GoogleDriveService
         try {
             // Get file metadata
             $file = $this->drive->files->get($fileId, [
-                'fields' => 'id, name, mimeType, size'
+                'fields' => 'id, name, mimeType, size',
+                'supportsAllDrives' => true,
             ]);
 
             // Get file content
             $response = $this->drive->files->get($fileId, [
-                'alt' => 'media'
+                'alt' => 'media',
+                'supportsAllDrives' => true,
             ]);
 
             $content = $response->getBody()->getContents();
@@ -337,19 +435,41 @@ class GoogleDriveService
 
     /**
      * Hapus file dari Google Drive
+     * Untuk Shared Drive, coba delete langsung, jika gagal pindahkan ke trash
      */
     public function deleteFile(string $fileId): bool
     {
         try {
             $this->initialize();
-            $this->drive->files->delete($fileId);
+            
+            // Coba delete langsung
+            $this->drive->files->delete($fileId, [
+                'supportsAllDrives' => true,
+            ]);
+            
+            Log::info('File permanently deleted from Google Drive', ['file_id' => $fileId]);
             return true;
         } catch (\Exception $e) {
-            Log::error('Failed to delete file from Google Drive', [
-                'file_id' => $fileId,
-                'error' => $e->getMessage(),
-            ]);
-            return false;
+            // Jika gagal delete, coba move to trash
+            try {
+                $fileMetadata = new \Google\Service\Drive\DriveFile([
+                    'trashed' => true,
+                ]);
+                
+                $this->drive->files->update($fileId, $fileMetadata, [
+                    'supportsAllDrives' => true,
+                ]);
+                
+                Log::info('File moved to trash in Google Drive', ['file_id' => $fileId]);
+                return true;
+            } catch (\Exception $e2) {
+                Log::error('Failed to delete/trash file from Google Drive', [
+                    'file_id' => $fileId,
+                    'delete_error' => $e->getMessage(),
+                    'trash_error' => $e2->getMessage(),
+                ]);
+                return false;
+            }
         }
     }
 
@@ -365,6 +485,8 @@ class GoogleDriveService
                 'q' => "'{$folderId}' in parents and trashed=false",
                 'fields' => 'files(id, name, mimeType, size, createdTime, webViewLink, webContentLink)',
                 'orderBy' => 'createdTime desc',
+                'supportsAllDrives' => true,
+                'includeItemsFromAllDrives' => true,
             ]);
 
             return array_map(function($file) {

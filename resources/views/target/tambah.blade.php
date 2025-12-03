@@ -63,15 +63,15 @@
                             <label for="week_number" class="block text-sm font-medium text-gray-700 mb-2">
                                 Minggu Ke <span class="text-red-500">*</span>
                             </label>
-                            <select name="week_number" id="week_number" required
-                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
-                                <option value="">-- Pilih Minggu --</option>
-                                @for($i = 1; $i <= 16; $i++)
-                                <option value="{{ $i }}" {{ old('week_number') == $i ? 'selected' : '' }}>
-                                    Minggu {{ $i }}
-                                </option>
-                                @endfor
-                            </select>
+                            <input type="number" name="week_number" id="week_number" required
+                                   value="{{ old('week_number') }}"
+                                   min="1"
+                                   placeholder="Masukkan nomor minggu"
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('week_number') border-red-500 @enderror">
+                            <p class="mt-1 text-xs text-gray-500">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Masukkan nomor minggu (minimal 1)
+                            </p>
                             @error('week_number')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror

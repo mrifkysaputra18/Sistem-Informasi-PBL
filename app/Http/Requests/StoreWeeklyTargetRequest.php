@@ -22,7 +22,7 @@ class StoreWeeklyTargetRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'week_number' => ['required', 'integer', 'min:1', 'max:16'],
+            'week_number' => ['required', 'integer', 'min:1'],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
         ];

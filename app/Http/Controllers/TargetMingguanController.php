@@ -220,7 +220,7 @@ class TargetMingguanController extends Controller
             'group_id' => 'required_if:target_type,single|nullable|exists:kelompok,id',
             'group_ids' => 'required_if:target_type,multiple|nullable|array',
             'group_ids.*' => 'exists:kelompok,id',
-            'week_number' => 'required|integer|min:1|max:16',
+            'week_number' => 'required|integer|min:1',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'deadline' => 'required|date|after:today',
@@ -384,7 +384,7 @@ class TargetMingguanController extends Controller
         // Allow dosen to update even if submitted (removed restriction)
 
         $validated = $request->validate([
-            'week_number' => 'required|integer|min:1|max:16',
+            'week_number' => 'required|integer|min:1',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'deadline' => 'required|date',
@@ -591,7 +591,7 @@ class TargetMingguanController extends Controller
         }
         
         $validated = $request->validate([
-            'week_number' => 'required|integer|min:1|max:16',
+            'week_number' => 'required|integer|min:1',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'deadline' => 'required|date',
