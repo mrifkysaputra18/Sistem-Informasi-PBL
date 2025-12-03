@@ -19,6 +19,9 @@
 
         <!-- Critical CSS Fallback -->
         <style>
+            /* Alpine.js cloak - hide elements until Alpine loads */
+            [x-cloak] { display: none !important; }
+            
             /* Emergency Navigation Fallback */
             nav { background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%) !important; min-height: 64px !important; }
             nav * { color: white !important; }
