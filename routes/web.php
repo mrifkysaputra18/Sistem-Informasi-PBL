@@ -96,12 +96,16 @@ Route::middleware(['auth'])->group(function () {
     // DOSEN + ADMIN ROUTES (Kelola Target Mingguan - CREATE/EDIT/DELETE)
     // ========================================
     Route::middleware(['role:dosen,admin'])->group(function () {
-        // Weekly Targets (CRUD - hanya dosen & admin)
+        // Weekly Targets (Create - hanya dosen & admin)
         Route::get('targets/create', [TargetMingguanController::class, 'create'])->name('targets.create');
         Route::post('targets', [TargetMingguanController::class, 'store'])->name('targets.store');
-        Route::get('targets/{target}/edit', [TargetMingguanController::class, 'edit'])->name('targets.edit');
-        Route::put('targets/{target}', [TargetMingguanController::class, 'update'])->name('targets.update');
-        Route::delete('targets/{target}', [TargetMingguanController::class, 'destroy'])->name('targets.destroy');
+        
+        // Bulk operations per week (edit/delete/reopen/close semua target dalam 1 minggu)
+        Route::get('targets/week/{weekNumber}/class/{classRoomId}/edit', [TargetMingguanController::class, 'editWeek'])->name('targets.week.edit');
+        Route::put('targets/week/{weekNumber}/class/{classRoomId}', [TargetMingguanController::class, 'updateWeek'])->name('targets.week.update');
+        Route::delete('targets/week/{weekNumber}/class/{classRoomId}', [TargetMingguanController::class, 'destroyWeek'])->name('targets.week.destroy');
+        Route::post('targets/week/{weekNumber}/class/{classRoomId}/reopen', [TargetMingguanController::class, 'reopenWeek'])->name('targets.week.reopen');
+        Route::post('targets/week/{weekNumber}/class/{classRoomId}/close', [TargetMingguanController::class, 'closeWeek'])->name('targets.week.close');
         
         // Input Nilai Mahasiswa (Form dengan perhitungan otomatis)
         Route::get('scores/student-input', [InputNilaiMahasiswaController::class, 'index'])->name('scores.student-input');
@@ -144,10 +148,6 @@ Route::middleware(['auth'])->group(function () {
         // View targets (semua bisa lihat untuk monitoring)
         Route::get('targets', [TargetMingguanController::class, 'index'])->name('targets.index');
         Route::get('targets/{target}/show', [TargetMingguanController::class, 'show'])->name('targets.show');
-        
-        // Reopen/Close targets (dosen bisa membuka/menutup target)
-        Route::post('targets/{target}/reopen', [TargetMingguanController::class, 'reopen'])->name('targets.reopen');
-        Route::post('targets/{target}/close', [TargetMingguanController::class, 'close'])->name('targets.close');
         
         // Auto-close overdue targets (manual trigger)
         Route::post('targets/auto-close-overdue', [TargetMingguanController::class, 'autoCloseOverdueTargets'])->name('targets.auto-close-overdue');

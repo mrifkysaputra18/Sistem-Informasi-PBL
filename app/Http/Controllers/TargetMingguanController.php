@@ -549,6 +549,186 @@ class TargetMingguanController extends Controller
     }
 
     /**
+     * Show form for editing all targets in a specific week
+     */
+    public function editWeek($weekNumber, $classRoomId)
+    {
+        $user = auth()->user();
+        $classRoom = RuangKelas::findOrFail($classRoomId);
+        
+        // Permission check
+        if ($user->isDosen() && $classRoom->dosen_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses untuk mengedit target di kelas ini.');
+        }
+        
+        // Get all targets for this week and class
+        $targets = TargetMingguan::whereHas('group', function($q) use ($classRoomId) {
+            $q->where('class_room_id', $classRoomId);
+        })->where('week_number', $weekNumber)
+          ->with('group')
+          ->get();
+        
+        if ($targets->isEmpty()) {
+            return redirect()->route('targets.index')->with('error', 'Target tidak ditemukan.');
+        }
+        
+        $firstTarget = $targets->first();
+        
+        return view('target.ubah-minggu', compact('targets', 'firstTarget', 'weekNumber', 'classRoom'));
+    }
+
+    /**
+     * Update all targets in a specific week
+     */
+    public function updateWeek(Request $request, $weekNumber, $classRoomId)
+    {
+        $user = auth()->user();
+        $classRoom = RuangKelas::findOrFail($classRoomId);
+        
+        // Permission check
+        if ($user->isDosen() && $classRoom->dosen_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses untuk mengedit target di kelas ini.');
+        }
+        
+        $validated = $request->validate([
+            'week_number' => 'required|integer|min:1|max:16',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'deadline' => 'required|date',
+        ]);
+        
+        // Update all targets for this week and class
+        $updatedCount = TargetMingguan::whereHas('group', function($q) use ($classRoomId) {
+            $q->where('class_room_id', $classRoomId);
+        })->where('week_number', $weekNumber)
+          ->update($validated);
+        
+        \Log::info('WeeklyTargets Bulk Updated', [
+            'week_number' => $weekNumber,
+            'class_room_id' => $classRoomId,
+            'updated_count' => $updatedCount,
+            'updated_by' => auth()->id(),
+        ]);
+        
+        return redirect()->route('targets.index')
+            ->with('success', "Berhasil mengupdate {$updatedCount} target minggu {$validated['week_number']}!");
+    }
+
+    /**
+     * Delete all targets in a specific week
+     */
+    public function destroyWeek($weekNumber, $classRoomId)
+    {
+        $user = auth()->user();
+        $classRoom = RuangKelas::findOrFail($classRoomId);
+        
+        // Permission check
+        if ($user->isDosen() && $classRoom->dosen_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses untuk menghapus target di kelas ini.');
+        }
+        
+        // Get targets to delete
+        $targets = TargetMingguan::whereHas('group', function($q) use ($classRoomId) {
+            $q->where('class_room_id', $classRoomId);
+        })->where('week_number', $weekNumber)->get();
+        
+        $deletedCount = $targets->count();
+        
+        \Log::warning('WeeklyTargets Bulk Deleted', [
+            'week_number' => $weekNumber,
+            'class_room_id' => $classRoomId,
+            'deleted_count' => $deletedCount,
+            'deleted_by' => auth()->id(),
+        ]);
+        
+        // Delete all targets
+        foreach ($targets as $target) {
+            $target->delete();
+        }
+        
+        return redirect()->route('targets.index')
+            ->with('success', "Berhasil menghapus {$deletedCount} target minggu {$weekNumber}!");
+    }
+
+    /**
+     * Reopen all targets in a specific week
+     */
+    public function reopenWeek($weekNumber, $classRoomId)
+    {
+        $user = auth()->user();
+        if (!$user->isDosen() && !$user->isAdmin() && !$user->isKoordinator()) {
+            abort(403, 'Hanya dosen yang dapat membuka kembali target.');
+        }
+        
+        $classRoom = RuangKelas::findOrFail($classRoomId);
+        
+        // Permission check for dosen
+        if ($user->isDosen() && $classRoom->dosen_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses untuk membuka target di kelas ini.');
+        }
+        
+        // Get and reopen all targets for this week and class
+        $targets = TargetMingguan::whereHas('group', function($q) use ($classRoomId) {
+            $q->where('class_room_id', $classRoomId);
+        })->where('week_number', $weekNumber)->get();
+        
+        $reopenedCount = 0;
+        foreach ($targets as $target) {
+            $target->reopenTarget(auth()->id());
+            $reopenedCount++;
+        }
+        
+        \Log::info('WeeklyTargets Bulk Reopened', [
+            'week_number' => $weekNumber,
+            'class_room_id' => $classRoomId,
+            'reopened_count' => $reopenedCount,
+            'reopened_by' => auth()->id(),
+        ]);
+        
+        return redirect()->route('targets.index')
+            ->with('success', "Berhasil membuka kembali {$reopenedCount} target minggu {$weekNumber}!");
+    }
+
+    /**
+     * Close all targets in a specific week
+     */
+    public function closeWeek($weekNumber, $classRoomId)
+    {
+        $user = auth()->user();
+        if (!$user->isDosen() && !$user->isAdmin() && !$user->isKoordinator()) {
+            abort(403, 'Hanya dosen yang dapat menutup target.');
+        }
+        
+        $classRoom = RuangKelas::findOrFail($classRoomId);
+        
+        // Permission check for dosen
+        if ($user->isDosen() && $classRoom->dosen_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses untuk menutup target di kelas ini.');
+        }
+        
+        // Get and close all targets for this week and class
+        $targets = TargetMingguan::whereHas('group', function($q) use ($classRoomId) {
+            $q->where('class_room_id', $classRoomId);
+        })->where('week_number', $weekNumber)->get();
+        
+        $closedCount = 0;
+        foreach ($targets as $target) {
+            $target->closeTarget();
+            $closedCount++;
+        }
+        
+        \Log::info('WeeklyTargets Bulk Closed', [
+            'week_number' => $weekNumber,
+            'class_room_id' => $classRoomId,
+            'closed_count' => $closedCount,
+            'closed_by' => auth()->id(),
+        ]);
+        
+        return redirect()->route('targets.index')
+            ->with('success', "Berhasil menutup {$closedCount} target minggu {$weekNumber}!");
+    }
+
+    /**
      * Close target (menutup target secara manual)
      * Hanya dosen yang bisa melakukan ini
      */

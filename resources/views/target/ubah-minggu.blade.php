@@ -6,7 +6,7 @@
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
             <h2 class="font-semibold text-xl text-white leading-tight">
-                {{ __('Edit Target Mingguan') }}
+                {{ __('Edit Target Minggu ') . $weekNumber }}
             </h2>
         </div>
     </x-slot>
@@ -29,18 +29,7 @@
                         </div>
                     @endif
 
-                    <!-- Info Target -->
-                    <div class="mb-6 p-4 bg-primary-50 border border-primary-200 rounded-lg">
-                        <div class="flex items-start">
-                            <i class="fas fa-info-circle text-primary-600 mt-1 mr-3"></i>
-                            <div>
-                                <p class="text-sm text-primary-800 font-medium">Kelompok: {{ $target->group->name }}</p>
-                                <p class="text-sm text-primary-700">Kelas: {{ $target->group->classRoom->name }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <form action="{{ route('targets.update', $target) }}" method="POST">
+                    <form action="{{ route('targets.week.update', [$weekNumber, $classRoom->id]) }}" method="POST">
                         @csrf
                         @method('PUT')
 
@@ -49,14 +38,15 @@
                             <label for="week_number" class="block text-sm font-medium text-gray-700 mb-2">
                                 Minggu Ke <span class="text-red-500">*</span>
                             </label>
-                            <select name="week_number" id="week_number" required
-                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
-                                @for($i = 1; $i <= 16; $i++)
-                                <option value="{{ $i }}" {{ old('week_number', $target->week_number) == $i ? 'selected' : '' }}>
-                                    Minggu {{ $i }}
-                                </option>
-                                @endfor
-                            </select>
+                            <input type="number" name="week_number" id="week_number" required
+                                   value="{{ old('week_number', $firstTarget->week_number) }}"
+                                   min="1"
+                                   placeholder="Masukkan nomor minggu"
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('week_number') border-red-500 @enderror">
+                            <p class="mt-1 text-xs text-gray-500">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Masukkan nomor minggu (minimal 1)
+                            </p>
                             @error('week_number')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -68,7 +58,7 @@
                                 Judul Target <span class="text-red-500">*</span>
                             </label>
                             <input type="text" name="title" id="title" required
-                                   value="{{ old('title', $target->title) }}"
+                                   value="{{ old('title', $firstTarget->title) }}"
                                    placeholder="Contoh: Membuat Use Case Diagram"
                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('title') border-red-500 @enderror">
                             @error('title')
@@ -83,7 +73,7 @@
                             </label>
                             <textarea name="description" id="description" rows="4" required
                                       placeholder="Jelaskan detail target yang harus dikerjakan mahasiswa..."
-                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description', $target->description) }}</textarea>
+                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description', $firstTarget->description) }}</textarea>
                             @error('description')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -95,7 +85,7 @@
                                 Deadline Submit <span class="text-red-500">*</span>
                             </label>
                             <input type="datetime-local" name="deadline" id="deadline" required
-                                   value="{{ old('deadline', $target->deadline ? $target->deadline->format('Y-m-d\TH:i') : '') }}"
+                                   value="{{ old('deadline', $firstTarget->deadline ? $firstTarget->deadline->format('Y-m-d\TH:i') : '') }}"
                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('deadline') border-red-500 @enderror">
                             <p class="mt-1 text-xs text-gray-500">
                                 <i class="fas fa-info-circle mr-1"></i>

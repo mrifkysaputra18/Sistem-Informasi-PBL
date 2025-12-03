@@ -273,6 +273,10 @@
                     $totalCount = $week['stats']['total'];
                     $progressPercent = $totalCount > 0 ? round(($submittedCount / $totalCount) * 100) : 0;
                     $isPastDeadline = \Carbon\Carbon::parse($week['deadline'])->isPast();
+                    $firstTarget = $week['targets']->first();
+                    $classRoomId = $firstTarget->group->class_room_id ?? null;
+                    // Cek apakah ada target yang masih terbuka
+                    $hasOpenTargets = $week['targets']->contains(fn($t) => $t->is_open);
                 @endphp
                 <!-- Week Accordion Card -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden" x-data="{ open: false }">
@@ -340,6 +344,59 @@
                             </div>
                         </div>
                     </button>
+                    
+                    <!-- Week Action Buttons -->
+                    @if(in_array(auth()->user()->role, ['dosen', 'admin']) && $classRoomId)
+                    <div class="bg-gray-50 border-b border-gray-200 px-6 py-3 flex items-center justify-end gap-2">
+                        <!-- Edit Week -->
+                        <a href="{{ route('targets.week.edit', [$week['week_number'], $classRoomId]) }}" 
+                           class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-all duration-200 hover:scale-105">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                            Edit Minggu
+                        </a>
+                        
+                        @if($hasOpenTargets)
+                        <!-- Close Week (jika ada target terbuka) -->
+                        <form action="{{ route('targets.week.close', [$week['week_number'], $classRoomId]) }}" method="POST" class="inline" id="close-week-form-{{ $week['week_number'] }}">
+                            @csrf
+                            <button type="button" onclick="closeWeek({{ $week['week_number'] }}, '{{ $week['title'] }}')"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-500 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-all duration-200 hover:scale-105">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                                Tutup Target
+                            </button>
+                        </form>
+                        @else
+                        <!-- Reopen Week (jika semua target tertutup) -->
+                        <form action="{{ route('targets.week.reopen', [$week['week_number'], $classRoomId]) }}" method="POST" class="inline" id="reopen-week-form-{{ $week['week_number'] }}">
+                            @csrf
+                            <button type="button" onclick="reopenWeek({{ $week['week_number'] }}, '{{ $week['title'] }}')"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-cyan-500 hover:bg-cyan-600 text-white text-sm font-medium rounded-lg transition-all duration-200 hover:scale-105">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+                                </svg>
+                                Buka Target
+                            </button>
+                        </form>
+                        @endif
+                        
+                        <!-- Delete Week -->
+                        <form action="{{ route('targets.week.destroy', [$week['week_number'], $classRoomId]) }}" method="POST" class="inline" id="delete-week-form-{{ $week['week_number'] }}">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button" onclick="deleteWeek({{ $week['week_number'] }}, '{{ $week['title'] }}', {{ $totalCount }})"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-all duration-200 hover:scale-105">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                                Hapus Minggu
+                            </button>
+                        </form>
+                    </div>
+                    @endif
 
                     <!-- Collapsible Content -->
                     <div x-show="open" 
@@ -354,7 +411,6 @@
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelas</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted</th>
-                                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
@@ -414,16 +470,6 @@
                                             @else
                                                 <span class="text-sm text-gray-400">-</span>
                                             @endif
-                                        </td>
-                                        <td class="px-6 py-4 text-center">
-                                            <a href="{{ route('targets.show', $target->id) }}" 
-                                               class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                                </svg>
-                                                Detail
-                                            </a>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -496,6 +542,48 @@
                 'Tutup Target?',
                 `Yakin ingin menutup target <strong>"${targetTitle}"</strong>?<br><small class="text-gray-500">Mahasiswa tidak akan dapat mensubmit target ini.</small>`,
                 '<i class="fas fa-lock mr-2"></i>Ya, Tutup!',
+                '#6b7280'
+            ).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading('Menutup Target...', 'Mohon tunggu sebentar');
+                    form.submit();
+                }
+            });
+        }
+
+        function deleteWeek(weekNumber, weekTitle, totalCount) {
+            const form = document.getElementById('delete-week-form-' + weekNumber);
+            
+            confirmDelete(
+                'Hapus Semua Target Minggu Ini?',
+                `Apakah Anda yakin ingin menghapus semua target minggu ${weekNumber}?<br><strong>Target:</strong> ${weekTitle}<br><strong>Jumlah:</strong> ${totalCount} kelompok<br><small class="text-gray-500">Tindakan ini tidak dapat dibatalkan.</small>`,
+                form
+            );
+        }
+
+        function reopenWeek(weekNumber, weekTitle) {
+            const form = document.getElementById('reopen-week-form-' + weekNumber);
+            
+            confirmAction(
+                'Buka Kembali Semua Target?',
+                `Yakin ingin membuka kembali semua target minggu ${weekNumber} <strong>"${weekTitle}"</strong>?<br><small class="text-gray-500">Mahasiswa akan dapat mensubmit ulang target yang sudah tertutup.</small>`,
+                '<i class="fas fa-unlock mr-2"></i>Ya, Buka Semua!',
+                '#0891b2'
+            ).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading('Membuka Target...', 'Mohon tunggu sebentar');
+                    form.submit();
+                }
+            });
+        }
+
+        function closeWeek(weekNumber, weekTitle) {
+            const form = document.getElementById('close-week-form-' + weekNumber);
+            
+            confirmAction(
+                'Tutup Semua Target?',
+                `Yakin ingin menutup semua target minggu ${weekNumber} <strong>"${weekTitle}"</strong>?<br><small class="text-gray-500">Mahasiswa tidak akan dapat mensubmit target ini.</small>`,
+                '<i class="fas fa-lock mr-2"></i>Ya, Tutup Semua!',
                 '#6b7280'
             ).then((result) => {
                 if (result.isConfirmed) {
