@@ -211,53 +211,69 @@
     </div>
 
     <script>
+        // Store all selected files
+        let selectedFiles = [];
+
         function toggleSubmissionType(type) {
             const fileSection = document.getElementById('file-upload-section');
             const checklistSection = document.getElementById('checklist-section');
-            const fileInput = document.getElementById('evidence');
             
             if (type === 'file') {
                 fileSection.classList.remove('hidden');
                 checklistSection.classList.add('hidden');
-                fileInput.required = true;
             } else {
                 fileSection.classList.add('hidden');
                 checklistSection.classList.remove('hidden');
-                fileInput.required = false;
             }
         }
 
-        function handleFileSelect(input) {
-            const fileList = document.getElementById('file-list');
-            const files = input.files;
+        function getFileIcon(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            let iconClass = 'fa-file';
+            let iconColor = 'text-gray-500';
             
+            if (['pdf'].includes(ext)) {
+                iconClass = 'fa-file-pdf';
+                iconColor = 'text-red-600';
+            } else if (['doc', 'docx'].includes(ext)) {
+                iconClass = 'fa-file-word';
+                iconColor = 'text-blue-600';
+            } else if (['xls', 'xlsx'].includes(ext)) {
+                iconClass = 'fa-file-excel';
+                iconColor = 'text-green-600';
+            } else if (['ppt', 'pptx'].includes(ext)) {
+                iconClass = 'fa-file-powerpoint';
+                iconColor = 'text-orange-600';
+            } else if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) {
+                iconClass = 'fa-file-image';
+                iconColor = 'text-purple-600';
+            }
+            
+            return { iconClass, iconColor };
+        }
+
+        function handleFileSelect(input) {
+            // Add new files to selectedFiles array (avoid duplicates by name)
+            Array.from(input.files).forEach(file => {
+                const exists = selectedFiles.some(f => f.name === file.name && f.size === file.size);
+                if (!exists) {
+                    selectedFiles.push(file);
+                }
+            });
+            
+            updateFileList();
+            updateFileInput();
+        }
+
+        function updateFileList() {
+            const fileList = document.getElementById('file-list');
             fileList.innerHTML = '';
             
-            if (files.length > 0) {
-                fileList.innerHTML = '<div class="text-sm font-medium text-gray-700 mb-2">File yang dipilih:</div>';
+            if (selectedFiles.length > 0) {
+                fileList.innerHTML = `<div class="text-sm font-medium text-gray-700 mb-2">File yang dipilih: (${selectedFiles.length} file)</div>`;
                 
-                Array.from(files).forEach((file, index) => {
-                    // Get file extension icon
-                    const ext = file.name.split('.').pop().toLowerCase();
-                    let iconClass = 'fa-file';
-                    let iconColor = 'text-gray-500';
-                    
-                    if (['pdf'].includes(ext)) {
-                        iconClass = 'fa-file-pdf';
-                        iconColor = 'text-red-600';
-                    } else if (['doc', 'docx'].includes(ext)) {
-                        iconClass = 'fa-file-word';
-                        iconColor = 'text-blue-600';
-                    } else if (['xls', 'xlsx'].includes(ext)) {
-                        iconClass = 'fa-file-excel';
-                        iconColor = 'text-green-600';
-                    } else if (['ppt', 'pptx'].includes(ext)) {
-                        iconClass = 'fa-file-powerpoint';
-                        iconColor = 'text-orange-600';
-                    } else if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) {
-                        iconClass = 'fa-file-image';
-                        iconColor = 'text-purple-600';
-                    }
+                selectedFiles.forEach((file, index) => {
+                    const { iconClass, iconColor } = getFileIcon(file.name);
                     
                     const fileItem = document.createElement('div');
                     fileItem.className = 'flex items-center justify-between bg-gray-50 rounded-lg p-3 mb-2 border border-gray-200 hover:border-primary-300 transition-colors';
@@ -278,18 +294,27 @@
             }
         }
 
-        function removeFile(index) {
+        function updateFileInput() {
             const input = document.getElementById('evidence');
             const dt = new DataTransfer();
             
-            Array.from(input.files).forEach((file, i) => {
-                if (i !== index) {
-                    dt.items.add(file);
-                }
+            selectedFiles.forEach(file => {
+                dt.items.add(file);
             });
             
             input.files = dt.files;
-            handleFileSelect(input);
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            updateFileList();
+            updateFileInput();
+        }
+
+        function clearAllFiles() {
+            selectedFiles = [];
+            updateFileList();
+            updateFileInput();
         }
 
         // Drag and Drop functionality
@@ -299,13 +324,11 @@
             
             if (!dropZone || !fileInput) return;
             
-            // Prevent default drag behaviors
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 dropZone.addEventListener(eventName, preventDefaults, false);
                 document.body.addEventListener(eventName, preventDefaults, false);
             });
             
-            // Highlight drop zone when item is dragged over it
             ['dragenter', 'dragover'].forEach(eventName => {
                 dropZone.addEventListener(eventName, highlight, false);
             });
@@ -314,7 +337,6 @@
                 dropZone.addEventListener(eventName, unhighlight, false);
             });
             
-            // Handle dropped files
             dropZone.addEventListener('drop', handleDrop, false);
             
             function preventDefaults(e) {
@@ -336,15 +358,19 @@
                 const dt = e.dataTransfer;
                 const files = dt.files;
                 
-                // Set files to input
-                fileInput.files = files;
+                // Add dropped files to selectedFiles
+                Array.from(files).forEach(file => {
+                    const exists = selectedFiles.some(f => f.name === file.name && f.size === file.size);
+                    if (!exists) {
+                        selectedFiles.push(file);
+                    }
+                });
                 
-                // Trigger change event
-                handleFileSelect(fileInput);
+                updateFileList();
+                updateFileInput();
             }
         }
 
-        // Set default submission type and setup drag-drop
         document.addEventListener('DOMContentLoaded', function() {
             toggleSubmissionType('file');
             setupDragAndDrop();

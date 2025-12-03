@@ -436,41 +436,11 @@
                                     </div>
                                     @endif
 
-                                    <!-- Actions Section (Fitts's Law - larger touch targets) -->
+                                    <!-- Actions Section -->
                                     <div class="border-t border-gray-100 pt-4 mt-4">
                                         <div class="flex flex-wrap items-center justify-between gap-3">
                                             <div class="flex flex-wrap gap-2">
-                                                <!-- Primary CTA (Von Restorff Effect - make primary action stand out) -->
-                                                @if($target->canAcceptSubmission())
-                                                    @if($target->isPending())
-                                                    <a href="{{ route('targets.submissions.submit', $target->id) }}" 
-                                                       class="group relative inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-xl hover:from-green-600 hover:to-emerald-700 transform hover:-translate-y-0.5 transition-all duration-200 shadow-lg hover:shadow-xl">
-                                                        <span class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 rounded-xl transition-opacity"></span>
-                                                        <i class="fas fa-upload mr-2 group-hover:animate-bounce"></i>
-                                                        <span>Submit Target</span>
-                                                    </a>
-                                                    @elseif($target->submission_status === 'revision')
-                                                    <a href="{{ route('targets.submissions.edit', $target->id) }}" 
-                                                       class="group relative inline-flex items-center px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-semibold rounded-xl hover:from-yellow-600 hover:to-orange-600 transform hover:-translate-y-0.5 transition-all duration-200 shadow-lg hover:shadow-xl animate-pulse">
-                                                        <span class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 rounded-xl transition-opacity"></span>
-                                                        <i class="fas fa-edit mr-2"></i>
-                                                        <span>Perbaiki Revisi</span>
-                                                    </a>
-                                                    @elseif($target->isSubmitted() && !$target->isReviewed())
-                                                    <a href="{{ route('targets.submissions.edit', $target->id) }}" 
-                                                       class="group relative inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium rounded-xl hover:from-indigo-600 hover:to-purple-700 transform hover:-translate-y-0.5 transition-all duration-200 shadow-md hover:shadow-lg">
-                                                        <i class="fas fa-pen mr-2"></i>
-                                                        <span>Edit Submission</span>
-                                                    </a>
-                                                    @endif
-                                                @else
-                                                    <div class="inline-flex items-center px-5 py-2.5 bg-red-50 text-red-600 font-medium rounded-xl border-2 border-red-200">
-                                                        <i class="fas fa-lock mr-2"></i>
-                                                        <span>Target Tertutup</span>
-                                                    </div>
-                                                @endif
-                                                
-                                                <!-- Secondary Action -->
+                                                <!-- Lihat Detail -->
                                                 <a href="{{ route('targets.submissions.show', $target->id) }}" 
                                                    class="group inline-flex items-center px-5 py-2.5 bg-white text-gray-700 font-medium rounded-xl border-2 border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600 transform hover:-translate-y-0.5 transition-all duration-200">
                                                     <i class="fas fa-info-circle mr-2 group-hover:text-indigo-500"></i>
