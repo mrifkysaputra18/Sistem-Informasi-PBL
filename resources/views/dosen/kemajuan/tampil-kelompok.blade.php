@@ -43,6 +43,27 @@
                 </div>
             </div>
 
+            <!-- Google Drive Folder Link -->
+            @if($group->google_drive_folder_id)
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fab fa-google-drive text-blue-600 text-2xl mr-3"></i>
+                        <div>
+                            <h3 class="font-semibold text-blue-900">Google Drive Folder</h3>
+                            <p class="text-sm text-blue-700">Semua file upload tersimpan di Google Drive</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('dosen.progress.view-folder', [$classRoom, $group]) }}" 
+                       target="_blank"
+                       class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
+                        <i class="fas fa-external-link-alt mr-2"></i>
+                        Buka Folder
+                    </a>
+                </div>
+            </div>
+            @endif
+
             <!-- Members Info -->
             <div class="bg-white shadow-md rounded-lg p-6 mb-8">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Anggota Kelompok</h3>
@@ -160,36 +181,57 @@
                                         <!-- Files Section -->
                                         @if($files && count($files) > 0)
                                             <div class="mb-4">
-                                                <h5 class="text-sm font-semibold text-gray-700 mb-3">
-                                                    <i class="fas fa-paperclip mr-1"></i>Uploaded Files ({{ count($files) }})
-                                                </h5>
+                                                <div class="flex justify-between items-center mb-3">
+                                                    <h5 class="text-sm font-semibold text-gray-700">
+                                                        <i class="fas fa-paperclip mr-1"></i>Uploaded Files ({{ count($files) }})
+                                                    </h5>
+                                                    @if($group->google_drive_folder_id)
+                                                        <a href="{{ route('dosen.progress.download-all', [$classRoom, $group, $target->id]) }}" 
+                                                           target="_blank"
+                                                           class="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-2 py-1 rounded flex items-center">
+                                                            <i class="fab fa-google-drive mr-1"></i>
+                                                            Lihat Semua di Drive
+                                                        </a>
+                                                    @endif
+                                                </div>
                                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                                    @foreach($files as $fileName => $fileInfo)
+                                                    @foreach($files as $fileIndex => $fileInfo)
+                                                        @php
+                                                            $fileName = $fileInfo['file_name'] ?? 'File ' . ($fileIndex + 1);
+                                                            $isGoogleDrive = ($fileInfo['storage'] ?? '') === 'google_drive' || isset($fileInfo['file_id']);
+                                                        @endphp
                                                         <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                                                             <div class="flex items-center flex-1 min-w-0">
-                                                                <i class="fas 
-                                                                    @if(str_contains(strtolower($fileName), 'pdf')) fa-file-pdf text-red-500
-                                                                    @elseif(str_contains(strtolower($fileName), 'doc') || str_contains(strtolower($fileName), 'docx')) fa-file-word text-blue-500
-                                                                    @elseif(str_contains(strtolower($fileName), 'xls') || str_contains(strtolower($fileName), 'xlsx')) fa-file-excel text-green-500
-                                                                    @elseif(str_contains(strtolower($fileName), 'ppt') || str_contains(strtolower($fileName), 'pptx')) fa-file-powerpoint text-orange-500
-                                                                    @elseif(str_contains(strtolower($fileName), 'jpg') || str_contains(strtolower($fileName), 'jpeg') || str_contains(strtolower($fileName), 'png')) fa-file-image text-purple-500
-                                                                    @else fa-file text-gray-500
-                                                                    @endif
-                                                                 mr-2 flex-shrink-0">
-                                                                </i>
+                                                                @if($isGoogleDrive)
+                                                                    <i class="fab fa-google-drive text-blue-500 mr-2 flex-shrink-0"></i>
+                                                                @else
+                                                                    <i class="fas 
+                                                                        @if(str_contains(strtolower($fileName), 'pdf')) fa-file-pdf text-red-500
+                                                                        @elseif(str_contains(strtolower($fileName), 'doc') || str_contains(strtolower($fileName), 'docx')) fa-file-word text-blue-500
+                                                                        @elseif(str_contains(strtolower($fileName), 'xls') || str_contains(strtolower($fileName), 'xlsx')) fa-file-excel text-green-500
+                                                                        @elseif(str_contains(strtolower($fileName), 'ppt') || str_contains(strtolower($fileName), 'pptx')) fa-file-powerpoint text-orange-500
+                                                                        @elseif(str_contains(strtolower($fileName), 'jpg') || str_contains(strtolower($fileName), 'jpeg') || str_contains(strtolower($fileName), 'png')) fa-file-image text-purple-500
+                                                                        @else fa-file text-gray-500
+                                                                        @endif
+                                                                     mr-2 flex-shrink-0">
+                                                                    </i>
+                                                                @endif
                                                                 <span class="text-sm text-gray-900 truncate">{{ $fileName }}</span>
+                                                                @if(isset($fileInfo['size']))
+                                                                    <span class="text-xs text-gray-500 ml-2">({{ number_format($fileInfo['size'] / 1024, 1) }} KB)</span>
+                                                                @endif
                                                             </div>
                                                             <div class="flex items-center space-x-2 ml-2 flex-shrink-0">
-                                                                <a href="{{ route('dosen.progress.download-file', [$classRoom, $group, $target->id, $fileName]) }}" 
+                                                                <a href="{{ route('dosen.progress.download-file', [$classRoom, $group, $target->id, $fileIndex]) }}" 
                                                                    class="text-indigo-600 hover:text-indigo-800 text-sm"
                                                                    title="Download file">
                                                                     <i class="fas fa-download"></i>
                                                                 </a>
-                                                                @if(isset($fileInfo['file_url']))
-                                                                    <a href="{{ $fileInfo['file_url'] }}" 
+                                                                @if(isset($fileInfo['file_url']) || isset($fileInfo['view_url']))
+                                                                    <a href="{{ $fileInfo['view_url'] ?? $fileInfo['file_url'] }}" 
                                                                        target="_blank"
                                                                        class="text-blue-600 hover:text-blue-800 text-sm"
-                                                                       title="View in Google Drive">
+                                                                       title="Lihat di Google Drive">
                                                                         <i class="fas fa-external-link-alt"></i>
                                                                     </a>
                                                                 @endif
@@ -200,7 +242,7 @@
                                             </div>
                                         @else
                                             <div class="bg-gray-50 rounded-lg p-4 text-center text-gray-500 text-sm mb-4">
-                                                <i class="fas fa-paperclip mr-1"></i> No files uploaded yet
+                                                <i class="fas fa-paperclip mr-1"></i> Belum ada file yang diupload
                                             </div>
                                         @endif
 

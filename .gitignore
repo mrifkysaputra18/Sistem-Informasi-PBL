@@ -69,3 +69,7 @@ Thumbs.db
 test-*.php
 *_test.php
 set_top_performers.php
+
+# Google Drive Service Account (SENSITIVE!)
+storage/app/google-drive-service-account.json
+*-service-account.json

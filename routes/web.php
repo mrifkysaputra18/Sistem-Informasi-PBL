@@ -125,9 +125,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('dosen/progress', [KemajuanDosenController::class, 'index'])->name('dosen.progress.index');
         Route::get('dosen/progress/class/{classRoom}', [KemajuanDosenController::class, 'showClass'])->name('dosen.progress.show-class');
         Route::get('dosen/progress/class/{classRoom}/group/{group}', [KemajuanDosenController::class, 'showGroup'])->name('dosen.progress.show-group');
-        Route::get('dosen/progress/class/{classRoom}/group/{group}/download/{targetId}/{fileName}', [KemajuanDosenController::class, 'downloadFile'])
-            ->name('dosen.progress.download-file')
-            ->where('fileName', '.*');
+        Route::get('dosen/progress/class/{classRoom}/group/{group}/download/{targetId}/{fileIndex}', [KemajuanDosenController::class, 'downloadFile'])
+            ->name('dosen.progress.download-file');
+        Route::get('dosen/progress/class/{classRoom}/group/{group}/download-all/{targetId}', [KemajuanDosenController::class, 'downloadAllFiles'])
+            ->name('dosen.progress.download-all');
+        Route::get('dosen/progress/class/{classRoom}/group/{group}/folder', [KemajuanDosenController::class, 'viewGroupFolder'])
+            ->name('dosen.progress.view-folder');
         
         // API endpoint for dropdowns
         Route::get('dosen/api/classroom/{classRoom}/groups', [KemajuanDosenController::class, 'getGroupsByClassroom'])

@@ -145,21 +145,30 @@ class PengumpulanTargetMingguanController extends Controller
                 'count' => count($request->file('evidence')),
             ]);
 
+            // Load group dengan relasi untuk folder hierarchy
+            $group = $target->group;
+
             foreach ($request->file('evidence') as $file) {
                 try {
-                    // Try upload to Google Drive first
-                    $fileId = $this->googleDriveService->uploadFile(
+                    // Upload ke Google Drive dengan folder otomatis (Periode/Kelas/Kelompok/Minggu)
+                    $uploadResult = $this->googleDriveService->uploadFileForGroup(
                         $file,
-                        config('services.google_drive.folder_id')
+                        $group,
+                        $target->week_number
                     );
                     
                     $evidencePaths[] = [
-                        'file_id' => $fileId,
-                        'file_name' => $file->getClientOriginalName(),
-                        'file_url' => $this->googleDriveService->getFileUrl($fileId),
+                        'file_id' => $uploadResult['file_id'],
+                        'file_name' => $uploadResult['file_name'],
+                        'file_url' => $uploadResult['file_url'],
+                        'download_url' => $uploadResult['download_url'],
+                        'view_url' => $uploadResult['view_url'],
+                        'mime_type' => $uploadResult['mime_type'],
+                        'size' => $uploadResult['size'],
+                        'storage' => 'google_drive',
                     ];
 
-                    \Log::info('File uploaded to Google Drive', ['file_id' => $fileId]);
+                    \Log::info('File uploaded to Google Drive', ['file_id' => $uploadResult['file_id']]);
                 } catch (\Exception $e) {
                     \Log::error('Google Drive upload failed, using local storage', [
                         'error' => $e->getMessage()
@@ -170,6 +179,7 @@ class PengumpulanTargetMingguanController extends Controller
                     $evidencePaths[] = [
                         'local_path' => $path,
                         'file_name' => $file->getClientOriginalName(),
+                        'storage' => 'local',
                     ];
                 }
             }
@@ -266,23 +276,33 @@ class PengumpulanTargetMingguanController extends Controller
 
         // Handle new file uploads
         if ($request->hasFile('evidence') && !$isCheckedOnly) {
+            $group = $target->group;
+            
             foreach ($request->file('evidence') as $file) {
                 try {
-                    $fileId = $this->googleDriveService->uploadFile(
+                    // Upload ke Google Drive dengan folder otomatis
+                    $uploadResult = $this->googleDriveService->uploadFileForGroup(
                         $file,
-                        config('services.google_drive.folder_id')
+                        $group,
+                        $target->week_number
                     );
                     
                     $evidencePaths[] = [
-                        'file_id' => $fileId,
-                        'file_name' => $file->getClientOriginalName(),
-                        'file_url' => $this->googleDriveService->getFileUrl($fileId),
+                        'file_id' => $uploadResult['file_id'],
+                        'file_name' => $uploadResult['file_name'],
+                        'file_url' => $uploadResult['file_url'],
+                        'download_url' => $uploadResult['download_url'],
+                        'view_url' => $uploadResult['view_url'],
+                        'mime_type' => $uploadResult['mime_type'],
+                        'size' => $uploadResult['size'],
+                        'storage' => 'google_drive',
                     ];
                 } catch (\Exception $e) {
                     $path = $file->store('evidence', 'public');
                     $evidencePaths[] = [
                         'local_path' => $path,
                         'file_name' => $file->getClientOriginalName(),
+                        'storage' => 'local',
                     ];
                 }
             }
