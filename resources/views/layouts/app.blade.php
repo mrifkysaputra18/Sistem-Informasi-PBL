@@ -23,7 +23,7 @@
             [x-cloak] { display: none !important; }
             
             /* Emergency Navigation Fallback */
-            nav { background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%) !important; min-height: 64px !important; }
+            nav { background: #003366 !important; min-height: 64px !important; }
             nav * { color: white !important; }
             nav a { color: white !important; text-decoration: none !important; padding: 8px 16px !important; display: inline-flex !important; align-items: center !important; }
             nav a:hover { background: rgba(255,255,255,0.1) !important; }

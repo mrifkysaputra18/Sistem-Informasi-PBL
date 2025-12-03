@@ -128,13 +128,9 @@
    MODERN NAVIGATION BAR
    ======================================== */
 
-/* Main Navigation - Biru Laut & Maroon Design */
+/* Main Navigation */
 .modern-navbar {
-    background: linear-gradient(135deg, 
-        #002952 0%,     /* Biru Laut Gelap */
-        #003366 50%,    /* Biru Laut */
-        #800020 100%    /* Merah Maroon */
-    );
+    background: #003366;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
                 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -260,7 +256,7 @@
 /* Scroll Effect - Make navbar more opaque when scrolled */
 @media (min-width: 640px) {
     .modern-navbar {
-        background: rgba(0, 64, 128, 0.95);
+        background: #003366;
     }
 }
 
@@ -307,7 +303,7 @@ nav a:hover {
 
 /* FORCE NAVIGATION VISIBILITY - CRITICAL FALLBACK */
 .modern-navbar {
-    background: linear-gradient(135deg, #002952 0%, #003366 50%, #800020 100%) !important;
+    background: #003366 !important;
     min-height: 64px !important;
     display: block !important;
     position: sticky !important;
@@ -387,15 +383,10 @@ button {
    ======================================== */
 
 .page-header {
-    background: linear-gradient(135deg, 
-        rgba(0, 41, 82, 0.95) 0%,       /* Biru Laut Gelap */
-        rgba(0, 51, 102, 0.95) 50%,     /* Biru Laut */
-        rgba(128, 0, 32, 0.95) 100%     /* Merah Maroon */
-    );
+    background: #003366;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 0;
-    backdrop-filter: blur(8px);
 }
 
 .page-header h2 {
