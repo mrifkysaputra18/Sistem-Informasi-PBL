@@ -12,16 +12,28 @@
                 <p class="text-sm text-white/90">Monitoring dan kelola target mingguan kelompok</p>
             </div>
             
-            <!-- Fitts's Law: Larger, accessible action button -->
-            @if(in_array(auth()->user()->role, ['dosen', 'admin']))
-            <a href="{{ route('targets.create') }}" 
-               class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-semibold py-2.5 px-4 rounded-lg border border-white/30 transition-all duration-200 hover:scale-105 hover:shadow-lg group">
-                <svg class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                </svg>
-                <span>Buat Target Baru</span>
-            </a>
-            @endif
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-2">
+                <!-- Export PDF Button -->
+                <a href="{{ route('targets.export-pdf', ['class_room_id' => request('class_room_id'), 'week_number' => request('week_number')]) }}" 
+                   class="inline-flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white font-semibold py-2.5 px-4 rounded-lg shadow transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Export PDF
+                </a>
+                
+                <!-- Buat Target Button -->
+                @if(in_array(auth()->user()->role, ['dosen', 'admin']))
+                <a href="{{ route('targets.create') }}" 
+                   class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-semibold py-2.5 px-4 rounded-lg border border-white/30 transition-all duration-200 hover:scale-105 hover:shadow-lg group">
+                    <svg class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
+                    <span>Buat Target Baru</span>
+                </a>
+                @endif
+            </div>
         </div>
     </x-slot>
 
@@ -271,7 +283,11 @@
                     $firstTarget = $week['targets']->first();
                     $classRoomId = $firstTarget->group->class_room_id ?? null;
                     // Cek apakah ada target yang masih terbuka
-                    $hasOpenTargets = $week['targets']->contains(fn($t) => $t->is_open);
+                    $adaTargetTerbuka = $week['targets']->contains(fn($t) => $t->is_open);
+                    // Target bisa ditutup jika batas waktu belum lewat dan masih terbuka
+                    $bisaDitutup = !$isPastDeadline && $adaTargetTerbuka;
+                    // Target bisa dibuka jika batas waktu sudah lewat ATAU sudah ditutup manual
+                    $bisaDibuka = $isPastDeadline || !$adaTargetTerbuka;
                 @endphp
                 <!-- Week Accordion Card -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden" x-data="{ open: false }">
@@ -352,8 +368,8 @@
                             Edit Minggu
                         </a>
                         
-                        @if($hasOpenTargets)
-                        <!-- Close Week (jika ada target terbuka) -->
+                        @if($bisaDitutup)
+                        <!-- Tutup Minggu (jika batas waktu belum lewat dan masih terbuka) -->
                         <form action="{{ route('targets.week.close', [$week['week_number'], $classRoomId]) }}" method="POST" class="inline" id="close-week-form-{{ $week['week_number'] }}">
                             @csrf
                             <button type="button" onclick="closeWeek({{ $week['week_number'] }}, '{{ $week['title'] }}')"
@@ -364,8 +380,10 @@
                                 Tutup Target
                             </button>
                         </form>
-                        @else
-                        <!-- Reopen Week (jika semua target tertutup) -->
+                        @endif
+                        
+                        @if($bisaDibuka)
+                        <!-- Buka Minggu (jika batas waktu sudah lewat ATAU sudah ditutup manual) -->
                         <form action="{{ route('targets.week.reopen', [$week['week_number'], $classRoomId]) }}" method="POST" class="inline" id="reopen-week-form-{{ $week['week_number'] }}">
                             @csrf
                             <button type="button" onclick="reopenWeek({{ $week['week_number'] }}, '{{ $week['title'] }}')"
@@ -560,13 +578,12 @@
             const form = document.getElementById('reopen-week-form-' + weekNumber);
             
             confirmAction(
-                'Buka Kembali Semua Target?',
-                `Yakin ingin membuka kembali semua target minggu ${weekNumber} <strong>"${weekTitle}"</strong>?<br><small class="text-gray-500">Mahasiswa akan dapat mensubmit ulang target yang sudah tertutup.</small>`,
-                '<i class="fas fa-unlock mr-2"></i>Ya, Buka Semua!',
+                'Buka Target?',
+                `Yakin ingin membuka target minggu ${weekNumber}?`,
+                '<i class="fas fa-unlock mr-2"></i>Ya, Buka',
                 '#0891b2'
             ).then((result) => {
                 if (result.isConfirmed) {
-                    showLoading('Membuka Target...', 'Mohon tunggu sebentar');
                     form.submit();
                 }
             });
@@ -576,13 +593,12 @@
             const form = document.getElementById('close-week-form-' + weekNumber);
             
             confirmAction(
-                'Tutup Semua Target?',
-                `Yakin ingin menutup semua target minggu ${weekNumber} <strong>"${weekTitle}"</strong>?<br><small class="text-gray-500">Mahasiswa tidak akan dapat mensubmit target ini.</small>`,
-                '<i class="fas fa-lock mr-2"></i>Ya, Tutup Semua!',
+                'Tutup Target?',
+                `Yakin ingin menutup target minggu ${weekNumber}?`,
+                '<i class="fas fa-lock mr-2"></i>Ya, Tutup',
                 '#6b7280'
             ).then((result) => {
                 if (result.isConfirmed) {
-                    showLoading('Menutup Target...', 'Mohon tunggu sebentar');
                     form.submit();
                 }
             });

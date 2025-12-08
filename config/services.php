@@ -46,6 +46,12 @@ return [
         'service_account_path' => env('GOOGLE_DRIVE_SERVICE_ACCOUNT_PATH') 
             ? base_path(env('GOOGLE_DRIVE_SERVICE_ACCOUNT_PATH'))
             : storage_path('app/google-drive-service-account.json'),
+        // OAuth2 credentials for user authentication
+        'oauth' => [
+            'client_id' => env('GOOGLE_DRIVE_CLIENT_ID', env('GOOGLE_CLIENT_ID')),
+            'client_secret' => env('GOOGLE_DRIVE_CLIENT_SECRET', env('GOOGLE_CLIENT_SECRET')),
+            'redirect' => env('GOOGLE_DRIVE_REDIRECT_URI', env('APP_URL').'/settings/google-drive/callback'),
+        ],
     ],
 
 ];

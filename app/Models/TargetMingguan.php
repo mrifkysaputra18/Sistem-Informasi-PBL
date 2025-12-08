@@ -203,11 +203,11 @@ class TargetMingguan extends Model
     }
 
     /**
-     * Check if target can accept submission (masih terbuka)
-     * Target tertutup jika:
-     * 1. is_open = false (ditutup manual atau otomatis karena deadline)
+     * Cek apakah target masih bisa menerima submission
+     * Target tidak bisa menerima submission jika:
+     * 1. is_open = false (ditutup manual)
      * 2. Sudah direview dosen
-     * 3. Past final deadline (deadline + grace period) if auto_close enabled
+     * 3. Batas waktu sudah lewat
      */
     public function canAcceptSubmission(): bool
     {
@@ -221,8 +221,8 @@ class TargetMingguan extends Model
             return false;
         }
 
-        // Jika auto_close enabled dan sudah lewat final deadline
-        if ($this->auto_close && $this->isPastFinalDeadline()) {
+        // Jika batas waktu sudah lewat, tidak bisa submit
+        if ($this->deadline && now()->gt($this->deadline)) {
             return false;
         }
 
@@ -297,20 +297,29 @@ class TargetMingguan extends Model
     }
 
     /**
-     * Reopen target (oleh dosen)
-     * Reset review status agar mahasiswa bisa submit ulang
+     * Buka kembali target (oleh dosen)
+     * Reset status review agar mahasiswa bisa submit ulang
+     * Jika batas waktu sudah lewat, perpanjang batas waktu otomatis
      */
-    public function reopenTarget($dosenId): void
+    public function reopenTarget($idDosen, $batasWaktuBaru = null): void
     {
-        $this->update([
+        $dataUpdate = [
             'is_open' => true,
-            'reopened_by' => $dosenId,
+            'reopened_by' => $idDosen,
             'reopened_at' => now(),
-            // Reset review status agar mahasiswa bisa submit ulang
+            // Reset status review agar mahasiswa bisa submit ulang
             'is_reviewed' => false,
             'reviewed_at' => null,
             'reviewer_id' => null,
-        ]);
+        ];
+
+        // Jika batas waktu sudah lewat, perpanjang batas waktu
+        if ($this->deadline && now()->gt($this->deadline)) {
+            // Gunakan batas waktu baru jika diberikan, atau tambah 7 hari dari sekarang
+            $dataUpdate['deadline'] = $batasWaktuBaru ?? now()->addDays(7);
+        }
+
+        $this->update($dataUpdate);
     }
 
     /**
@@ -378,21 +387,22 @@ class TargetMingguan extends Model
     }
 
     /**
-     * Check if can submit (considering deadline + grace period)
+     * Cek apakah mahasiswa bisa submit sekarang
+     * Mempertimbangkan status target dan batas waktu
      */
     public function canSubmitNow(): bool
     {
-        // Must be open
+        // Harus terbuka (is_open = true)
         if (!$this->is_open) {
             return false;
         }
 
-        // If auto_close enabled, check deadline
-        if ($this->auto_close && $this->isPastFinalDeadline()) {
+        // Jika batas waktu sudah lewat, tidak bisa submit
+        if ($this->deadline && now()->gt($this->deadline)) {
             return false;
         }
 
-        // If already reviewed, cannot submit
+        // Jika sudah direview, tidak bisa submit
         if ($this->is_reviewed) {
             return false;
         }

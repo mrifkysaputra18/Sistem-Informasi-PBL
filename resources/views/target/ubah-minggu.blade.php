@@ -84,12 +84,13 @@
                             <label for="deadline" class="block text-sm font-medium text-gray-700 mb-2">
                                 Deadline Submit <span class="text-red-500">*</span>
                             </label>
-                            <input type="datetime-local" name="deadline" id="deadline" required
-                                   value="{{ old('deadline', $firstTarget->deadline ? $firstTarget->deadline->format('Y-m-d\TH:i') : '') }}"
+                            <input type="text" name="deadline" id="deadline" required
+                                   value="{{ old('deadline', $firstTarget->deadline ? $firstTarget->deadline->format('Y-m-d H:i') : '') }}"
+                                   placeholder="Pilih tanggal dan waktu"
                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('deadline') border-red-500 @enderror">
                             <p class="mt-1 text-xs text-gray-500">
                                 <i class="fas fa-info-circle mr-1"></i>
-                                Mahasiswa harus submit sebelum deadline ini
+                                Mahasiswa harus submit sebelum deadline ini (format 24 jam)
                             </p>
                             @error('deadline')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -112,4 +113,26 @@
             </div>
         </div>
     </div>
+
+    <!-- Flatpickr CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/airbnb.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inisialisasi Flatpickr dengan format 24 jam
+            flatpickr("#deadline", {
+                enableTime: true,
+                time_24hr: true,
+                dateFormat: "Y-m-d H:i",
+                locale: "id",
+                allowInput: true,
+                altInput: true,
+                altFormat: "d M Y, H:i",
+                minuteIncrement: 5
+            });
+        });
+    </script>
 </x-app-layout>

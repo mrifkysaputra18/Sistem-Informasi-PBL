@@ -5,7 +5,7 @@ namespace App\Services;
 use Google\Client;
 use Google\Service\Drive;
 use Illuminate\Http\UploadedFile;
-use App\Models\{Kelompok, RuangKelas, PeriodeAkademik};
+use App\Models\{Kelompok, RuangKelas, PeriodeAkademik, Setting};
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 
@@ -16,8 +16,51 @@ class GoogleDriveService
     protected $initialized = false;
 
     /**
+     * Get the root folder ID from settings or config
+     */
+    public function getRootFolderId(): ?string
+    {
+        // Try to get from database settings first
+        try {
+            $settingValue = Setting::get('google_drive_folder_id');
+            if ($settingValue) {
+                return $settingValue;
+            }
+        } catch (\Exception $e) {
+            // Settings table might not exist yet
+        }
+        
+        // Fallback to config
+        return config('services.google_drive.folder_id');
+    }
+
+    /**
+     * Check if Google Drive storage is enabled
+     */
+    public function isEnabled(): bool
+    {
+        try {
+            return Setting::get('google_drive_enabled', true);
+        } catch (\Exception $e) {
+            return true; // Default to enabled
+        }
+    }
+
+    /**
+     * Get authentication type (oauth or service_account)
+     */
+    public function getAuthType(): string
+    {
+        try {
+            return Setting::get('google_drive_auth_type', 'service_account');
+        } catch (\Exception $e) {
+            return 'service_account';
+        }
+    }
+
+    /**
      * Initialize Google Client (Lazy Loading)
-     * Hanya dipanggil saat benar-benar dibutuhkan
+     * Supports both OAuth and Service Account authentication
      */
     protected function initialize()
     {
@@ -25,26 +68,78 @@ class GoogleDriveService
             return;
         }
 
-        // Check if Google Client class exists
         if (!class_exists(Client::class)) {
             throw new \Exception("Google API Client library is not installed. Run: composer require google/apiclient");
         }
 
-        $this->client = new Client();
+        $authType = $this->getAuthType();
+
+        if ($authType === 'oauth') {
+            // Use OAuth authentication
+            $this->initializeWithOAuth();
+        } else {
+            // Use Service Account authentication
+            $this->initializeWithServiceAccount();
+        }
+
+        $this->drive = new Drive($this->client);
+        $this->initialized = true;
+    }
+
+    /**
+     * Initialize with OAuth token
+     */
+    protected function initializeWithOAuth()
+    {
+        $token = Setting::get('google_drive_oauth_token');
         
-        // Gunakan Service Account untuk authentication
+        if (!$token || empty($token)) {
+            throw new \Exception("OAuth token not found. Please connect Google Drive account first.");
+        }
+
+        // If it's a string, decode it
+        if (is_string($token)) {
+            $token = json_decode($token, true);
+        }
+        
+        $this->client = new Client();
+        $this->client->setClientId(config('services.google_drive.oauth.client_id'));
+        $this->client->setClientSecret(config('services.google_drive.oauth.client_secret'));
+        $this->client->setAccessToken($token);
+
+        // Refresh token if expired
+        if ($this->client->isAccessTokenExpired()) {
+            if (isset($token['refresh_token'])) {
+                $newToken = $this->client->fetchAccessTokenWithRefreshToken($token['refresh_token']);
+                
+                if (!isset($newToken['refresh_token']) && isset($token['refresh_token'])) {
+                    $newToken['refresh_token'] = $token['refresh_token'];
+                }
+
+                $this->client->setAccessToken($newToken);
+                Setting::set('google_drive_oauth_token', json_encode($newToken), 'json', 'google_drive');
+                Cache::forget('setting_google_drive_oauth_token');
+            } else {
+                throw new \Exception("Token expired and no refresh token available. Please reconnect Google Drive.");
+            }
+        }
+    }
+
+    /**
+     * Initialize with Service Account
+     */
+    protected function initializeWithServiceAccount()
+    {
         $serviceAccountPath = config('services.google_drive.service_account_path');
         
         if (!$serviceAccountPath || !file_exists($serviceAccountPath)) {
             throw new \Exception("Google Drive service account file not found. Please configure it in .env");
         }
-        
+
+        $this->client = new Client();
         $this->client->setAuthConfig($serviceAccountPath);
         $this->client->setScopes([Drive::DRIVE, Drive::DRIVE_FILE]);
-        $this->client->setSubject(null); // Tidak perlu subject untuk service account
-        
-        $this->drive = new Drive($this->client);
-        $this->initialized = true;
+        $this->client->setSubject(null);
     }
 
     /**
@@ -56,7 +151,7 @@ class GoogleDriveService
         
         $fileMetadata = new \Google\Service\Drive\DriveFile([
             'name' => $file->getClientOriginalName(),
-            'parents' => $folderId ? [$folderId] : [config('services.google_drive.folder_id')],
+            'parents' => $folderId ? [$folderId] : [$this->getRootFolderId()],
         ]);
 
         $content = file_get_contents($file->getRealPath());
@@ -153,8 +248,8 @@ class GoogleDriveService
         $classRoom = $group->classRoom;
         $academicPeriod = $classRoom->academicPeriod;
 
-        // Dapatkan root folder ID dari config
-        $rootFolderId = config('services.google_drive.folder_id');
+        // Dapatkan root folder ID dari settings atau config
+        $rootFolderId = $this->getRootFolderId();
         
         // Verifikasi root folder masih ada
         if (!$this->folderExists($rootFolderId)) {
@@ -328,7 +423,7 @@ class GoogleDriveService
         $fileMetadata = new \Google\Service\Drive\DriveFile([
             'name' => $name,
             'mimeType' => 'application/vnd.google-apps.folder',
-            'parents' => $parentFolderId ? [$parentFolderId] : [config('services.google_drive.folder_id')],
+            'parents' => $parentFolderId ? [$parentFolderId] : [$this->getRootFolderId()],
         ]);
 
         $folder = $this->drive->files->create($fileMetadata, [
@@ -531,5 +626,144 @@ class GoogleDriveService
         $name = preg_replace('/[<>:\"\/\\|?*]/', '-', $name);
         // Trim dan batasi panjang
         return substr(trim($name), 0, 100);
+    }
+
+    /**
+     * Get storage quota information from Google Drive
+     * Note: For Shared Drives, quota is unlimited from API perspective
+     */
+    public function getStorageQuota(): array
+    {
+        try {
+            $this->initialize();
+            
+            $about = $this->drive->about->get([
+                'fields' => 'storageQuota, user'
+            ]);
+            
+            $quota = $about->getStorageQuota();
+            $user = $about->getUser();
+            
+            // Convert bytes to human readable
+            $limit = $quota->getLimit();
+            $usage = $quota->getUsage();
+            $usageInDrive = $quota->getUsageInDrive();
+            $usageInDriveTrash = $quota->getUsageInDriveTrash();
+            
+            return [
+                'success' => true,
+                'user' => [
+                    'email' => $user ? $user->getEmailAddress() : 'Service Account',
+                    'display_name' => $user ? $user->getDisplayName() : 'Service Account',
+                ],
+                'quota' => [
+                    'limit' => $limit, // null for unlimited (Shared Drive)
+                    'limit_formatted' => $limit ? $this->formatBytes($limit) : 'Unlimited',
+                    'usage' => $usage,
+                    'usage_formatted' => $this->formatBytes($usage ?? 0),
+                    'usage_in_drive' => $usageInDrive,
+                    'usage_in_drive_formatted' => $this->formatBytes($usageInDrive ?? 0),
+                    'usage_in_trash' => $usageInDriveTrash,
+                    'usage_in_trash_formatted' => $this->formatBytes($usageInDriveTrash ?? 0),
+                    'available' => $limit ? ($limit - $usage) : null,
+                    'available_formatted' => $limit ? $this->formatBytes($limit - $usage) : 'Unlimited',
+                    'percentage_used' => $limit ? round(($usage / $limit) * 100, 2) : 0,
+                ],
+            ];
+        } catch (\Exception $e) {
+            Log::error('Failed to get storage quota', [
+                'error' => $e->getMessage(),
+            ]);
+            
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+                'user' => null,
+                'quota' => null,
+            ];
+        }
+    }
+
+    /**
+     * Test connection to Google Drive
+     */
+    public function testConnection(string $folderId = null): array
+    {
+        try {
+            $this->initialize();
+            
+            $targetFolderId = $folderId ?: $this->getRootFolderId();
+            
+            if (!$targetFolderId) {
+                return [
+                    'success' => false,
+                    'error' => 'Folder ID tidak dikonfigurasi',
+                ];
+            }
+            
+            // Try to get folder info
+            $folder = $this->drive->files->get($targetFolderId, [
+                'supportsAllDrives' => true,
+                'fields' => 'id, name, mimeType, owners, shared'
+            ]);
+            
+            return [
+                'success' => true,
+                'folder' => [
+                    'id' => $folder->getId(),
+                    'name' => $folder->getName(),
+                    'type' => $folder->getMimeType() === 'application/vnd.google-apps.folder' ? 'Folder' : 
+                             ($folder->getMimeType() === 'application/vnd.google-apps.shortcut' ? 'Shortcut' : 'Shared Drive'),
+                ],
+            ];
+        } catch (\Exception $e) {
+            Log::error('Google Drive connection test failed', [
+                'folder_id' => $folderId,
+                'error' => $e->getMessage(),
+            ]);
+            
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Get folder info by ID
+     */
+    public function getFolderInfo(string $folderId): ?array
+    {
+        try {
+            $this->initialize();
+            
+            $folder = $this->drive->files->get($folderId, [
+                'supportsAllDrives' => true,
+                'fields' => 'id, name, mimeType, createdTime, modifiedTime'
+            ]);
+            
+            return [
+                'id' => $folder->getId(),
+                'name' => $folder->getName(),
+                'type' => $folder->getMimeType(),
+                'created' => $folder->getCreatedTime(),
+                'modified' => $folder->getModifiedTime(),
+            ];
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Format bytes to human readable format
+     */
+    protected function formatBytes($bytes, $precision = 2): string
+    {
+        if ($bytes == 0) return '0 B';
+        
+        $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+        $factor = floor((strlen($bytes) - 1) / 3);
+        
+        return sprintf("%.{$precision}f", $bytes / pow(1024, $factor)) . ' ' . $units[$factor];
     }
 }

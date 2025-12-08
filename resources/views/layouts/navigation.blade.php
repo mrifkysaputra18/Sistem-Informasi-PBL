@@ -57,6 +57,10 @@
                         <x-nav-link :href="route('criteria.index')" :active="request()->routeIs('criteria.*')">
                             {{ __('Kriteria') }}
                         </x-nav-link>
+                        <!-- Admin Only - Google Drive Settings -->
+                        <x-nav-link :href="route('settings.google-drive.index')" :active="request()->routeIs('settings.google-drive.*')">
+                            {{ __('Google Drive') }}
+                        </x-nav-link>
                     @endif
 
                     @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
@@ -212,6 +216,10 @@
                 <!-- Admin Only - Criteria -->
                 <x-responsive-nav-link :href="route('criteria.index')" :active="request()->routeIs('criteria.*')">
                     {{ __('Kriteria') }}
+                </x-responsive-nav-link>
+                <!-- Admin Only - Google Drive Settings -->
+                <x-responsive-nav-link :href="route('settings.google-drive.index')" :active="request()->routeIs('settings.google-drive.*')">
+                    {{ __('Google Drive') }}
                 </x-responsive-nav-link>
             @endif
 

@@ -77,9 +77,20 @@ Route::middleware(['auth'])->group(function () {
         Route::get('import/groups', [ImporController::class, 'showGroupsImport'])->name('import.groups');
         Route::post('import/groups', [ImporController::class, 'importGroups'])->name('import.groups.store');
         Route::get('import/groups/template', [ImporController::class, 'downloadGroupTemplate'])->name('import.groups.template');
-        
+
         // Calculate Ranking (Admin only)
         Route::post('scores/recalc', [NilaiKelompokController::class, 'recalc'])->name('scores.recalc');
+
+        // Google Drive Settings (Admin only)
+        Route::get('settings/google-drive', [\App\Http\Controllers\GoogleDriveSettingsController::class, 'index'])->name('settings.google-drive.index');
+        Route::put('settings/google-drive', [\App\Http\Controllers\GoogleDriveSettingsController::class, 'update'])->name('settings.google-drive.update');
+        Route::post('settings/google-drive/test', [\App\Http\Controllers\GoogleDriveSettingsController::class, 'testConnection'])->name('settings.google-drive.test');
+        Route::get('settings/google-drive/quota', [\App\Http\Controllers\GoogleDriveSettingsController::class, 'getStorageQuota'])->name('settings.google-drive.quota');
+        
+        // Google Drive OAuth
+        Route::get('settings/google-drive/connect', [\App\Http\Controllers\GoogleDriveOAuthController::class, 'redirect'])->name('settings.google-drive.connect');
+        Route::get('settings/google-drive/callback', [\App\Http\Controllers\GoogleDriveOAuthController::class, 'callback'])->name('settings.google-drive.callback');
+        Route::post('settings/google-drive/disconnect', [\App\Http\Controllers\GoogleDriveOAuthController::class, 'disconnect'])->name('settings.google-drive.disconnect');
     });
 
     // ========================================
@@ -148,6 +159,9 @@ Route::middleware(['auth'])->group(function () {
         // View targets (semua bisa lihat untuk monitoring)
         Route::get('targets', [TargetMingguanController::class, 'index'])->name('targets.index');
         Route::get('targets/{target}/show', [TargetMingguanController::class, 'show'])->name('targets.show');
+        
+        // Export Laporan Progress PDF
+        Route::get('targets/export-pdf', [\App\Http\Controllers\LaporanController::class, 'exportPdf'])->name('targets.export-pdf');
         
         // Auto-close overdue targets (manual trigger)
         Route::post('targets/auto-close-overdue', [TargetMingguanController::class, 'autoCloseOverdueTargets'])->name('targets.auto-close-overdue');

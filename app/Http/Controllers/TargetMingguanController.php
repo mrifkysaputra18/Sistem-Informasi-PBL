@@ -597,6 +597,12 @@ class TargetMingguanController extends Controller
             'deadline' => 'required|date',
         ]);
         
+        // Jika deadline baru di masa depan, otomatis buka target
+        $deadlineBaru = \Carbon\Carbon::parse($validated['deadline']);
+        if ($deadlineBaru->isFuture()) {
+            $validated['is_open'] = true;
+        }
+        
         // Update all targets for this week and class
         $updatedCount = TargetMingguan::whereHas('group', function($q) use ($classRoomId) {
             $q->where('class_room_id', $classRoomId);
@@ -608,6 +614,7 @@ class TargetMingguanController extends Controller
             'class_room_id' => $classRoomId,
             'updated_count' => $updatedCount,
             'updated_by' => auth()->id(),
+            'auto_reopened' => $deadlineBaru->isFuture(),
         ]);
         
         return redirect()->route('targets.index')

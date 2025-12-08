@@ -1,449 +1,308 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div class="space-y-1">
-                <h2 class="font-bold text-2xl text-white leading-tight flex items-center gap-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                    </svg>
-                    {{ __('Kelola Mahasiswa & User') }}
-                </h2>
-                <p class="text-sm text-white/90">Manajemen user sistem untuk semua role pengguna</p>
-            </div>
+            <h2 class="font-semibold text-xl text-white leading-tight">
+                Kelola User
+            </h2>
             <div class="flex gap-2">
                 <a href="{{ route('admin.users.without-group') }}" 
-                   class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-                    <i class="fa-solid fa-user-xmark mr-2"></i>Mahasiswa Tanpa Kelompok
+                   class="bg-orange-500 hover:bg-orange-600 text-white text-sm py-2 px-4 rounded-lg transition">
+                    <i class="fa-solid fa-user-xmark mr-1"></i>Tanpa Kelompok
                 </a>
                 <a href="{{ route('users.import.form') }}" 
-                   class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-                    <i class="fa-solid fa-file-excel mr-2"></i>Import Excel
+                   class="bg-green-500 hover:bg-green-600 text-white text-sm py-2 px-4 rounded-lg transition">
+                    <i class="fa-solid fa-file-excel mr-1"></i>Import
                 </a>
                 <a href="{{ route('admin.users.create') }}" 
-                   class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-                    <i class="fa-solid fa-circle-plus mr-2"></i>Tambah User
+                   class="bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-4 rounded-lg transition">
+                    <i class="fa-solid fa-plus mr-1"></i>Tambah
                 </a>
             </div>
         </div>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Alert Messages -->
             @if(session('success'))
-                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-r-lg shadow-md">
-                    <div class="flex items-center">
-                        <i class="fa-solid fa-circle-check mr-2"></i>
-                        <span>{{ session('success') }}</span>
-                    </div>
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded">
+                    <i class="fa-solid fa-check-circle mr-2"></i>{{ session('success') }}
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-r-lg shadow-md">
-                    <div class="flex items-center">
-                        <i class="fa-solid fa-circle-exclamation mr-2"></i>
-                        <span>{{ session('error') }}</span>
-                    </div>
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded">
+                    <i class="fa-solid fa-exclamation-circle mr-2"></i>{{ session('error') }}
                 </div>
             @endif
 
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-blue-500">
+                    <p class="text-xs text-gray-500 uppercase">Total User</p>
+                    <p class="text-2xl font-bold text-gray-800">{{ $users->total() }}</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-green-500">
+                    <p class="text-xs text-gray-500 uppercase">Mahasiswa</p>
+                    <p class="text-2xl font-bold text-gray-800">{{ \App\Models\Pengguna::where('role', 'mahasiswa')->count() }}</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-purple-500">
+                    <p class="text-xs text-gray-500 uppercase">Dosen</p>
+                    <p class="text-2xl font-bold text-gray-800">{{ \App\Models\Pengguna::where('role', 'dosen')->count() }}</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-orange-500">
+                    <p class="text-xs text-gray-500 uppercase">Admin/Koordinator</p>
+                    <p class="text-2xl font-bold text-gray-800">{{ \App\Models\Pengguna::whereIn('role', ['admin', 'koordinator'])->count() }}</p>
+                </div>
+            </div>
+
             <!-- Filter -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                <form method="GET" action="{{ route('admin.users.index') }}">
-                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                        <!-- Search -->
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                <i class="fa-solid fa-magnifying-glass mr-1"></i>Cari
-                            </label>
-                            <input type="text" name="search" value="{{ request('search') }}" 
-                                   placeholder="Nama, email, atau NIM..." 
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
-                        </div>
-
-                        <!-- Role Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                <i class="fa-solid fa-user-tag mr-1"></i>Role
-                            </label>
-                            <select name="role" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
-                                <option value="">Semua Role</option>
-                                <option value="mahasiswa" {{ request('role') == 'mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
-                                <option value="dosen" {{ request('role') == 'dosen' ? 'selected' : '' }}>Dosen</option>
-                                <option value="koordinator" {{ request('role') == 'koordinator' ? 'selected' : '' }}>Koordinator</option>
-                                <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                            </select>
-                        </div>
-
-                        <!-- Class Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                <i class="fa-solid fa-chalkboard-user mr-1"></i>Kelas
-                            </label>
-                            <select name="class_room_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
-                                <option value="">Semua Kelas</option>
-                                @foreach($classRooms as $classroom)
-                                    <option value="{{ $classroom->id }}" {{ request('class_room_id') == $classroom->id ? 'selected' : '' }}>
-                                        {{ $classroom->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Status Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                <i class="fa-solid fa-toggle-on mr-1"></i>Status
-                            </label>
-                            <select name="is_active" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
-                                <option value="">Semua Status</option>
-                                <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Aktif</option>
-                                <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Tidak Aktif</option>
-                            </select>
-                        </div>
+            <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+                <form method="GET" action="{{ route('admin.users.index') }}" class="flex flex-wrap items-end gap-3">
+                    <div class="flex-1 min-w-[200px]">
+                        <label class="block text-xs text-gray-600 mb-1">Cari</label>
+                        <input type="text" name="search" value="{{ request('search') }}" 
+                               placeholder="Nama, email, atau NIM..." 
+                               class="w-full text-sm rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                     </div>
-
-                    <div class="flex items-center gap-2 mt-4">
-                        <button type="submit" class="bg-primary-500 hover:bg-primary-600 text-white py-2 px-6 rounded-md">
-                            <i class="fa-solid fa-filter mr-2"></i>Filter
+                    <div class="w-36">
+                        <label class="block text-xs text-gray-600 mb-1">Role</label>
+                        <select name="role" class="w-full text-sm rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">Semua</option>
+                            <option value="mahasiswa" {{ request('role') == 'mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
+                            <option value="dosen" {{ request('role') == 'dosen' ? 'selected' : '' }}>Dosen</option>
+                            <option value="koordinator" {{ request('role') == 'koordinator' ? 'selected' : '' }}>Koordinator</option>
+                            <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                        </select>
+                    </div>
+                    <div class="w-36">
+                        <label class="block text-xs text-gray-600 mb-1">Kelas</label>
+                        <select name="class_room_id" class="w-full text-sm rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">Semua</option>
+                            @foreach($classRooms as $classroom)
+                                <option value="{{ $classroom->id }}" {{ request('class_room_id') == $classroom->id ? 'selected' : '' }}>
+                                    {{ $classroom->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="w-32">
+                        <label class="block text-xs text-gray-600 mb-1">Status</label>
+                        <select name="is_active" class="w-full text-sm rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">Semua</option>
+                            <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Aktif</option>
+                            <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Nonaktif</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-4 rounded-lg">
+                            <i class="fa-solid fa-search mr-1"></i>Filter
                         </button>
                         @if(request()->hasAny(['search', 'role', 'class_room_id', 'is_active']))
-                            <a href="{{ route('admin.users.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-6 rounded-md">
-                                <i class="fa-solid fa-xmark mr-2"></i>Reset
+                            <a href="{{ route('admin.users.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white text-sm py-2 px-4 rounded-lg">
+                                Reset
                             </a>
                         @endif
                     </div>
                 </form>
             </div>
 
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <!-- Card 1: Total User -->
-                <div class="group relative bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    
-                    <div class="relative flex items-start justify-between">
-                        <div class="flex-1">
-                            <p class="text-blue-100 text-xs font-medium uppercase tracking-wider">Total User</p>
-                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $users->total() }}</p>
-                            <p class="text-xs text-blue-100 mt-2">Pengguna terdaftar</p>
-                        </div>
-                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
-                            <i class="fa-solid fa-users text-2xl"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Card 2: Mahasiswa -->
-                <div class="group relative bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    
-                    <div class="relative flex items-start justify-between">
-                        <div class="flex-1">
-                            <p class="text-green-100 text-xs font-medium uppercase tracking-wider">Mahasiswa</p>
-                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ \App\Models\Pengguna::where('role', 'mahasiswa')->count() }}</p>
-                            <p class="text-xs text-green-100 mt-2">Mahasiswa aktif</p>
-                        </div>
-                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
-                            <i class="fa-solid fa-user-graduate text-2xl"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Card 3: Dosen -->
-                <div class="group relative bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    
-                    <div class="relative flex items-start justify-between">
-                        <div class="flex-1">
-                            <p class="text-purple-100 text-xs font-medium uppercase tracking-wider">Dosen</p>
-                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ \App\Models\Pengguna::where('role', 'dosen')->count() }}</p>
-                            <p class="text-xs text-purple-100 mt-2">Dosen pengajar</p>
-                        </div>
-                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
-                            <i class="fa-solid fa-chalkboard-user text-2xl"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 4: Koordinator -->
-                <div class="group relative bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    
-                    <div class="relative flex items-start justify-between">
-                        <div class="flex-1">
-                            <p class="text-orange-100 text-xs font-medium uppercase tracking-wider">Koordinator</p>
-                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ \App\Models\Pengguna::whereIn('role', ['admin', 'koordinator'])->count() }}</p>
-                            <p class="text-xs text-orange-100 mt-2">Admin & koordinator</p>
-                        </div>
-                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
-                            <i class="fa-solid fa-user-tie text-2xl"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Tab Navigation -->
             @if(!request()->hasAny(['role', 'class_room_id', 'is_active', 'search']))
-            <div class="bg-white rounded-t-lg shadow-md mb-0">
-                <div class="border-b border-gray-200">
-                    <nav class="flex -mb-px" aria-label="Tabs">
-                        <button onclick="showTab('admin')" id="tab-admin" class="role-tab active flex-1 py-4 px-6 text-center border-b-4 font-semibold text-sm transition-all">
-                            <i class="fa-solid fa-user-shield mr-2"></i>
-                            Admin ({{ $usersByRole['admin']->count() }})
-                        </button>
-                        <button onclick="showTab('koordinator')" id="tab-koordinator" class="role-tab flex-1 py-4 px-6 text-center border-b-4 font-semibold text-sm transition-all">
-                            <i class="fa-solid fa-user-tie mr-2"></i>
-                            Koordinator ({{ $usersByRole['koordinator']->count() }})
-                        </button>
-                        <button onclick="showTab('dosen')" id="tab-dosen" class="role-tab flex-1 py-4 px-6 text-center border-b-4 font-semibold text-sm transition-all">
-                            <i class="fa-solid fa-chalkboard-user mr-2"></i>
-                            Dosen ({{ $usersByRole['dosen']->count() }})
-                        </button>
-                        <button onclick="showTab('mahasiswa')" id="tab-mahasiswa" class="role-tab flex-1 py-4 px-6 text-center border-b-4 font-semibold text-sm transition-all">
-                            <i class="fa-solid fa-user-graduate mr-2"></i>
-                            Mahasiswa ({{ $usersByRole['mahasiswa']->count() }})
-                        </button>
-                    </nav>
-                </div>
+            <div class="bg-white rounded-t-lg shadow-md border-b">
+                <nav class="flex">
+                    @foreach(['admin' => 'Admin', 'koordinator' => 'Koordinator', 'dosen' => 'Dosen', 'mahasiswa' => 'Mahasiswa'] as $roleKey => $roleLabel)
+                    <button onclick="showTab('{{ $roleKey }}')" id="tab-{{ $roleKey }}" 
+                            class="role-tab flex-1 py-3 px-4 text-center text-sm font-medium border-b-2 transition {{ $roleKey === 'admin' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700' }}">
+                        {{ $roleLabel }} ({{ $usersByRole[$roleKey]->count() }})
+                    </button>
+                    @endforeach
+                </nav>
             </div>
             @endif
 
-            <!-- Main Content Card -->
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-b-lg {{ request()->hasAny(['role', 'class_room_id', 'is_active', 'search']) ? 'rounded-t-lg' : '' }}">
-                <div class="p-6 bg-white border-b border-gray-200">
+            <!-- Main Content -->
+            <div class="bg-white shadow-md {{ request()->hasAny(['role', 'class_room_id', 'is_active', 'search']) ? 'rounded-lg' : 'rounded-b-lg' }}">
+                <div class="p-4">
                     
                     @if(!request()->hasAny(['role', 'class_room_id', 'is_active', 'search']))
-                        <!-- Tab Content untuk setiap role -->
+                        <!-- Tab Content -->
                         @foreach(['admin', 'koordinator', 'dosen', 'mahasiswa'] as $roleType)
                         <div id="content-{{ $roleType }}" class="tab-content {{ $roleType === 'admin' ? '' : 'hidden' }}">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-lg font-semibold text-gray-800">
-                                    <i class="fa-solid fa-users mr-2 text-gray-600"></i>Daftar {{ ucfirst($roleType) }}
-                                </h3>
-                                <div class="text-sm text-gray-600">
-                                    Total: {{ $usersByRole[$roleType]->count() }} {{ $roleType }}
-                                </div>
-                            </div>
-
                             @if($usersByRole[$roleType]->count() > 0)
                                 <div class="overflow-x-auto">
-                                    <table class="min-w-full divide-y divide-gray-200">
-                                        <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
-                                            <tr>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                    <table class="min-w-full">
+                                        <thead>
+                                            <tr class="bg-gray-50 text-left text-xs text-gray-500 uppercase">
+                                                <th class="px-4 py-3 font-medium">No</th>
+                                                <th class="px-4 py-3 font-medium">User</th>
                                                 @if($roleType === 'mahasiswa')
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelas</th>
+                                                <th class="px-4 py-3 font-medium">Kelas</th>
                                                 @endif
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                                <th class="px-4 py-3 font-medium">Status</th>
+                                                <th class="px-4 py-3 font-medium text-center">Aksi</th>
                                             </tr>
                                         </thead>
-                                        <tbody class="bg-white divide-y divide-gray-200">
+                                        <tbody class="divide-y divide-gray-100">
                                             @foreach($usersByRole[$roleType] as $index => $user)
-                                                <tr class="hover:bg-primary-50 transition duration-200">
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                        {{ $index + 1 }}
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap">
-                                                        <div class="flex items-center">
-                                                            <div class="flex-shrink-0 h-12 w-12">
-                                                                <div class="h-12 w-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg
-                                                                    {{ $roleType === 'admin' ? 'bg-gradient-to-br from-red-500 to-secondary-600' : '' }}
-                                                                    {{ $roleType === 'koordinator' ? 'bg-gradient-to-br from-secondary-500 to-primary-600' : '' }}
-                                                                    {{ $roleType === 'dosen' ? 'bg-gradient-to-br from-blue-500 to-cyan-600' : '' }}
-                                                                    {{ $roleType === 'mahasiswa' ? 'bg-gradient-to-br from-green-500 to-emerald-600' : '' }}">
-                                                                    {{ strtoupper(substr($user->name, 0, 2)) }}
-                                                                </div>
-                                                            </div>
-                                                            <div class="ml-4">
-                                                                <div class="text-base font-bold text-gray-900">{{ $user->name }}</div>
-                                                                <div class="text-sm text-gray-600">{{ $user->email }}</div>
-                                                                @if($roleType === 'mahasiswa' && $user->nim)
-                                                                    <div class="text-xs text-blue-600 mt-0.5 font-medium">
-                                                                        <i class="fas fa-graduation-cap mr-1"></i>NIM: {{ $user->nim }}
-                                                                    </div>
-                                                                @endif
-                                                            </div>
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-4 py-3 text-sm text-gray-600">{{ $index + 1 }}</td>
+                                                <td class="px-4 py-3">
+                                                    <div class="flex items-center gap-3">
+                                                        <div class="h-9 w-9 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium">
+                                                            {{ strtoupper(substr($user->name, 0, 2)) }}
                                                         </div>
-                                                    </td>
-                                                    @if($roleType === 'mahasiswa')
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                                        @if($user->classRoom)
-                                                            <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary-100 text-primary-800">
-                                                                <i class="fas fa-school mr-1.5"></i>{{ $user->classRoom->name }}
-                                                            </span>
-                                                        @else
-                                                            <span class="text-gray-400 text-xs">Belum ada kelas</span>
-                                                        @endif
-                                                    </td>
-                                                    @endif
-                                                    <td class="px-6 py-4 whitespace-nowrap">
-                                                        <form action="{{ route('admin.users.toggle-active', $user) }}" method="POST">
-                                                            @csrf
-                                                            <button type="submit" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition-all {{ $user->is_active ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-red-100 text-red-800 hover:bg-red-200' }}">
-                                                                <i class="fas fa-circle text-xs mr-1.5"></i>
-                                                                {{ $user->is_active ? 'Aktif' : 'Nonaktif' }}
-                                                            </button>
-                                                        </form>
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                                        <div class="flex items-center justify-center space-x-2">
-                                                            <a href="{{ route('admin.users.show', $user) }}" 
-                                                               class="inline-flex items-center px-3 py-2 text-sm font-semibold text-green-700 bg-green-100 hover:bg-green-200 rounded-lg transition shadow-sm hover:shadow-md">
-                                                                <i class="fas fa-eye mr-1.5"></i>Detail
-                                                            </a>
-                                                            <a href="{{ route('admin.users.edit', $user) }}" 
-                                                               class="inline-flex items-center px-3 py-2 text-sm font-semibold text-primary-700 bg-primary-100 hover:bg-primary-200 rounded-lg transition shadow-sm hover:shadow-md">
-                                                                <i class="fas fa-edit mr-1.5"></i>Edit
-                                                            </a>
-                                                            @if($user->id !== auth()->id())
-                                                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline delete-form">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button type="button" 
-                                                                            class="delete-btn inline-flex items-center px-3 py-2 text-sm font-semibold text-red-700 bg-red-100 hover:bg-red-200 rounded-lg transition shadow-sm hover:shadow-md"
-                                                                            data-name="{{ $user->name }}">
-                                                                        <i class="fas fa-trash mr-1.5"></i>Hapus
-                                                                    </button>
-                                                                </form>
+                                                        <div>
+                                                            <p class="font-medium text-gray-800">{{ $user->name }}</p>
+                                                            <p class="text-xs text-gray-500">{{ $user->email }}</p>
+                                                            @if($roleType === 'mahasiswa' && $user->nim)
+                                                            <p class="text-xs text-blue-600">NIM: {{ $user->nim }}</p>
                                                             @endif
                                                         </div>
-                                                    </td>
-                                                </tr>
+                                                    </div>
+                                                </td>
+                                                @if($roleType === 'mahasiswa')
+                                                <td class="px-4 py-3 text-sm">
+                                                    @if($user->classRoom)
+                                                        <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">{{ $user->classRoom->name }}</span>
+                                                    @else
+                                                        <span class="text-gray-400 text-xs">-</span>
+                                                    @endif
+                                                </td>
+                                                @endif
+                                                <td class="px-4 py-3">
+                                                    <form action="{{ route('admin.users.toggle-active', $user) }}" method="POST">
+                                                        @csrf
+                                                        <button type="submit" class="px-2 py-1 text-xs rounded {{ $user->is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                                                            {{ $user->is_active ? 'Aktif' : 'Nonaktif' }}
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                                <td class="px-4 py-3 text-center">
+                                                    <div class="flex items-center justify-center gap-1">
+                                                        <a href="{{ route('admin.users.show', $user) }}" class="p-2 text-green-600 hover:bg-green-50 rounded" title="Detail">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <a href="{{ route('admin.users.edit', $user) }}" class="p-2 text-blue-600 hover:bg-blue-50 rounded" title="Edit">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        @if($user->id !== auth()->id())
+                                                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline delete-form">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="button" class="delete-btn p-2 text-red-600 hover:bg-red-50 rounded" data-name="{{ $user->name }}" title="Hapus">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                        @endif
+                                                    </div>
+                                                </td>
+                                            </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
                                 </div>
                             @else
-                                <div class="text-center py-12">
-                                    <div class="text-gray-400 mb-4">
-                                        <i class="fas fa-user-slash text-6xl"></i>
-                                    </div>
-                                    <h3 class="text-lg font-medium text-gray-900 mb-2">Tidak ada {{ $roleType }}</h3>
-                                    <p class="text-gray-500">Belum ada user dengan role {{ $roleType }}.</p>
+                                <div class="text-center py-8 text-gray-500">
+                                    <i class="fas fa-user-slash text-4xl mb-2 text-gray-300"></i>
+                                    <p>Tidak ada {{ $roleType }}</p>
                                 </div>
                             @endif
                         </div>
                         @endforeach
                     @else
                         <!-- Filtered Results -->
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-gray-800">
-                                <i class="fas fa-filter mr-2 text-gray-600"></i>Hasil Filter
-                            </h3>
-                            <div class="text-sm text-gray-700 font-medium">
-                                Showing {{ $users->count() }} of {{ $users->total() }} entries
-                            </div>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-sm text-gray-600">Menampilkan {{ $users->count() }} dari {{ $users->total() }} user</span>
                         </div>
 
                         @if($users->count() > 0)
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelas</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                            <table class="min-w-full">
+                                <thead>
+                                    <tr class="bg-gray-50 text-left text-xs text-gray-500 uppercase">
+                                        <th class="px-4 py-3 font-medium">No</th>
+                                        <th class="px-4 py-3 font-medium">User</th>
+                                        <th class="px-4 py-3 font-medium">Role</th>
+                                        <th class="px-4 py-3 font-medium">Kelas</th>
+                                        <th class="px-4 py-3 font-medium">Status</th>
+                                        <th class="px-4 py-3 font-medium text-center">Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
+                                <tbody class="divide-y divide-gray-100">
                                     @foreach($users as $index => $user)
-                                        <tr class="hover:bg-gray-50 transition duration-200">
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                {{ ($users->currentPage() - 1) * $users->perPage() + $index + 1 }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="flex items-center">
-                                                    <div class="flex-shrink-0 h-10 w-10">
-                                                        <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold">
-                                                            {{ strtoupper(substr($user->name, 0, 2)) }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="ml-4">
-                                                        <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
-                                                        <div class="text-sm text-gray-500">{{ $user->email }}</div>
-                                                        @if($user->role === 'mahasiswa' && $user->nim)
-                                                            <div class="text-xs text-blue-600 font-medium">
-                                                                <i class="fas fa-graduation-cap mr-1"></i>NIM: {{ $user->nim }}
-                                                            </div>
-                                                        @endif
-                                                    </div>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 text-sm text-gray-600">{{ ($users->currentPage() - 1) * $users->perPage() + $index + 1 }}</td>
+                                        <td class="px-4 py-3">
+                                            <div class="flex items-center gap-3">
+                                                <div class="h-9 w-9 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium">
+                                                    {{ strtoupper(substr($user->name, 0, 2)) }}
                                                 </div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                                    {{ $user->role === 'admin' ? 'bg-red-100 text-red-800' : '' }}
-                                                    {{ $user->role === 'koordinator' ? 'bg-secondary-100 text-secondary-800' : '' }}
-                                                    {{ $user->role === 'dosen' ? 'bg-primary-100 text-primary-800' : '' }}
-                                                    {{ $user->role === 'mahasiswa' ? 'bg-green-100 text-green-800' : '' }}">
-                                                    <i class="fas fa-circle text-xs mr-1"></i>
-                                                    {{ ucfirst($user->role) }}
-                                                </span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                @if($user->classRoom)
-                                                    <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-primary-100 text-primary-800">
-                                                        <i class="fas fa-school mr-1"></i>{{ $user->classRoom->name }}
-                                                    </span>
-                                                @else
-                                                    <span class="text-gray-400">-</span>
-                                                @endif
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <form action="{{ route('admin.users.toggle-active', $user) }}" method="POST">
-                                                    @csrf
-                                                    <button type="submit" class="inline-flex items-center px-2 py-1 rounded text-xs font-medium {{ $user->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                                        <i class="fas fa-circle text-xs mr-1"></i>
-                                                        {{ $user->is_active ? 'Aktif' : 'Tidak Aktif' }}
-                                                    </button>
-                                                </form>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                                <div class="flex items-center justify-center space-x-2">
-                                                    <a href="{{ route('admin.users.show', $user) }}" 
-                                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-green-600 bg-green-100 hover:bg-green-200 hover:text-green-900 rounded-lg transition">
-                                                        <i class="fas fa-eye mr-1.5"></i>Detail
-                                                    </a>
-                                                    <a href="{{ route('admin.users.edit', $user) }}" 
-                                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-primary-600 bg-primary-100 hover:bg-primary-200 hover:text-primary-900 rounded-lg transition">
-                                                        <i class="fas fa-edit mr-1.5"></i>Edit
-                                                    </a>
-                                                    @if($user->id !== auth()->id())
-                                                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline delete-form">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="button" 
-                                                                    class="delete-btn inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-100 hover:bg-red-200 hover:text-red-900 rounded-lg transition"
-                                                                    data-name="{{ $user->name }}">
-                                                                <i class="fas fa-trash mr-1.5"></i>Hapus
-                                                            </button>
-                                                        </form>
+                                                <div>
+                                                    <p class="font-medium text-gray-800">{{ $user->name }}</p>
+                                                    <p class="text-xs text-gray-500">{{ $user->email }}</p>
+                                                    @if($user->role === 'mahasiswa' && $user->nim)
+                                                    <p class="text-xs text-blue-600">NIM: {{ $user->nim }}</p>
                                                     @endif
                                                 </div>
-                                            </td>
-                                        </tr>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <span class="px-2 py-1 text-xs rounded
+                                                {{ $user->role === 'admin' ? 'bg-red-100 text-red-700' : '' }}
+                                                {{ $user->role === 'koordinator' ? 'bg-orange-100 text-orange-700' : '' }}
+                                                {{ $user->role === 'dosen' ? 'bg-purple-100 text-purple-700' : '' }}
+                                                {{ $user->role === 'mahasiswa' ? 'bg-green-100 text-green-700' : '' }}">
+                                                {{ ucfirst($user->role) }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 text-sm">
+                                            @if($user->classRoom)
+                                                <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">{{ $user->classRoom->name }}</span>
+                                            @else
+                                                <span class="text-gray-400">-</span>
+                                            @endif
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <form action="{{ route('admin.users.toggle-active', $user) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="px-2 py-1 text-xs rounded {{ $user->is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                                                    {{ $user->is_active ? 'Aktif' : 'Nonaktif' }}
+                                                </button>
+                                            </form>
+                                        </td>
+                                        <td class="px-4 py-3 text-center">
+                                            <div class="flex items-center justify-center gap-1">
+                                                <a href="{{ route('admin.users.show', $user) }}" class="p-2 text-green-600 hover:bg-green-50 rounded" title="Detail">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ route('admin.users.edit', $user) }}" class="p-2 text-blue-600 hover:bg-blue-50 rounded" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                @if($user->id !== auth()->id())
+                                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline delete-form">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="button" class="delete-btn p-2 text-red-600 hover:bg-red-50 rounded" data-name="{{ $user->name }}" title="Hapus">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
 
-                        <!-- Pagination -->
-                        <div class="mt-6">
+                        <div class="mt-4">
                             {{ $users->appends(request()->except('page'))->links() }}
                         </div>
                         @else
-                            <div class="text-center py-12">
-                                <div class="text-gray-400 mb-4">
-                                    <i class="fas fa-users text-6xl"></i>
-                                </div>
-                                <h3 class="text-lg font-medium text-gray-900 mb-2">Tidak ada user ditemukan</h3>
-                                <p class="text-gray-500 mb-4">Coba ubah filter atau tambahkan user baru.</p>
+                            <div class="text-center py-8 text-gray-500">
+                                <i class="fas fa-search text-4xl mb-2 text-gray-300"></i>
+                                <p>Tidak ada user ditemukan</p>
                             </div>
                         @endif
                     @endif
@@ -452,76 +311,42 @@
         </div>
     </div>
 
-    <!-- Tab Switching Script -->
     <script>
         function showTab(role) {
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.add('hidden');
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('.role-tab').forEach(t => {
+                t.classList.remove('border-blue-600', 'text-blue-600');
+                t.classList.add('border-transparent', 'text-gray-500');
             });
             
-            // Remove active class from all tabs
-            document.querySelectorAll('.role-tab').forEach(tab => {
-                tab.classList.remove('active', 'border-primary-600', 'text-primary-600');
-                tab.classList.add('border-transparent', 'text-gray-600');
-            });
-            
-            // Show selected tab content
             document.getElementById('content-' + role).classList.remove('hidden');
-            
-            // Add active class to selected tab
-            const activeTab = document.getElementById('tab-' + role);
-            activeTab.classList.add('active', 'border-primary-600', 'text-primary-600');
-            activeTab.classList.remove('border-transparent', 'text-gray-600');
+            const tab = document.getElementById('tab-' + role);
+            tab.classList.add('border-blue-600', 'text-blue-600');
+            tab.classList.remove('border-transparent', 'text-gray-500');
         }
-        
-        // Set initial state
-        document.addEventListener('DOMContentLoaded', function() {
-            showTab('admin');
-        });
     </script>
-
-    <!-- Tab Styles -->
-    <style>
-        .role-tab {
-            border-color: transparent;
-            color: #6b7280;
-        }
-        
-        .role-tab:hover {
-            color: #3b82f6;
-            border-color: #93c5fd;
-        }
-        
-        .role-tab.active {
-            border-color: #3b82f6;
-            color: #3b82f6;
-            background-color: rgba(59, 130, 246, 0.05);
-        }
-    </style>
 
     @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Handle delete button clicks
-            const deleteButtons = document.querySelectorAll('.delete-btn');
-            
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    const userName = this.getAttribute('data-name');
-                    const form = this.closest('.delete-form');
-                    
-                    confirmDelete(
-                        'Hapus User?',
-                        `Apakah Anda yakin ingin menghapus user <strong>"${userName}"</strong>?<br><small class="text-gray-500">Tindakan ini tidak dapat dibatalkan.</small>`,
-                        form
-                    );
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const name = this.dataset.name;
+                const form = this.closest('.delete-form');
+                
+                Swal.fire({
+                    title: 'Hapus User?',
+                    text: `Hapus "${name}" dari sistem?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Ya, Hapus',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) form.submit();
                 });
             });
         });
     </script>
     @endpush
 </x-app-layout>
-

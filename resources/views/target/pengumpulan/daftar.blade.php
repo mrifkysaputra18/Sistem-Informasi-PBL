@@ -113,11 +113,30 @@
                 @if($targets->count() > 0)
                 <div class="divide-y divide-gray-100">
                     @foreach($targets as $target)
-                    <div class="p-4 hover:bg-blue-50/50 transition-colors">
+                    @php
+                        // Hitung sisa waktu deadline
+                        $waktuSekarang = now();
+                        $deadline = $target->deadline;
+                        $sudahLewat = $deadline && $waktuSekarang->gt($deadline);
+                        $jamTersisa = $deadline ? $waktuSekarang->diffInHours($deadline, false) : 999;
+                        
+                        // Warna merah hanya untuk 2 hari terakhir (48 jam) atau sudah lewat
+                        if ($sudahLewat || $target->isClosed()) {
+                            $weekBoxClass = 'bg-red-500';
+                            $cardBorderClass = 'border-l-4 border-red-500 bg-red-50';
+                        } elseif ($jamTersisa <= 48 && $target->isPending()) {
+                            $weekBoxClass = 'bg-red-500';
+                            $cardBorderClass = 'border-l-4 border-red-500 bg-red-50';
+                        } else {
+                            $weekBoxClass = 'bg-[#003366]';
+                            $cardBorderClass = '';
+                        }
+                    @endphp
+                    <div class="p-4 hover:bg-blue-50/50 transition-colors {{ $cardBorderClass }}">
                         <div class="flex items-start justify-between gap-4">
                             <div class="flex items-start gap-4 flex-1">
-                                {{-- Week Number --}}
-                                <div class="w-14 h-14 bg-[#003366] rounded-xl flex flex-col items-center justify-center flex-shrink-0">
+                                {{-- Week Number dengan warna dinamis --}}
+                                <div class="w-14 h-14 {{ $weekBoxClass }} rounded-xl flex flex-col items-center justify-center flex-shrink-0">
                                     <span class="text-[10px] text-white/70 uppercase">Week</span>
                                     <span class="text-xl font-bold text-white">{{ $target->week_number }}</span>
                                 </div>
@@ -130,11 +149,12 @@
                                     @endif
                                     
                                     <div class="flex flex-wrap items-center gap-2">
-                                        {{-- Deadline --}}
+                                        {{-- Deadline dengan countdown realtime --}}
                                         @if($target->deadline)
-                                        <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                        <span class="countdown-badge text-xs px-2 py-1 rounded font-medium bg-gray-100 text-gray-600"
+                                              data-deadline="{{ $target->deadline->timestamp }}">
                                             <i class="far fa-calendar mr-1"></i>
-                                            {{ $target->deadline->format('d M Y, H:i') }}
+                                            <span class="countdown-text">Memuat...</span>
                                         </span>
                                         @endif
                                         
@@ -153,14 +173,10 @@
                                             {{ $statusConfig['label'] }}
                                         </span>
                                         
-                                        {{-- Closed/Overdue Badge --}}
+                                        {{-- Closed Badge --}}
                                         @if($target->isClosed())
                                         <span class="px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-700">
                                             <i class="fas fa-lock mr-1"></i>Tertutup
-                                        </span>
-                                        @elseif($target->isOverdue() && $target->isPending())
-                                        <span class="px-2 py-1 rounded text-xs font-medium bg-orange-100 text-orange-700">
-                                            <i class="fas fa-exclamation-triangle mr-1"></i>Lewat Deadline
                                         </span>
                                         @endif
                                     </div>
@@ -201,5 +217,65 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
+        
+        @keyframes pulse-urgent {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+        
+        .animate-pulse-urgent {
+            animation: pulse-urgent 1s ease-in-out infinite;
+        }
     </style>
+
+    <script>
+        function updateCountdown() {
+            const sekarang = Math.floor(Date.now() / 1000);
+            
+            document.querySelectorAll('.countdown-badge').forEach(badge => {
+                const deadline = parseInt(badge.dataset.deadline);
+                const selisih = deadline - sekarang;
+                const sudahLewat = selisih < 0;
+                
+                const totalDetik = Math.abs(selisih);
+                const hari = Math.floor(totalDetik / 86400);
+                const jam = Math.floor((totalDetik % 86400) / 3600);
+                const menit = Math.floor((totalDetik % 3600) / 60);
+                const detik = totalDetik % 60;
+
+                let teks, icon, kelas;
+                
+                if (sudahLewat) {
+                    if (hari > 0) teks = `Lewat ${hari} hari ${jam} jam`;
+                    else if (jam > 0) teks = `Lewat ${jam} jam ${menit} menit`;
+                    else teks = `Lewat ${menit} menit`;
+                    kelas = 'countdown-badge text-xs px-2 py-1 rounded font-medium bg-red-600 text-white animate-pulse-urgent';
+                    icon = 'fas fa-times-circle';
+                } else {
+                    if (hari > 0) teks = `${hari} hari ${jam} jam lagi`;
+                    else if (jam > 0) teks = `${jam} jam ${menit} menit lagi`;
+                    else if (menit > 0) teks = `${menit} menit ${detik} detik lagi`;
+                    else teks = `${detik} detik lagi`;
+                    
+                    // 2 hari = 172800 detik
+                    if (totalDetik <= 172800) {
+                        kelas = 'countdown-badge text-xs px-2 py-1 rounded font-medium bg-red-500 text-white animate-pulse-urgent';
+                        icon = 'fas fa-exclamation-circle';
+                    } else {
+                        kelas = 'countdown-badge text-xs px-2 py-1 rounded font-medium bg-gray-100 text-gray-600';
+                        icon = 'far fa-calendar';
+                    }
+                }
+
+                badge.className = kelas;
+                badge.querySelector('i').className = icon + ' mr-1';
+                badge.querySelector('.countdown-text').textContent = teks;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        });
+    </script>
 </x-app-layout>
