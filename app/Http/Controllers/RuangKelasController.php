@@ -112,8 +112,14 @@ class RuangKelasController extends Controller
             'dosen_id' => 'nullable|exists:pengguna,id',
         ]);
 
+        // Initialize academic period variable
+        $academicPeriod = null;
+
         // Use selected academic_period_id if provided, otherwise auto-sync based on semester
         if (!empty($validated['academic_period_id'])) {
+            // Load the selected academic period for the success message
+            $academicPeriod = PeriodeAkademik::find($validated['academic_period_id']);
+            
             Log::info('Using selected academic period for new class', [
                 'class_code' => $validated['code'],
                 'academic_period_id' => $validated['academic_period_id']
