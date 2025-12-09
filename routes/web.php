@@ -19,7 +19,8 @@ use App\Http\Controllers\{
     UlasanTargetMingguanController,
     ImporController,
     ImporPenggunaController,
-    PeriodeAkademikController
+    PeriodeAkademikController,
+    SinkronKriteriaController
 };
 use App\Http\Controllers\Auth\GoogleAuthController;
 use Illuminate\Support\Facades\Route;
@@ -113,6 +114,7 @@ Route::middleware(['auth'])->group(function () {
         
         // Bulk operations per week (edit/delete/reopen/close semua target dalam 1 minggu)
         Route::get('targets/week/{weekNumber}/class/{classRoomId}/edit', [TargetMingguanController::class, 'editWeek'])->name('targets.week.edit');
+        Route::get('targets/week/{weekNumber}/class/{classRoomId}/info', [TargetMingguanController::class, 'showWeekInfo'])->name('targets.week.info');
         Route::put('targets/week/{weekNumber}/class/{classRoomId}', [TargetMingguanController::class, 'updateWeek'])->name('targets.week.update');
         Route::delete('targets/week/{weekNumber}/class/{classRoomId}', [TargetMingguanController::class, 'destroyWeek'])->name('targets.week.destroy');
         Route::post('targets/week/{weekNumber}/class/{classRoomId}/reopen', [TargetMingguanController::class, 'reopenWeek'])->name('targets.week.reopen');
@@ -125,6 +127,12 @@ Route::middleware(['auth'])->group(function () {
         Route::post('scores/student-input/calculate', [InputNilaiMahasiswaController::class, 'calculate'])->name('scores.student-input.calculate');
         Route::delete('scores/student-input/delete-student', [InputNilaiMahasiswaController::class, 'deleteStudentScores'])->name('scores.student-input.delete-student');
         Route::delete('scores/student-input/delete-score', [InputNilaiMahasiswaController::class, 'deleteScore'])->name('scores.student-input.delete-score');
+
+        // Sync Kriteria (Sinkronkan nilai target ke kriteria AHP)
+        Route::get('sync-kriteria', [SinkronKriteriaController::class, 'index'])->name('sync-kriteria.index');
+        Route::post('sync-kriteria/preview', [SinkronKriteriaController::class, 'preview'])->name('sync-kriteria.preview');
+        Route::post('sync-kriteria', [SinkronKriteriaController::class, 'sync'])->name('sync-kriteria.sync');
+        Route::delete('sync-kriteria/{syncLog}', [SinkronKriteriaController::class, 'unsync'])->name('sync-kriteria.unsync');
     });
     
     // Admin Only - Force Delete

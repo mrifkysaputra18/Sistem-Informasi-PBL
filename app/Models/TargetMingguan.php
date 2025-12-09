@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TargetMingguan extends Model
 {
@@ -12,19 +13,19 @@ class TargetMingguan extends Model
 
     protected $fillable = [
         'group_id',
-        'created_by',           // NEW: Dosen yang membuat target
+        'created_by',           // Dosen yang membuat target
         'week_number',
         'title',
         'description',
-        'deadline',             // NEW: Deadline submit
-        'grace_period_minutes', // NEW: Grace period
-        'auto_close',           // NEW: Auto close
-        'auto_closed_at',       // NEW: Auto closed timestamp
-        'is_open',              // NEW: Apakah target masih bisa disubmit
-        'reopened_by',          // NEW: Dosen yang membuka kembali target
-        'reopened_at',          // NEW: Waktu dibuka kembali
-        'submission_notes',     // NEW: Catatan dari mahasiswa
-        'submission_status',    // NEW: Status submission
+        'deadline',             // Deadline submit
+        'grace_period_minutes', // Grace period
+        'auto_close',           // Auto close
+        'auto_closed_at',       // Auto closed timestamp
+        'is_open',              // Apakah target masih bisa disubmit
+        'reopened_by',          // Dosen yang membuka kembali target
+        'reopened_at',          // Waktu dibuka kembali
+        'submission_notes',     // Catatan dari mahasiswa
+        'submission_status',    // Status submission
         'is_completed',
         'evidence_file',
         'evidence_files',
@@ -34,20 +35,24 @@ class TargetMingguan extends Model
         'is_reviewed',
         'reviewed_at',
         'reviewer_id',
+        'quality_score',        // NEW: Nilai kualitas dari dosen (0-100)
+        'final_score',          // NEW: Hasil kalkulasi (verified/total) × quality
     ];
 
     protected $casts = [
         'is_completed' => 'boolean',
         'is_checked_only' => 'boolean',
         'is_reviewed' => 'boolean',
-        'is_open' => 'boolean',    // NEW
-        'auto_close' => 'boolean', // NEW
+        'is_open' => 'boolean',
+        'auto_close' => 'boolean',
         'evidence_files' => 'array',
         'completed_at' => 'datetime',
         'reviewed_at' => 'datetime',
-        'deadline' => 'datetime',  // NEW
-        'reopened_at' => 'datetime', // NEW
-        'auto_closed_at' => 'datetime', // NEW
+        'deadline' => 'datetime',
+        'reopened_at' => 'datetime',
+        'auto_closed_at' => 'datetime',
+        'quality_score' => 'decimal:2',  // NEW
+        'final_score' => 'decimal:2',    // NEW
     ];
 
     /**
@@ -117,6 +122,92 @@ class TargetMingguan extends Model
     public function review(): HasOne
     {
         return $this->hasOne(UlasanTargetMingguan::class, 'weekly_target_id');
+    }
+
+    /**
+     * Get todo items for this target
+     */
+    public function todoItems(): HasMany
+    {
+        return $this->hasMany(TargetTodoItem::class, 'target_mingguan_id')->orderBy('order');
+    }
+
+    /**
+     * Check if this target has todo items
+     */
+    public function hasTodoItems(): bool
+    {
+        return $this->todoItems()->count() > 0;
+    }
+
+    /**
+     * Get total todo items count
+     */
+    public function getTotalTodoCount(): int
+    {
+        return $this->todoItems()->count();
+    }
+
+    /**
+     * Get completed todo items count (claimed by student)
+     */
+    public function getCompletedTodoCount(): int
+    {
+        return $this->todoItems()->where('is_completed_by_student', true)->count();
+    }
+
+    /**
+     * Get verified todo items count (verified by reviewer)
+     */
+    public function getVerifiedTodoCount(): int
+    {
+        return $this->todoItems()->where('is_verified_by_reviewer', true)->count();
+    }
+
+    /**
+     * Get completion percentage by student
+     */
+    public function getCompletionPercentage(): float
+    {
+        $total = $this->getTotalTodoCount();
+        if ($total === 0) return 0;
+        
+        return round(($this->getCompletedTodoCount() / $total) * 100, 2);
+    }
+
+    /**
+     * Get verified percentage by reviewer
+     */
+    public function getVerifiedPercentage(): float
+    {
+        $total = $this->getTotalTodoCount();
+        if ($total === 0) return 0;
+        
+        return round(($this->getVerifiedTodoCount() / $total) * 100, 2);
+    }
+
+    /**
+     * Calculate final score based on verified todos and quality score
+     * Formula: (verified/total) × quality_score
+     */
+    public function calculateFinalScore(): float
+    {
+        $total = $this->getTotalTodoCount();
+        if ($total === 0) return 0;
+        
+        $verified = $this->getVerifiedTodoCount();
+        $qualityScore = $this->quality_score ?? 0;
+        
+        return round(($verified / $total) * $qualityScore, 2);
+    }
+
+    /**
+     * Update and save final score
+     */
+    public function updateFinalScore(): void
+    {
+        $this->final_score = $this->calculateFinalScore();
+        $this->save();
     }
 
     /**

@@ -128,43 +128,101 @@
                         <form action="{{ route('target-reviews.store', $target) }}" method="POST">
                             @csrf
 
-                            <!-- Score -->
+                            <!-- Todo List Verification (if exists) -->
+                            @if($target->hasTodoItems())
                             <div class="mb-6">
-                                <label for="score" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Nilai (0-100) <span class="text-red-500">*</span>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                    <i class="fa-solid fa-list-check mr-1 text-indigo-600"></i>
+                                    Verifikasi Todo List <span class="text-red-500">*</span>
+                                </label>
+                                <p class="text-xs text-gray-500 mb-3">
+                                    Centang todo yang benar-benar sudah diselesaikan mahasiswa.
+                                </p>
+
+                                <div class="space-y-2 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                    @foreach($target->todoItems as $index => $todo)
+                                    <label class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all
+                                                  {{ $todo->is_completed_by_student ? 'bg-blue-50 border-blue-200' : 'bg-white border-gray-200' }}"
+                                           id="todo-label-{{ $todo->id }}">
+                                        <input type="checkbox" 
+                                               name="verified_todos[]" 
+                                               value="{{ $todo->id }}"
+                                               {{ $todo->is_verified_by_reviewer ? 'checked' : '' }}
+                                               onchange="updateScorePreview()"
+                                               class="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-2">
+                                                <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs">
+                                                    {{ $index + 1 }}
+                                                </span>
+                                                <span class="font-medium text-gray-900 text-sm">{{ $todo->title }}</span>
+                                            </div>
+                                            @if($todo->description)
+                                            <p class="text-xs text-gray-500 mt-1 ml-7">{{ $todo->description }}</p>
+                                            @endif
+                                        </div>
+                                        @if($todo->is_completed_by_student)
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">
+                                            <i class="fa-solid fa-user mr-1"></i>Claimed
+                                        </span>
+                                        @else
+                                        <span class="px-2 py-1 bg-gray-100 text-gray-500 text-xs font-medium rounded">
+                                            <i class="fa-solid fa-times mr-1"></i>Not claimed
+                                        </span>
+                                        @endif
+                                    </label>
+                                    @endforeach
+                                </div>
+
+                                <div class="mt-3 flex items-center gap-4 text-sm">
+                                    <span class="text-gray-600">
+                                        Verified: <strong id="verified-count">{{ $target->getVerifiedTodoCount() }}</strong>/{{ $target->getTotalTodoCount() }} todo
+                                    </span>
+                                    <span class="text-indigo-600">
+                                        = <strong id="verified-percent">{{ number_format($target->getVerifiedPercentage(), 0) }}%</strong>
+                                    </span>
+                                </div>
+                            </div>
+                            @endif
+
+                            <!-- Quality Score -->
+                            <div class="mb-6">
+                                <label for="quality_score" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Nilai Kualitas (0-100) <span class="text-red-500">*</span>
                                 </label>
                                 <input type="number" 
-                                       name="score" 
-                                       id="score" 
-                                       value="{{ old('score') }}"
+                                       name="quality_score" 
+                                       id="quality_score" 
+                                       value="{{ old('quality_score', 100) }}"
                                        min="0"
                                        max="100"
-                                       step="0.01"
+                                       step="1"
                                        required
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('score') border-red-500 @enderror">
-                                @error('score')
+                                       oninput="updateScorePreview()"
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('quality_score') border-red-500 @enderror">
+                                @error('quality_score')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
-                                <p class="mt-1 text-xs text-gray-500">Berikan nilai berdasarkan kualitas dan ketepatan waktu penyelesaian target</p>
+                                <p class="mt-1 text-xs text-gray-500">Berikan nilai kualitas pengerjaan (0-100)</p>
                             </div>
 
-                            <!-- Status -->
-                            <div class="mb-6">
-                                <label for="status" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Status Review <span class="text-red-500">*</span>
-                                </label>
-                                <select name="status" 
-                                        id="status" 
-                                        required
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('status') border-red-500 @enderror">
-                                    <option value="">Pilih Status</option>
-                                    <option value="approved" {{ old('status') == 'approved' ? 'selected' : '' }}>✓ Diterima (Approved)</option>
-                                    <option value="needs_revision" {{ old('status') == 'needs_revision' ? 'selected' : '' }}>⚠ Perlu Revisi</option>
-                                </select>
-                                @error('status')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
+                            <!-- Score Preview -->
+                            @if($target->hasTodoItems())
+                            <div class="mb-6 p-4 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg border border-indigo-200">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-700">Nilai Akhir (Auto-calculate)</span>
+                                        <p class="text-xs text-gray-500 mt-1">
+                                            Formula: (<span id="formula-verified">0</span>/<span id="formula-total">{{ $target->getTotalTodoCount() }}</span>) × <span id="formula-quality">100</span>
+                                        </p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-3xl font-black text-indigo-600" id="final-score-preview">0</span>
+                                        <span class="text-lg text-gray-500">/100</span>
+                                    </div>
+                                </div>
                             </div>
+                            @endif
 
                             <!-- Feedback -->
                             <div class="mb-6">
@@ -214,5 +272,35 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const totalTodos = {{ $target->hasTodoItems() ? $target->getTotalTodoCount() : 0 }};
+
+        function updateScorePreview() {
+            if (totalTodos === 0) return;
+
+            // Get verified checkboxes count
+            const verifiedCheckboxes = document.querySelectorAll('input[name="verified_todos[]"]:checked');
+            const verifiedCount = verifiedCheckboxes.length;
+            
+            // Get quality score
+            const qualityScore = parseFloat(document.getElementById('quality_score').value) || 0;
+            
+            // Calculate final score: (verified/total) × quality_score
+            const finalScore = (verifiedCount / totalTodos) * qualityScore;
+            
+            // Update UI elements
+            document.getElementById('verified-count').textContent = verifiedCount;
+            document.getElementById('verified-percent').textContent = Math.round((verifiedCount / totalTodos) * 100) + '%';
+            document.getElementById('formula-verified').textContent = verifiedCount;
+            document.getElementById('formula-quality').textContent = qualityScore;
+            document.getElementById('final-score-preview').textContent = finalScore.toFixed(1);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateScorePreview();
+        });
+    </script>
 </x-app-layout>
 

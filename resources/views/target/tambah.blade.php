@@ -104,6 +104,67 @@
                             @enderror
                         </div>
 
+                        <!-- Todo List Section -->
+                        <div class="mb-6" x-data="todoListManager()">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fa-solid fa-list-check mr-1 text-indigo-600"></i>
+                                Todo List <span class="text-red-500">*</span>
+                            </label>
+                            <p class="text-xs text-gray-500 mb-3">
+                                <i class="fa-solid fa-info-circle mr-1"></i>
+                                Buat daftar tugas yang harus diselesaikan mahasiswa. Minimal 1 item.
+                            </p>
+
+                            <!-- Todo Items Container -->
+                            <div class="space-y-3" id="todo-container">
+                                <template x-for="(todo, index) in todos" :key="index">
+                                    <div class="flex items-start gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                        <!-- Order Number -->
+                                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm" x-text="index + 1"></div>
+                                        
+                                        <!-- Input Fields -->
+                                        <div class="flex-1 space-y-2">
+                                            <input type="text" 
+                                                   :name="'todo_items[' + index + '][title]'"
+                                                   x-model="todo.title"
+                                                   placeholder="Judul todo (wajib)"
+                                                   required
+                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                                            <input type="text" 
+                                                   :name="'todo_items[' + index + '][description]'"
+                                                   x-model="todo.description"
+                                                   placeholder="Deskripsi tambahan (opsional)"
+                                                   class="w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-xs text-gray-600">
+                                            <input type="hidden" :name="'todo_items[' + index + '][order]'" :value="index">
+                                        </div>
+                                        
+                                        <!-- Delete Button -->
+                                        <button type="button" 
+                                                @click="removeTodo(index)"
+                                                x-show="todos.length > 1"
+                                                class="flex-shrink-0 w-8 h-8 rounded-full bg-red-100 text-red-600 hover:bg-red-200 flex items-center justify-center transition-colors">
+                                            <i class="fa-solid fa-trash text-xs"></i>
+                                        </button>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <!-- Add Todo Button -->
+                            <button type="button" 
+                                    @click="addTodo()"
+                                    class="mt-3 w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-indigo-400 hover:text-indigo-600 transition-colors flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Tambah Todo Item</span>
+                            </button>
+
+                            <!-- Todo Count Info -->
+                            <p class="mt-2 text-xs text-gray-500">
+                                <i class="fa-solid fa-calculator mr-1"></i>
+                                Total: <span class="font-bold" x-text="todos.length"></span> todo items. 
+                                Setiap item bernilai <span class="font-bold text-indigo-600" x-text="(100 / todos.length).toFixed(1)"></span>% dari nilai total.
+                            </p>
+                        </div>
+
                         <!-- Deadline -->
                         <div class="mb-6">
                             <label for="deadline" class="block text-sm font-medium text-gray-700 mb-2">
@@ -146,6 +207,23 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
     
     <script>
+        // Alpine.js Todo List Manager
+        function todoListManager() {
+            return {
+                todos: [
+                    { title: '', description: '' }
+                ],
+                addTodo() {
+                    this.todos.push({ title: '', description: '' });
+                },
+                removeTodo(index) {
+                    if (this.todos.length > 1) {
+                        this.todos.splice(index, 1);
+                    }
+                }
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Set default deadline ke besok jam 23:59
             const besok = new Date();

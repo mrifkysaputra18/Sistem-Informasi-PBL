@@ -188,6 +188,31 @@ class PengumpulanTargetMingguanController extends Controller
             $isCheckedOnly = false; // If files uploaded, cannot be check-only
         }
 
+        // Handle todo items completion
+        $completedTodos = $request->input('completed_todos', []);
+        if ($target->hasTodoItems()) {
+            // Reset semua todo completion status dulu
+            $target->todoItems()->update([
+                'is_completed_by_student' => false,
+                'completed_at' => null,
+            ]);
+
+            // Mark todo items yang dicentang mahasiswa sebagai completed
+            if (!empty($completedTodos)) {
+                $target->todoItems()
+                    ->whereIn('id', $completedTodos)
+                    ->update([
+                        'is_completed_by_student' => true,
+                        'completed_at' => now(),
+                    ]);
+            }
+
+            \Log::info('Todo items marked as completed', [
+                'target_id' => $target->id,
+                'completed_todos' => $completedTodos,
+            ]);
+        }
+
         // Determine submission status
         $submissionStatus = 'submitted';
         if ($target->deadline && now()->gt($target->deadline)) {
@@ -209,12 +234,17 @@ class PengumpulanTargetMingguanController extends Controller
             'target_id' => $target->id,
             'status' => $submissionStatus,
             'file_count' => count($evidencePaths),
+            'completed_todos' => count($completedTodos),
         ]);
+
+        $completedCount = count($completedTodos);
+        $totalCount = $target->getTotalTodoCount();
 
         return redirect()->route('mahasiswa.dashboard')
             ->with('success', 'Target berhasil disubmit!' . 
                 ($submissionStatus === 'late' ? ' (Terlambat)' : '') .
-                (count($evidencePaths) > 0 ? ' (' . count($evidencePaths) . ' file)' : ''));
+                ($totalCount > 0 ? " ({$completedCount}/{$totalCount} todo selesai)" : '') .
+                (count($evidencePaths) > 0 ? ' + ' . count($evidencePaths) . ' file' : ''));
     }
 
     /**

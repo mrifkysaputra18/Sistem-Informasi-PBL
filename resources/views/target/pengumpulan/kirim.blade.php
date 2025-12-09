@@ -56,6 +56,70 @@
                 </div>
             </div>
 
+            <!-- Todo List Checklist (if exists) -->
+            @if($target->hasTodoItems())
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold flex items-center">
+                        <i class="fa-solid fa-list-check mr-2 text-indigo-600"></i>
+                        Todo List
+                    </h3>
+                    <div class="text-sm text-gray-500">
+                        <span id="completed-count">{{ $target->getCompletedTodoCount() }}</span>/{{ $target->getTotalTodoCount() }} selesai
+                    </div>
+                </div>
+                
+                <p class="text-sm text-gray-500 mb-4">
+                    <i class="fa-solid fa-info-circle mr-1"></i>
+                    Centang todo yang sudah Anda kerjakan. Dosen akan memverifikasi penyelesaian Anda.
+                </p>
+
+                <div class="space-y-3" id="todo-checklist">
+                    @foreach($target->todoItems as $index => $todo)
+                    <label class="flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all
+                                  {{ $todo->is_completed_by_student ? 'bg-green-50 border-green-300' : 'bg-gray-50 border-gray-200 hover:border-indigo-300' }}">
+                        <input type="checkbox" 
+                               name="completed_todos[]" 
+                               value="{{ $todo->id }}"
+                               {{ $todo->is_completed_by_student ? 'checked' : '' }}
+                               onchange="updateTodoStyle(this)"
+                               class="mt-1 w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs">
+                                    {{ $index + 1 }}
+                                </span>
+                                <span class="font-medium text-gray-900 {{ $todo->is_completed_by_student ? 'line-through' : '' }}" id="todo-title-{{ $todo->id }}">
+                                    {{ $todo->title }}
+                                </span>
+                            </div>
+                            @if($todo->description)
+                            <p class="text-sm text-gray-500 mt-1 ml-8">{{ $todo->description }}</p>
+                            @endif
+                        </div>
+                        @if($todo->is_verified_by_reviewer)
+                        <span class="px-2 py-1 bg-green-600 text-white text-xs font-bold rounded">
+                            <i class="fa-solid fa-check mr-1"></i>Verified
+                        </span>
+                        @endif
+                    </label>
+                    @endforeach
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="mt-4">
+                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                        <span>Progress</span>
+                        <span id="progress-percent">{{ number_format($target->getCompletionPercentage(), 0) }}%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all" 
+                             style="width: {{ $target->getCompletionPercentage() }}%"></div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- Deadline Warning -->
             @if($target->deadline)
                 @if($target->isInGracePeriod())
@@ -369,6 +433,39 @@
                 updateFileList();
                 updateFileInput();
             }
+        }
+
+        // Todo checklist style update
+        function updateTodoStyle(checkbox) {
+            const label = checkbox.closest('label');
+            const titleSpan = label.querySelector('[id^="todo-title-"]');
+            
+            if (checkbox.checked) {
+                label.classList.remove('bg-gray-50', 'border-gray-200');
+                label.classList.add('bg-green-50', 'border-green-300');
+                if (titleSpan) titleSpan.classList.add('line-through');
+            } else {
+                label.classList.remove('bg-green-50', 'border-green-300');
+                label.classList.add('bg-gray-50', 'border-gray-200');
+                if (titleSpan) titleSpan.classList.remove('line-through');
+            }
+            
+            // Update progress
+            updateTodoProgress();
+        }
+
+        function updateTodoProgress() {
+            const checkboxes = document.querySelectorAll('#todo-checklist input[type="checkbox"]');
+            const total = checkboxes.length;
+            const completed = Array.from(checkboxes).filter(cb => cb.checked).length;
+            
+            const countEl = document.getElementById('completed-count');
+            const percentEl = document.getElementById('progress-percent');
+            const barEl = document.getElementById('progress-bar');
+            
+            if (countEl) countEl.textContent = completed;
+            if (percentEl) percentEl.textContent = Math.round((completed / total) * 100) + '%';
+            if (barEl) barEl.style.width = ((completed / total) * 100) + '%';
         }
 
         document.addEventListener('DOMContentLoaded', function() {
