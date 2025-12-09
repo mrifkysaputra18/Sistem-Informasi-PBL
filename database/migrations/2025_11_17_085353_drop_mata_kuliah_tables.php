@@ -11,6 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Drop foreign key constraint from kriteria table first
+        Schema::table('kriteria', function (Blueprint $table) {
+            if (Schema::hasColumn('kriteria', 'subject_id')) {
+                $table->dropForeign(['subject_id']);
+                $table->dropColumn('subject_id');
+            }
+        });
+
         // Drop all junction/pivot tables that reference mata_kuliah
         Schema::dropIfExists('mata_kuliah_pengguna');
         Schema::dropIfExists('subject_user');

@@ -19,7 +19,9 @@ use App\Http\Controllers\{
     UlasanTargetMingguanController,
     ImporController,
     ImporPenggunaController,
-    PeriodeAkademikController
+    PeriodeAkademikController,
+    MataKuliahController,
+    RubrikPenilaianController
 };
 use App\Http\Controllers\Auth\GoogleAuthController;
 use Illuminate\Support\Facades\Route;
@@ -262,6 +264,26 @@ Route::middleware(['auth'])->group(function () {
         // Student Rankings (View only)
         Route::get('student-scores', [NilaiMahasiswaController::class, 'index'])->name('student-scores.index');
         Route::post('student-scores/recalc', [NilaiMahasiswaController::class, 'recalc'])->name('student-scores.recalc');
+    });
+
+    // ========================================
+    // MATA KULIAH & RUBRIK PENILAIAN
+    // ========================================
+    Route::middleware(['role:dosen,koordinator,admin'])->group(function () {
+        // Mata Kuliah
+        Route::resource('mata-kuliah', MataKuliahController::class)->parameters(['mata-kuliah' => 'mataKuliah']);
+        
+        // Rubrik Penilaian (nested under mata-kuliah)
+        Route::get('mata-kuliah/{mataKuliah}/rubrik', [RubrikPenilaianController::class, 'index'])->name('rubrik-penilaian.index');
+        Route::get('mata-kuliah/{mataKuliah}/rubrik/create', [RubrikPenilaianController::class, 'create'])->name('rubrik-penilaian.create');
+        Route::post('mata-kuliah/{mataKuliah}/rubrik', [RubrikPenilaianController::class, 'store'])->name('rubrik-penilaian.store');
+        Route::get('mata-kuliah/{mataKuliah}/rubrik/{rubrikPenilaian}', [RubrikPenilaianController::class, 'show'])->name('rubrik-penilaian.show');
+        Route::get('mata-kuliah/{mataKuliah}/rubrik/{rubrikPenilaian}/edit', [RubrikPenilaianController::class, 'edit'])->name('rubrik-penilaian.edit');
+        Route::put('mata-kuliah/{mataKuliah}/rubrik/{rubrikPenilaian}', [RubrikPenilaianController::class, 'update'])->name('rubrik-penilaian.update');
+        Route::delete('mata-kuliah/{mataKuliah}/rubrik/{rubrikPenilaian}', [RubrikPenilaianController::class, 'destroy'])->name('rubrik-penilaian.destroy');
+        Route::post('mata-kuliah/{mataKuliah}/rubrik/{rubrikPenilaian}/activate', [RubrikPenilaianController::class, 'activate'])->name('rubrik-penilaian.activate');
+        Route::get('mata-kuliah/{mataKuliah}/rubrik/{rubrikPenilaian}/duplicate', [RubrikPenilaianController::class, 'duplicate'])->name('rubrik-penilaian.duplicate');
+        Route::post('mata-kuliah/{mataKuliah}/rubrik/{rubrikPenilaian}/duplicate', [RubrikPenilaianController::class, 'storeDuplicate'])->name('rubrik-penilaian.store-duplicate');
     });
 
     // ========================================

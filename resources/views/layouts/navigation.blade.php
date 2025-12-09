@@ -68,6 +68,11 @@
                         <x-nav-link :href="route('targets.index')" :active="request()->routeIs('targets.*')">
                             {{ __('Target Mingguan') }}
                         </x-nav-link>
+                        
+                        <!-- Mata Kuliah & Rubrik -->
+                        <x-nav-link :href="route('mata-kuliah.index')" :active="request()->routeIs('mata-kuliah.*') || request()->routeIs('rubrik-penilaian.*')">
+                            {{ __('Mata Kuliah') }}
+                        </x-nav-link>
                     @endif
 
                     @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
@@ -215,6 +220,11 @@
                 <!-- Dosen, Koordinator, Admin - Target Mingguan -->
                 <x-responsive-nav-link :href="route('targets.index')" :active="request()->routeIs('targets.*')">
                     {{ __('Target Mingguan') }}
+                </x-responsive-nav-link>
+                
+                <!-- Mata Kuliah & Rubrik -->
+                <x-responsive-nav-link :href="route('mata-kuliah.index')" :active="request()->routeIs('mata-kuliah.*') || request()->routeIs('rubrik-penilaian.*')">
+                    {{ __('Mata Kuliah') }}
                 </x-responsive-nav-link>
                 
                 <!-- Menu Penilaian (Grouped) -->

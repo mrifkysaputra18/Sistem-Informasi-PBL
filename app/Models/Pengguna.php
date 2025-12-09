@@ -168,6 +168,23 @@ class Pengguna extends Authenticatable
     }
 
     /**
+     * Get mata kuliah for dosen
+     */
+    public function mataKuliahs()
+    {
+        return $this->belongsToMany(MataKuliah::class, 'dosen_mata_kuliah', 'dosen_id', 'mata_kuliah_id')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Get rubrik penilaian created by this dosen
+     */
+    public function rubrikPenilaians()
+    {
+        return $this->hasMany(RubrikPenilaian::class, 'created_by');
+    }
+
+    /**
      * Get profile photo URL
      */
     public function getProfilePhotoUrlAttribute(): string
