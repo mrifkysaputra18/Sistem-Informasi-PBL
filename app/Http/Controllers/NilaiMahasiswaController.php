@@ -14,7 +14,7 @@ class NilaiMahasiswaController extends Controller
      */
     public function index(Request $request)
     {
-        // Build query with filters
+        // Base query for students
         $query = Pengguna::where('role', 'mahasiswa')
             ->with(['classRoom.academicPeriod', 'groups', 'studentScores']);
         
@@ -25,27 +25,40 @@ class NilaiMahasiswaController extends Controller
             });
         }
         
-        // Filter by class
-        if ($request->filled('class_room_id')) {
+        // Filter by class (Tab Active)
+        // Jika tab 'all' atau tidak ada, jangan filter class_id
+        if ($request->filled('class_room_id') && $request->class_room_id !== 'all') {
             $query->where('class_room_id', $request->class_room_id);
         }
         
-        $students = $query->get();
-        $criteria = Kriteria::where('segment', 'student')->get();
+        // Clone query for ranking calculation (needs all students to calculate rank correctly)
+        $rankingQuery = clone $query;
         
-        // Filter scores based on filtered students
-        $studentIds = $students->pluck('id');
+        // Get paginated students for the view (Matrix Table)
+        $students = $query->orderBy('name')->paginate(10)->withQueryString();
+        
+        // Get ALL IDs for Ranking Calculation (Global context within filter)
+        // Note: If we filtered by class above, ranking is calculated relative to that class.
+        // If we want global ranking regardless of tab, we should remove the class filter for rankingQuery.
+        // But usually, if I select a class tab, I want to see ranking within that class OR global ranking.
+        // Let's stick to calculating ranking based on the current filter context for consistency.
+        $studentIds = $rankingQuery->pluck('id');
+        
+        $criteria = Kriteria::where('segment', 'student')->get();
         $scores = NilaiMahasiswa::whereIn('user_id', $studentIds)->get();
         
         // Calculate ranking using RankingService
         $rankingService = new RankingService();
-        $ranking = $rankingService->getStudentRankingWithDetails($request->class_room_id, $studentIds->toArray());
+        $ranking = $rankingService->getStudentRankingWithDetails(
+            $request->class_room_id === 'all' ? null : $request->class_room_id, 
+            $studentIds->toArray()
+        );
         
         // Calculate average score
         $averageScore = $scores->count() > 0 ? $scores->avg('skor') : 0;
         
         // Get best students per class (with filter)
-        $bestStudentsPerClass = $this->getBestStudentsPerClass($request->academic_year, $request->class_room_id);
+        $bestStudentsPerClass = $this->getBestStudentsPerClass($request->academic_year, $request->class_room_id === 'all' ? null : $request->class_room_id);
         
         // Get unique academic years for filter
         $academicYears = \App\Models\PeriodeAkademik::orderBy('academic_year', 'desc')
@@ -53,15 +66,17 @@ class NilaiMahasiswaController extends Controller
             ->unique()
             ->values();
         
-        // Get classrooms for filter
-        $classRooms = RuangKelas::with('academicPeriod')
-            ->when($request->filled('academic_year'), function($q) use ($request) {
-                $q->whereHas('academicPeriod', function($query) use ($request) {
-                    $query->where('academic_year', $request->academic_year);
-                });
-            })
-            ->orderBy('name')
-            ->get();
+        // Get classrooms for tabs
+        $classRoomsQuery = \App\Models\RuangKelas::with('academicPeriod')
+            ->withCount(['students']);
+            
+        if ($request->filled('academic_year')) {
+            $classRoomsQuery->whereHas('academicPeriod', function($query) use ($request) {
+                $query->where('academic_year', $request->academic_year);
+            });
+        }
+            
+        $classRooms = $classRoomsQuery->orderBy('name')->get();
         
         return view('nilai-mahasiswa.daftar', compact(
             'students', 

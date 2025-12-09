@@ -1,202 +1,155 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div class="space-y-1">
-                <h2 class="font-bold text-2xl text-white leading-tight flex items-center gap-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                    </svg>
-                    {{ __('Manajemen Kriteria Penilaian') }}
-                </h2>
-                <p class="text-sm text-white/90">Atur kriteria dan bobot penilaian dengan metode AHP</p>
+    <div class="py-8 bg-gray-100 min-h-screen font-sans">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- 1. HEADER SECTION -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                <div>
+                    <h2 class="text-3xl font-black text-gray-900 tracking-tight">MANAJEMEN KRITERIA</h2>
+                    <p class="text-sm font-medium text-gray-500 mt-1">Atur kriteria penilaian dan pembobotan menggunakan metode AHP.</p>
+                </div>
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap gap-3">
+                    <a href="{{ route('ahp.index') }}" 
+                       class="inline-flex items-center px-5 py-2.5 bg-orange-500 hover:bg-orange-600 border-2 border-orange-700 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">
+                        <i class="fa-solid fa-calculator mr-2 text-lg"></i>
+                        <span>Hitung Bobot AHP</span>
+                    </a>
+                    <a href="{{ route('criteria.create') }}" 
+                       class="inline-flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 border-2 border-indigo-800 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">
+                        <i class="fa-solid fa-plus mr-2 text-lg"></i>
+                        <span>Tambah Kriteria</span>
+                    </a>
+                </div>
             </div>
-            <div class="flex gap-2">
-                <a href="{{ route('ahp.index') }}" 
-                   class="bg-secondary-500 hover:bg-secondary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-                    <i class="fa-solid fa-calculator mr-2"></i>Hitung Bobot AHP
-                </a>
-                <a href="{{ route('criteria.create') }}" 
-                   class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-                    <i class="fa-solid fa-circle-plus mr-2"></i>Tambah Kriteria
-                </a>
-            </div>
-        </div>
-    </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Alert Success -->
+            <!-- Alert Messages -->
             @if(session('ok'))
-                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-r-lg shadow-md">
+                <div x-data="{ show: true }" x-show="show" class="bg-emerald-100 border-l-8 border-emerald-600 text-emerald-800 px-6 py-4 rounded-lg shadow-md mb-8 flex items-start justify-between">
                     <div class="flex items-center">
-                        <i class="fa-solid fa-circle-check mr-2"></i>
-                        <span>{{ session('ok') }}</span>
+                        <i class="fa-solid fa-check-circle text-2xl mr-4 text-emerald-600"></i>
+                        <span class="font-bold text-lg">{{ session('ok') }}</span>
                     </div>
+                    <button @click="show = false" class="text-emerald-600 hover:text-emerald-800"><i class="fa-solid fa-times text-xl"></i></button>
                 </div>
             @endif
 
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <!-- Card 1: Total Kriteria -->
-                <div class="group relative bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    
-                    <div class="relative flex items-start justify-between">
-                        <div class="flex-1">
-                            <p class="text-blue-100 text-xs font-medium uppercase tracking-wider">Total Kriteria</p>
-                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $criteria->total() }}</p>
-                            <p class="text-xs text-blue-100 mt-2">Kriteria penilaian</p>
-                        </div>
-                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
-                            <i class="fa-solid fa-list-check text-2xl"></i>
-                        </div>
+            <!-- 2. STATS CARDS (Indigo Theme) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Total Kriteria -->
+                <div class="bg-white rounded-xl shadow-md border-b-4 border-indigo-600 p-6 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Total Kriteria</p>
+                        <p class="text-3xl font-black text-gray-800">{{ $criteria->total() }}</p>
+                    </div>
+                    <div class="p-3 bg-indigo-100 rounded-full text-indigo-600">
+                        <i class="fa-solid fa-list-check text-2xl"></i>
                     </div>
                 </div>
-                
-                <!-- Card 2: Kriteria Benefit -->
-                <div class="group relative bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    
-                    <div class="relative flex items-start justify-between">
-                        <div class="flex-1">
-                            <p class="text-green-100 text-xs font-medium uppercase tracking-wider">Kriteria Benefit</p>
-                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $criteria->where('tipe', 'benefit')->count() }}</p>
-                            <p class="text-xs text-green-100 mt-2">Lebih tinggi lebih baik</p>
-                        </div>
-                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
-                            <i class="fa-solid fa-arrow-trend-up text-2xl"></i>
-                        </div>
+
+                <!-- Kriteria Benefit -->
+                <div class="bg-white rounded-xl shadow-md border-b-4 border-emerald-600 p-6 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Kriteria Benefit</p>
+                        <p class="text-3xl font-black text-gray-800">{{ $criteria->where('tipe', 'benefit')->count() }}</p>
+                        <p class="text-xs text-emerald-600 font-bold mt-1">Lebih tinggi lebih baik</p>
+                    </div>
+                    <div class="p-3 bg-emerald-100 rounded-full text-emerald-600">
+                        <i class="fa-solid fa-arrow-trend-up text-2xl"></i>
                     </div>
                 </div>
-                
-                <!-- Card 3: Kriteria Cost -->
-                <div class="group relative bg-gradient-to-br from-red-500 to-red-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    
-                    <div class="relative flex items-start justify-between">
-                        <div class="flex-1">
-                            <p class="text-red-100 text-xs font-medium uppercase tracking-wider">Kriteria Cost</p>
-                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $criteria->where('tipe', 'cost')->count() }}</p>
-                            <p class="text-xs text-red-100 mt-2">Lebih rendah lebih baik</p>
-                        </div>
-                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
-                            <i class="fa-solid fa-arrow-trend-down text-2xl"></i>
-                        </div>
+
+                <!-- Kriteria Cost -->
+                <div class="bg-white rounded-xl shadow-md border-b-4 border-rose-600 p-6 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Kriteria Cost</p>
+                        <p class="text-3xl font-black text-gray-800">{{ $criteria->where('tipe', 'cost')->count() }}</p>
+                        <p class="text-xs text-rose-600 font-bold mt-1">Lebih rendah lebih baik</p>
+                    </div>
+                    <div class="p-3 bg-rose-100 rounded-full text-rose-600">
+                        <i class="fa-solid fa-arrow-trend-down text-2xl"></i>
                     </div>
                 </div>
             </div>
 
-            <!-- Main Content Card -->
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800">
-                            <i class="fa-solid fa-table mr-2 text-gray-600"></i>Daftar Kriteria
-                        </h3>
-                        <div class="text-sm text-gray-700 font-medium">
-                            Showing {{ $criteria->count() }} of {{ $criteria->total() }} entries
-                        </div>
-                    </div>
-
+            <!-- 3. DATA TABLE -->
+            <div class="bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden">
+                <div class="overflow-x-auto">
                     @if($criteria->count() > 0)
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <i class="fa-solid fa-hashtag mr-1"></i>No
-                                        </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <i class="fa-solid fa-tag mr-1"></i>Nama Kriteria
-                                        </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <i class="fa-solid fa-weight-hanging mr-1"></i>Bobot
-                                        </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <i class="fa-solid fa-chart-line mr-1"></i>Tipe
-                                        </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <i class="fa-solid fa-users mr-1"></i>Segment
-                                        </th>
-                                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <i class="fa-solid fa-gears mr-1"></i>Aksi
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($criteria as $index => $criterion)
-                                        <tr class="hover:bg-gray-50 transition duration-200">
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                {{ ($criteria->currentPage() - 1) * $criteria->perPage() + $index + 1 }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm font-medium text-gray-900">{{ $criterion->nama }}</div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-center">
-                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
-                                                        <i class="fa-solid fa-weight-hanging mr-1.5"></i>
-                                                        {{ number_format($criterion->bobot, 2) }}
-                                                    </span>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                @if($criterion->tipe == 'benefit')
-                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                        <i class="fa-solid fa-arrow-up mr-1"></i>Benefit
-                                                    </span>
-                                                @else
-                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                                        <i class="fa-solid fa-arrow-down mr-1"></i>Cost
-                                                    </span>
-                                                @endif
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $criterion->segment == 'group' ? 'bg-primary-100 text-primary-800' : 'bg-secondary-100 text-secondary-800' }}">
-                                                    <i class="fa-solid {{ $criterion->segment == 'group' ? 'fa-users' : 'fa-user' }} mr-1"></i>
-                                                    {{ ucfirst($criterion->segment) }}
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-900">
+                                <tr>
+                                    <th class="px-6 py-5 text-left text-xs font-bold text-white uppercase tracking-wider w-16">No</th>
+                                    <th class="px-6 py-5 text-left text-xs font-bold text-white uppercase tracking-wider">Nama Kriteria</th>
+                                    <th class="px-6 py-5 text-left text-xs font-bold text-white uppercase tracking-wider">Bobot Penilaian</th>
+                                    <th class="px-6 py-5 text-left text-xs font-bold text-white uppercase tracking-wider">Tipe & Segment</th>
+                                    <th class="px-6 py-5 text-center text-xs font-bold text-white uppercase tracking-wider w-64 border-l border-gray-800">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @foreach($criteria as $index => $criterion)
+                                <tr class="hover:bg-indigo-50 transition-colors group">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-bold">{{ ($criteria->currentPage() - 1) * $criteria->perPage() + $index + 1 }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-black text-gray-900 group-hover:text-indigo-700">{{ $criterion->nama }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <span class="text-lg font-black text-indigo-600 mr-2">{{ number_format($criterion->bobot, 3) }}</span>
+                                            <div class="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                                <div class="h-full bg-indigo-500" style="width: {{ $criterion->bobot * 100 }}%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex flex-col gap-1">
+                                            @if($criterion->tipe == 'benefit')
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 w-fit uppercase tracking-wide">
+                                                    <i class="fa-solid fa-arrow-up mr-1.5"></i> Benefit
                                                 </span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                                <div class="flex items-center justify-center space-x-2">
-                                                    <a href="{{ route('criteria.edit', $criterion) }}" 
-                                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-primary-600 bg-primary-100 hover:bg-primary-200 hover:text-primary-900 rounded-lg transition duration-200 ease-in-out">
-                                                        <i class="fa-solid fa-pen-to-square mr-1.5"></i>
-                                                        Edit
-                                                    </a>
-                                                    <form action="{{ route('criteria.destroy', $criterion) }}" method="POST" class="inline delete-form">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="button" 
-                                                                class="delete-btn inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-100 hover:bg-red-200 hover:text-red-900 rounded-lg transition duration-200 ease-in-out"
-                                                                data-name="{{ $criterion->name }}">
-                                                            <i class="fa-solid fa-trash-can mr-1.5"></i>
-                                                            Hapus
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Pagination -->
-                        <div class="mt-6">
+                                            @else
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200 w-fit uppercase tracking-wide">
+                                                    <i class="fa-solid fa-arrow-down mr-1.5"></i> Cost
+                                                </span>
+                                            @endif
+                                            
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold bg-gray-100 text-gray-600 border border-gray-200 w-fit uppercase tracking-wide">
+                                                <i class="fa-solid {{ $criterion->segment == 'group' ? 'fa-users' : 'fa-user' }} mr-1.5"></i> {{ ucfirst($criterion->segment) }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center border-l border-gray-100">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <a href="{{ route('criteria.edit', $criterion) }}" 
+                                               class="inline-flex items-center justify-center px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold rounded shadow-sm hover:shadow transition-all uppercase tracking-wide">
+                                                <i class="fas fa-edit mr-1.5"></i> Edit
+                                            </a>
+                                            
+                                            <form action="{{ route('criteria.destroy', $criterion) }}" method="POST" class="inline delete-form">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button" 
+                                                        class="delete-btn inline-flex items-center justify-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold rounded shadow-sm hover:shadow transition-all uppercase tracking-wide"
+                                                        data-name="{{ $criterion->nama }}">
+                                                    <i class="fas fa-trash mr-1.5"></i> Hapus
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                        <div class="px-6 py-6 bg-gray-50 border-t border-gray-200">
                             {{ $criteria->links() }}
                         </div>
                     @else
-                        <div class="text-center py-12">
-                            <div class="text-gray-400 mb-4">
-                                <i class="fa-solid fa-inbox text-6xl"></i>
+                        <div class="py-24 text-center">
+                            <div class="inline-block p-6 rounded-full bg-gray-100 mb-4 border border-gray-200">
+                                <i class="fas fa-list-check text-5xl text-gray-300"></i>
                             </div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">Belum ada kriteria</h3>
-                            <p class="text-gray-500 mb-4">Mulai dengan menambahkan kriteria penilaian pertama Anda.</p>
-                            <a href="{{ route('criteria.create') }}" 
-                               class="inline-flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-700 text-white font-bold rounded-lg shadow-md transition duration-300">
-                                <i class="fa-solid fa-circle-plus mr-2"></i>Tambah Kriteria Pertama
-                            </a>
+                            <h3 class="text-xl font-bold text-gray-800">Belum Ada Kriteria</h3>
+                            <p class="text-gray-500 mt-2">Silakan tambahkan kriteria baru untuk memulai penilaian.</p>
                         </div>
                     @endif
                 </div>
@@ -214,14 +167,23 @@
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
                     
-                    const criteriaName = this.getAttribute('data-name');
+                    const name = this.getAttribute('data-name');
                     const form = this.closest('.delete-form');
                     
-                    confirmDelete(
-                        'Hapus Kriteria?',
-                        `Apakah Anda yakin ingin menghapus kriteria <strong>"${criteriaName}"</strong>?<br><small class="text-gray-500">Tindakan ini tidak dapat dibatalkan.</small>`,
-                        form
-                    );
+                    Swal.fire({
+                        title: 'Hapus Kriteria?',
+                        html: `Anda akan menghapus kriteria <b>"${name}"</b>.<br>Ini dapat mempengaruhi perhitungan nilai yang ada!`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
                 });
             });
         });

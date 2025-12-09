@@ -18,7 +18,7 @@ class UserController extends Controller
     {
         $query = Pengguna::with('classRoom');
         
-        // Filter by role
+        // Filter by role (Acting as Tab)
         if ($request->has('role') && $request->role !== '') {
             $query->where('role', $request->role);
         }
@@ -43,25 +43,20 @@ class UserController extends Controller
             });
         }
         
-        // Group by role untuk tampilan
-        $usersByRole = [
-            'admin' => Pengguna::where('role', 'admin')->with('classRoom')->latest()->get(),
-            'koordinator' => Pengguna::where('role', 'koordinator')->with('classRoom')->latest()->get(),
-            'dosen' => Pengguna::where('role', 'dosen')->with('classRoom')->latest()->get(),
-            'mahasiswa' => Pengguna::where('role', 'mahasiswa')->with('classRoom')->latest()->get(),
+        // Counts for Tabs Badges
+        $counts = [
+            'all' => Pengguna::count(),
+            'admin' => Pengguna::where('role', 'admin')->count(),
+            'koordinator' => Pengguna::where('role', 'koordinator')->count(),
+            'dosen' => Pengguna::where('role', 'dosen')->count(),
+            'mahasiswa' => Pengguna::where('role', 'mahasiswa')->count(),
         ];
         
-        // Apply filters ke grouped data jika ada filter
-        if ($request->hasAny(['role', 'class_room_id', 'is_active', 'search'])) {
-            $users = $query->latest()->paginate(15);
-            $classRooms = RuangKelas::orderBy('name')->get();
-            return view('admin.pengguna.daftar', compact('users', 'classRooms', 'usersByRole'));
-        }
-        
-        $users = $query->latest()->paginate(15);
+        // Always paginate
+        $users = $query->latest()->paginate(10)->withQueryString();
         $classRooms = RuangKelas::orderBy('name')->get();
         
-        return view('admin.pengguna.daftar', compact('users', 'classRooms', 'usersByRole'));
+        return view('admin.pengguna.daftar', compact('users', 'classRooms', 'counts'));
     }
 
     /**

@@ -18,14 +18,14 @@
                             <x-application-logo class="block h-10 w-auto fill-current text-gray-800" />
                         @endif
                         <div class="hidden lg:block border-l-2 border-white/30 pl-3 ml-1">
-                            <div class="logo-text-main">Sistem Informasi PBL</div>
+                            <div class="logo-text-main">SMART PBL</div>
                             <div class="logo-text-sub">Politeknik Negeri Tanah Laut</div>
                         </div>
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-2 sm:ms-6 lg:flex items-center">
+                <div class="hidden space-x-1 sm:ms-4 lg:flex items-center">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard', 'admin.dashboard', 'koordinator.dashboard', 'dosen.dashboard', 'mahasiswa.dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
@@ -88,33 +88,21 @@
                             <x-slot name="content">
                                 @if(auth()->user()->isDosen() || auth()->user()->isAdmin())
                                     <x-dropdown-link :href="route('scores.student-input')">
-                                        <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                        </svg>
                                         {{ __('Input Nilai') }}
                                     </x-dropdown-link>
                                 @endif
                                 
                                 @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
                                     <x-dropdown-link :href="route('target-reviews.index')">
-                                        <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
                                         {{ __('Review Target') }}
                                     </x-dropdown-link>
                                 @endif
                                 
                                 <x-dropdown-link :href="route('scores.index')">
-                                    <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                    </svg>
                                     {{ __('Ranking Kelompok') }}
                                 </x-dropdown-link>
                                 
                                 <x-dropdown-link :href="route('student-scores.index')">
-                                    <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                    </svg>
                                     {{ __('Ranking Mahasiswa') }}
                                 </x-dropdown-link>
                             </x-slot>

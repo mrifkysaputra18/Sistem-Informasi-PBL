@@ -23,12 +23,14 @@ class DasborMahasiswaController extends Controller
         ];
 
         if ($myGroup) {
+            // Get weekly targets, EXCLUDING closed ones
             $weeklyTargets = TargetMingguan::where('group_id', $myGroup->id)
                 ->orderBy('week_number')
                 ->orderBy('deadline')
-                ->get();
+                ->get()
+                ->filter(fn($t) => !$t->isClosed()); // Sembunyikan target tertutup
 
-            // Calculate stats
+            // Calculate stats (based on filtered targets)
             $totalTargets = $weeklyTargets->count();
             $completedTargets = $weeklyTargets->where('submission_status', 'approved')->count();
             $submittedTargets = $weeklyTargets->whereIn('submission_status', ['submitted', 'approved'])->count();

@@ -32,12 +32,13 @@ class PengumpulanTargetMingguanController extends Controller
                 ->with('info', 'Anda belum tergabung dalam kelompok.');
         }
 
-        // Get all targets for this group
+        // Get all targets for this group, EXCLUDING closed ones for students
         $targets = TargetMingguan::where('group_id', $group->id)
             ->with(['creator', 'completedByUser'])
             ->orderBy('week_number')
             ->orderBy('deadline')
-            ->get();
+            ->get()
+            ->filter(fn($t) => !$t->isClosed()); // Sembunyikan target tertutup
 
         return view('target.pengumpulan.daftar', compact('group', 'targets'));
     }

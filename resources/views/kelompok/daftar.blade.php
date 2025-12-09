@@ -1,256 +1,191 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div class="space-y-1">
-                <h2 class="font-bold text-2xl text-white leading-tight flex items-center gap-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                    </svg>
-                    {{ __('Manajemen Kelompok') }}
-                </h2>
-                <p class="text-sm text-white/90">Kelola kelompok mahasiswa dan anggota untuk project PBL</p>
+    <div class="py-8 bg-gray-100 min-h-screen font-sans">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- 1. HEADER SECTION -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                <div>
+                    <h2 class="text-3xl font-black text-gray-900 tracking-tight">MANAJEMEN KELOMPOK</h2>
+                    <p class="text-sm font-medium text-gray-500 mt-1">Kelola kelompok mahasiswa, ketua, dan anggota project.</p>
+                </div>
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap gap-3">
+                    @if(auth()->user()->isAdmin())
+                    <a href="{{ route('import.groups') }}" 
+                       class="inline-flex items-center px-5 py-2.5 bg-green-600 hover:bg-green-700 border-2 border-green-800 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">
+                        <i class="fa-solid fa-file-excel mr-2 text-lg"></i>
+                        <span>Import Excel</span>
+                    </a>
+                    @endif
+                    <a href="{{ route('groups.create', ['classroom' => request('classroom')]) }}" 
+                       class="inline-flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 border-2 border-indigo-800 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">
+                        <i class="fa-solid fa-plus mr-2 text-lg"></i>
+                        <span>Tambah Kelompok</span>
+                    </a>
+                </div>
             </div>
-            <div class="flex gap-2">
-                @if(auth()->user()->isAdmin())
-                <a href="{{ route('import.groups') }}" 
-                   class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-                    <i class="fas fa-file-excel mr-2"></i>Import Excel
-                </a>
-                @endif
-                <a href="{{ route('groups.create', ['classroom' => request('classroom')]) }}" 
-                   class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-                    <i class="fas fa-plus mr-2"></i>Tambah Kelompok
-                </a>
-            </div>
-        </div>
-    </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Alert Success -->
-            @if(session('ok'))
-                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-r-lg shadow-md">
+            <!-- Alert Messages -->
+            @if(session('success'))
+                <div x-data="{ show: true }" x-show="show" class="bg-emerald-100 border-l-8 border-emerald-600 text-emerald-800 px-6 py-4 rounded-lg shadow-md mb-8 flex items-start justify-between">
                     <div class="flex items-center">
-                        <i class="fas fa-check-circle mr-2"></i>
-                        <span>{{ session('ok') }}</span>
+                        <i class="fa-solid fa-check-circle text-2xl mr-4 text-emerald-600"></i>
+                        <span class="font-bold text-lg">{{ session('success') }}</span>
                     </div>
+                    <button @click="show = false" class="text-emerald-600 hover:text-emerald-800"><i class="fa-solid fa-times text-xl"></i></button>
                 </div>
             @endif
 
-            <!-- Filter hanya tampil pada halaman awal (tanpa filter kelas terpilih) -->
-            @if(!request()->filled('classroom'))
-                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                    <form method="GET" action="{{ route('groups.index') }}" class="flex gap-4">
-                        <div class="flex-1">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Filter by Kelas</label>
-                            <select name="classroom" class="w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-500 focus:ring-secondary-500">
-                                <option value="">Semua Kelas</option>
-                                @foreach($classRooms as $classroom)
+            <!-- 2. STATS CARDS (Indigo Theme) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Total Kelompok -->
+                <div class="bg-white rounded-xl shadow-md border-b-4 border-indigo-600 p-6 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Total Kelompok</p>
+                        <p class="text-3xl font-black text-gray-800">{{ $groups->total() }}</p>
+                    </div>
+                    <div class="p-3 bg-indigo-100 rounded-full text-indigo-600">
+                        <i class="fa-solid fa-users text-2xl"></i>
+                    </div>
+                </div>
+
+                <!-- Kelompok Aktif -->
+                <div class="bg-white rounded-xl shadow-md border-b-4 border-emerald-600 p-6 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Kelompok Aktif</p>
+                        <p class="text-3xl font-black text-gray-800">{{ $groups->count() }}</p>
+                    </div>
+                    <div class="p-3 bg-emerald-100 rounded-full text-emerald-600">
+                        <i class="fa-solid fa-circle-check text-2xl"></i>
+                    </div>
+                </div>
+
+                <!-- Kelompok Penuh -->
+                <div class="bg-white rounded-xl shadow-md border-b-4 border-purple-600 p-6 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Kelompok Penuh</p>
+                        <p class="text-3xl font-black text-gray-800">{{ $groups->filter(fn($g) => $g->isFull())->count() }}</p>
+                    </div>
+                    <div class="p-3 bg-purple-100 rounded-full text-purple-600">
+                        <i class="fa-solid fa-users-cog text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. FILTER CONTROL -->
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-indigo-600"></div>
+                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fa-solid fa-filter mr-2 text-indigo-600"></i> Filter Data
+                </h3>
+                
+                <form method="GET" action="{{ route('groups.index') }}" class="flex flex-col md:flex-row gap-4 items-end">
+                    <div class="flex-1 w-full">
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Filter Berdasarkan Kelas</label>
+                        <select name="classroom" class="w-full h-12 bg-gray-50 border-2 border-gray-200 rounded-lg text-sm font-semibold focus:border-indigo-600 focus:ring-0 cursor-pointer transition-colors">
+                            <option value="">Semua Kelas</option>
+                            @foreach($classRooms as $classroom)
                                 <option value="{{ $classroom->id }}" {{ request('classroom') == $classroom->id ? 'selected' : '' }}>
                                     {{ $classroom->name }}
                                 </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="flex items-end gap-2">
-                            <button type="submit" class="bg-secondary-500 hover:bg-secondary-600 text-white py-2 px-6 rounded-md">
-                                <i class="fas fa-filter mr-2"></i>Filter
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            @else
-                @php
-                    $selectedClass = $classRooms->firstWhere('id', request('classroom'));
-                @endphp
-                <div class="bg-white rounded-lg shadow-md p-6 mb-6 flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500">Menampilkan kelompok untuk kelas:</p>
-                        <p class="text-xl font-semibold text-gray-900 mt-1">
-                            {{ $selectedClass?->name ?? 'Kelas tidak ditemukan' }}
-                        </p>
+                            @endforeach
+                        </select>
                     </div>
-                    <a href="{{ route('classrooms.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition">
-                        <i class="fas fa-undo mr-2"></i>Ganti Kelas
-                    </a>
-                </div>
-            @endif
-
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <!-- Card 1: Total Kelompok -->
-                <div class="group relative bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    
-                    <div class="relative flex items-start justify-between">
-                        <div class="flex-1">
-                            <p class="text-blue-100 text-xs font-medium uppercase tracking-wider">Total Kelompok</p>
-                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $groups->total() }}</p>
-                            <p class="text-xs text-blue-100 mt-2">Kelompok terdaftar</p>
-                        </div>
-                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
-                            <i class="fa-solid fa-users text-2xl"></i>
-                        </div>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <button type="submit" class="flex-1 md:flex-none h-12 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center">
+                            Terapkan
+                        </button>
+                        @if(request()->has('classroom'))
+                            <a href="{{ route('groups.index') }}" class="h-12 w-12 bg-white border-2 border-gray-300 hover:border-red-500 hover:bg-red-50 text-gray-600 hover:text-red-600 rounded-lg transition-all flex items-center justify-center" title="Reset Filter">
+                                <i class="fa-solid fa-rotate-left text-lg"></i>
+                            </a>
+                        @endif
                     </div>
-                </div>
-                
-                <!-- Card 2: Kelompok Aktif -->
-                <div class="group relative bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    
-                    <div class="relative flex items-start justify-between">
-                        <div class="flex-1">
-                            <p class="text-green-100 text-xs font-medium uppercase tracking-wider">Kelompok Aktif</p>
-                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $groups->count() }}</p>
-                            <p class="text-xs text-green-100 mt-2">Kelompok aktif</p>
-                        </div>
-                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
-                            <i class="fa-solid fa-circle-check text-2xl"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Card 3: Kelompok Penuh -->
-                <div class="group relative bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg hover:shadow-2xl p-6 text-white transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    
-                    <div class="relative flex items-start justify-between">
-                        <div class="flex-1">
-                            <p class="text-purple-100 text-xs font-medium uppercase tracking-wider">Kelompok Penuh</p>
-                            <p class="text-4xl font-black mt-3 mb-1 group-hover:scale-110 transition-transform duration-300">{{ $groups->filter(fn($g) => $g->isFull())->count() }}</p>
-                            <p class="text-xs text-purple-100 mt-2">Anggota lengkap</p>
-                        </div>
-                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:rotate-12 transition-transform duration-300">
-                            <i class="fa-solid fa-user-check text-2xl"></i>
-                        </div>
-                    </div>
-                </div>
+                </form>
             </div>
 
-            <!-- Main Content Card -->
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800">
-                            <i class="fas fa-table mr-2 text-gray-600"></i>Daftar Kelompok
-                        </h3>
-                        <div class="text-sm text-gray-700 font-medium">
-                            Showing {{ $groups->count() }} of {{ $groups->total() }} entries
-                        </div>
-                    </div>
-
+            <!-- 4. DATA TABLE -->
+            <div class="bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden">
+                <div class="overflow-x-auto">
                     @if($groups->count() > 0)
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <i class="fas fa-hashtag mr-1"></i>No
-                                        </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <i class="fas fa-users mr-1"></i>Nama Kelompok
-                                        </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <i class="fas fa-school mr-1"></i>Kelas
-                                        </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <i class="fas fa-user-tie mr-1"></i>Ketua
-                                        </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <i class="fas fa-users-cog mr-1"></i>Anggota
-                                        </th>
-                                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <i class="fas fa-cogs mr-1"></i>Aksi
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($groups as $index => $group)
-                                        <tr class="hover:bg-gray-50 transition duration-200">
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                {{ ($groups->currentPage() - 1) * $groups->perPage() + $index + 1 }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm font-medium text-gray-900">{{ $group->name }}</div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                @if($group->classRoom)
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
-                                                    {{ $group->classRoom->name }}
-                                                </span>
-                                                @else
-                                                <span class="text-gray-400">-</span>
-                                                @endif
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                @if($group->leader)
-                                                <div class="flex items-center">
-                                                    <span class="text-primary-600 mr-1">★</span>
-                                                    <div class="text-sm text-gray-900">{{ $group->leader->name }}</div>
-                                                </div>
-                                                @else
-                                                <span class="text-gray-400">Belum ada</span>
-                                                @endif
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $group->isFull() ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }}">
-                                                    <i class="fas fa-users mr-1"></i>{{ $group->members->count() }}/{{ $group->max_members }}
-                                                </span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                                <div class="flex items-center justify-center space-x-2">
-                                                    <a href="{{ route('groups.show', $group) }}" 
-                                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-green-600 bg-green-100 hover:bg-green-200 hover:text-green-900 rounded-lg transition duration-200 ease-in-out">
-                                                        <i class="fas fa-eye mr-1.5"></i>
-                                                        Detail
-                                                    </a>
-                                                    <a href="{{ route('groups.edit', $group) }}" 
-                                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-primary-600 bg-primary-100 hover:bg-primary-200 hover:text-primary-900 rounded-lg transition duration-200 ease-in-out">
-                                                        <i class="fas fa-edit mr-1.5"></i>
-                                                        Edit
-                                                    </a>
-                                                    <form action="{{ route('groups.destroy', $group) }}" method="POST" class="inline delete-form">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="button" 
-                                                                class="delete-btn inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-100 hover:bg-red-200 hover:text-red-900 rounded-lg transition duration-200 ease-in-out"
-                                                                data-group-name="{{ $group->name }}">
-                                                            <i class="fas fa-trash mr-1.5"></i>
-                                                            Hapus
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Pagination -->
-                        <div class="mt-6">
-                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                                <div class="text-sm text-gray-700 font-medium">
-                                    Menampilkan <span class="font-semibold text-primary-600">{{ $groups->firstItem() ?? 0 }}</span> 
-                                    sampai <span class="font-semibold text-primary-600">{{ $groups->lastItem() ?? 0 }}</span> 
-                                    dari <span class="font-semibold text-primary-600">{{ $groups->total() }}</span> kelompok
-                                </div>
-                                <div>
-                                    {{ $groups->links('pagination::tailwind') }}
-                                </div>
-                            </div>
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-900">
+                                <tr>
+                                    <th class="px-6 py-5 text-left text-xs font-bold text-white uppercase tracking-wider w-16">No</th>
+                                    <th class="px-6 py-5 text-left text-xs font-bold text-white uppercase tracking-wider">Nama Kelompok</th>
+                                    <th class="px-6 py-5 text-left text-xs font-bold text-white uppercase tracking-wider">Kelas</th>
+                                    <th class="px-6 py-5 text-left text-xs font-bold text-white uppercase tracking-wider">Ketua</th>
+                                    <th class="px-6 py-5 text-left text-xs font-bold text-white uppercase tracking-wider">Anggota</th>
+                                    <th class="px-6 py-5 text-center text-xs font-bold text-white uppercase tracking-wider w-64 border-l border-gray-800">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @foreach($groups as $index => $group)
+                                <tr class="hover:bg-indigo-50 transition-colors group">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-bold">{{ ($groups->currentPage() - 1) * $groups->perPage() + $index + 1 }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-black text-gray-900 group-hover:text-indigo-700">{{ $group->name }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($group->classRoom)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold bg-indigo-100 text-indigo-800 border border-indigo-200 uppercase tracking-wide">
+                                                {{ $group->classRoom->name }}
+                                            </span>
+                                        @else
+                                            <span class="text-gray-400 text-xs italic">Tidak ada kelas</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($group->leader)
+                                            <div class="flex items-center">
+                                                <i class="fa-solid fa-crown text-yellow-500 mr-2 text-xs"></i>
+                                                <span class="text-sm font-bold text-gray-700">{{ $group->leader->name }}</span>
+                                            </div>
+                                        @else
+                                            <span class="text-xs text-gray-400 italic">Belum ditentukan</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold border uppercase tracking-wide
+                                            {{ $group->isFull() ? 'bg-rose-100 text-rose-800 border-rose-200' : 'bg-emerald-100 text-emerald-800 border-emerald-200' }}">
+                                            <i class="fas fa-users mr-1.5"></i> {{ $group->members->count() }} / {{ $group->max_members }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center border-l border-gray-100">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <a href="{{ route('groups.show', $group) }}" 
+                                               class="inline-flex items-center justify-center px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white text-[10px] font-bold rounded shadow-sm hover:shadow transition-all uppercase tracking-wide">
+                                                <i class="fas fa-eye mr-1.5"></i> Detail
+                                            </a>
+                                            
+                                            <a href="{{ route('groups.edit', $group) }}" 
+                                               class="inline-flex items-center justify-center px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold rounded shadow-sm hover:shadow transition-all uppercase tracking-wide">
+                                                <i class="fas fa-edit mr-1.5"></i> Edit
+                                            </a>
+                                            
+                                            <form action="{{ route('groups.destroy', $group) }}" method="POST" class="inline delete-form">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button" class="delete-btn inline-flex items-center justify-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold rounded shadow-sm hover:shadow transition-all uppercase tracking-wide" data-group-name="{{ $group->name }}">
+                                                    <i class="fas fa-trash mr-1.5"></i> Hapus
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                        <div class="px-6 py-6 bg-gray-50 border-t border-gray-200">
+                            {{ $groups->links() }}
                         </div>
                     @else
-                        <div class="text-center py-12">
-                            <div class="text-gray-400 mb-4">
-                                <i class="fas fa-users text-6xl"></i>
+                        <div class="py-24 text-center">
+                            <div class="inline-block p-6 rounded-full bg-gray-100 mb-4 border border-gray-200">
+                                <i class="fas fa-users text-5xl text-gray-300"></i>
                             </div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">Belum ada kelompok</h3>
-                            <p class="text-gray-500 mb-4">Mulai dengan menambahkan kelompok pertama Anda.</p>
-                            <a href="{{ route('groups.create', ['classroom' => request('classroom')]) }}" 
-                               class="inline-flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-700 text-white font-bold rounded-lg shadow-md transition duration-300">
-                                <i class="fas fa-plus mr-2"></i>Tambah Kelompok Pertama
-                            </a>
+                            <h3 class="text-xl font-bold text-gray-800">Belum Ada Kelompok</h3>
+                            <p class="text-gray-500 mt-2">Silakan buat kelompok baru untuk memulai.</p>
                         </div>
                     @endif
                 </div>
@@ -258,101 +193,29 @@
         </div>
     </div>
 
-    @push('styles')
-    <style>
-        /* Custom Pagination Styling - Fix spacing and color */
-        nav[role="navigation"] {
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            gap: 0.75rem !important;
-        }
-        
-        nav[role="navigation"] > span,
-        nav[role="navigation"] > a {
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            min-width: 2.75rem !important;
-            height: 2.75rem !important;
-            padding: 0.5rem !important;
-            margin: 0 !important;
-            font-size: 0.875rem !important;
-            font-weight: 600 !important;
-            border-radius: 0.5rem !important;
-            transition: all 0.2s ease-in-out !important;
-        }
-        
-        /* Pagination links - BLUE COLOR */
-        nav[role="navigation"] > a {
-            background-color: #ffffff !important;
-            color: #3b82f6 !important;
-            border: 2px solid #3b82f6 !important;
-            text-decoration: none !important;
-        }
-        
-        /* Hover state */
-        nav[role="navigation"] > a:hover:not([aria-disabled="true"]) {
-            background-color: #3b82f6 !important;
-            color: #ffffff !important;
-            border-color: #3b82f6 !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 12px -2px rgba(59, 130, 246, 0.4) !important;
-        }
-        
-        /* Active page - BLUE BACKGROUND */
-        nav[role="navigation"] > span[aria-current="page"] {
-            background-color: #3b82f6 !important;
-            color: #ffffff !important;
-            border: 2px solid #3b82f6 !important;
-            font-weight: 700 !important;
-            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4) !important;
-        }
-        
-        /* Disabled state */
-        nav[role="navigation"] > a[aria-disabled="true"],
-        nav[role="navigation"] > span[aria-disabled="true"] {
-            opacity: 0.4 !important;
-            cursor: not-allowed !important;
-            background-color: #f3f4f6 !important;
-            color: #9ca3af !important;
-            border-color: #e5e7eb !important;
-        }
-        
-        /* Remove negative margins from pagination wrapper */
-        nav[role="navigation"] .flex {
-            gap: 0.75rem !important;
-        }
-        
-        /* Ensure proper spacing */
-        nav[role="navigation"] span:not([aria-current]):not([aria-disabled]),
-        nav[role="navigation"] a:not([aria-disabled]) {
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-        }
-    </style>
-    @endpush
-
     @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Handle delete button clicks
-            const deleteButtons = document.querySelectorAll('.delete-btn');
-            
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    const groupName = this.getAttribute('data-group-name');
-                    const form = this.closest('.delete-form');
-                    
-                    confirmDelete(
-                        'Hapus Kelompok?',
-                        `Apakah Anda yakin ingin menghapus kelompok <strong>"${groupName}"</strong>?<br><small class="text-gray-500">Tindakan ini tidak dapat dibatalkan.</small>`,
-                        form
-                    );
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.delete-btn')) {
+                const btn = e.target.closest('.delete-btn');
+                const groupName = btn.getAttribute('data-group-name');
+                const form = btn.closest('.delete-form');
+                
+                Swal.fire({
+                    title: 'Hapus Kelompok?',
+                    html: `Anda akan menghapus kelompok <b>"${groupName}"</b>.<br>Data ini tidak dapat dikembalikan!`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
                 });
-            });
+            }
         });
     </script>
     @endpush
