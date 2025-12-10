@@ -34,8 +34,8 @@ class MataKuliahController extends Controller
             'nama' => 'required|string|max:100',
             'deskripsi' => 'nullable|string',
             'sks' => 'required|integer|min:1|max:6',
-            'dosen_ids' => 'nullable|array',
-            'dosen_ids.*' => 'exists:pengguna,id',
+            'dosen_sebelum_uts_id' => 'nullable|exists:pengguna,id',
+            'dosen_sesudah_uts_id' => 'nullable|exists:pengguna,id',
         ]);
 
         $mataKuliah = MataKuliah::create([
@@ -45,9 +45,11 @@ class MataKuliahController extends Controller
             'sks' => $validated['sks'],
         ]);
 
-        if (!empty($validated['dosen_ids'])) {
-            $mataKuliah->dosens()->sync($validated['dosen_ids']);
-        }
+        // Sync dosen per periode
+        $mataKuliah->syncDosens(
+            $validated['dosen_sebelum_uts_id'] ?? null,
+            $validated['dosen_sesudah_uts_id'] ?? null
+        );
 
         return redirect()->route('mata-kuliah.index')->with('success', 'Mata kuliah berhasil ditambahkan.');
     }
@@ -61,8 +63,8 @@ class MataKuliahController extends Controller
     public function edit(MataKuliah $mataKuliah)
     {
         $dosens = Pengguna::where('role', 'dosen')->where('is_active', true)->get();
-        $selectedDosens = $mataKuliah->dosens->pluck('id')->toArray();
-        return view('mata-kuliah.edit', compact('mataKuliah', 'dosens', 'selectedDosens'));
+        $mataKuliah->load('dosens');
+        return view('mata-kuliah.edit', compact('mataKuliah', 'dosens'));
     }
 
     public function update(Request $request, MataKuliah $mataKuliah)
@@ -73,8 +75,8 @@ class MataKuliahController extends Controller
             'deskripsi' => 'nullable|string',
             'sks' => 'required|integer|min:1|max:6',
             'is_active' => 'boolean',
-            'dosen_ids' => 'nullable|array',
-            'dosen_ids.*' => 'exists:pengguna,id',
+            'dosen_sebelum_uts_id' => 'nullable|exists:pengguna,id',
+            'dosen_sesudah_uts_id' => 'nullable|exists:pengguna,id',
         ]);
 
         $mataKuliah->update([
@@ -85,7 +87,11 @@ class MataKuliahController extends Controller
             'is_active' => $request->has('is_active'),
         ]);
 
-        $mataKuliah->dosens()->sync($validated['dosen_ids'] ?? []);
+        // Sync dosen per periode
+        $mataKuliah->syncDosens(
+            $validated['dosen_sebelum_uts_id'] ?? null,
+            $validated['dosen_sesudah_uts_id'] ?? null
+        );
 
         return redirect()->route('mata-kuliah.index')->with('success', 'Mata kuliah berhasil diupdate.');
     }

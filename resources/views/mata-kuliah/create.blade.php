@@ -64,20 +64,44 @@
                             @enderror
                         </div>
 
-                        <!-- Dosen -->
+                        <!-- Dosen Sebelum UTS -->
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-2">Dosen Pengampu</label>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto border-2 border-gray-200 rounded-lg p-4">
+                            <label for="dosen_sebelum_uts_id" class="block text-sm font-bold text-gray-700 mb-2">
+                                <i class="fa-solid fa-calendar text-blue-500 mr-1"></i>
+                                Dosen Pengampu (Sebelum UTS - Minggu 1-8)
+                            </label>
+                            <select name="dosen_sebelum_uts_id" id="dosen_sebelum_uts_id"
+                                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium @error('dosen_sebelum_uts_id') border-red-500 @enderror">
+                                <option value="">-- Pilih Dosen (Optional) --</option>
                                 @foreach($dosens as $dosen)
-                                    <label class="flex items-center space-x-3 p-2 rounded hover:bg-gray-50 cursor-pointer">
-                                        <input type="checkbox" name="dosen_ids[]" value="{{ $dosen->id }}"
-                                               class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                                               {{ in_array($dosen->id, old('dosen_ids', [])) ? 'checked' : '' }}>
-                                        <span class="text-sm font-medium text-gray-700">{{ $dosen->name }}</span>
-                                    </label>
+                                    <option value="{{ $dosen->id }}" {{ old('dosen_sebelum_uts_id') == $dosen->id ? 'selected' : '' }}>
+                                        {{ $dosen->name }} - {{ $dosen->email }}
+                                    </option>
                                 @endforeach
-                            </div>
-                            @error('dosen_ids')
+                            </select>
+                            <p class="mt-1 text-xs text-gray-500">Dosen yang mengampu minggu 1-8 (sebelum UTS)</p>
+                            @error('dosen_sebelum_uts_id')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Dosen Sesudah UTS -->
+                        <div>
+                            <label for="dosen_sesudah_uts_id" class="block text-sm font-bold text-gray-700 mb-2">
+                                <i class="fa-solid fa-calendar-check text-green-500 mr-1"></i>
+                                Dosen Pengampu (Sesudah UTS - Minggu 9-16)
+                            </label>
+                            <select name="dosen_sesudah_uts_id" id="dosen_sesudah_uts_id"
+                                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 font-medium @error('dosen_sesudah_uts_id') border-red-500 @enderror">
+                                <option value="">-- Pilih Dosen (Optional) --</option>
+                                @foreach($dosens as $dosen)
+                                    <option value="{{ $dosen->id }}" {{ old('dosen_sesudah_uts_id') == $dosen->id ? 'selected' : '' }}>
+                                        {{ $dosen->name }} - {{ $dosen->email }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <p class="mt-1 text-xs text-gray-500">Dosen yang mengampu minggu 9-16 (sesudah UTS)</p>
+                            @error('dosen_sesudah_uts_id')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>

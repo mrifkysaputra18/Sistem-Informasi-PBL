@@ -78,22 +78,32 @@
                                         <span class="text-lg font-black text-indigo-600">{{ $mk->sks }}</span>
                                     </td>
                                     <td class="px-6 py-4">
-                                        @if($mk->dosens && $mk->dosens->count() > 0)
-                                            <div class="flex flex-wrap gap-1">
-                                                @foreach($mk->dosens->take(2) as $dosen)
-                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
-                                                        {{ $dosen->name }}
-                                                    </span>
-                                                @endforeach
-                                                @if($mk->dosens->count() > 2)
-                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-200 text-gray-600">
-                                                        +{{ $mk->dosens->count() - 2 }}
-                                                    </span>
+                                        @php
+                                            $dosenSebelumUts = $mk->dosens->where('pivot.periode', 'sebelum_uts')->first();
+                                            $dosenSesudahUts = $mk->dosens->where('pivot.periode', 'sesudah_uts')->first();
+                                        @endphp
+                                        <div class="space-y-1">
+                                            <div class="flex items-center text-xs">
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 font-semibold mr-2" title="Minggu 1-8">
+                                                    <i class="fas fa-calendar-alt mr-1"></i>1-8
+                                                </span>
+                                                @if($dosenSebelumUts)
+                                                    <span class="text-gray-700 font-medium">{{ $dosenSebelumUts->name }}</span>
+                                                @else
+                                                    <span class="text-gray-400 italic">-</span>
                                                 @endif
                                             </div>
-                                        @else
-                                            <span class="text-gray-400 text-xs">Belum ada dosen</span>
-                                        @endif
+                                            <div class="flex items-center text-xs">
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-green-100 text-green-700 font-semibold mr-2" title="Minggu 9-16">
+                                                    <i class="fas fa-calendar-alt mr-1"></i>9-16
+                                                </span>
+                                                @if($dosenSesudahUts)
+                                                    <span class="text-gray-700 font-medium">{{ $dosenSesudahUts->name }}</span>
+                                                @else
+                                                    <span class="text-gray-400 italic">-</span>
+                                                @endif
+                                            </div>
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @php $activeRubrik = $mk->rubrikPenilaians->where('is_active', true)->first(); @endphp
