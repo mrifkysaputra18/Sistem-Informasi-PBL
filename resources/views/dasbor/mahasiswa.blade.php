@@ -17,235 +17,245 @@
         </div>
     </x-slot>
 
-    <div class="py-8 bg-gray-50 min-h-screen">
+    <div class="py-8 bg-gray-100 min-h-screen">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             @if($myGroup)
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <!-- Two Column Layout using Flexbox -->
+                <div class="flex flex-col lg:flex-row gap-6">
                     
-                    <!-- LEFT COLUMN (Main Content - approx 60%) -->
-                    <div class="lg:col-span-7 space-y-6">
+                    <!-- LEFT COLUMN - Target List (40%) -->
+                    <div class="w-full lg:w-2/5 space-y-4">
                         
-                        <!-- Header for Task List -->
-                        <div class="bg-blue-900 rounded-xl p-6 shadow-md text-white flex justify-between items-center relative overflow-hidden border-2 border-blue-950">
-                            <div class="relative z-10">
-                                <h3 class="text-xl font-black tracking-wide">DAFTAR TUGAS & TARGET</h3>
-                                <p class="text-blue-100 text-sm mt-1 font-bold">Selesaikan target mingguan Anda tepat waktu.</p>
+                        <!-- Weekly Calendar Header -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-bold text-gray-900">Target Minggu Ini</h3>
+                                <span class="text-sm text-gray-500">{{ now()->format('d F Y') }}</span>
                             </div>
-                            <div class="relative z-10">
-                                <span class="bg-indigo-800 border-2 border-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-black shadow-sm">
-                                    {{ $weeklyTargets->where('submission_status', 'pending')->count() }} MENUNGGU
-                                </span>
+                            
+                            <!-- Mini Week Calendar - Horizontal -->
+                            <div class="flex justify-between">
+                                @php
+                                    $startOfWeek = now()->startOfWeek();
+                                    $days = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+                                @endphp
+                                @foreach($days as $i => $day)
+                                    @php
+                                        $date = $startOfWeek->copy()->addDays($i);
+                                        $isToday = $date->isToday();
+                                    @endphp
+                                    <div class="flex flex-col items-center">
+                                        <span class="text-xs text-gray-400 font-medium">{{ $day }}</span>
+                                        <span class="w-9 h-9 flex items-center justify-center rounded-full text-sm font-bold mt-1
+                                            {{ $isToday ? 'bg-blue-600 text-white' : 'text-gray-700' }}">
+                                            {{ $date->format('d') }}
+                                        </span>
+                                        @if($isToday)
+                                            <span class="w-1.5 h-1.5 bg-blue-600 rounded-full mt-1"></span>
+                                        @endif
+                                    </div>
+                                @endforeach
                             </div>
-                            <!-- Decor -->
-                            <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-blue-500 rounded-full opacity-20 blur-2xl"></div>
                         </div>
 
-                        <!-- Task List (High Contrast) -->
-                        <div class="space-y-4">
+                        <!-- Perlu Dikerjakan Header -->
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                                Perlu Dikerjakan
+                                <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                                    {{ $weeklyTargets->where('submission_status', 'pending')->count() }}
+                                </span>
+                            </h3>
+                        </div>
+
+                        <!-- Target List -->
+                        <div class="space-y-3">
                             @forelse($weeklyTargets as $target)
                                 @php
-                                    $statusConfig = match($target->submission_status) {
-                                        'pending' => ['bg' => 'bg-white', 'text' => 'text-orange-700', 'border' => 'border-orange-400', 'label' => 'MENUNGGU PENGUMPULAN', 'icon' => 'fa-clock'],
-                                        'submitted' => ['bg' => 'bg-white', 'text' => 'text-blue-700', 'border' => 'border-blue-400', 'label' => 'MENUNGGU REVIEW', 'icon' => 'fa-paper-plane'],
-                                        'late' => ['bg' => 'bg-white', 'text' => 'text-red-700', 'border' => 'border-red-400', 'label' => 'TERLAMBAT', 'icon' => 'fa-exclamation-circle'],
-                                        'approved' => ['bg' => 'bg-white', 'text' => 'text-green-700', 'border' => 'border-green-400', 'label' => 'SELESAI', 'icon' => 'fa-check-circle'],
-                                        'revision' => ['bg' => 'bg-white', 'text' => 'text-yellow-700', 'border' => 'border-yellow-400', 'label' => 'PERLU REVISI', 'icon' => 'fa-tools'],
-                                        default => ['bg' => 'bg-white', 'text' => 'text-gray-700', 'border' => 'border-gray-400', 'label' => 'UNKNOWN', 'icon' => 'fa-question'],
+                                    $iconBg = match($target->submission_status) {
+                                        'pending' => 'bg-orange-100 text-orange-600',
+                                        'submitted' => 'bg-blue-100 text-blue-600',
+                                        'approved' => 'bg-green-100 text-green-600',
+                                        'late' => 'bg-red-100 text-red-600',
+                                        default => 'bg-gray-100 text-gray-600',
                                     };
-                                    
-                                    $classroomName = $target->group->classRoom->name ?? $myGroup->classRoom->name ?? 'Mata Kuliah Umum';
                                 @endphp
-
-                                <div class="bg-white rounded-xl p-6 shadow-sm border-2 border-gray-300 hover:border-blue-600 hover:shadow-md transition-all duration-200 group relative">
-                                    <!-- Left Accent for Pending (Thicker & Darker) -->
-                                    @if($target->submission_status == 'pending')
-                                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-orange-500 rounded-l-lg"></div>
-                                    @endif
-
-                                    <div class="flex flex-col sm:flex-row gap-6">
-                                        <!-- Week Icon (Bold) -->
-                                        <div class="flex-shrink-0">
-                                            <div class="w-16 h-16 rounded-xl bg-gray-100 border-2 border-gray-300 text-gray-900 flex flex-col items-center justify-center shadow-inner">
-                                                <span class="text-[10px] font-black uppercase text-gray-600 tracking-widest">WEEK</span>
-                                                <span class="text-3xl font-black leading-none">{{ $target->week_number }}</span>
-                                            </div>
+                                
+                                <a href="{{ route('targets.submissions.show', $target->id) }}" 
+                                   class="block bg-white rounded-xl p-4 shadow-sm border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all group">
+                                    <div class="flex gap-4">
+                                        <div class="flex-shrink-0 w-10 h-10 rounded-lg {{ $iconBg }} flex items-center justify-center">
+                                            <i class="fas fa-clipboard-list"></i>
                                         </div>
-
-                                        <!-- Main Content -->
-                                        <div class="flex-1 min-w-0 py-1">
-                                            <!-- Meta Row -->
-                                            <div class="flex items-center gap-2 mb-2">
-                                                <span class="px-2 py-1 rounded text-[10px] font-black uppercase tracking-wide bg-gray-200 text-gray-800 border border-gray-300">
-                                                    {{ $classroomName }}
-                                                </span>
-                                                @if($target->isClosed())
-                                                    <span class="px-2 py-1 rounded text-[10px] font-black uppercase tracking-wide bg-red-100 text-red-800 border border-red-200">
-                                                        CLOSED
-                                                    </span>
-                                                @endif
-                                            </div>
-
-                                            <!-- Title -->
-                                            <h4 class="text-xl font-black text-gray-900 mb-2 leading-tight group-hover:text-blue-800 transition-colors">
+                                        <div class="flex-1 min-w-0">
+                                            <h4 class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
                                                 {{ $target->title }}
                                             </h4>
-
-                                            <!-- Deadline & Info -->
-                                            <div class="flex items-center gap-4 text-sm font-bold text-gray-700">
-                                                @if($target->deadline)
-                                                    <div class="flex items-center gap-2 {{ now()->gt($target->deadline) && !$target->submission ? 'text-red-700 bg-red-50 px-2 py-0.5 rounded border border-red-200' : 'bg-gray-50 px-2 py-0.5 rounded border border-gray-200' }}">
-                                                        <i class="far fa-calendar-alt text-gray-600"></i>
-                                                        <span>{{ $target->deadline->format('d M Y, H:i') }}</span>
-                                                    </div>
-                                                @endif
-                                                
-                                                {{-- Countdown Timer Badge --}}
-                                                @if($target->deadline && $target->submission_status == 'pending' && !$target->isClosed())
-                                                    @php
-                                                        $sudahLewat = now()->gt($target->deadline);
-                                                    @endphp
-                                                    @if(!$sudahLewat)
-                                                        <span class="countdown-timer inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-black border border-blue-200" 
+                                            <p class="text-xs text-gray-500 mt-0.5">
+                                                {{ $myGroup->classRoom->name ?? 'Kelas' }}
+                                            </p>
+                                            <div class="flex items-center gap-2 mt-2 text-xs text-gray-500">
+                                                <i class="far fa-calendar-alt"></i>
+                                                <span>Batas waktu: {{ $target->deadline ? $target->deadline->format('d M Y, H:i') : '-' }}</span>
+                                            </div>
+                                            
+                                            {{-- Countdown Timer Badge --}}
+                                            @if($target->deadline && $target->submission_status == 'pending' && !$target->isClosed())
+                                                @php
+                                                    $sudahLewat = now()->gt($target->deadline);
+                                                @endphp
+                                                @if(!$sudahLewat)
+                                                    <div class="mt-3">
+                                                        <span class="countdown-timer inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200" 
                                                               data-deadline="{{ $target->deadline->timestamp }}">
                                                             <i class="fas fa-hourglass-half text-blue-500"></i>
                                                             <span class="timer-text font-mono">Memuat...</span>
                                                         </span>
-                                                    @else
-                                                        <span class="countdown-urgent inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500 text-white text-xs font-black border-2 border-red-600 shadow-lg">
+                                                    </div>
+                                                @else
+                                                    <div class="mt-3">
+                                                        <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500 text-white text-xs font-bold border-2 border-red-600 shadow-lg animate-pulse">
                                                             <i class="fas fa-skull-crossbones"></i>
                                                             WAKTU HABIS
                                                         </span>
-                                                    @endif
+                                                    </div>
                                                 @endif
-                                            </div>
-                                        </div>
-
-                                        <!-- Status Badge & Action (Right Side) -->
-                                        <div class="flex flex-col items-end gap-3 justify-center min-w-[160px]">
-                                            <span class="px-3 py-1.5 rounded-lg text-xs font-black flex items-center gap-2 border-2 {{ $statusConfig['bg'] }} {{ $statusConfig['text'] }} {{ $statusConfig['border'] }} shadow-sm">
-                                                <i class="fas {{ $statusConfig['icon'] }}"></i>
-                                                {{ $statusConfig['label'] }}
-                                            </span>
-                                            
-                                            @if($target->submission_status == 'pending')
-                                            <a href="{{ route('targets.submissions.show', $target->id) }}" class="w-full text-center px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-lg shadow-sm border-2 border-blue-900 transition-colors text-sm">
-                                                KERJAKAN <i class="fas fa-arrow-right ml-1"></i>
-                                            </a>
-                                            @else
-                                            <a href="{{ route('targets.submissions.show', $target->id) }}" class="w-full text-center px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 font-bold rounded-lg shadow-sm border-2 border-gray-300 transition-colors text-sm">
-                                                LIHAT DETAIL
-                                            </a>
                                             @endif
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             @empty
-                                <div class="bg-white rounded-xl p-10 shadow-sm border-2 border-gray-200 text-center">
-                                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5 text-green-600 border-2 border-green-200">
-                                        <i class="fas fa-check text-3xl"></i>
+                                <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-200 text-center">
+                                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <i class="fas fa-check text-green-600 text-2xl"></i>
                                     </div>
-                                    <h3 class="text-xl font-black text-gray-900">SEMUA BERES!</h3>
-                                    <p class="text-gray-600 font-bold mt-2">Tidak ada tugas yang perlu dikerjakan saat ini.</p>
+                                    <h4 class="font-bold text-gray-900">Semua Beres!</h4>
+                                    <p class="text-sm text-gray-500 mt-1">Tidak ada tugas yang perlu dikerjakan.</p>
                                 </div>
                             @endforelse
                         </div>
+                        
+                        @if($weeklyTargets->count() > 5)
+                        <div class="text-center">
+                            <a href="{{ route('targets.index') }}" class="text-blue-600 hover:text-blue-800 text-sm font-bold inline-flex items-center gap-1">
+                                Tampilkan Semuanya <i class="fas fa-chevron-down"></i>
+                            </a>
+                        </div>
+                        @endif
                     </div>
 
-                    <!-- RIGHT COLUMN (Sidebar - approx 40%) -->
-                    <div class="lg:col-span-5 space-y-6">
+                    <!-- RIGHT COLUMN - Group & Progress Info (60%) -->
+                    <div class="w-full lg:w-3/5 space-y-4">
                         
-                        <!-- 1. Stats Summary Widget (Compact & Contrast) -->
-                        <div class="bg-white rounded-xl shadow-sm border-2 border-gray-300 p-6">
-                            <h3 class="font-black text-gray-900 mb-5 text-sm uppercase tracking-widest border-b-2 border-gray-100 pb-2">RINGKASAN TARGET</h3>
-                            <div class="grid grid-cols-3 gap-3">
-                                <!-- Completed -->
-                                <div class="text-center p-3 rounded-xl bg-white border-2 border-green-400 shadow-sm">
-                                    <span class="block text-3xl font-black text-green-700">{{ $stats['completedTargets'] }}</span>
-                                    <span class="text-[10px] font-black text-green-800 uppercase tracking-wide">SELESAI</span>
-                                </div>
-                                <!-- Pending -->
-                                <div class="text-center p-3 rounded-xl bg-white border-2 border-orange-400 shadow-sm">
-                                    <span class="block text-3xl font-black text-orange-600">{{ $stats['pendingTargets'] }}</span>
-                                    <span class="text-[10px] font-black text-orange-800 uppercase tracking-wide">PENDING</span>
-                                </div>
-                                <!-- Total -->
-                                <div class="text-center p-3 rounded-xl bg-white border-2 border-gray-300 shadow-sm">
-                                    <span class="block text-3xl font-black text-gray-800">{{ $stats['totalTargets'] }}</span>
-                                    <span class="text-[10px] font-black text-gray-600 uppercase tracking-wide">TOTAL</span>
+                        <!-- Group Info Card with Tabs -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                            <div class="border-b border-gray-200">
+                                <div class="flex">
+                                    <button class="px-6 py-3 text-sm font-bold text-blue-600 border-b-2 border-blue-600">
+                                        Informasi Kelompok
+                                    </button>
+                                    <button class="px-6 py-3 text-sm font-bold text-gray-500 hover:text-gray-700">
+                                        Progress Target
+                                    </button>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- 2. Semester Progress (Contrast) -->
-                        <div class="bg-white rounded-xl shadow-sm border-2 border-gray-300 p-6">
-                            <div class="flex justify-between items-end mb-3">
-                                <div>
-                                    <h3 class="font-black text-gray-900 uppercase text-sm tracking-wide">PROGRESS SEMESTER</h3>
-                                    <p class="text-xs text-gray-600 font-bold mt-1">Pencapaian target keseluruhan</p>
-                                </div>
-                                <span class="text-4xl font-black text-blue-800">{{ round($stats['completionRate']) }}%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-5 mb-2 border border-gray-300">
-                                <div class="bg-blue-700 h-5 rounded-full shadow-sm transition-all duration-500 relative overflow-hidden" 
-                                     style="width: {{ $stats['completionRate'] }}%">
-                                     <div class="absolute inset-0 bg-white/10 w-full h-full"></div>
-                                </div>
-                            </div>
-                            <p class="text-xs text-right text-gray-600 font-bold mt-2">
-                                <span class="text-green-700">{{ $stats['completedTargets'] }} Selesai</span> dari <span class="text-gray-900">{{ $stats['totalTargets'] }} Total Target</span>
-                            </p>
-                        </div>
-
-                        <!-- 3. Group Information (Contrast) -->
-                        <div class="bg-white rounded-xl shadow-sm border-2 border-gray-300 overflow-hidden">
-                            <div class="p-5 border-b-2 border-gray-200 bg-gray-50 flex justify-between items-center">
-                                <h3 class="font-black text-gray-900 uppercase text-sm tracking-wide">INFORMASI KELOMPOK</h3>
-                                <span class="text-xs font-black bg-white border-2 border-gray-300 px-3 py-1 rounded text-gray-700">
-                                    {{ $myGroup->members->count() }} ANGGOTA
-                                </span>
-                            </div>
-                            <div class="p-6 space-y-6">
-                                <!-- Nama & Kelas -->
-                                <div>
-                                    <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">KELOMPOK & KELAS</p>
-                                    <div class="flex items-center justify-between">
-                                        <p class="font-black text-gray-900 text-xl">{{ $myGroup->name }}</p>
-                                        <span class="text-xs font-black bg-blue-100 text-blue-800 px-3 py-1.5 rounded border border-blue-300">
-                                            {{ $myGroup->classRoom->name ?? '-' }}
-                                        </span>
+                            
+                            <div class="p-5">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="text-lg font-bold text-gray-900">{{ $myGroup->name }}</h3>
+                                        <p class="text-sm text-gray-500">Kelas {{ $myGroup->classRoom->name ?? '-' }}</p>
                                     </div>
-                                </div>
-
-                                <!-- Ketua -->
-                                <div class="flex items-center gap-4 bg-white p-4 border-2 border-gray-200 rounded-xl hover:border-gray-400 transition-colors">
-                                    <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-800 flex items-center justify-center font-black text-lg border-2 border-purple-200">
-                                        {{ substr($myGroup->leader->name ?? '?', 0, 2) }}
-                                    </div>
-                                    <div class="flex-1">
-                                        <p class="text-[10px] font-black text-gray-500 uppercase tracking-wider">KETUA KELOMPOK</p>
-                                        <p class="text-base font-bold text-gray-900 truncate">{{ $myGroup->leader->name ?? '-' }}</p>
-                                    </div>
+                                    <span class="text-xs font-bold bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+                                        {{ $myGroup->members->count() }} Anggota
+                                    </span>
                                 </div>
                                 
-                                <!-- Members List (Vertical Full) -->
-                                <div>
-                                    <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">ANGGOTA LAINNYA</p>
-                                    <div class="space-y-3">
-                                        @foreach($myGroup->members as $member)
-                                            @if($member->user_id !== $myGroup->leader_id)
-                                                <div class="flex items-center gap-3 bg-white p-3 rounded-xl border-2 border-gray-200 hover:border-blue-300 transition-colors shadow-sm text-left">
-                                                    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 text-gray-700 flex items-center justify-center text-xs font-black border-2 border-gray-300">
-                                                        {{ substr($member->user->name, 0, 1) }}
-                                                    </div>
-                                                    <div class="flex-1 min-w-0">
-                                                        <p class="text-sm font-black text-gray-900 truncate">{{ $member->user->name }}</p>
-                                                        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{{ $member->user->nim ?? 'ANGGOTA' }}</p>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        @endforeach
+                                <!-- Progress Summary -->
+                                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-bold text-gray-700">Progress Keseluruhan</span>
+                                        <span class="text-lg font-black text-blue-600">{{ round($stats['completionRate']) }}%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-3">
+                                        <div class="bg-blue-600 h-3 rounded-full transition-all" style="width: {{ $stats['completionRate'] }}%"></div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-2">
+                                        {{ $stats['completedTargets'] }} dari {{ $stats['totalTargets'] }} target selesai
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Group Cards Grid - Side by Side -->
+                        <div class="flex gap-4">
+                            <!-- Target Selesai Card -->
+                            <div class="flex-1 bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-10 h-10 rounded-lg bg-green-100 text-green-600 flex items-center justify-center">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500 font-medium">Target Selesai</p>
+                                        <p class="text-xl font-black text-gray-900">{{ $stats['completedTargets'] }}</p>
                                     </div>
                                 </div>
+                                <div class="flex items-center gap-2 text-xs text-gray-500">
+                                    <i class="fas fa-chart-line text-green-500"></i>
+                                    <span>dari {{ $stats['totalTargets'] }} total target</span>
+                                </div>
+                            </div>
+
+                            <!-- Pending Card -->
+                            <div class="flex-1 bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-10 h-10 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500 font-medium">Menunggu Dikerjakan</p>
+                                        <p class="text-xl font-black text-gray-900">{{ $stats['pendingTargets'] }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs text-gray-500">
+                                    <i class="fas fa-exclamation-circle text-orange-500"></i>
+                                    <span>perlu segera diselesaikan</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Member List Card -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                            <div class="px-5 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                                <h4 class="font-bold text-gray-900">Anggota Kelompok</h4>
+                            </div>
+                            <div class="p-5 space-y-3">
+                                <!-- Leader -->
+                                <div class="flex items-center gap-3 p-3 rounded-lg bg-purple-50 border border-purple-200">
+                                    <div class="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold">
+                                        {{ substr($myGroup->leader->name ?? '?', 0, 1) }}
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="font-bold text-gray-900 truncate">{{ $myGroup->leader->name ?? '-' }}</p>
+                                        <p class="text-xs text-purple-600 font-medium">Ketua Kelompok</p>
+                                    </div>
+                                    <span class="px-2 py-1 bg-purple-600 text-white text-xs font-bold rounded">KETUA</span>
+                                </div>
+                                
+                                <!-- Other Members -->
+                                @foreach($myGroup->members as $member)
+                                    @if($member->user_id !== $myGroup->leader_id)
+                                    <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                        <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-bold">
+                                            {{ substr($member->user->name, 0, 1) }}
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="font-bold text-gray-900 truncate">{{ $member->user->name }}</p>
+                                            <p class="text-xs text-gray-500">{{ $member->user->nim ?? 'Anggota' }}</p>
+                                        </div>
+                                    </div>
+                                    @endif
+                                @endforeach
                             </div>
                         </div>
 
@@ -284,20 +294,17 @@
                     const iconElement = timer.querySelector('i');
                     
                     if (diff <= 0) {
-                        // Waktu habis
-                        textElement.textContent = "⏰ WAKTU HABIS!";
-                        timer.className = 'countdown-timer countdown-urgent inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-600 text-white text-xs font-black border-2 border-red-700 shadow-lg';
+                        textElement.textContent = "WAKTU HABIS!";
+                        timer.className = 'countdown-timer countdown-urgent inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-600 text-white text-xs font-bold border-2 border-red-700 shadow-lg';
                         if (iconElement) iconElement.className = 'fas fa-skull-crossbones text-white';
                         return;
                     }
                     
-                    // Hitung komponen waktu
                     const days = Math.floor(diff / 86400);
                     const hours = Math.floor((diff % 86400) / 3600);
                     const minutes = Math.floor((diff % 3600) / 60);
                     const seconds = diff % 60;
                     
-                    // Format teks countdown
                     let text = '';
                     if (days > 0) text += `${days}h `;
                     if (hours > 0 || days > 0) text += `${hours}j `;
@@ -305,19 +312,17 @@
                     
                     textElement.textContent = text;
                     
-                    // Jika sisa waktu ≤ 48 jam (2 hari), ubah ke merah/urgent dengan animasi
+                    // Jika sisa waktu <= 48 jam, ubah ke merah/urgent
                     if (diff <= URGENT_THRESHOLD) {
-                        timer.className = 'countdown-timer countdown-urgent inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500 text-white text-xs font-black border-2 border-red-600 shadow-lg';
+                        timer.className = 'countdown-timer countdown-urgent inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500 text-white text-xs font-bold border-2 border-red-600 shadow-lg';
                         if (iconElement) iconElement.className = 'fas fa-bell text-yellow-300';
                     } else {
-                        // Normal (biru) - tanpa animasi
-                        timer.className = 'countdown-timer inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-black border border-blue-200';
+                        timer.className = 'countdown-timer inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200';
                         if (iconElement) iconElement.className = 'fas fa-hourglass-half text-blue-500';
                     }
                 });
             }
             
-            // Update immediately then every second
             updateCountdowns();
             setInterval(updateCountdowns, 1000);
         });
@@ -325,14 +330,9 @@
     
     {{-- CSS Animation for Urgent Countdown --}}
     <style>
-        /* Animasi membesar-mengecil untuk countdown urgent */
         @keyframes pulse-scale {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.08);
-            }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
         
         .countdown-urgent {
@@ -340,12 +340,8 @@
         }
         
         @keyframes pulse-glow {
-            0%, 100% {
-                box-shadow: 0 0 5px 0 rgba(239, 68, 68, 0.4);
-            }
-            50% {
-                box-shadow: 0 0 20px 5px rgba(239, 68, 68, 0.6);
-            }
+            0%, 100% { box-shadow: 0 0 5px 0 rgba(239, 68, 68, 0.4); }
+            50% { box-shadow: 0 0 15px 5px rgba(239, 68, 68, 0.6); }
         }
     </style>
 </x-app-layout>

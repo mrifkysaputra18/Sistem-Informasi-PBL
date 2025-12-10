@@ -163,8 +163,21 @@
                     <h3 class="text-lg font-semibold mb-4">Submit Target</h3>
                     
                     <form method="POST" action="{{ route('targets.submissions.store', $target->id) }}" 
-                          enctype="multipart/form-data">
+                          enctype="multipart/form-data"
+                          id="submission-form"
+                          onsubmit="syncTodosBeforeSubmit()">
                         @csrf
+                        
+                        <!-- Hidden container for todo items - will be synced from external checkboxes -->
+                        <div id="hidden-todos-container">
+                            @if($target->hasTodoItems())
+                                @foreach($target->todoItems as $todo)
+                                    @if($todo->is_completed_by_student)
+                                    <input type="hidden" name="completed_todos[]" value="{{ $todo->id }}" class="hidden-todo-input" data-todo-id="{{ $todo->id }}">
+                                    @endif
+                                @endforeach
+                            @endif
+                        </div>
 
                         <!-- Submission Type -->
                         <div class="mb-6">
@@ -277,6 +290,58 @@
     <script>
         // Store all selected files
         let selectedFiles = [];
+
+        // Sync todo checkboxes to hidden inputs before form submit
+        function syncTodosBeforeSubmit() {
+            const container = document.getElementById('hidden-todos-container');
+            container.innerHTML = ''; // Clear existing
+            
+            // Get all checked todo checkboxes from the external checklist
+            const checkboxes = document.querySelectorAll('#todo-checklist input[type="checkbox"]:checked');
+            checkboxes.forEach(cb => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'completed_todos[]';
+                input.value = cb.value;
+                container.appendChild(input);
+            });
+            
+            return true; // Allow form to submit
+        }
+        
+        // Update todo checkbox styling and sync to hidden inputs
+        function updateTodoStyle(checkbox) {
+            const label = checkbox.closest('label');
+            const titleSpan = label.querySelector('[id^="todo-title-"]');
+            
+            if (checkbox.checked) {
+                label.classList.remove('bg-gray-50', 'border-gray-200');
+                label.classList.add('bg-green-50', 'border-green-300');
+                if (titleSpan) titleSpan.classList.add('line-through');
+            } else {
+                label.classList.remove('bg-green-50', 'border-green-300');
+                label.classList.add('bg-gray-50', 'border-gray-200');
+                if (titleSpan) titleSpan.classList.remove('line-through');
+            }
+            
+            // Update progress counter
+            updateTodoProgress();
+        }
+        
+        // Update todo progress counter
+        function updateTodoProgress() {
+            const total = document.querySelectorAll('#todo-checklist input[type="checkbox"]').length;
+            const completed = document.querySelectorAll('#todo-checklist input[type="checkbox"]:checked').length;
+            const countEl = document.getElementById('completed-count');
+            if (countEl) countEl.textContent = completed;
+            
+            // Update progress bar if exists
+            const progressBar = document.querySelector('#todo-progress-bar');
+            if (progressBar) {
+                const percent = total > 0 ? (completed / total) * 100 : 0;
+                progressBar.style.width = percent + '%';
+            }
+        }
 
         function toggleSubmissionType(type) {
             const fileSection = document.getElementById('file-upload-section');
