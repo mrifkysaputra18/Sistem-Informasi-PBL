@@ -80,50 +80,93 @@ class UlasanTargetMingguanController extends Controller
                 ->with('error', 'Target ini sudah dinilai sebelumnya!');
         }
 
+        // Validation - quality_score is the main score input now
         $validated = $request->validate([
-            'score' => 'required|numeric|min:0|max:100',
+            'quality_score' => 'required|numeric|min:0|max:100',
             'feedback' => 'required|string|max:1000',
             'suggestions' => 'nullable|string|max:1000',
-            'status' => 'required|in:approved,needs_revision',
+            'verified_todos' => 'nullable|array',
+            'verified_todos.*' => 'exists:target_todo_items,id',
         ]);
 
-        \Log::info('Creating WeeklyTarget Review', [
+        // Status otomatis approved
+        $validated['status'] = 'approved';
+
+        // Handle todo verification
+        $verifiedTodos = $request->input('verified_todos', []);
+        if ($target->hasTodoItems()) {
+            // Reset semua todo verification status dulu
+            $target->todoItems()->update([
+                'is_verified_by_reviewer' => false,
+                'verified_by' => null,
+                'verified_at' => null,
+            ]);
+
+            // Mark todo items yang di-verify sebagai verified
+            if (!empty($verifiedTodos)) {
+                $target->todoItems()
+                    ->whereIn('id', $verifiedTodos)
+                    ->update([
+                        'is_verified_by_reviewer' => true,
+                        'verified_by' => Auth::id(),
+                        'verified_at' => now(),
+                    ]);
+            }
+        }
+
+        // Calculate final score: (verified/total) × quality_score
+        $qualityScore = $validated['quality_score'];
+        $finalScore = $qualityScore; // Default jika tidak ada todo
+
+        if ($target->hasTodoItems()) {
+            $totalTodos = $target->getTotalTodoCount();
+            $verifiedCount = count($verifiedTodos);
+            $finalScore = round(($verifiedCount / $totalTodos) * $qualityScore, 2);
+        }
+
+        \Log::info('Creating WeeklyTarget Review with Todo Verification', [
             'target_id' => $target->id,
             'reviewer_id' => Auth::id(),
-            'score' => $validated['score'],
+            'quality_score' => $qualityScore,
+            'verified_todos' => count($verifiedTodos),
+            'total_todos' => $target->getTotalTodoCount(),
+            'final_score' => $finalScore,
             'status' => $validated['status'],
         ]);
 
-        // Create review
+        // Create review - use final_score for the review score
         $review = UlasanTargetMingguan::create([
             'weekly_target_id' => $target->id,
             'reviewer_id' => Auth::id(),
-            'score' => $validated['score'],
+            'score' => $finalScore,
             'feedback' => $validated['feedback'],
             'suggestions' => $validated['suggestions'] ?? null,
             'status' => $validated['status'],
         ]);
 
         // Update target submission status based on review
-        $newSubmissionStatus = $validated['status'] === 'approved' ? 'approved' : 'needs_revision';
+        $newSubmissionStatus = $validated['status'] === 'approved' ? 'approved' : 'revision';
         
-        // Update target as reviewed
+        // Update target as reviewed with scores
         $target->update([
             'is_reviewed' => true,
             'reviewed_at' => now(),
             'reviewer_id' => Auth::id(),
             'submission_status' => $newSubmissionStatus,
+            'quality_score' => $qualityScore,
+            'final_score' => $finalScore,
         ]);
 
         \Log::info('WeeklyTarget Review Created', [
             'review_id' => $review->id,
             'target_id' => $target->id,
+            'final_score' => $finalScore,
             'status' => $newSubmissionStatus,
         ]);
 
         return redirect()
             ->route('target-reviews.index')
-            ->with('success', 'Review berhasil disimpan! Target sudah dinilai.');
+            ->with('success', "Review berhasil disimpan! Nilai: {$finalScore} (Kualitas: {$qualityScore} × " . count($verifiedTodos) . "/{$target->getTotalTodoCount()} todo)");
     }
 
     /**

@@ -115,7 +115,7 @@
                      class="bg-white rounded-xl shadow-xl border border-gray-200 p-6 mt-4 relative overflow-hidden ring-1 ring-black/5">
                     <div class="absolute top-0 left-0 w-1 h-full bg-indigo-600"></div>
                     <form method="GET" action="{{ route('admin.users.index') }}" class="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
-                        <input type="hidden" name="role" value="{{ request('role') }}">
+                        <!-- Role is controlled by tabs, not by search form -->
                         
                         <!-- Search Input -->
                         <div class="md:col-span-4">
@@ -123,7 +123,7 @@
                             <div class="relative">
                                 <i class="fa-solid fa-search absolute left-4 top-3.5 text-gray-400"></i>
                                 <input type="text" name="search" value="{{ request('search') }}" 
-                                       placeholder="Nama, Email, atau NIM..." 
+                                       placeholder="Ketik NIM, Nama, atau Email..." 
                                        class="pl-12 w-full h-12 bg-gray-50 border-2 border-gray-200 rounded-lg text-sm font-semibold focus:border-indigo-600 focus:ring-0 transition-colors">
                             </div>
                         </div>
@@ -185,15 +185,15 @@
                     @foreach($tabs as $roleKey => $tab)
                     <a href="{{ route('admin.users.index', array_merge(request()->except(['role', 'page']), ['role' => $roleKey])) }}" 
                        class="flex-1 min-w-[120px] py-5 text-center group transition-all duration-300 border-b-4 
-                       {{ $currentRole == $roleKey ? 'border-indigo-600 bg-indigo-50' : 'border-transparent hover:bg-gray-50' }}">
+                       {{ $currentRole == $roleKey ? 'border-blue-600 bg-blue-600 text-white shadow-lg' : 'border-transparent hover:bg-gray-100 bg-white' }}">
                         
                         <div class="flex flex-col items-center justify-center">
                             <span class="text-xs font-extrabold uppercase tracking-widest mb-1 
-                                {{ $currentRole == $roleKey ? 'text-indigo-700' : 'text-gray-400 group-hover:text-gray-600' }}">
+                                {{ $currentRole == $roleKey ? 'text-white' : 'text-gray-500 group-hover:text-gray-700' }}">
                                 <i class="fa-solid {{ $tab['icon'] }} mr-1"></i> {{ $tab['label'] }}
                             </span>
                             <span class="py-0.5 px-2.5 rounded-full text-xs font-black shadow-sm 
-                                {{ $currentRole == $roleKey ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500 group-hover:bg-gray-300' }}">
+                                {{ $currentRole == $roleKey ? 'bg-white text-blue-700' : 'bg-gray-200 text-gray-600 group-hover:bg-gray-300' }}">
                                 {{ $tab['count'] }}
                             </span>
                         </div>

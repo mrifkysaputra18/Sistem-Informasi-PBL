@@ -97,12 +97,6 @@
                                     </x-dropdown-link>
                                 @endif
                                 
-                                @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
-                                    <x-dropdown-link :href="route('target-reviews.index')">
-                                        {{ __('Review Target') }}
-                                    </x-dropdown-link>
-                                @endif
-                                
                                 <x-dropdown-link :href="route('scores.index')">
                                     {{ __('Ranking Kelompok') }}
                                 </x-dropdown-link>

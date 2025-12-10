@@ -27,11 +27,12 @@ class TargetMingguanController extends Controller
             if ($myClassRoomIds->isEmpty()) {
                 return view('target.daftar', [
                     'targets' => collect(),
+                    'targetsByWeek' => collect(),
                     'classRooms' => collect(),
                     'stats' => [
                         'total' => 0, 'submitted' => 0, 'approved' => 0, 
                         'revision' => 0, 'pending' => 0, 'late' => 0,
-                        'submitted_percentage' => 0,
+                        'submitted_percentage' => 0, 'open' => 0, 'closed' => 0,
                     ],
                     'message' => 'Anda belum ditugaskan ke kelas manapun.'
                 ]);
@@ -40,15 +41,15 @@ class TargetMingguanController extends Controller
 
         $query = TargetMingguan::with(['group.classRoom', 'creator', 'completedByUser']);
 
-        // Base query untuk statistik (sebelum pagination)
-        $statsQuery = clone $query;
+        // Base query untuk statistik (sebelum filter lock_status)
+        $baseStatsQuery = clone $query;
 
         // Auto filter untuk dosen - Hanya dari kelas yang diampu
         if ($user->isDosen() && count($myClassRoomIds) > 0) {
             $query->whereHas('group', function($q) use ($myClassRoomIds) {
                 $q->whereIn('class_room_id', $myClassRoomIds);
             });
-            $statsQuery->whereHas('group', function($q) use ($myClassRoomIds) {
+            $baseStatsQuery->whereHas('group', function($q) use ($myClassRoomIds) {
                 $q->whereIn('class_room_id', $myClassRoomIds);
             });
         }
@@ -63,7 +64,7 @@ class TargetMingguanController extends Controller
             $query->whereHas('group', function($q) use ($request) {
                 $q->where('class_room_id', $request->class_room_id);
             });
-            $statsQuery->whereHas('group', function($q) use ($request) {
+            $baseStatsQuery->whereHas('group', function($q) use ($request) {
                 $q->where('class_room_id', $request->class_room_id);
             });
         }
@@ -71,7 +72,7 @@ class TargetMingguanController extends Controller
         // Filter by week
         if ($request->has('week_number') && $request->week_number != '') {
             $query->where('week_number', $request->week_number);
-            $statsQuery->where('week_number', $request->week_number);
+            $baseStatsQuery->where('week_number', $request->week_number);
         }
 
         // Filter by status
@@ -79,14 +80,32 @@ class TargetMingguanController extends Controller
             $query->where('submission_status', $request->status);
         }
 
-        // Calculate statistics
+        // Clone untuk menghitung statistik open/closed sebelum filter lock_status
+        $statsQueryForCounts = clone $baseStatsQuery;
+        
+        // Hitung jumlah target terbuka dan terkunci (untuk badge di tabs)
+        $openCount = (clone $statsQueryForCounts)->where('is_open', true)->count();
+        $closedCount = (clone $statsQueryForCounts)->where('is_open', false)->count();
+
+        // Filter by lock_status (untuk tabs)
+        $lockStatus = $request->get('lock_status', 'aktif'); // Default: aktif (terbuka)
+        if ($lockStatus === 'aktif') {
+            $query->where('is_open', true);
+        } elseif ($lockStatus === 'terkunci') {
+            $query->where('is_open', false);
+        }
+
+        // Calculate statistics setelah semua filter
+        $statsQuery = clone $query;
         $stats = [
             'total' => $statsQuery->count(),
-            'submitted' => $statsQuery->where('submission_status', 'submitted')->count(),
-            'approved' => $statsQuery->where('submission_status', 'approved')->count(),
-            'revision' => $statsQuery->where('submission_status', 'revision')->count(),
-            'pending' => $statsQuery->where('submission_status', 'pending')->count(),
-            'late' => $statsQuery->where('submission_status', 'late')->count(),
+            'submitted' => (clone $statsQuery)->where('submission_status', 'submitted')->count(),
+            'approved' => (clone $statsQuery)->where('submission_status', 'approved')->count(),
+            'revision' => (clone $statsQuery)->where('submission_status', 'revision')->count(),
+            'pending' => (clone $statsQuery)->where('submission_status', 'pending')->count(),
+            'late' => (clone $statsQuery)->where('submission_status', 'late')->count(),
+            'open' => $openCount,
+            'closed' => $closedCount,
         ];
 
         // Calculate percentage
@@ -289,10 +308,25 @@ class TargetMingguanController extends Controller
             return back()->with('error', 'Tidak ada kelompok yang dipilih.');
         }
 
+        // Validate todo items
+        $todoItems = $request->input('todo_items', []);
+        if (empty($todoItems)) {
+            return back()->withInput()->with('error', 'Minimal 1 todo item harus diisi.');
+        }
+
+        // Filter empty todo items
+        $todoItems = array_filter($todoItems, function($item) {
+            return !empty($item['title']);
+        });
+
+        if (empty($todoItems)) {
+            return back()->withInput()->with('error', 'Minimal 1 todo item dengan judul harus diisi.');
+        }
+
         // Create target untuk setiap Kelompok
         $createdCount = 0;
         foreach ($targetGroups as $groupId) {
-            TargetMingguan::create([
+            $target = TargetMingguan::create([
                 'group_id' => $groupId,
                 'created_by' => auth()->id(),
                 'week_number' => $request->week_number,
@@ -303,16 +337,29 @@ class TargetMingguanController extends Controller
                 'is_completed' => false,
                 'is_reviewed' => false,
             ]);
+
+            // Create todo items for this target
+            foreach ($todoItems as $index => $item) {
+                $target->todoItems()->create([
+                    'title' => $item['title'],
+                    'description' => $item['description'] ?? null,
+                    'order' => $item['order'] ?? $index,
+                    'is_completed_by_student' => false,
+                    'is_verified_by_reviewer' => false,
+                ]);
+            }
+
             $createdCount++;
         }
 
-        \Log::info('WeeklyTargets Created', [
+        \Log::info('WeeklyTargets Created with Todo Items', [
             'count' => $createdCount,
+            'todo_items_count' => count($todoItems),
             'created_by' => auth()->id(),
         ]);
 
         return redirect()->route('targets.index')
-            ->with('success', "Target berhasil dibuat untuk {$createdCount} kelompok!");
+            ->with('success', "Target berhasil dibuat untuk {$createdCount} kelompok dengan " . count($todoItems) . " todo items!");
     }
 
     /**
@@ -575,6 +622,58 @@ class TargetMingguanController extends Controller
         $firstTarget = $targets->first();
         
         return view('target.ubah-minggu', compact('targets', 'firstTarget', 'weekNumber', 'classRoom'));
+    }
+
+    /**
+     * Show detailed info page for a specific week's targets
+     */
+    public function showWeekInfo($weekNumber, $classRoomId)
+    {
+        $user = auth()->user();
+        $classRoom = RuangKelas::findOrFail($classRoomId);
+        
+        // Permission check for dosen
+        if ($user->isDosen() && $classRoom->dosen_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses untuk melihat target di kelas ini.');
+        }
+        
+        // Get all targets for this week and class with relations
+        $targets = TargetMingguan::whereHas('group', function($q) use ($classRoomId) {
+            $q->where('class_room_id', $classRoomId);
+        })->where('week_number', $weekNumber)
+          ->with(['group.classRoom', 'completedByUser', 'review.reviewer', 'todoItems'])
+          ->get();
+        
+        if ($targets->isEmpty()) {
+            return redirect()->route('targets.index')->with('error', 'Target tidak ditemukan.');
+        }
+        
+        $firstTarget = $targets->first();
+        
+        // Calculate stats
+        $stats = [
+            'total' => $targets->count(),
+            'submitted' => $targets->where('submission_status', 'submitted')->count(),
+            'approved' => $targets->where('submission_status', 'approved')->count(),
+            'pending' => $targets->where('submission_status', 'pending')->count(),
+            'reviewed' => $targets->where('is_reviewed', true)->count(),
+        ];
+        
+        $isPastDeadline = \Carbon\Carbon::parse($firstTarget->deadline)->isPast();
+        $adaTargetTerbuka = $targets->contains(fn($t) => $t->is_open);
+        $bisaDitutup = !$isPastDeadline && $adaTargetTerbuka;
+        $bisaDibuka = $isPastDeadline || !$adaTargetTerbuka;
+        
+        return view('target.info-minggu', compact(
+            'targets', 
+            'firstTarget', 
+            'weekNumber', 
+            'classRoom',
+            'stats',
+            'isPastDeadline',
+            'bisaDitutup',
+            'bisaDibuka'
+        ));
     }
 
     /**

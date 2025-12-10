@@ -17,6 +17,12 @@
                     </a>
                     
                     @if(in_array(auth()->user()->role, ['dosen', 'admin']))
+                    <a href="{{ route('sync-kriteria.index') }}" 
+                       class="inline-flex items-center px-5 py-2.5 bg-green-600 hover:bg-green-700 border-2 border-green-800 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">
+                        <i class="fa-solid fa-arrows-rotate mr-2 text-lg"></i>
+                        <span>Sync Kriteria</span>
+                    </a>
+                    
                     <a href="{{ route('targets.create') }}" 
                        class="inline-flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 border-2 border-indigo-800 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">
                         <i class="fa-solid fa-plus mr-2 text-lg"></i>
@@ -167,11 +173,50 @@
                             Terapkan
                         </button>
                     </div>
+                    <!-- Hidden input untuk preserve lock_status -->
+                    <input type="hidden" name="lock_status" value="{{ request('lock_status', 'aktif') }}">
                 </form>
             </div>
 
-            <!-- 4. TARGET LIST (Accordions) -->
-            <div class="space-y-6">
+            <!-- TAB NAVIGATION -->
+            @php
+                $currentLockStatus = request('lock_status', 'aktif');
+                $preserveParams = request()->except(['lock_status']);
+            @endphp
+            <div class="bg-white rounded-xl shadow-md border border-gray-200 mb-8">
+                <div class="flex border-b border-gray-200">
+                    <!-- Tab Target Aktif -->
+                    <a href="{{ route('targets.index', array_merge($preserveParams, ['lock_status' => 'aktif'])) }}" 
+                       class="flex-1 flex items-center justify-center gap-3 px-6 py-4 text-sm font-bold transition-all relative
+                              {{ $currentLockStatus === 'aktif' 
+                                 ? 'text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50' 
+                                 : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50' }}">
+                        <i class="fa-solid fa-unlock text-lg"></i>
+                        <span>Target Aktif</span>
+                        <span class="px-2.5 py-1 rounded-full text-xs font-black 
+                                     {{ $currentLockStatus === 'aktif' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700' }}">
+                            {{ $stats['open'] ?? 0 }}
+                        </span>
+                    </a>
+                    
+                    <!-- Tab Target Terkunci -->
+                    <a href="{{ route('targets.index', array_merge($preserveParams, ['lock_status' => 'terkunci'])) }}" 
+                       class="flex-1 flex items-center justify-center gap-3 px-6 py-4 text-sm font-bold transition-all relative
+                              {{ $currentLockStatus === 'terkunci' 
+                                 ? 'text-gray-700 border-b-2 border-gray-700 bg-gray-100' 
+                                 : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50' }}">
+                        <i class="fa-solid fa-lock text-lg"></i>
+                        <span>Target Terkunci</span>
+                        <span class="px-2.5 py-1 rounded-full text-xs font-black 
+                                     {{ $currentLockStatus === 'terkunci' ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-700' }}">
+                            {{ $stats['closed'] ?? 0 }}
+                        </span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 4. TARGET LIST (Cards with Info Button) -->
+            <div class="space-y-4">
                 @if($targetsByWeek->count() > 0)
                     @foreach($targetsByWeek as $weekIndex => $week)
                     @php
@@ -181,140 +226,58 @@
                         $isPastDeadline = \Carbon\Carbon::parse($week['deadline'])->isPast();
                         $firstTarget = $week['targets']->first();
                         $classRoomId = $firstTarget->group->class_room_id ?? null;
-                        $adaTargetTerbuka = $week['targets']->contains(fn($t) => $t->is_open);
-                        $bisaDitutup = !$isPastDeadline && $adaTargetTerbuka;
-                        $bisaDibuka = $isPastDeadline || !$adaTargetTerbuka;
+                        $reviewedCount = $week['targets']->where('is_reviewed', true)->count();
                     @endphp
 
-                    <div x-data="{ open: false }" class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-md">
-                        <!-- Accordion Header -->
-                        <button @click="open = !open" class="w-full flex flex-col sm:flex-row sm:items-center justify-between p-6 bg-white hover:bg-gray-50 transition-colors border-b border-gray-100">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between p-6">
+                            <!-- Left: Week Info -->
                             <div class="flex items-center gap-4">
-                                <div class="h-12 w-12 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center text-lg font-black">
+                                <div class="h-14 w-14 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xl font-black shadow-md">
                                     {{ $week['week_number'] }}
                                 </div>
-                                <div class="text-left">
+                                <div>
                                     <h3 class="text-lg font-bold text-gray-900">{{ $week['title'] }}</h3>
-                                    <p class="text-sm text-gray-500 flex items-center gap-2">
+                                    <p class="text-sm text-gray-500 flex items-center gap-2 mt-1">
                                         <i class="fa-regular fa-calendar"></i> 
                                         Deadline: {{ \Carbon\Carbon::parse($week['deadline'])->format('d M Y, H:i') }}
                                         @if($isPastDeadline)
                                             <span class="text-rose-600 font-bold text-xs bg-rose-100 px-2 py-0.5 rounded-full">EXPIRED</span>
                                         @endif
                                     </p>
+                                    <p class="text-xs text-gray-400 mt-1">
+                                        <i class="fa-solid fa-building mr-1"></i> {{ $firstTarget->group->classRoom->name ?? '-' }}
+                                    </p>
                                 </div>
                             </div>
                             
+                            <!-- Right: Stats & Info Button -->
                             <div class="flex items-center gap-6 mt-4 sm:mt-0">
-                                <div class="text-right">
-                                    <div class="text-xs font-bold text-gray-400 uppercase">Progress</div>
-                                    <div class="text-lg font-black text-gray-800">{{ $submittedCount }}/{{ $totalCount }}</div>
+                                <!-- Stats Pills -->
+                                <div class="flex items-center gap-3">
+                                    <div class="text-center px-3 py-1 bg-gray-100 rounded-lg">
+                                        <div class="text-xs text-gray-500">Submit</div>
+                                        <div class="text-sm font-bold text-gray-800">{{ $submittedCount }}/{{ $totalCount }}</div>
+                                    </div>
+                                    <div class="text-center px-3 py-1 bg-green-100 rounded-lg">
+                                        <div class="text-xs text-green-600">Reviewed</div>
+                                        <div class="text-sm font-bold text-green-700">{{ $reviewedCount }}</div>
+                                    </div>
                                 </div>
-                                <div class="h-10 w-10 rounded-full bg-indigo-50 flex items-center justify-center">
-                                    <i class="fa-solid fa-chevron-down text-indigo-600 transition-transform duration-300" :class="open ? 'rotate-180' : ''"></i>
-                                </div>
-                            </div>
-                        </button>
-
-                        <!-- Accordion Content -->
-                        <div x-show="open" x-collapse>
-                            <!-- Week Actions -->
-                            @if(in_array(auth()->user()->role, ['dosen', 'admin']) && $classRoomId)
-                            <div class="bg-gray-50 border-b border-gray-200 px-6 py-3 flex flex-wrap items-center justify-end gap-3">
-                                <a href="{{ route('targets.week.edit', [$week['week_number'], $classRoomId]) }}" 
-                                   class="text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg transition-colors shadow-sm border border-indigo-700">
-                                    <i class="fa-solid fa-edit mr-1"></i> Edit Minggu
+                                
+                                <!-- Info Button -->
+                                @if($classRoomId)
+                                <a href="{{ route('targets.week.info', [$week['week_number'], $classRoomId]) }}" 
+                                   class="inline-flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg transition-all shadow-md hover:shadow-lg">
+                                    <i class="fa-solid fa-circle-info mr-2"></i> Info
                                 </a>
-                                
-                                @if($bisaDitutup)
-                                <form action="{{ route('targets.week.close', [$week['week_number'], $classRoomId]) }}" method="POST" class="inline">
-                                    @csrf
-                                    <button type="submit" class="text-xs font-bold text-white bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg transition-colors shadow-sm border border-gray-700">
-                                        <i class="fa-solid fa-lock mr-1"></i> Tutup Target
-                                    </button>
-                                </form>
                                 @endif
-                                
-                                @if($bisaDibuka)
-                                <form action="{{ route('targets.week.reopen', [$week['week_number'], $classRoomId]) }}" method="POST" class="inline">
-                                    @csrf
-                                    <button type="submit" class="text-xs font-bold text-white bg-cyan-600 hover:bg-cyan-700 px-4 py-2 rounded-lg transition-colors shadow-sm border border-cyan-700">
-                                        <i class="fa-solid fa-unlock mr-1"></i> Buka Target
-                                    </button>
-                                </form>
-                                @endif
-
-                                <form action="{{ route('targets.week.destroy', [$week['week_number'], $classRoomId]) }}" method="POST" class="inline delete-week-form">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="button" class="delete-week-btn text-xs font-bold text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition-colors shadow-sm border border-red-700" 
-                                            data-week="{{ $week['week_number'] }}">
-                                        <i class="fa-solid fa-trash mr-1"></i> Hapus Minggu
-                                    </button>
-                                </form>
                             </div>
-                            @endif
-
-                            <!-- Table -->
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-gray-900 text-white">
-                                        <tr>
-                                            <th class="px-6 py-4 text-left text-xs font-bold uppercase w-48">Kelompok</th>
-                                            <th class="px-6 py-4 text-left text-xs font-bold uppercase">Kelas</th>
-                                            <th class="px-6 py-4 text-left text-xs font-bold uppercase">Status</th>
-                                            <th class="px-6 py-4 text-left text-xs font-bold uppercase">Waktu Submit</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
-                                        @foreach($week['targets'] as $target)
-                                        <tr class="hover:bg-indigo-50 transition-colors">
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm font-bold text-gray-900">{{ $target->group->name }}</div>
-                                                @if($target->completedByUser)
-                                                    <div class="text-xs text-indigo-600 mt-1">
-                                                        <i class="fa-solid fa-user mr-1"></i> {{ $target->completedByUser->name }}
-                                                    </div>
-                                                @endif
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                                {{ $target->group->classRoom->name }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                @php
-                                                    $statusClass = match($target->submission_status) {
-                                                        'submitted' => 'bg-blue-100 text-blue-800 border-blue-200',
-                                                        'approved' => 'bg-green-100 text-green-800 border-green-200',
-                                                        'revision' => 'bg-yellow-100 text-yellow-800 border-yellow-200',
-                                                        'late' => 'bg-rose-100 text-rose-800 border-rose-200',
-                                                        default => 'bg-gray-100 text-gray-600 border-gray-200',
-                                                    };
-                                                    $label = match($target->submission_status) {
-                                                        'pending' => 'Belum Submit',
-                                                        'submitted' => 'Menunggu Review',
-                                                        'approved' => 'Disetujui',
-                                                        'revision' => 'Perlu Revisi',
-                                                        'late' => 'Terlambat',
-                                                        default => ucfirst($target->submission_status),
-                                                    };
-                                                @endphp
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold border uppercase tracking-wide {{ $statusClass }}">
-                                                    {{ $label }}
-                                                </span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                @if($target->completed_at)
-                                                    <div class="text-sm text-gray-900 font-medium">{{ $target->completed_at->format('d/m/Y H:i') }}</div>
-                                                    <div class="text-xs text-gray-500">{{ $target->completed_at->diffForHumans() }}</div>
-                                                @else
-                                                    <span class="text-sm text-gray-400 italic">-</span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
+                        </div>
+                        
+                        <!-- Progress Bar -->
+                        <div class="h-1.5 bg-gray-200">
+                            <div class="h-full bg-indigo-600 transition-all duration-500" style="width: {{ $progressPercent }}%"></div>
                         </div>
                     </div>
                     @endforeach

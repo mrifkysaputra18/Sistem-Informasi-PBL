@@ -19,22 +19,22 @@ class UserController extends Controller
         $query = Pengguna::with('classRoom');
         
         // Filter by role (Acting as Tab)
-        if ($request->has('role') && $request->role !== '') {
+        if ($request->filled('role')) {
             $query->where('role', $request->role);
         }
         
-        // Filter by class
-        if ($request->has('class_room_id') && $request->class_room_id !== '') {
+        // Filter by class (only if a specific class is selected)
+        if ($request->filled('class_room_id')) {
             $query->where('class_room_id', $request->class_room_id);
         }
         
-        // Filter by status
-        if ($request->has('is_active') && $request->is_active !== '') {
+        // Filter by status (only if a specific status is selected)
+        if ($request->filled('is_active')) {
             $query->where('is_active', $request->is_active);
         }
         
         // Search by name, email, or nim
-        if ($request->has('search') && $request->search !== '') {
+        if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
