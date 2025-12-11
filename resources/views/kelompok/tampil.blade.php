@@ -8,15 +8,9 @@
                 <p class="text-sm text-gray-600">{{ $group->classRoom->name ?? 'Tanpa Kelas' }}</p>
             </div>
             <div class="flex gap-2">
-                @if($group->classRoom)
-                <a href="{{ url('/classrooms/' . $group->classRoom->id) }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                    ← Kembali ke Kelas
-                </a>
-                @else
                 <a href="{{ route('groups.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                    ← Kembali
+                    ← Kembali ke Kelompok
                 </a>
-                @endif
             </div>
         </div>
     </x-slot>

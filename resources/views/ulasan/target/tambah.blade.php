@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center">
-            <a href="{{ route('target-reviews.index') }}" 
+            <a href="{{ url('/targets/week/' . $target->week_number . '/class/' . $target->group->class_room_id . '/info') }}" 
                class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>

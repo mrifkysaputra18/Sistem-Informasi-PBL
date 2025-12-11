@@ -83,16 +83,38 @@ class TargetMingguanController extends Controller
         // Clone untuk menghitung statistik open/closed sebelum filter lock_status
         $statsQueryForCounts = clone $baseStatsQuery;
         
-        // Hitung jumlah target terbuka dan terkunci (untuk badge di tabs)
-        $openCount = (clone $statsQueryForCounts)->where('is_open', true)->count();
-        $closedCount = (clone $statsQueryForCounts)->where('is_open', false)->count();
+        // Hitung jumlah MINGGU (bukan target per kelompok) untuk badge di tabs
+        // Target dianggap AKTIF jika: is_open = true DAN deadline belum lewat
+        // Target dianggap TERKUNCI jika: is_open = false ATAU deadline sudah lewat
+        $now = now();
+        
+        // Count distinct week numbers for open targets (minggu yang masih aktif)
+        $openCount = (clone $statsQueryForCounts)
+            ->where('is_open', true)
+            ->where('deadline', '>', $now)
+            ->distinct('week_number')
+            ->count('week_number');
+            
+        // Count distinct week numbers for closed targets (minggu yang sudah terkunci)
+        $closedCount = (clone $statsQueryForCounts)
+            ->where(function($q) use ($now) {
+                $q->where('is_open', false)
+                  ->orWhere('deadline', '<=', $now);
+            })
+            ->distinct('week_number')
+            ->count('week_number');
 
         // Filter by lock_status (untuk tabs)
         $lockStatus = $request->get('lock_status', 'aktif'); // Default: aktif (terbuka)
         if ($lockStatus === 'aktif') {
-            $query->where('is_open', true);
+            // Target aktif: is_open = true DAN deadline belum lewat
+            $query->where('is_open', true)->where('deadline', '>', $now);
         } elseif ($lockStatus === 'terkunci') {
-            $query->where('is_open', false);
+            // Target terkunci: is_open = false ATAU deadline sudah lewat
+            $query->where(function($q) use ($now) {
+                $q->where('is_open', false)
+                  ->orWhere('deadline', '<=', $now);
+            });
         }
 
         // Calculate statistics setelah semua filter
