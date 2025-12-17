@@ -11,7 +11,7 @@
                 <p class="text-sm text-white/90">Kelola tahun ajaran dan semester PBL</p>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('academic-periods.create') }}" class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded">
+                <a href="{{ route('academic-periods.create') }}" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                     <i class="fa-solid fa-circle-plus mr-2"></i>Tambah Periode
                 </a>
             </div>
@@ -143,7 +143,7 @@
                     <div class="text-center py-8 bg-gray-50 rounded-lg">
                         <div class="text-gray-400 mb-3"><i class="fa-solid fa-calendar-days text-4xl"></i></div>
                         <p class="text-gray-600 mb-3">Belum ada periode akademik</p>
-                        <a href="{{ route('academic-periods.create') }}" class="inline-flex items-center bg-primary-500 hover:bg-primary-600 text-white text-sm px-4 py-2 rounded">
+                        <a href="{{ route('academic-periods.create') }}" class="inline-flex items-center bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-2 rounded">
                             <i class="fa-solid fa-circle-plus mr-2"></i>Tambah Periode Akademik Pertama
                         </a>
                     </div>

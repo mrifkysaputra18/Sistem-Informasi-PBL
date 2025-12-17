@@ -21,20 +21,28 @@ class StoreGroupRequest extends FormRequest
      */
     public function rules(): array
     {
+        $maxMembers = $this->input('max_members', 5);
+        
         return [
             'name' => ['required', 'string', 'max:100'],
             'class_room_id' => ['required', 'exists:ruang_kelas,id'],
-            'project_id' => ['nullable', 'exists:proyek,id'],
             'max_members' => ['integer', 'min:1', 'max:10'],
+            'members' => ['nullable', 'array', 'max:' . $maxMembers],
+            'members.*' => ['exists:pengguna,id'],
+            'leader_id' => ['nullable', 'exists:pengguna,id'],
         ];
     }
     
     public function messages(): array
     {
+        $maxMembers = $this->input('max_members', 5);
+        
         return [
             'name.required' => 'Nama kelompok wajib diisi',
             'class_room_id.required' => 'Kelas wajib dipilih',
             'class_room_id.exists' => 'Kelas tidak valid',
+            'members.max' => "Jumlah anggota tidak boleh melebihi {$maxMembers} orang",
+            'members.*.exists' => 'Salah satu anggota tidak valid',
         ];
     }
 }

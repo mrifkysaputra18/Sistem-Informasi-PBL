@@ -138,24 +138,6 @@
                     </form>
                 </div>
             </div>
-
-            <!-- Info Box -->
-            <div class="mt-6 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg p-4">
-                <div class="flex items-start">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-lightbulb text-blue-500 text-2xl"></i>
-                    </div>
-                    <div class="ml-3">
-                        <h4 class="font-semibold text-blue-900 mb-2">💡 Panduan Edit Kelompok</h4>
-                        <ul class="text-sm text-blue-800 space-y-1 list-disc list-inside">
-                            <li>Centang mahasiswa untuk menambahkan atau menghapus dari kelompok</li>
-                            <li>Pilih ketua dari anggota yang sudah dicentang</li>
-                            <li>Kelas tidak dapat diubah setelah kelompok dibuat</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     @push('scripts')
@@ -264,17 +246,20 @@
                 const memberCheckboxes = document.querySelectorAll('.member-checkbox');
                 const checked = Array.from(memberCheckboxes).filter(cb => cb.checked);
                 
-                // Update counter dengan warna
-                selectedCountSpan.textContent = checked.length;
-                const counterContainer = selectedCountSpan.closest('.bg-blue-50');
+                // Selalu ambil container segar dari DOM
+                const counterContainer = document.querySelector('.mt-3.flex.items-center.justify-between');
+                const counterP = counterContainer ? counterContainer.querySelector('p') : null;
+                
+                if (!counterContainer || !counterP) {
+                    console.warn('Counter container not found');
+                    return;
+                }
                 
                 if (checked.length > maxMembers) {
                     // Over limit - red warning
-                    counterContainer.classList.remove('bg-blue-50', 'border-blue-200');
-                    counterContainer.classList.add('bg-red-50', 'border-red-300');
-                    selectedCountSpan.closest('p').classList.remove('text-blue-800');
-                    selectedCountSpan.closest('p').classList.add('text-red-800');
-                    selectedCountSpan.closest('p').innerHTML = `<i class="fas fa-exclamation-triangle"></i> <span class="font-semibold"><span id="selectedCount">${checked.length}</span>/${maxMembers} mahasiswa</span> - <strong>Melebihi batas!</strong>`;
+                    counterContainer.className = 'mt-3 flex items-center justify-between bg-red-50 border border-red-300 rounded-lg p-2 transition-colors';
+                    counterP.className = 'text-sm text-red-800';
+                    counterP.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <span class="font-semibold">${checked.length}/${maxMembers} mahasiswa</span> - <strong>Melebihi batas!</strong>`;
                     
                     // Disable unchecked checkboxes
                     memberCheckboxes.forEach(cb => {
@@ -285,11 +270,9 @@
                     });
                 } else if (checked.length === maxMembers) {
                     // At limit - yellow warning
-                    counterContainer.classList.remove('bg-blue-50', 'border-blue-200', 'bg-red-50', 'border-red-300');
-                    counterContainer.classList.add('bg-yellow-50', 'border-yellow-300');
-                    selectedCountSpan.closest('p').classList.remove('text-blue-800', 'text-red-800');
-                    selectedCountSpan.closest('p').classList.add('text-yellow-800');
-                    selectedCountSpan.closest('p').innerHTML = `<i class="fas fa-check-circle"></i> <span class="font-semibold"><span id="selectedCount">${checked.length}</span>/${maxMembers} mahasiswa</span> - <strong>Penuh!</strong>`;
+                    counterContainer.className = 'mt-3 flex items-center justify-between bg-yellow-50 border border-yellow-300 rounded-lg p-2 transition-colors';
+                    counterP.className = 'text-sm text-yellow-800';
+                    counterP.innerHTML = `<i class="fas fa-check-circle"></i> <span class="font-semibold">${checked.length}/${maxMembers} mahasiswa</span> - <strong>Penuh!</strong>`;
                     
                     // Disable unchecked checkboxes
                     memberCheckboxes.forEach(cb => {
@@ -300,11 +283,9 @@
                     });
                 } else {
                     // Under limit - normal
-                    counterContainer.classList.remove('bg-yellow-50', 'border-yellow-300', 'bg-red-50', 'border-red-300');
-                    counterContainer.classList.add('bg-blue-50', 'border-blue-200');
-                    selectedCountSpan.closest('p').classList.remove('text-yellow-800', 'text-red-800');
-                    selectedCountSpan.closest('p').classList.add('text-blue-800');
-                    selectedCountSpan.closest('p').innerHTML = `<i class="fas fa-check-circle"></i> <span class="font-semibold"><span id="selectedCount">${checked.length}</span>/${maxMembers} mahasiswa</span> dipilih`;
+                    counterContainer.className = 'mt-3 flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-2 transition-colors';
+                    counterP.className = 'text-sm text-blue-800';
+                    counterP.innerHTML = `<i class="fas fa-check-circle"></i> <span class="font-semibold">${checked.length}/${maxMembers} mahasiswa</span> dipilih`;
                     
                     // Enable all checkboxes
                     memberCheckboxes.forEach(cb => {
@@ -374,8 +355,6 @@
                 const memberCheckboxes = document.querySelectorAll('.member-checkbox');
                 const checked = Array.from(memberCheckboxes).filter(cb => cb.checked);
                 const currentLeaderId = {{ $group->leader_id ?? 'null' }};
-                
-                selectedCountSpan.textContent = checked.length;
                 
                 leaderSelect.innerHTML = '<option value="">-- Pilih Ketua --</option>';
                 

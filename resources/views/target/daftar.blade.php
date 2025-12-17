@@ -8,28 +8,32 @@
                     <h2 class="text-3xl font-black text-gray-900 tracking-tight">TARGET MINGGUAN</h2>
                     <p class="text-sm font-medium text-gray-500 mt-1">Monitoring dan kelola target mingguan kelompok.</p>
                 </div>
-                <!-- Action Buttons -->
+                <!-- Action Buttons - Hanya untuk admin dan dosen (koordinator hanya monitoring) -->
+                @if(in_array(auth()->user()->role, ['dosen', 'admin']))
                 <div class="flex flex-wrap gap-3">
+                    {{-- Export Laporan --}}
                     <a href="{{ route('targets.export-pdf', ['class_room_id' => request('class_room_id'), 'week_number' => request('week_number')]) }}" 
-                       class="inline-flex items-center px-5 py-2.5 bg-red-600 hover:bg-red-700 border-2 border-red-800 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">
-                        <i class="fa-solid fa-file-pdf mr-2 text-lg"></i>
-                        <span>Export PDF</span>
+                       class="inline-flex items-center px-5 py-2.5 bg-green-600 hover:bg-green-700 border-2 border-green-800 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">
+                        <i class="fa-solid fa-file-excel mr-2 text-lg"></i>
+                        <span>Export Laporan</span>
                     </a>
                     
-                    @if(in_array(auth()->user()->role, ['dosen', 'admin']))
+                    {{-- Sync Kriteria --}}
                     <a href="{{ route('sync-kriteria.index') }}" 
-                       class="inline-flex items-center px-5 py-2.5 bg-green-600 hover:bg-green-700 border-2 border-green-800 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">
+                       style="background-color: #800000 !important; border-color: #600000 !important;"
+                       class="inline-flex items-center px-5 py-2.5 bg-red-900 hover:bg-red-800 border-2 border-red-950 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">
                         <i class="fa-solid fa-arrows-rotate mr-2 text-lg"></i>
                         <span>Sync Kriteria</span>
                     </a>
                     
+                    {{-- Buat Target --}}
                     <a href="{{ route('targets.create') }}" 
                        class="inline-flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 border-2 border-indigo-800 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">
                         <i class="fa-solid fa-plus mr-2 text-lg"></i>
                         <span>Buat Target</span>
                     </a>
-                    @endif
                 </div>
+                @endif
             </div>
 
             <!-- Alert Messages -->
@@ -55,59 +59,69 @@
 
             <!-- 2. STATS CARDS -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-                <!-- Total -->
-                <div class="bg-white rounded-xl p-5 border-2 border-gray-200 shadow-sm hover:border-blue-900 transition-all group">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-[10px] font-black text-black uppercase tracking-widest">TOTAL TARGET</span>
-                        <div class="w-8 h-8 rounded-lg bg-gray-50 text-black border border-black flex items-center justify-center group-hover:bg-blue-900 group-hover:text-white group-hover:border-blue-900 transition-all">
-                            <i class="fa-solid fa-list-check text-sm"></i>
+                <!-- Total Target - Purple -->
+                <div class="bg-white rounded-xl p-5 shadow-sm" style="border: 1px solid #e2e8f0; border-bottom: 4px solid #7c3aed;">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">TOTAL TARGET</p>
+                            <p class="text-3xl font-bold text-gray-800">{{ $stats['total'] }}</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: #ede9fe;">
+                            <i class="fa-solid fa-list-check text-lg" style="color: #7c3aed;"></i>
                         </div>
                     </div>
-                    <p class="text-4xl font-black text-black">{{ $stats['total'] }}</p>
                 </div>
 
-                <!-- Submitted -->
-                <div class="bg-white rounded-xl p-5 border-2 border-gray-200 shadow-sm hover:border-blue-900 transition-all group">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-[10px] font-black text-black uppercase tracking-widest">SUDAH SUBMIT</span>
-                        <div class="w-8 h-8 rounded-lg bg-gray-50 text-black border border-black flex items-center justify-center group-hover:bg-blue-900 group-hover:text-white group-hover:border-blue-900 transition-all">
-                            <i class="fa-solid fa-paper-plane text-sm"></i>
+                <!-- Sudah Submit - Blue -->
+                <div class="bg-white rounded-xl p-5 shadow-sm" style="border: 1px solid #e2e8f0; border-bottom: 4px solid #2563eb;">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">SUDAH SUBMIT</p>
+                            <p class="text-3xl font-bold text-gray-800">{{ $stats['submitted'] }}</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: #dbeafe;">
+                            <i class="fa-solid fa-paper-plane text-lg" style="color: #2563eb;"></i>
                         </div>
                     </div>
-                    <p class="text-4xl font-black text-black">{{ $stats['submitted'] }}</p>
                 </div>
 
-                <!-- Approved -->
-                <div class="bg-white rounded-xl p-5 border-2 border-gray-200 shadow-sm hover:border-blue-900 transition-all group">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-[10px] font-black text-black uppercase tracking-widest">DISETUJUI</span>
-                        <div class="w-8 h-8 rounded-lg bg-gray-50 text-black border border-black flex items-center justify-center group-hover:bg-blue-900 group-hover:text-white group-hover:border-blue-900 transition-all">
-                            <i class="fa-solid fa-check-double text-sm"></i>
+                <!-- Disetujui - Green -->
+                <div class="bg-white rounded-xl p-5 shadow-sm" style="border: 1px solid #e2e8f0; border-bottom: 4px solid #10b981;">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">DISETUJUI</p>
+                            <p class="text-3xl font-bold text-gray-800">{{ $stats['approved'] }}</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: #d1fae5;">
+                            <i class="fa-solid fa-check-double text-lg" style="color: #10b981;"></i>
                         </div>
                     </div>
-                    <p class="text-4xl font-black text-black">{{ $stats['approved'] }}</p>
                 </div>
 
-                <!-- Revision -->
-                <div class="bg-white rounded-xl p-5 border-2 border-gray-200 shadow-sm hover:border-blue-900 transition-all group">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-[10px] font-black text-black uppercase tracking-widest">PERLU REVISI</span>
-                        <div class="w-8 h-8 rounded-lg bg-gray-50 text-black border border-black flex items-center justify-center group-hover:bg-blue-900 group-hover:text-white group-hover:border-blue-900 transition-all">
-                            <i class="fa-solid fa-rotate-right text-sm"></i>
+                <!-- Perlu Revisi - Orange -->
+                <div class="bg-white rounded-xl p-5 shadow-sm" style="border: 1px solid #e2e8f0; border-bottom: 4px solid #f97316;">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">PERLU REVISI</p>
+                            <p class="text-3xl font-bold text-gray-800">{{ $stats['revision'] }}</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: #ffedd5;">
+                            <i class="fa-solid fa-rotate-right text-lg" style="color: #f97316;"></i>
                         </div>
                     </div>
-                    <p class="text-4xl font-black text-black">{{ $stats['revision'] }}</p>
                 </div>
 
-                <!-- Pending -->
-                <div class="bg-white rounded-xl p-5 border-2 border-gray-200 shadow-sm hover:border-blue-900 transition-all group">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-[10px] font-black text-black uppercase tracking-widest">PENDING/TELAT</span>
-                        <div class="w-8 h-8 rounded-lg bg-gray-50 text-black border border-black flex items-center justify-center group-hover:bg-blue-900 group-hover:text-white group-hover:border-blue-900 transition-all">
-                            <i class="fa-solid fa-clock text-sm"></i>
+                <!-- Pending/Telat - Red -->
+                <div class="bg-white rounded-xl p-5 shadow-sm" style="border: 1px solid #e2e8f0; border-bottom: 4px solid #ef4444;">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">PENDING/TELAT</p>
+                            <p class="text-3xl font-bold text-gray-800">{{ $stats['pending'] + $stats['late'] }}</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: #fee2e2;">
+                            <i class="fa-solid fa-clock text-lg" style="color: #ef4444;"></i>
                         </div>
                     </div>
-                    <p class="text-4xl font-black text-black">{{ $stats['pending'] + $stats['late'] }}</p>
                 </div>
             </div>
 
@@ -241,9 +255,6 @@
                                     <p class="text-sm text-gray-500 flex items-center gap-2 mt-1">
                                         <i class="fa-regular fa-calendar"></i> 
                                         Deadline: {{ \Carbon\Carbon::parse($week['deadline'])->format('d M Y, H:i') }}
-                                        @if($isPastDeadline)
-                                            <span class="text-rose-600 font-bold text-xs bg-rose-100 px-2 py-0.5 rounded-full">EXPIRED</span>
-                                        @endif
                                     </p>
                                     <p class="text-xs text-gray-400 mt-1">
                                         <i class="fa-solid fa-building mr-1"></i> {{ $firstTarget->group->classRoom->name ?? '-' }}

@@ -37,50 +37,50 @@
             <!-- Statistics Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 <!-- Total Kelas -->
-                <div class="bg-white rounded-xl p-5 border-2 border-gray-200 shadow-sm hover:border-blue-900 transition-all group">
+                <div class="bg-white rounded-xl p-5 shadow-sm transition-all hover:shadow-md" style="border: 1px solid #e2e8f0; border-left: 4px solid #6366f1;">
                     <div class="flex items-center justify-between mb-3">
-                        <span class="text-[10px] font-black text-black uppercase tracking-widest">TOTAL KELAS</span>
-                        <div class="w-8 h-8 rounded-lg bg-gray-50 text-black border border-black flex items-center justify-center group-hover:bg-blue-900 group-hover:text-white group-hover:border-blue-900 transition-all">
-                            <i class="fa-solid fa-school text-sm"></i>
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wide">TOTAL KELAS</span>
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: #eef2ff;">
+                            <i class="fa-solid fa-school" style="color: #6366f1;"></i>
                         </div>
                     </div>
-                    <p class="text-4xl font-black text-black">{{ $stats['totalClassRooms'] }}</p>
+                    <p class="text-3xl font-black text-gray-800">{{ $stats['totalClassRooms'] }}</p>
                     <p class="text-xs text-gray-500 mt-1">Kelas aktif saat ini</p>
                 </div>
 
                 <!-- Total Kelompok -->
-                <div class="bg-white rounded-xl p-5 border-2 border-gray-200 shadow-sm hover:border-blue-900 transition-all group">
+                <div class="bg-white rounded-xl p-5 shadow-sm transition-all hover:shadow-md" style="border: 1px solid #e2e8f0; border-left: 4px solid #2563eb;">
                     <div class="flex items-center justify-between mb-3">
-                        <span class="text-[10px] font-black text-black uppercase tracking-widest">TOTAL KELOMPOK</span>
-                        <div class="w-8 h-8 rounded-lg bg-gray-50 text-black border border-black flex items-center justify-center group-hover:bg-blue-900 group-hover:text-white group-hover:border-blue-900 transition-all">
-                            <i class="fa-solid fa-users text-sm"></i>
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wide">TOTAL KELOMPOK</span>
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: #dbeafe;">
+                            <i class="fa-solid fa-users" style="color: #2563eb;"></i>
                         </div>
                     </div>
-                    <p class="text-4xl font-black text-black">{{ $stats['totalGroups'] }}</p>
+                    <p class="text-3xl font-black text-gray-800">{{ $stats['totalGroups'] }}</p>
                     <p class="text-xs text-gray-500 mt-1"><span class="font-bold">{{ $stats['activeGroups'] }}</span> kelompok aktif</p>
                 </div>
 
                 <!-- Total Progress -->
-                <div class="bg-white rounded-xl p-5 border-2 border-gray-200 shadow-sm hover:border-blue-900 transition-all group">
+                <div class="bg-white rounded-xl p-5 shadow-sm transition-all hover:shadow-md" style="border: 1px solid #e2e8f0; border-left: 4px solid #10b981;">
                     <div class="flex items-center justify-between mb-3">
-                        <span class="text-[10px] font-black text-black uppercase tracking-widest">TOTAL PROGRESS</span>
-                        <div class="w-8 h-8 rounded-lg bg-gray-50 text-black border border-black flex items-center justify-center group-hover:bg-blue-900 group-hover:text-white group-hover:border-blue-900 transition-all">
-                            <i class="fa-solid fa-tasks text-sm"></i>
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wide">TOTAL PROGRESS</span>
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: #d1fae5;">
+                            <i class="fa-solid fa-tasks" style="color: #10b981;"></i>
                         </div>
                     </div>
-                    <p class="text-4xl font-black text-black">{{ $stats['totalProgress'] }}</p>
+                    <p class="text-3xl font-black text-gray-800">{{ $stats['totalProgress'] }}</p>
                     <p class="text-xs text-gray-500 mt-1">Progress terdaftar</p>
                 </div>
 
                 <!-- Perlu Review -->
-                <div class="bg-white rounded-xl p-5 border-2 border-gray-200 shadow-sm hover:border-blue-900 transition-all group">
+                <div class="bg-white rounded-xl p-5 shadow-sm transition-all hover:shadow-md" style="border: 1px solid #e2e8f0; border-left: 4px solid #f59e0b;">
                     <div class="flex items-center justify-between mb-3">
-                        <span class="text-[10px] font-black text-black uppercase tracking-widest">PERLU REVIEW</span>
-                        <div class="w-8 h-8 rounded-lg bg-gray-50 text-black border border-black flex items-center justify-center group-hover:bg-blue-900 group-hover:text-white group-hover:border-blue-900 transition-all">
-                            <i class="fa-solid fa-clock text-sm"></i>
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wide">PERLU REVIEW</span>
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: #fef3c7;">
+                            <i class="fa-solid fa-clock" style="color: #f59e0b;"></i>
                         </div>
                     </div>
-                    <p class="text-4xl font-black text-black">{{ $stats['pendingReviews'] }}</p>
+                    <p class="text-3xl font-black text-gray-800">{{ $stats['pendingReviews'] }}</p>
                     <p class="text-xs text-gray-500 mt-1">Menunggu persetujuan</p>
                 </div>
             </div>
@@ -195,41 +195,44 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <!-- Kelola Kelompok -->
                     <a href="{{ route('groups.index') }}" 
-                       class="bg-white rounded-xl p-5 border-2 border-gray-200 shadow-sm hover:border-blue-900 hover:shadow-lg transition-all group flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-lg bg-gray-100 text-gray-700 border border-gray-300 flex items-center justify-center group-hover:bg-blue-900 group-hover:text-white group-hover:border-blue-900 transition-all">
-                            <i class="fa-solid fa-users text-lg"></i>
+                       class="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all group flex items-center gap-4"
+                       style="border: 1px solid #e2e8f0; border-left: 4px solid #10b981;">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: #d1fae5;">
+                            <i class="fa-solid fa-users text-lg" style="color: #10b981;"></i>
                         </div>
                         <div class="flex-1">
-                            <h4 class="font-bold text-gray-900 group-hover:text-blue-900">Kelola Kelompok</h4>
-                            <p class="text-xs text-gray-500">Tambah/hapus anggota</p>
+                            <h4 class="font-bold text-gray-900 group-hover:text-gray-700">Kelola Kelompok</h4>
+                            <p class="text-xs text-gray-500">Lihat anggota kelompok</p>
                         </div>
-                        <i class="fa-solid fa-chevron-right text-gray-400 group-hover:text-blue-900 transition-all"></i>
+                        <i class="fa-solid fa-chevron-right text-gray-400 group-hover:text-gray-600 transition-all"></i>
                     </a>
 
                     <!-- Lihat Ranking -->
                     <a href="{{ route('scores.index') }}" 
-                       class="bg-white rounded-xl p-5 border-2 border-gray-200 shadow-sm hover:border-blue-900 hover:shadow-lg transition-all group flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-lg bg-gray-100 text-gray-700 border border-gray-300 flex items-center justify-center group-hover:bg-blue-900 group-hover:text-white group-hover:border-blue-900 transition-all">
-                            <i class="fa-solid fa-ranking-star text-lg"></i>
+                       class="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all group flex items-center gap-4"
+                       style="border: 1px solid #e2e8f0; border-left: 4px solid #6366f1;">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: #eef2ff;">
+                            <i class="fa-solid fa-ranking-star text-lg" style="color: #6366f1;"></i>
                         </div>
                         <div class="flex-1">
-                            <h4 class="font-bold text-gray-900 group-hover:text-blue-900">Lihat Ranking</h4>
+                            <h4 class="font-bold text-gray-900 group-hover:text-gray-700">Lihat Ranking</h4>
                             <p class="text-xs text-gray-500">Monitor peringkat</p>
                         </div>
-                        <i class="fa-solid fa-chevron-right text-gray-400 group-hover:text-blue-900 transition-all"></i>
+                        <i class="fa-solid fa-chevron-right text-gray-400 group-hover:text-gray-600 transition-all"></i>
                     </a>
 
                     <!-- Lihat Kelas -->
                     <a href="{{ route('classrooms.index') }}" 
-                       class="bg-white rounded-xl p-5 border-2 border-gray-200 shadow-sm hover:border-blue-900 hover:shadow-lg transition-all group flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-lg bg-gray-100 text-gray-700 border border-gray-300 flex items-center justify-center group-hover:bg-blue-900 group-hover:text-white group-hover:border-blue-900 transition-all">
-                            <i class="fa-solid fa-school text-lg"></i>
+                       class="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all group flex items-center gap-4"
+                       style="border: 1px solid #e2e8f0; border-left: 4px solid #2563eb;">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: #dbeafe;">
+                            <i class="fa-solid fa-school text-lg" style="color: #2563eb;"></i>
                         </div>
                         <div class="flex-1">
-                            <h4 class="font-bold text-gray-900 group-hover:text-blue-900">Lihat Kelas</h4>
+                            <h4 class="font-bold text-gray-900 group-hover:text-gray-700">Lihat Kelas</h4>
                             <p class="text-xs text-gray-500">Monitor semua kelas</p>
                         </div>
-                        <i class="fa-solid fa-chevron-right text-gray-400 group-hover:text-blue-900 transition-all"></i>
+                        <i class="fa-solid fa-chevron-right text-gray-400 group-hover:text-gray-600 transition-all"></i>
                     </a>
                 </div>
             </div>

@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{RuangKelas, Kelompok, KemajuanMingguan, NilaiKelompok, TargetMingguan};
+use App\Models\{RuangKelas, Kelompok, KemajuanMingguan, NilaiKelompok, TargetMingguan, MataKuliah};
+use Illuminate\Support\Facades\DB;
 
 class DasborDosenController extends Controller
 {
@@ -10,19 +11,25 @@ class DasborDosenController extends Controller
     {
         $user = auth()->user();
 
-        // Filter data berdasarkan kelas yang diampu oleh dosen
-        $myClassRoomIds = RuangKelas::where('dosen_id', $user->id)->pluck('id');
+        // Cari mata kuliah yang diampu dosen ini
+        $mataKuliahIds = DB::table('dosen_mata_kuliah')
+            ->where('dosen_id', $user->id)
+            ->pluck('mata_kuliah_id');
+
+        // Untuk sementara, dosen bisa melihat semua kelas aktif
+        // karena relasi langsung dosen-kelas sudah dihapus
+        $myClassRoomIds = RuangKelas::where('is_active', true)->pluck('id');
         $myGroupIds = Kelompok::whereIn('class_room_id', $myClassRoomIds)->pluck('id');
 
-        // Get weekly targets data for this dosen's classes
+        // Get weekly targets data
         $totalTargets = TargetMingguan::whereIn('group_id', $myGroupIds)->count();
         $completedTargets = TargetMingguan::whereIn('group_id', $myGroupIds)
             ->where('is_completed', true)->count();
         $completionRate = $totalTargets > 0 ? ($completedTargets / $totalTargets) * 100 : 0;
 
-        // Stats untuk kelas yang diampu dosen
+        // Stats untuk dosen
         $stats = [
-            'totalClassRooms' => RuangKelas::where('dosen_id', $user->id)->count(),
+            'totalClassRooms' => RuangKelas::where('is_active', true)->count(),
             'totalGroups' => Kelompok::whereIn('class_room_id', $myClassRoomIds)->count(),
             'totalScores' => NilaiKelompok::whereIn('group_id', $myGroupIds)->count(),
             'pendingReviews' => TargetMingguan::whereIn('group_id', $myGroupIds)
@@ -31,17 +38,17 @@ class DasborDosenController extends Controller
             'completedTargets' => $completedTargets,
             'completionRate' => round($completionRate, 1),
             'pendingTargets' => $totalTargets - $completedTargets,
+            'mataKuliahDiampu' => $mataKuliahIds->count(),
         ];
 
-        // Classes assigned to this dosen
-        $classRooms = RuangKelas::with(['groups.members.user', 'academicPeriod', 'dosen'])
-            ->where('dosen_id', $user->id)
+        // All active classes (dosen dapat melihat semua kelas aktif)
+        $classRooms = RuangKelas::with(['groups.members.user', 'academicPeriod'])
             ->where('is_active', true)
             ->withCount('groups')
             ->latest()
             ->get();
 
-        // Progress yang perlu direview dari kelas dosen
+        // Progress yang perlu direview
         $progressToReview = TargetMingguan::with(['group.classRoom', 'completedByUser'])
             ->whereIn('group_id', $myGroupIds)
             ->whereIn('submission_status', ['submitted', 'revision'])
@@ -49,14 +56,14 @@ class DasborDosenController extends Controller
             ->take(10)
             ->get();
 
-        // Recent weekly targets from dosen's classes
+        // Recent weekly targets
         $recentTargets = TargetMingguan::with(['group.classRoom', 'creator'])
             ->whereIn('group_id', $myGroupIds)
             ->latest('created_at')
             ->take(10)
             ->get();
 
-        // Quick access: Get submission stats per class (akan kosong jika tidak ada class rooms)
+        // Quick access: Get submission stats per class
         $classStats = collect();
         
         if ($classRooms->isNotEmpty()) {
@@ -84,3 +91,4 @@ class DasborDosenController extends Controller
             compact('stats', 'classRooms', 'progressToReview', 'recentTargets', 'classStats'));
     }
 }
+

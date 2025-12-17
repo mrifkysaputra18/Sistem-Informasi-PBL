@@ -97,7 +97,7 @@
                 
                 <form method="GET" action="{{ route('classrooms.index') }}" class="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
                     <!-- Search Input -->
-                    <div class="md:col-span-4">
+                    <div class="md:col-span-5">
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Cari Kelas</label>
                         <div class="relative">
                             <i class="fa-solid fa-search absolute left-4 top-3.5 text-gray-400"></i>
@@ -107,21 +107,8 @@
                         </div>
                     </div>
 
-                    <!-- Semester Dropdown -->
-                    <div class="md:col-span-3">
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Semester</label>
-                        <select name="semester" class="w-full h-12 bg-gray-50 border-2 border-gray-200 rounded-lg text-sm font-semibold focus:border-indigo-600 focus:ring-0 cursor-pointer">
-                            <option value="">Semua Semester</option>
-                            @foreach($semesters as $semester)
-                                <option value="{{ $semester }}" {{ request('semester') == $semester ? 'selected' : '' }}>
-                                    Semester {{ $semester }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
                     <!-- Status Dropdown -->
-                    <div class="md:col-span-3">
+                    <div class="md:col-span-4">
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Status</label>
                         <select name="is_active" class="w-full h-12 bg-gray-50 border-2 border-gray-200 rounded-lg text-sm font-semibold focus:border-indigo-600 focus:ring-0 cursor-pointer">
                             <option value="">Semua Status</option>
@@ -131,11 +118,11 @@
                     </div>
 
                     <!-- Filter Buttons -->
-                    <div class="md:col-span-2 flex gap-2">
+                    <div class="md:col-span-3 flex gap-2">
                         <button type="submit" class="flex-1 h-12 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center">
                             Terapkan
                         </button>
-                        @if(request()->hasAny(['search', 'semester', 'is_active']))
+                        @if(request()->hasAny(['search', 'is_active']))
                             <a href="{{ route('classrooms.index') }}" class="h-12 w-12 bg-white border-2 border-gray-300 hover:border-red-500 hover:bg-red-50 text-gray-600 hover:text-red-600 rounded-lg transition-all flex items-center justify-center" title="Reset">
                                 <i class="fa-solid fa-rotate-left text-lg"></i>
                             </a>
@@ -148,21 +135,21 @@
             <div class="bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden">
                 <div class="overflow-x-auto">
                     @if($classRooms->count() > 0)
-                        <table class="min-w-full divide-y divide-gray-200">
+                        <table class="min-w-full border-collapse">
                             <thead class="bg-gray-900">
                                 <tr>
-                                    <th class="px-6 py-5 text-left text-xs font-bold text-white uppercase tracking-wider w-16">No</th>
-                                    <th class="px-6 py-5 text-left text-xs font-bold text-white uppercase tracking-wider">Informasi Kelas</th>
-                                    <th class="px-6 py-5 text-left text-xs font-bold text-white uppercase tracking-wider">Statistik</th>
-                                    <th class="px-6 py-5 text-left text-xs font-bold text-white uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-5 text-center text-xs font-bold text-white uppercase tracking-wider w-64 border-l border-gray-800">Aksi</th>
+                                    <th class="px-6 py-5 text-center text-xs font-bold text-white uppercase tracking-wider w-16 border-r border-gray-700">No</th>
+                                    <th class="px-6 py-5 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-gray-700">Informasi Kelas</th>
+                                    <th class="px-6 py-5 text-center text-xs font-bold text-white uppercase tracking-wider w-32 border-r border-gray-700">Statistik</th>
+                                    <th class="px-6 py-5 text-center text-xs font-bold text-white uppercase tracking-wider w-28 border-r border-gray-700">Status</th>
+                                    <th class="px-6 py-5 text-center text-xs font-bold text-white uppercase tracking-wider w-64">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                            <tbody class="bg-white">
                                 @foreach($classRooms as $index => $classRoom)
-                                <tr class="hover:bg-indigo-50 transition-colors group">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-bold">{{ ($classRooms->currentPage() - 1) * $classRooms->perPage() + $index + 1 }}</td>
-                                    <td class="px-6 py-4">
+                                <tr class="hover:bg-indigo-50 transition-colors group border-b border-gray-200">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-bold text-center border-r border-gray-200">{{ ($classRooms->currentPage() - 1) * $classRooms->perPage() + $index + 1 }}</td>
+                                    <td class="px-6 py-4 border-r border-gray-200">
                                         <div class="flex items-center">
                                             <div class="flex-shrink-0 h-12 w-12">
                                                 <div class="h-12 w-12 rounded-lg bg-indigo-600 flex items-center justify-center text-white text-lg font-bold shadow-lg">
@@ -175,25 +162,19 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center gap-4">
-                                            <div class="text-center">
-                                                <span class="block text-xs font-bold text-gray-400 uppercase">Siswa</span>
-                                                <span class="text-lg font-black text-gray-800">{{ $classRoom->students_count }}</span>
-                                            </div>
-                                            <div class="text-center">
-                                                <span class="block text-xs font-bold text-gray-400 uppercase">Kelompok</span>
-                                                <span class="text-lg font-black text-gray-800">{{ $classRoom->groups_count ?? '-' }}</span>
-                                            </div>
+                                    <td class="px-6 py-4 whitespace-nowrap border-r border-gray-200">
+                                        <div class="text-center">
+                                            <span class="block text-xs font-bold text-gray-400 uppercase">Siswa</span>
+                                            <span class="text-lg font-black text-gray-800">{{ $classRoom->students_count }}</span>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-6 py-4 whitespace-nowrap text-center border-r border-gray-200">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold border uppercase tracking-wide
                                             {{ $classRoom->is_active ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-800 border-gray-200' }}">
                                             {{ $classRoom->is_active ? 'Aktif' : 'Nonaktif' }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center border-l border-gray-100">
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
                                         <div class="flex items-center justify-center gap-2">
                                             <a href="{{ route('classrooms.show', $classRoom->id) }}" 
                                                class="inline-flex items-center justify-center px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white text-[10px] font-bold rounded shadow-sm hover:shadow transition-all uppercase tracking-wide">

@@ -107,6 +107,14 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ========================================
+    // DOSEN + ADMIN + KOORDINATOR ROUTES (View Target Info - READ ONLY)
+    // ========================================
+    Route::middleware(['role:dosen,admin,koordinator'])->group(function () {
+        // Info halaman target mingguan (koordinator bisa melihat tapi tidak bisa edit)
+        Route::get('targets/week/{weekNumber}/class/{classRoomId}/info', [TargetMingguanController::class, 'showWeekInfo'])->name('targets.week.info');
+    });
+
+    // ========================================
     // DOSEN + ADMIN ROUTES (Kelola Target Mingguan - CREATE/EDIT/DELETE)
     // ========================================
     Route::middleware(['role:dosen,admin'])->group(function () {
@@ -116,7 +124,6 @@ Route::middleware(['auth'])->group(function () {
         
         // Bulk operations per week (edit/delete/reopen/close semua target dalam 1 minggu)
         Route::get('targets/week/{weekNumber}/class/{classRoomId}/edit', [TargetMingguanController::class, 'editWeek'])->name('targets.week.edit');
-        Route::get('targets/week/{weekNumber}/class/{classRoomId}/info', [TargetMingguanController::class, 'showWeekInfo'])->name('targets.week.info');
         Route::put('targets/week/{weekNumber}/class/{classRoomId}', [TargetMingguanController::class, 'updateWeek'])->name('targets.week.update');
         Route::delete('targets/week/{weekNumber}/class/{classRoomId}', [TargetMingguanController::class, 'destroyWeek'])->name('targets.week.destroy');
         Route::post('targets/week/{weekNumber}/class/{classRoomId}/reopen', [TargetMingguanController::class, 'reopenWeek'])->name('targets.week.reopen');
@@ -247,10 +254,6 @@ Route::middleware(['auth'])->group(function () {
         // Group Scores (Input Nilai Kelompok)
         Route::get('scores/create', [NilaiKelompokController::class, 'create'])->name('scores.create');
         Route::post('scores', [NilaiKelompokController::class, 'store'])->name('scores.store');
-        
-        // Student Scores (Input Nilai Mahasiswa)
-        Route::get('student-scores/create', [NilaiMahasiswaController::class, 'create'])->name('student-scores.create');
-        Route::post('student-scores', [NilaiMahasiswaController::class, 'store'])->name('student-scores.store');
         
         // Weekly Target Reviews
         Route::get('target-reviews', [UlasanTargetMingguanController::class, 'index'])->name('target-reviews.index');

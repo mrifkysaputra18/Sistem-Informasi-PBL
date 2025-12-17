@@ -1,9 +1,10 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center">
-            <a href="{{ url('/targets/week/' . $target->week_number . '/class/' . $target->group->class_room_id . '/info') }}" 
-               class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
-                <i class="fas fa-arrow-left text-xl"></i>
+        <div class="flex items-center gap-4">
+            <a href="{{ route('targets.index') }}" 
+               class="flex items-center gap-2 px-4 py-2 text-white bg-white/20 hover:bg-white/30 rounded-lg transition-colors">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
             </a>
             <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Review & Nilai Target Mingguan') }}
@@ -255,9 +256,8 @@
                                 @enderror
                             </div>
 
-                            <!-- Action Buttons -->
                             <div class="flex items-center justify-between pt-6 border-t border-gray-200">
-                                <a href="{{ route('target-reviews.index') }}" 
+                                <a href="{{ route('targets.index') }}" 
                                    class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50">
                                     <i class="fas fa-times mr-2"></i>Batal
                                 </a>

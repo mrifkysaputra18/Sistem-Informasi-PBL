@@ -8,7 +8,8 @@
                     <h2 class="text-3xl font-black text-gray-900 tracking-tight">MATA KULIAH</h2>
                     <p class="text-sm font-medium text-gray-500 mt-1">Kelola mata kuliah dan rubrik penilaian.</p>
                 </div>
-                @if(auth()->user()->isAdmin() || auth()->user()->isKoordinator())
+                {{-- Tombol Tambah hanya untuk Admin (koordinator hanya monitoring) --}}
+                @if(auth()->user()->isAdmin())
                 <div class="flex flex-wrap gap-3">
                     <a href="{{ route('mata-kuliah.create') }}" 
                        class="inline-flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 border-2 border-indigo-800 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">
@@ -121,7 +122,8 @@
                                                class="inline-flex items-center justify-center px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold rounded shadow-sm hover:shadow transition-all uppercase tracking-wide">
                                                 <i class="fas fa-eye mr-1.5"></i> Lihat
                                             </a>
-                                            @if(auth()->user()->isAdmin() || auth()->user()->isKoordinator())
+                                            {{-- Tombol Edit dan Hapus hanya untuk Admin (koordinator hanya monitoring) --}}
+                                            @if(auth()->user()->isAdmin())
                                             <a href="{{ route('mata-kuliah.edit', $mk) }}" 
                                                class="inline-flex items-center justify-center px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold rounded shadow-sm hover:shadow transition-all uppercase tracking-wide">
                                                 <i class="fas fa-edit mr-1.5"></i> Edit

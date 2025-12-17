@@ -21,12 +21,8 @@ class SinkronKriteriaController extends Controller
     {
         $user = Auth::user();
         
-        // Get classrooms based on user role
-        if ($user->isAdmin()) {
-            $classRooms = RuangKelas::all();
-        } else {
-            $classRooms = RuangKelas::where('dosen_id', $user->id)->get();
-        }
+        // Dosen dan admin bisa akses semua kelas
+        $classRooms = RuangKelas::all();
 
         // Get group criteria (segment = group)
         $criteria = Kriteria::where('segment', 'group')->get();
@@ -105,12 +101,8 @@ class SinkronKriteriaController extends Controller
 
         $user = Auth::user();
         
-        // Get all classrooms for this user
-        if ($user->isAdmin()) {
-            $classRooms = RuangKelas::all();
-        } else {
-            $classRooms = RuangKelas::where('dosen_id', $user->id)->get();
-        }
+        // Dosen dan admin bisa sync semua kelas
+        $classRooms = RuangKelas::all();
 
         if ($classRooms->isEmpty()) {
             return back()->with('error', 'Tidak ada kelas yang dapat disinkronisasi.');
@@ -196,11 +188,6 @@ class SinkronKriteriaController extends Controller
     {
         $user = Auth::user();
         $syncLog = SyncKriteriaLog::findOrFail($syncLogId);
-
-        // Validate access
-        if ($user->isDosen() && $syncLog->classRoom->dosen_id !== $user->id) {
-            abort(403, 'Anda tidak memiliki akses untuk membatalkan sinkronisasi ini.');
-        }
 
         if (!$syncLog->canBeReverted()) {
             return back()->with('error', 'Sinkronisasi ini sudah dibatalkan sebelumnya.');

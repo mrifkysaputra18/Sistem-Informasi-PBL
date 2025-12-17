@@ -18,7 +18,7 @@
                     <a href="{{ route('users.import.form') }}" 
                        class="inline-flex items-center px-5 py-2.5 bg-green-600 hover:bg-green-700 border-2 border-green-800 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">
                         <i class="fa-solid fa-file-excel mr-2 text-lg"></i>
-                        <span>Import Excel</span>
+                        <span>Import User</span>
                     </a>
                     <a href="{{ route('admin.users.create') }}" 
                        class="inline-flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 border-2 border-indigo-800 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">

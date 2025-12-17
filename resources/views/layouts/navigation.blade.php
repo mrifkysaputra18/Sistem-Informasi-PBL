@@ -65,7 +65,7 @@
 
                     @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
                         <!-- Dosen, Koordinator, Admin - Kelola Target Mingguan -->
-                        <x-nav-link :href="route('targets.index')" :active="request()->routeIs('targets.*')">
+                        <x-nav-link :href="route('targets.index')" :active="request()->routeIs('targets.*') || request()->routeIs('target-reviews.*')">
                             {{ __('Target Mingguan') }}
                         </x-nav-link>
                         
@@ -79,7 +79,7 @@
                         <!-- Dropdown Menu Penilaian -->
                         <x-dropdown align="top" width="48">
                             <x-slot name="trigger">
-                                <button class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white hover:text-white/80 focus:outline-none transition ease-in-out duration-150 {{ request()->routeIs('scores.*') || request()->routeIs('student-scores.*') || request()->routeIs('target-reviews.*') ? 'border-b-2 border-white' : '' }}">
+                                <button class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white hover:text-white/80 focus:outline-none transition ease-in-out duration-150 {{ request()->routeIs('scores.*') || request()->routeIs('student-scores.*') ? 'border-b-2 border-white' : '' }}">
                                     <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
                                     </svg>
@@ -212,7 +212,7 @@
 
             @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
                 <!-- Dosen, Koordinator, Admin - Target Mingguan -->
-                <x-responsive-nav-link :href="route('targets.index')" :active="request()->routeIs('targets.*')">
+                <x-responsive-nav-link :href="route('targets.index')" :active="request()->routeIs('targets.*') || request()->routeIs('target-reviews.*')">
                     {{ __('Target Mingguan') }}
                 </x-responsive-nav-link>
                 

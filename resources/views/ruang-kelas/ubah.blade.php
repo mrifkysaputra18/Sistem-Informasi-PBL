@@ -44,24 +44,12 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="semester" class="block text-sm font-medium text-gray-700 mb-2">
-                                Semester <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" name="semester" id="semester" required
-                                value="{{ old('semester', $classRoom->semester) }}"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('semester') border-red-500 @enderror">
-                            @error('semester')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="mb-4">
                             <label for="academic_period_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                Periode Akademik
+                                Periode Akademik <span class="text-red-500">*</span>
                             </label>
-                            <select name="academic_period_id" id="academic_period_id"
+                            <select name="academic_period_id" id="academic_period_id" required
                                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('academic_period_id') border-red-500 @enderror">
-                                <option value="">-- Auto (berdasarkan semester) --</option>
+                                <option value="">-- Pilih Periode Akademik --</option>
                                 @foreach($academicPeriods as $period)
                                     <option value="{{ $period->id }}" 
                                         {{ old('academic_period_id', $classRoom->academic_period_id) == $period->id ? 'selected' : '' }}>
@@ -69,7 +57,7 @@
                                     </option>
                                 @endforeach
                             </select>
-                            <p class="mt-1 text-xs text-gray-500">Kosongkan untuk auto-link berdasarkan semester</p>
+                            <p class="mt-1 text-xs text-gray-500">Semester akan otomatis mengikuti periode akademik yang dipilih</p>
                             @error('academic_period_id')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -83,25 +71,6 @@
                                 value="{{ old('program_studi', $classRoom->program_studi) }}"
                                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('program_studi') border-red-500 @enderror">
                             @error('program_studi')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="dosen_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                Dosen Pengampu
-                            </label>
-                            <select name="dosen_id" id="dosen_id"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('dosen_id') border-red-500 @enderror">
-                                <option value="">-- Pilih Dosen (Optional) --</option>
-                                @foreach($dosens as $dosen)
-                                    <option value="{{ $dosen->id }}" {{ old('dosen_id', $classRoom->dosen_id) == $dosen->id ? 'selected' : '' }}>
-                                        {{ $dosen->name }} - {{ $dosen->email }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <p class="mt-1 text-xs text-gray-500">Assign dosen yang akan mengampu kelas ini</p>
-                            @error('dosen_id')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>

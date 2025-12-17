@@ -3,19 +3,20 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class RuangKelas extends Model
 {
+    use HasFactory;
+    
     protected $table = 'ruang_kelas';
 
     protected $fillable = [
         'name',
         'code',
         'academic_period_id',
-        'dosen_id',
-        'semester',
         'program_studi',
         'max_groups',
         'is_active'
@@ -32,14 +33,6 @@ class RuangKelas extends Model
     public function academicPeriod(): BelongsTo
     {
         return $this->belongsTo(PeriodeAkademik::class, 'academic_period_id');
-    }
-
-    /**
-     * Get the dosen assigned to this class
-     */
-    public function dosen(): BelongsTo
-    {
-        return $this->belongsTo(Pengguna::class, 'dosen_id');
     }
 
     /**

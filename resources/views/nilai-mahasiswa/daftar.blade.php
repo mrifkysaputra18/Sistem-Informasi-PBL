@@ -11,12 +11,6 @@
                 <!-- Action Buttons -->
                 @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
                 <div class="flex flex-wrap gap-3">
-                    <a href="{{ route('student-scores.create') }}" 
-                       class="inline-flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 border-2 border-indigo-800 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">
-                        <i class="fa-solid fa-plus mr-2 text-lg"></i>
-                        <span>Input Nilai</span>
-                    </a>
-                    
                     <form action="{{ route('student-scores.recalc') }}" method="POST" class="inline recalc-form">
                         @csrf
                         <button type="button" 

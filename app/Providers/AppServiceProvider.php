@@ -4,7 +4,10 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Gate;
 use App\Models\RuangKelas;
+use App\Models\TargetMingguan;
+use App\Policies\TargetMingguanPolicy;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,7 +28,8 @@ class AppServiceProvider extends ServiceProvider
         Route::bind('classroom', function ($value) {
             return RuangKelas::findOrFail($value);
         });
+
+        // Register Policy untuk TargetMingguan
+        Gate::policy(TargetMingguan::class, TargetMingguanPolicy::class);
     }
 }
-
-

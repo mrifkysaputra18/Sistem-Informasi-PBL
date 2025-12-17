@@ -22,9 +22,6 @@
                             <span class="mx-2">|</span>
                             <i class="fa-regular fa-calendar mr-1"></i> 
                             Deadline: {{ \Carbon\Carbon::parse($firstTarget->deadline)->format('d M Y, H:i') }}
-                            @if($isPastDeadline)
-                                <span class="ml-2 text-rose-600 font-bold text-xs bg-rose-100 px-2 py-0.5 rounded-full">EXPIRED</span>
-                            @endif
                         </p>
                     </div>
                 </div>
@@ -81,18 +78,20 @@
                     </a>
                     
                     @if($bisaDitutup)
-                    <form action="{{ route('targets.week.close', [$weekNumber, $classRoom->id]) }}" method="POST" class="inline">
+                    <form action="{{ route('targets.week.close', [$weekNumber, $classRoom->id]) }}" method="POST" class="inline" id="close-target-form">
                         @csrf
-                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-bold rounded-lg transition-colors shadow-sm">
+                        <button type="button" onclick="confirmAction('close-target-form', 'Tutup Target?', 'Apakah Anda yakin ingin menutup target minggu ini? Mahasiswa tidak akan bisa submit lagi.', 'warning', 'Ya, Tutup!')" 
+                                class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-bold rounded-lg transition-colors shadow-sm">
                             <i class="fa-solid fa-lock mr-2"></i> Tutup Target
                         </button>
                     </form>
                     @endif
                     
                     @if($bisaDibuka)
-                    <form action="{{ route('targets.week.reopen', [$weekNumber, $classRoom->id]) }}" method="POST" class="inline">
+                    <form action="{{ route('targets.week.reopen', [$weekNumber, $classRoom->id]) }}" method="POST" class="inline" id="reopen-target-form">
                         @csrf
-                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-lg transition-colors shadow-sm">
+                        <button type="button" onclick="confirmAction('reopen-target-form', 'Buka Target?', 'Apakah Anda yakin ingin membuka kembali target minggu ini? Mahasiswa bisa submit kembali.', 'question', 'Ya, Buka!')"
+                                class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-lg transition-colors shadow-sm">
                             <i class="fa-solid fa-unlock mr-2"></i> Buka Target
                         </button>
                     </form>
@@ -103,7 +102,7 @@
                         @method('DELETE')
                         <button type="button" class="delete-week-btn inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-lg transition-colors shadow-sm" 
                                 data-week="{{ $weekNumber }}">
-                            <i class="fa-solid fa-trash mr-2"></i> Hapus Minggu
+                            <i class="fa-solid fa-trash mr-2"></i> Hapus
                         </button>
                     </form>
                 </div>
@@ -228,6 +227,24 @@
                 });
             });
         });
+
+        // Reusable confirm function
+        function confirmAction(formId, title, text, icon, confirmText) {
+            Swal.fire({
+                title: title,
+                text: text,
+                icon: icon,
+                showCancelButton: true,
+                confirmButtonColor: icon === 'warning' ? '#d33' : '#10b981', // Red for warning, Green for others
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: confirmText,
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(formId).submit();
+                }
+            });
+        }
     </script>
     @endpush
 </x-app-layout>

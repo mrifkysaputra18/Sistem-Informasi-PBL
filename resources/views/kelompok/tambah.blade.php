@@ -73,24 +73,6 @@
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
-
-                                <!-- Mata Kuliah (Project) -->
-                                <div class="mb-4">
-                                    <label for="project_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Mata Kuliah (Opsional)
-                                    </label>
-                                    <select name="project_id" id="project_id"
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
-                                        <option value="">-- Tidak Ada Mata Kuliah --</option>
-                                        @if(isset($projects))
-                                            @foreach($projects as $project)
-                                            <option value="{{ $project->id }}" {{ old('project_id') == $project->id ? 'selected' : '' }}>
-                                                {{ $project->title }}
-                                            </option>
-                                            @endforeach
-                                        @endif
-                                    </select>
-                                </div>
                             </div>
 
                             <!-- RIGHT COLUMN: Members Selection -->
@@ -155,28 +137,6 @@
                             </button>
                         </div>
                     </form>
-                </div>
-            </div>
-
-            <!-- Info Box -->
-            <div class="mt-6 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg p-4">
-                <div class="flex items-start">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-lightbulb text-blue-500 text-2xl"></i>
-                    </div>
-                    <div class="ml-3">
-                        <h4 class="font-semibold text-blue-900 mb-2">💡 Panduan Membuat Kelompok</h4>
-                        <ol class="text-sm text-blue-800 space-y-2 list-decimal list-inside">
-                            <li><strong>Pilih Kelas</strong> - Mahasiswa akan otomatis dimuat sesuai kelas</li>
-                            <li><strong>Centang Mahasiswa</strong> - Klik kotak di samping nama untuk menambahkan anggota</li>
-                            <li><strong>Pilih Ketua</strong> - Pilih satu anggota sebagai ketua kelompok</li>
-                            <li><strong>Simpan</strong> - Klik "Buat Kelompok" untuk menyimpan</li>
-                        </ol>
-                        <div class="mt-3 p-2 bg-blue-100 rounded text-xs text-blue-900">
-                            <i class="fas fa-info-circle mr-1"></i>
-                            <strong>Tips:</strong> Anda juga bisa membuat kelompok kosong terlebih dahulu, lalu menambahkan anggota kemudian
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -275,14 +235,7 @@
                 loadStudents(this.value);
             });
         
-            // Function to attach checkbox event listeners
-            function attachCheckboxListeners() {
-                const memberCheckboxes = document.querySelectorAll('.member-checkbox');
-                memberCheckboxes.forEach(checkbox => {
-                    checkbox.addEventListener('change', updateLeaderOptions);
-                });
-                updateLeaderOptions();
-            }
+
             
             // Select All functionality
             selectAllBtn.addEventListener('click', function() {
@@ -327,13 +280,37 @@
             // Update leader dropdown when members are selected
             const leaderSelect = document.getElementById('leader_id');
             const leaderSection = document.getElementById('leaderSection');
-            const selectedCountSpan = document.getElementById('selectedCount');
+            const maxMembersInput = document.getElementById('max_members');
+            const counterContainer = document.querySelector('.bg-blue-50.border-blue-200, .bg-red-50.border-red-200') || document.querySelector('[class*="bg-blue-50"]');
 
             function updateLeaderOptions() {
                 const memberCheckboxes = document.querySelectorAll('.member-checkbox');
                 const checked = Array.from(memberCheckboxes).filter(cb => cb.checked);
-                selectedCountSpan.textContent = checked.length;
+                const maxMembers = parseInt(maxMembersInput.value) || 5;
                 
+                // Get the counter container element
+                const container = document.querySelector('.mt-3.flex.items-center');
+                const counterP = container ? container.querySelector('p') : null;
+                
+                if (counterP) {
+                    if (checked.length > maxMembers) {
+                        // Melebihi batas - tampilan merah
+                        container.classList.remove('bg-blue-50', 'border-blue-200');
+                        container.classList.add('bg-red-50', 'border-red-200');
+                        counterP.classList.remove('text-blue-800');
+                        counterP.classList.add('text-red-800');
+                        counterP.innerHTML = `<i class="fas fa-exclamation-circle"></i> <span class="font-semibold">${checked.length}/${maxMembers} mahasiswa</span> dipilih <span class="text-red-600 font-bold">(MELEBIHI BATAS!)</span>`;
+                    } else {
+                        // Normal - tampilan biru
+                        container.classList.remove('bg-red-50', 'border-red-200');
+                        container.classList.add('bg-blue-50', 'border-blue-200');
+                        counterP.classList.remove('text-red-800');
+                        counterP.classList.add('text-blue-800');
+                        counterP.innerHTML = `<i class="fas fa-check-circle"></i> <span class="font-semibold">${checked.length}/${maxMembers} mahasiswa</span> dipilih`;
+                    }
+                }
+                
+                // Update leader dropdown
                 leaderSelect.innerHTML = '<option value="">-- Pilih Ketua --</option>';
                 
                 if (checked.length > 0) {
@@ -350,6 +327,87 @@
                     leaderSection.style.display = 'none';
                 }
             }
+
+            // Validasi saat checkbox berubah - mencegah melebihi batas
+            function attachCheckboxListeners() {
+                const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+                memberCheckboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        const maxMembers = parseInt(maxMembersInput.value) || 5;
+                        const checked = Array.from(document.querySelectorAll('.member-checkbox')).filter(cb => cb.checked);
+                        
+                        // Jika melebihi batas, batalkan centang
+                        if (checked.length > maxMembers && this.checked) {
+                            this.checked = false;
+                            
+                            // SweetAlert dengan animasi
+                            Swal.fire({
+                                icon: 'warning',
+                                title: '<span class="text-red-600">Batas Anggota Tercapai!</span>',
+                                html: `
+                                    <div class="text-center">
+                                        <div class="text-6xl mb-4 animate-bounce">🚫</div>
+                                        <p class="text-gray-700 text-lg">Maksimal anggota kelompok adalah</p>
+                                        <p class="text-4xl font-black text-red-600 my-2">${maxMembers} orang</p>
+                                        <p class="text-gray-500 text-sm">Hapus anggota lain terlebih dahulu jika ingin menambahkan</p>
+                                    </div>
+                                `,
+                                confirmButtonText: '<i class="fas fa-check mr-2"></i>Mengerti',
+                                confirmButtonColor: '#4F46E5',
+                                showClass: {
+                                    popup: 'animate__animated animate__shakeX'
+                                },
+                                hideClass: {
+                                    popup: 'animate__animated animate__fadeOut'
+                                }
+                            });
+                            return;
+                        }
+                        
+                        updateLeaderOptions();
+                    });
+                });
+                updateLeaderOptions();
+            }
+
+            // Listen for max_members change
+            maxMembersInput.addEventListener('change', function() {
+                const maxMembers = parseInt(this.value) || 5;
+                const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+                const checked = Array.from(memberCheckboxes).filter(cb => cb.checked);
+                
+                // Jika jumlah terpilih melebihi batas baru
+                if (checked.length > maxMembers) {
+                    const excess = checked.length - maxMembers;
+                    
+                    // Uncheck dari yang terakhir dipilih
+                    for (let i = checked.length - 1; i >= maxMembers; i--) {
+                        checked[i].checked = false;
+                    }
+                    
+                    // Tampilkan notifikasi
+                    Swal.fire({
+                        icon: 'info',
+                        title: '<span class="text-blue-600">Batas Diubah</span>',
+                        html: `
+                            <div class="text-center">
+                                <div class="text-5xl mb-3">✂️</div>
+                                <p class="text-gray-700">${excess} mahasiswa telah dihapus otomatis</p>
+                                <p class="text-gray-500 text-sm mt-2">Batas baru: <strong>${maxMembers} orang</strong></p>
+                            </div>
+                        `,
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#4F46E5',
+                        timer: 3000,
+                        timerProgressBar: true,
+                        showClass: {
+                            popup: 'animate__animated animate__fadeIn'
+                        }
+                    });
+                }
+                
+                updateLeaderOptions(); // Re-validate display
+            });
 
             // Auto-load students if classroom is pre-selected
             const preSelectedClassroom = classRoomSelect.value;

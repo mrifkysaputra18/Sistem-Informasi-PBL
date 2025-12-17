@@ -15,15 +15,14 @@ class KemajuanDosenController extends Controller
         $this->googleDriveService = $googleDriveService;
     }
     /**
-     * Tampilkan semua kelas yang diampu dosen
+     * Tampilkan semua kelas (dosen bisa akses semua kelas)
      */
     public function index()
     {
         $user = auth()->user();
         
-        // Dosen hanya melihat kelas yang dia ampu
-        $classRooms = RuangKelas::with(['groups', 'academicPeriod', 'dosen'])
-            ->where('dosen_id', $user->id)
+        // Dosen bisa melihat semua kelas aktif
+        $classRooms = RuangKelas::with(['groups', 'academicPeriod'])
             ->where('is_active', true)
             ->withCount(['groups', 'groups as group_members_count' => function($query) {
                 $query->join('anggota_kelompok', 'kelompok.id', 'anggota_kelompok.group_id')
@@ -31,14 +30,12 @@ class KemajuanDosenController extends Controller
             }])
             ->get();
 
-        // Stats keseluruhan untuk dosen
+        // Stats keseluruhan
         $stats = [
             'totalClassRooms' => $classRooms->count(),
             'totalGroups' => $classRooms->sum->groups_count,
             'totalStudents' => $classRooms->sum->group_members_count,
-            'pendingReviews' => KemajuanMingguan::whereHas('group.classRoom', function($query) use ($user) {
-                $query->where('dosen_id', $user->id);
-            })->where('submission_status', 'submitted')->orWhereIn('submission_status', ['submitted', 'revision'])->count(),
+            'pendingReviews' => KemajuanMingguan::whereIn('submission_status', ['submitted', 'revision'])->count(),
         ];
 
         return view('dosen.kemajuan.daftar', compact('classRooms', 'stats'));
@@ -50,11 +47,6 @@ class KemajuanDosenController extends Controller
     public function showClass(RuangKelas $classRoom)
     {
         $user = auth()->user();
-        
-        // Validasi: dosen hanya bisa lihat kelas sendiri
-        if ($classRoom->dosen_id !== $user->id && !$user->isAdmin()) {
-            abort(403, 'Unauthorized access.');
-        }
 
         // Load groups dengan members dan progress
         $classRoom->load([
@@ -91,8 +83,8 @@ class KemajuanDosenController extends Controller
     {
         $user = auth()->user();
         
-        // Validasi akses
-        if (($classRoom->dosen_id !== $user->id || $group->class_room_id !== $classRoom->id) && !$user->isAdmin()) {
+        // Validasi: kelompok harus di kelas yang benar
+        if ($group->class_room_id !== $classRoom->id) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -155,8 +147,8 @@ class KemajuanDosenController extends Controller
     {
         $user = auth()->user();
         
-        // Validasi akses
-        if (($classRoom->dosen_id !== $user->id || $group->class_room_id !== $classRoom->id) && !$user->isAdmin()) {
+        // Validasi: kelompok harus di kelas yang benar
+        if ($group->class_room_id !== $classRoom->id) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -224,8 +216,8 @@ class KemajuanDosenController extends Controller
     {
         $user = auth()->user();
         
-        // Validasi akses
-        if (($classRoom->dosen_id !== $user->id || $group->class_room_id !== $classRoom->id) && !$user->isAdmin()) {
+        // Validasi: kelompok harus di kelas yang benar
+        if ($group->class_room_id !== $classRoom->id) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -243,8 +235,8 @@ class KemajuanDosenController extends Controller
     {
         $user = auth()->user();
         
-        // Validasi akses
-        if (($classRoom->dosen_id !== $user->id || $group->class_room_id !== $classRoom->id) && !$user->isAdmin()) {
+        // Validasi: kelompok harus di kelas yang benar
+        if ($group->class_room_id !== $classRoom->id) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -272,11 +264,6 @@ class KemajuanDosenController extends Controller
     public function getGroupsByClassroom(RuangKelas $classRoom)
     {
         $user = auth()->user();
-        
-        // Validasi akses
-        if ($classRoom->dosen_id !== $user->id && !$user->isAdmin()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
 
         $groups = $classRoom->groups()
             ->with(['members.user', 'leader'])

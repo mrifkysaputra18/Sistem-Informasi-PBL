@@ -18,7 +18,7 @@ class ImporController extends Controller
      */
     public function showGroupsImport()
     {
-        $classRooms = RuangKelas::with(['academicPeriod', 'dosen'])->orderBy('name')->get();
+        $classRooms = RuangKelas::with('academicPeriod')->orderBy('name')->get();
         return view('impor.kelompok', compact('classRooms'));
     }
 

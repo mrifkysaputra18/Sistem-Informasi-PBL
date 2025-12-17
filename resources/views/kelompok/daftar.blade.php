@@ -8,13 +8,14 @@
                     <h2 class="text-3xl font-black text-gray-900 tracking-tight">MANAJEMEN KELOMPOK</h2>
                     <p class="text-sm font-medium text-gray-500 mt-1">Kelola kelompok mahasiswa, ketua, dan anggota project.</p>
                 </div>
-                <!-- Action Buttons -->
+                <!-- Action Buttons - Hanya untuk admin dan dosen (koordinator hanya monitoring) -->
+                @if(in_array(auth()->user()->role, ['admin', 'dosen']))
                 <div class="flex flex-wrap gap-3">
                     @if(auth()->user()->isAdmin())
                     <a href="{{ route('import.groups') }}" 
                        class="inline-flex items-center px-5 py-2.5 bg-green-600 hover:bg-green-700 border-2 border-green-800 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">
                         <i class="fa-solid fa-file-excel mr-2 text-lg"></i>
-                        <span>Import Excel</span>
+                        <span>Import Kelompok</span>
                     </a>
                     @endif
                     <a href="{{ route('groups.create', ['classroom' => request('classroom')]) }}" 
@@ -23,6 +24,7 @@
                         <span>Tambah Kelompok</span>
                     </a>
                 </div>
+                @endif
             </div>
 
             <!-- Alert Messages -->
@@ -158,6 +160,8 @@
                                                 <i class="fas fa-eye mr-1.5"></i> Detail
                                             </a>
                                             
+                                            {{-- Edit dan Hapus hanya untuk admin dan dosen (koordinator hanya monitoring) --}}
+                                            @if(in_array(auth()->user()->role, ['admin', 'dosen']))
                                             <a href="{{ route('groups.edit', $group) }}" 
                                                class="inline-flex items-center justify-center px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold rounded shadow-sm hover:shadow transition-all uppercase tracking-wide">
                                                 <i class="fas fa-edit mr-1.5"></i> Edit
@@ -170,6 +174,7 @@
                                                     <i class="fas fa-trash mr-1.5"></i> Hapus
                                                 </button>
                                             </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

@@ -8,7 +8,7 @@
             <div class="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-xl backdrop-blur-sm border border-white/20">
                 <div class="text-right hidden sm:block">
                     <p class="text-[10px] text-blue-100 uppercase tracking-wider font-bold opacity-80">Semester Saat Ini</p>
-                    <p class="text-sm font-bold text-white">Ganjil 2024/2025</p>
+                    <p class="text-sm font-bold text-white">{{ $activePeriod->name ?? 'Tidak Ada Periode Aktif' }}</p>
                 </div>
                 <div class="h-8 w-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-white border border-white/10">
                     <i class="far fa-calendar-alt"></i>
@@ -29,7 +29,7 @@
                         <!-- Weekly Calendar Header -->
                         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                             <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-lg font-bold text-gray-900">Target Minggu Ini</h3>
+                                <h3 class="text-lg font-bold text-gray-900">Kalender</h3>
                                 <span class="text-sm text-gray-500">{{ now()->format('d F Y') }}</span>
                             </div>
                             
@@ -101,25 +101,13 @@
                                             
                                             {{-- Countdown Timer Badge --}}
                                             @if($target->deadline && $target->submission_status == 'pending' && !$target->isClosed())
-                                                @php
-                                                    $sudahLewat = now()->gt($target->deadline);
-                                                @endphp
-                                                @if(!$sudahLewat)
-                                                    <div class="mt-3">
-                                                        <span class="countdown-timer inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200" 
-                                                              data-deadline="{{ $target->deadline->timestamp }}">
-                                                            <i class="fas fa-hourglass-half text-blue-500"></i>
-                                                            <span class="timer-text font-mono">Memuat...</span>
-                                                        </span>
-                                                    </div>
-                                                @else
-                                                    <div class="mt-3">
-                                                        <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500 text-white text-xs font-bold border-2 border-red-600 shadow-lg animate-pulse">
-                                                            <i class="fas fa-skull-crossbones"></i>
-                                                            WAKTU HABIS
-                                                        </span>
-                                                    </div>
-                                                @endif
+                                                <div class="mt-3">
+                                                    <span class="countdown-timer inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200" 
+                                                          data-deadline="{{ $target->deadline->timestamp }}">
+                                                        <i class="fas fa-hourglass-half text-blue-500"></i>
+                                                        <span class="timer-text font-mono">Memuat...</span>
+                                                    </span>
+                                                </div>
                                             @endif
                                         </div>
                                     </div>
@@ -153,9 +141,6 @@
                                 <div class="flex">
                                     <button class="px-6 py-3 text-sm font-bold text-blue-600 border-b-2 border-blue-600">
                                         Informasi Kelompok
-                                    </button>
-                                    <button class="px-6 py-3 text-sm font-bold text-gray-500 hover:text-gray-700">
-                                        Progress Target
                                     </button>
                                 </div>
                             </div>
@@ -294,9 +279,23 @@
                     const iconElement = timer.querySelector('i');
                     
                     if (diff <= 0) {
-                        textElement.textContent = "WAKTU HABIS!";
-                        timer.className = 'countdown-timer countdown-urgent inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-600 text-white text-xs font-bold border-2 border-red-700 shadow-lg';
-                        if (iconElement) iconElement.className = 'fas fa-skull-crossbones text-white';
+                        // Hide the target card when expired
+                        const targetCard = timer.closest('a');
+                        if (targetCard) {
+                            targetCard.style.transition = 'opacity 0.5s ease-out';
+                            targetCard.style.opacity = '0';
+                            setTimeout(() => {
+                                targetCard.style.display = 'none';
+                                // Update counter badge
+                                const counterBadge = document.querySelector('.bg-red-500.text-white.text-xs.font-bold.px-2');
+                                if (counterBadge) {
+                                    const currentCount = parseInt(counterBadge.textContent) || 0;
+                                    if (currentCount > 0) {
+                                        counterBadge.textContent = currentCount - 1;
+                                    }
+                                }
+                            }, 500);
+                        }
                         return;
                     }
                     

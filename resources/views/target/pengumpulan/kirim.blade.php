@@ -89,7 +89,7 @@
                                 <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs">
                                     {{ $index + 1 }}
                                 </span>
-                                <span class="font-medium text-gray-900 {{ $todo->is_completed_by_student ? 'line-through' : '' }}" id="todo-title-{{ $todo->id }}">
+                                <span class="font-medium text-gray-900" id="todo-title-{{ $todo->id }}">
                                     {{ $todo->title }}
                                 </span>
                             </div>
@@ -317,11 +317,9 @@
             if (checkbox.checked) {
                 label.classList.remove('bg-gray-50', 'border-gray-200');
                 label.classList.add('bg-green-50', 'border-green-300');
-                if (titleSpan) titleSpan.classList.add('line-through');
             } else {
                 label.classList.remove('bg-green-50', 'border-green-300');
                 label.classList.add('bg-gray-50', 'border-gray-200');
-                if (titleSpan) titleSpan.classList.remove('line-through');
             }
             
             // Update progress counter
@@ -508,11 +506,9 @@
             if (checkbox.checked) {
                 label.classList.remove('bg-gray-50', 'border-gray-200');
                 label.classList.add('bg-green-50', 'border-green-300');
-                if (titleSpan) titleSpan.classList.add('line-through');
             } else {
                 label.classList.remove('bg-green-50', 'border-green-300');
                 label.classList.add('bg-gray-50', 'border-gray-200');
-                if (titleSpan) titleSpan.classList.remove('line-through');
             }
             
             // Update progress

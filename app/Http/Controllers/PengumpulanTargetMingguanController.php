@@ -32,15 +32,30 @@ class PengumpulanTargetMingguanController extends Controller
                 ->with('info', 'Anda belum tergabung dalam kelompok.');
         }
 
-        // Get all targets for this group, EXCLUDING closed ones for students
+        // Get all targets for this group, EXCLUDING closed ones AND expired pending targets
         $targets = TargetMingguan::where('group_id', $group->id)
             ->with(['creator', 'completedByUser'])
             ->orderBy('week_number')
             ->orderBy('deadline')
             ->get()
-            ->filter(fn($t) => !$t->isClosed()); // Sembunyikan target tertutup
+            ->filter(function($t) {
+                // Sembunyikan target yang sudah tertutup (is_locked = true)
+                if ($t->isClosed()) {
+                    return false;
+                }
+                // Sembunyikan target pending yang deadline-nya sudah lewat
+                if ($t->submission_status === 'pending' && $t->deadline && now()->gt($t->deadline)) {
+                    return false;
+                }
+                return true;
+            });
 
-        return view('target.pengumpulan.daftar', compact('group', 'targets'));
+        // Calculate progress percentage
+        $totalTargets = $targets->count();
+        $completedTargets = $targets->where('submission_status', 'approved')->count();
+        $progressPercentage = $totalTargets > 0 ? round(($completedTargets / $totalTargets) * 100) : 0;
+
+        return view('target.pengumpulan.daftar', compact('group', 'targets', 'progressPercentage'));
     }
 
     /**

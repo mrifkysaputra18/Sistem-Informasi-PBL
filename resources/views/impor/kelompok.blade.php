@@ -1,9 +1,10 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center">
-            <a href="{{ route('classrooms.index') }}" 
-               class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
-                <i class="fas fa-arrow-left text-xl"></i>
+        <div class="flex items-center gap-4">
+            <a href="{{ route('groups.index') }}" 
+               class="flex items-center gap-2 px-4 py-2 text-white bg-white/20 hover:bg-white/30 rounded-lg transition-colors">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
             </a>
             <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Import Kelompok dari Excel') }}
@@ -130,7 +131,7 @@
                                 <!-- Action Buttons: UX Laws Applied -->
                                 <div class="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">
                                     <!-- Secondary Action (Batal) - Low Visual Weight -->
-                                    <a href="{{ route('classrooms.index') }}" 
+                                    <a href="{{ route('groups.index') }}" 
                                        class="inline-flex items-center justify-center min-w-[120px] px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-lg border-2 border-gray-300 hover:border-gray-400 transition-all duration-200 shadow-sm hover:shadow">
                                         <i class="fas fa-times mr-2"></i>
                                         Batal

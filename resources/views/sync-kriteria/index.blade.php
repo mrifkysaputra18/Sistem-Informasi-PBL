@@ -1,8 +1,15 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-white leading-tight">
-            {{ __('Sinkronkan ke Kriteria') }}
-        </h2>
+        <div class="flex items-center gap-4">
+            <a href="{{ route('dashboard') }}" 
+               class="flex items-center gap-2 px-4 py-2 text-white bg-white/20 hover:bg-white/30 rounded-lg transition-colors">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </a>
+            <h2 class="font-semibold text-xl text-white leading-tight">
+                {{ __('Sinkronkan ke Kriteria') }}
+            </h2>
+        </div>
     </x-slot>
 
     <div class="py-12">
