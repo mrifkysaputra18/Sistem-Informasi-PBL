@@ -1,4 +1,5 @@
 <?php
+// Controller InputNilaiMahasiswa - Form input nilai massal dengan AJAX
 
 namespace App\Http\Controllers;
 
@@ -8,26 +9,17 @@ use Illuminate\Support\Facades\DB;
 
 class InputNilaiMahasiswaController extends Controller
 {
-    /**
-     * Tampilkan form input nilai mahasiswa
-     */
+    // Tampilkan form input nilai (GET /scores/student-input)
     public function index()
     {
-        // Get dosen yang login
         $dosen = auth()->user();
-        
-        // Get kelas yang diampu dosen (sesuaikan dengan relasi di sistem Anda)
         $classRooms = RuangKelas::all();
-        
-        // Get kriteria untuk mahasiswa
         $criteria = Kriteria::where('segment', 'student')->get();
         
         return view('nilai.input-mahasiswa', compact('dosen', 'classRooms', 'criteria'));
     }
     
-    /**
-     * Get mahasiswa berdasarkan kelas (AJAX)
-     */
+    // Ambil mahasiswa berdasarkan kelas (AJAX)
     public function getStudentsByClass(Request $request)
     {
         $classRoomId = $request->class_room_id;
@@ -38,15 +30,10 @@ class InputNilaiMahasiswaController extends Controller
             ->orderBy('nim')
             ->get();
         
-        return response()->json([
-            'success' => true,
-            'students' => $students
-        ]);
+        return response()->json(['success' => true, 'students' => $students]);
     }
     
-    /**
-     * Simpan nilai mahasiswa
-     */
+    // Simpan nilai massal (POST /scores/student-input/store)
     public function store(Request $request)
     {
         $request->validate([
@@ -56,79 +43,51 @@ class InputNilaiMahasiswaController extends Controller
             'scores.*.skor' => 'nullable|numeric|min:0|max:100',
         ]);
         
-        DB::beginTransaction();
+        DB::beginTransaction(); // Mulai transaksi
         try {
             foreach ($request->scores as $scoreData) {
-                // Skip jika skor tidak diisi (null)
                 if (!isset($scoreData['skor']) || $scoreData['skor'] === null || $scoreData['skor'] === '') {
                     continue;
                 }
                 
                 NilaiMahasiswa::updateOrCreate(
-                    [
-                        'user_id' => $scoreData['user_id'],
-                        'criterion_id' => $scoreData['criterion_id'],
-                    ],
-                    [
-                        'skor' => $scoreData['skor']
-                    ]
+                    ['user_id' => $scoreData['user_id'], 'criterion_id' => $scoreData['criterion_id']],
+                    ['skor' => $scoreData['skor']]
                 );
             }
             
-            DB::commit();
-            
-            return response()->json([
-                'success' => true,
-                'message' => 'Nilai berhasil disimpan!'
-            ]);
+            DB::commit(); // Simpan jika sukses
+            return response()->json(['success' => true, 'message' => 'Nilai disimpan!']);
             
         } catch (\Exception $e) {
-            DB::rollBack();
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal menyimpan nilai: ' . $e->getMessage()
-            ], 500);
+            DB::rollBack(); // Batalkan jika gagal
+            return response()->json(['success' => false, 'message' => 'Gagal: ' . $e->getMessage()], 500);
         }
     }
     
-    /**
-     * Hitung ranking mahasiswa berdasarkan nilai yang diinput
-     */
+    // Hitung ranking dengan metode SAW (POST /scores/student-input/calculate)
     public function calculate(Request $request)
     {
         try {
-            $request->validate([
-                'class_room_id' => 'required|exists:ruang_kelas,id',
-            ]);
-            
+            $request->validate(['class_room_id' => 'required|exists:ruang_kelas,id']);
             $classRoomId = $request->class_room_id;
             
-            // Get mahasiswa dari kelas tersebut
             $students = Pengguna::where('role', 'mahasiswa')
                 ->where('class_room_id', $classRoomId)
                 ->with(['studentScores.criterion'])
                 ->get();
             
             if ($students->isEmpty()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Tidak ada mahasiswa di kelas ini'
-                ], 404);
+                return response()->json(['success' => false, 'message' => 'Tidak ada mahasiswa'], 404);
             }
             
-            // Get kriteria
             $criteria = Kriteria::where('segment', 'student')->get();
             
             if ($criteria->isEmpty()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Kriteria mahasiswa belum diatur'
-                ], 404);
+                return response()->json(['success' => false, 'message' => 'Kriteria belum diatur'], 404);
             }
             
-            // Hitung ranking dengan metode SAW (Simple Additive Weighting)
-            // Step 1: Kumpulkan semua nilai per kriteria untuk normalisasi
+            // Kumpulkan nilai per kriteria
             $allScores = [];
             foreach ($criteria as $criterion) {
                 $allScores[$criterion->id] = [];
@@ -140,14 +99,14 @@ class InputNilaiMahasiswaController extends Controller
                 }
             }
             
-            // Step 2: Hitung nilai maksimum per kriteria untuk normalisasi SAW
+            // Hitung maks per kriteria untuk normalisasi
             $maxScores = [];
             foreach ($criteria as $criterion) {
-                $scores = array_filter($allScores[$criterion->id], function($v) { return $v > 0; });
+                $scores = array_filter($allScores[$criterion->id], fn($v) => $v > 0);
                 $maxScores[$criterion->id] = !empty($scores) ? max($scores) : 1;
             }
             
-            // Step 3: Hitung ranking untuk setiap mahasiswa
+            // Hitung ranking SAW
             $rankings = [];
             foreach ($students as $student) {
                 $totalScore = 0;
@@ -155,13 +114,11 @@ class InputNilaiMahasiswaController extends Controller
                 
                 foreach ($criteria as $criterion) {
                     $rawScore = $allScores[$criterion->id][$student->id];
-                    
-                    // Normalisasi SAW (benefit: nilai/max)
                     $maxScore = $maxScores[$criterion->id];
-                    $normalized = $maxScore > 0 ? $rawScore / $maxScore : 0;
-                    $weighted = $normalized * $criterion->bobot;
-                    
+                    $normalized = $maxScore > 0 ? $rawScore / $maxScore : 0; // Normalisasi
+                    $weighted = $normalized * $criterion->bobot; // Kalikan bobot
                     $totalScore += $weighted;
+                    
                     $criteriaScores[] = [
                         'criterion_name' => $criterion->nama,
                         'raw_score' => $rawScore,
@@ -179,65 +136,35 @@ class InputNilaiMahasiswaController extends Controller
                 ];
             }
             
-            // Sort by total_score descending
-            usort($rankings, function($a, $b) {
-                return $b['total_score'] <=> $a['total_score'];
-            });
+            // Urutkan menurun
+            usort($rankings, fn($a, $b) => $b['total_score'] <=> $a['total_score']);
             
-            // Add rank
+            // Tambah nomor peringkat
             foreach ($rankings as $index => &$ranking) {
                 $ranking['rank'] = $index + 1;
             }
             
-            return response()->json([
-                'success' => true,
-                'rankings' => $rankings
-            ]);
+            return response()->json(['success' => true, 'rankings' => $rankings]);
             
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validasi gagal: ' . implode(', ', $e->errors())
-            ], 422);
         } catch (\Exception $e) {
-            \Log::error('Error calculating student ranking: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
     
-    /**
-     * Hapus nilai mahasiswa
-     */
+    // Hapus semua nilai mahasiswa
     public function deleteStudentScores(Request $request)
     {
-        $request->validate([
-            'user_id' => 'required|exists:pengguna,id',
-        ]);
+        $request->validate(['user_id' => 'required|exists:pengguna,id']);
         
         try {
-            // Hapus semua nilai mahasiswa
             $deleted = NilaiMahasiswa::where('user_id', $request->user_id)->delete();
-            
-            return response()->json([
-                'success' => true,
-                'message' => 'Nilai mahasiswa berhasil dihapus!',
-                'deleted_count' => $deleted
-            ]);
-            
+            return response()->json(['success' => true, 'message' => 'Nilai dihapus!', 'deleted_count' => $deleted]);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal menghapus nilai: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
     
-    /**
-     * Hapus nilai mahasiswa untuk kriteria tertentu
-     */
+    // Hapus nilai untuk satu kriteria
     public function deleteScore(Request $request)
     {
         $request->validate([
@@ -246,22 +173,12 @@ class InputNilaiMahasiswaController extends Controller
         ]);
         
         try {
-            $deleted = NilaiMahasiswa::where('user_id', $request->user_id)
+            NilaiMahasiswa::where('user_id', $request->user_id)
                 ->where('criterion_id', $request->criterion_id)
                 ->delete();
-            
-            return response()->json([
-                'success' => true,
-                'message' => 'Nilai berhasil dihapus!'
-            ]);
-            
+            return response()->json(['success' => true, 'message' => 'Nilai dihapus!']);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal menghapus nilai: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 }
-
-

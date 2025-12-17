@@ -1,4 +1,5 @@
 <?php
+// Controller AHP - Menangani perhitungan bobot kriteria dengan metode AHP
 
 namespace App\Http\Controllers;
 
@@ -9,36 +10,34 @@ use Illuminate\Support\Facades\Validator;
 
 class AhpController extends Controller
 {
-    protected $ahpService;
+    protected $ahpService; // Layanan untuk logika AHP
 
+    // Masukkan AhpService via konstruktor
     public function __construct(AhpService $ahpService)
     {
         $this->ahpService = $ahpService;
     }
 
-    /**
-     * Show AHP comparison form
-     */
+    // Tampilkan halaman AHP dengan form perbandingan (GET /ahp)
     public function index(Request $request)
     {
-        $segment = $request->get('segment', 'group');
+        $segment = $request->get('segment', 'group'); // Bawaan segment = group
         
-        // Validate segment
         if (!in_array($segment, ['group', 'student'])) {
             $segment = 'group';
         }
 
         $criteria = Kriteria::where('segment', $segment)->orderBy('id')->get();
 
+        // Minimal 2 kriteria untuk AHP
         if ($criteria->count() < 2) {
             return redirect()->route('criteria.index')
-                ->with('error', 'Minimal 2 kriteria diperlukan untuk perhitungan AHP. Silakan tambahkan kriteria terlebih dahulu.');
+                ->with('error', 'Minimal 2 kriteria diperlukan untuk perhitungan AHP.');
         }
 
-        // Get existing comparisons
-        $comparisons = $this->ahpService->getComparisons($segment);
+        $comparisons = $this->ahpService->getComparisons($segment); // Ambil data perbandingan
 
-        // Check if all comparisons are filled
+        // Cek apakah semua perbandingan sudah diisi
         $allFilled = true;
         foreach ($comparisons as $comparison) {
             if ($comparison['value'] == 1) {
@@ -47,80 +46,60 @@ class AhpController extends Controller
             }
         }
 
+        // Hitung hasil jika semua sudah diisi
         $result = null;
         if ($allFilled) {
             try {
                 $result = $this->ahpService->calculateWeights($segment);
             } catch (\Exception $e) {
-                // Jika error, tetap tampilkan form
             }
         }
 
         return view('ahp.daftar', compact('segment', 'criteria', 'comparisons', 'result'));
     }
 
-    /**
-     * Save pairwise comparison
-     */
+    // Simpan perbandingan via AJAX (POST /ahp/save)
     public function saveComparison(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'segment' => 'required|in:group,student',
             'criterion_a_id' => 'required|exists:kriteria,id',
             'criterion_b_id' => 'required|exists:kriteria,id',
-            'value' => 'required|numeric|min:0.111|max:9', // 1/9 sampai 9
+            'value' => 'required|numeric|min:0.111|max:9', // Skala 1/9 - 9
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validasi gagal: ' . $validator->errors()->first()
-            ], 422);
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 422);
         }
 
         try {
             $this->ahpService->saveComparison(
-                $request->segment,
-                $request->criterion_a_id,
-                $request->criterion_b_id,
-                $request->value
+                $request->segment, $request->criterion_a_id, 
+                $request->criterion_b_id, $request->value
             );
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Perbandingan berhasil disimpan'
-            ]);
+            return response()->json(['success' => true, 'message' => 'Perbandingan disimpan']);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * Calculate AHP weights
-     */
+    // Hitung bobot AHP (GET /ahp/calculate)
     public function calculate(Request $request)
     {
         $segment = $request->get('segment', 'group');
 
         try {
             $result = $this->ahpService->calculateWeights($segment);
-
             return redirect()->route('ahp.index', ['segment' => $segment])
                 ->with('result', $result)
-                ->with('success', 'Perhitungan AHP berhasil! CR = ' . $result['cr'] . 
-                    ($result['is_consistent'] ? ' (Konsisten ✓)' : ' (Tidak Konsisten ✗)'));
+                ->with('success', 'Perhitungan AHP berhasil! CR = ' . $result['cr']);
         } catch (\Exception $e) {
             return redirect()->route('ahp.index', ['segment' => $segment])
-                ->with('error', 'Error: ' . $e->getMessage());
+                ->with('error', 'Kesalahan: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Apply calculated weights to criteria
-     */
+    // Terapkan bobot ke kriteria (POST /ahp/apply)
     public function applyWeights(Request $request)
     {
         $segment = $request->get('segment', 'group');
@@ -128,46 +107,39 @@ class AhpController extends Controller
         try {
             $result = $this->ahpService->calculateWeights($segment);
 
+            // CR harus <= 0.1 agar konsisten
             if (!$result['is_consistent']) {
                 return redirect()->route('ahp.index', ['segment' => $segment])
-                    ->with('error', 'Bobot tidak dapat diterapkan karena Consistency Ratio > 0.1. Silakan revisi perbandingan Anda.');
+                    ->with('error', 'CR > 0.1, tidak konsisten. Revisi perbandingan Anda.');
             }
 
             $this->ahpService->applyWeightsToCriteria($segment, $result['weights']);
-
             return redirect()->route('criteria.index')
-                ->with('ok', 'Bobot kriteria berhasil diperbarui menggunakan metode AHP!');
+                ->with('ok', 'Bobot kriteria diperbarui dengan AHP!');
         } catch (\Exception $e) {
             return redirect()->route('ahp.index', ['segment' => $segment])
-                ->with('error', 'Error: ' . $e->getMessage());
+                ->with('error', 'Kesalahan: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Reset all comparisons
-     */
+    // Reset semua perbandingan (POST /ahp/reset)
     public function reset(Request $request)
     {
         $segment = $request->get('segment', 'group');
 
         try {
             $this->ahpService->resetComparisons($segment);
-
             return redirect()->route('ahp.index', ['segment' => $segment])
-                ->with('success', 'Semua perbandingan berhasil direset!');
+                ->with('success', 'Perbandingan direset!');
         } catch (\Exception $e) {
             return redirect()->route('ahp.index', ['segment' => $segment])
-                ->with('error', 'Error: ' . $e->getMessage());
+                ->with('error', 'Kesalahan: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Show AHP tutorial/help
-     */
+    // Tampilkan halaman bantuan (GET /ahp/help)
     public function help()
     {
         return view('ahp.bantuan');
     }
 }
-
-

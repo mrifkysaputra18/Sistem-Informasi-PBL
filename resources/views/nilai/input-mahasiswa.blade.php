@@ -1,4 +1,6 @@
+{{-- View: Input Nilai Mahasiswa | Controller: InputNilaiMahasiswaController@index | Route: scores/student-input --}}
 <x-app-layout>
+    {{-- Header halaman --}}
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div>
@@ -13,7 +15,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
-            <!-- Info User -->
+            {{-- Info User yang Login (Admin/Dosen) --}}
             <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 mb-6 text-white">
                 <div class="flex items-center gap-4">
                     <div class="bg-white/20 p-4 rounded-full">
@@ -33,7 +35,7 @@
                 </div>
             </div>
 
-            <!-- Form Pilih Kelas -->
+            {{-- Form Pilih Kelas --}}
             <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
                 <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                     <i class="fas fa-filter text-blue-600"></i>
@@ -42,6 +44,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="class_room_id" class="block text-sm font-medium text-gray-700 mb-2">Kelas</label>
+                        {{-- Dropdown pilihan kelas dari $classRooms --}}
                         <select id="class_room_id" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                             <option value="">-- Pilih Kelas --</option>
                             @foreach($classRooms as $classRoom)
@@ -50,6 +53,7 @@
                         </select>
                     </div>
                     <div class="flex items-end">
+                        {{-- Tombol untuk memuat data mahasiswa via AJAX --}}
                         <button onclick="loadStudents()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2">
                             <i class="fas fa-search"></i>
                             Tampilkan Mahasiswa
@@ -58,13 +62,13 @@
                 </div>
             </div>
 
-            <!-- Loading State -->
+            {{-- Indikator Loading --}}
             <div id="loading-state" class="hidden bg-white rounded-xl shadow-lg p-12 text-center">
                 <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
                 <p class="text-gray-600">Memuat data mahasiswa...</p>
             </div>
 
-            <!-- Tabel Input Nilai -->
+            {{-- Tabel Input Nilai (ditampilkan setelah pilih kelas) --}}
             <div id="score-table-container" class="hidden">
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-6">
                     <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 px-6 py-4">
@@ -83,6 +87,7 @@
                                         <th class="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">No</th>
                                         <th class="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">NIM</th>
                                         <th class="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nama Mahasiswa</th>
+                                        {{-- Loop kolom kriteria dari $criteria --}}
                                         @foreach($criteria as $criterion)
                                             <th class="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider" title="{{ $criterion->nama }}">
                                                 {{ Str::limit($criterion->nama, 20) }}
@@ -93,13 +98,13 @@
                                         <th class="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Aksi</th>
                                     </tr>
                                 </thead>
+                                {{-- Body tabel diisi via JavaScript --}}
                                 <tbody class="bg-white divide-y divide-gray-200" id="score-table-body">
-                                    <!-- Data akan diisi via JavaScript -->
                                 </tbody>
                             </table>
                         </div>
 
-                        <!-- Tombol Aksi -->
+                        {{-- Tombol Simpan dan Hitung Ranking --}}
                         <div class="mt-6 flex gap-4">
                             <button onclick="saveScores()" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
                                 <i class="fas fa-save"></i>
@@ -114,7 +119,7 @@
                 </div>
             </div>
 
-            <!-- Hasil Perhitungan Ranking -->
+            {{-- Hasil Perhitungan Ranking (ditampilkan setelah hitung) --}}
             <div id="ranking-result" class="hidden">
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                     <div class="bg-gradient-to-r from-yellow-500 to-orange-600 px-6 py-4">
@@ -141,13 +146,13 @@
                                         <th class="px-4 py-3 text-center text-xs font-bold text-indigo-700 uppercase tracking-wider bg-indigo-50">Total Skor</th>
                                     </tr>
                                 </thead>
+                                {{-- Body tabel ranking diisi via JavaScript --}}
                                 <tbody class="bg-white divide-y divide-gray-200" id="ranking-table-body">
-                                    <!-- Data akan diisi via JavaScript -->
                                 </tbody>
                             </table>
                         </div>
 
-                        <!-- Keterangan -->
+                        {{-- Keterangan Metode SAW --}}
                         <div class="mt-6 bg-gray-50 rounded-lg p-4 border border-gray-200">
                             <h4 class="font-semibold text-gray-800 mb-2 flex items-center gap-2">
                                 <i class="fas fa-info-circle text-indigo-600"></i>
@@ -160,15 +165,15 @@
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <span class="text-indigo-600 font-bold">•</span>
-                                    <span><strong>Normalisasi</strong>: Nilai / 100</span>
+                                    <span><strong>Normalisasi</strong>: Nilai / Nilai Maksimum</span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <span class="text-indigo-600 font-bold">•</span>
-                                    <span><strong>Weighted Score</strong>: Nilai Ternormalisasi × Bobot Kriteria</span>
+                                    <span><strong>Skor Terbobot</strong>: Nilai Ternormalisasi × Bobot Kriteria</span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <span class="text-indigo-600 font-bold">•</span>
-                                    <span><strong>Total Skor</strong>: Jumlah dari semua weighted score</span>
+                                    <span><strong>Total Skor</strong>: Jumlah dari semua skor terbobot</span>
                                 </li>
                             </ul>
                         </div>
@@ -179,12 +184,13 @@
         </div>
     </div>
 
-    <!-- JavaScript -->
+    {{-- JavaScript untuk AJAX dan interaksi halaman --}}
     <script>
+        // Data kriteria dari controller (dikonversi ke JSON)
         const criteria = @json($criteria);
-        let studentsData = [];
+        let studentsData = []; // Menyimpan data mahasiswa yang dimuat
 
-        // Load mahasiswa berdasarkan kelas
+        // Fungsi: Muat mahasiswa berdasarkan kelas yang dipilih
         async function loadStudents() {
             const classRoomId = document.getElementById('class_room_id').value;
             
@@ -193,12 +199,13 @@
                 return;
             }
 
-            // Show loading
+            // Tampilkan loading, sembunyikan tabel
             document.getElementById('loading-state').classList.remove('hidden');
             document.getElementById('score-table-container').classList.add('hidden');
             document.getElementById('ranking-result').classList.add('hidden');
 
             try {
+                // Kirim permintaan AJAX ke controller
                 const response = await fetch(`/scores/students-by-class?class_room_id=${classRoomId}`, {
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -210,18 +217,18 @@
                 
                 if (data.success) {
                     studentsData = data.students;
-                    renderScoreTable();
+                    renderScoreTable(); // Render tabel dengan data
                     document.getElementById('score-table-container').classList.remove('hidden');
                 }
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Kesalahan:', error);
                 alert('Gagal memuat data mahasiswa');
             } finally {
                 document.getElementById('loading-state').classList.add('hidden');
             }
         }
 
-        // Render tabel input nilai
+        // Fungsi: Render tabel input nilai
         function renderScoreTable() {
             const tbody = document.getElementById('score-table-body');
             tbody.innerHTML = '';
@@ -230,6 +237,7 @@
                 const row = document.createElement('tr');
                 row.className = 'hover:bg-gray-50 transition-colors';
                 
+                // Kolom: No, NIM, Nama
                 let html = `
                     <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">${index + 1}</td>
                     <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${student.nim || '-'}</td>
@@ -248,10 +256,10 @@
                     </td>
                 `;
 
+                // Kolom input nilai untuk setiap kriteria
                 criteria.forEach(criterion => {
                     const existingScore = student.student_scores?.find(s => s.criterion_id === criterion.id);
                     const score = existingScore ? existingScore.skor : '';
-                    // Format score dengan koma untuk tampilan
                     const formattedScore = score ? String(score).replace('.', ',') : '';
                     
                     html += `
@@ -271,7 +279,7 @@
                     `;
                 });
 
-                // Tombol Hapus
+                // Kolom tombol hapus
                 html += `
                     <td class="px-4 py-4 whitespace-nowrap text-center">
                         <button 
@@ -291,7 +299,7 @@
             });
         }
 
-        // Hapus semua nilai mahasiswa
+        // Fungsi: Hapus semua nilai mahasiswa
         async function deleteStudentScores(studentId, studentName) {
             if (!confirm(`Apakah Anda yakin ingin menghapus SEMUA nilai untuk mahasiswa ${studentName}?\n\nNilai yang dihapus tidak dapat dikembalikan!`)) {
                 return;
@@ -312,32 +320,30 @@
 
                 if (data.success) {
                     showNotification('Berhasil!', data.message, 'success');
-                    // Reload data mahasiswa
-                    loadStudents();
-                    // Hide ranking result
+                    loadStudents(); // Muat ulang data
                     document.getElementById('ranking-result').classList.add('hidden');
                 } else {
                     showNotification('Gagal!', data.message, 'error');
                 }
             } catch (error) {
-                console.error('Error:', error);
-                showNotification('Error!', 'Gagal menghapus nilai', 'error');
+                console.error('Kesalahan:', error);
+                showNotification('Kesalahan!', 'Gagal menghapus nilai', 'error');
             }
         }
 
-        // Parse angka Indonesia (koma sebagai desimal)
+        // Fungsi: Konversi angka format Indonesia (koma) ke float
         function parseIndonesianNumber(value) {
             if (!value) return null;
-            // Ubah koma menjadi titik untuk parsing
             const normalized = String(value).replace(',', '.');
             return parseFloat(normalized);
         }
 
-        // Simpan nilai
+        // Fungsi: Simpan nilai ke database via AJAX
         async function saveScores() {
             const inputs = document.querySelectorAll('.score-input');
             const scores = [];
 
+            // Kumpulkan semua nilai yang valid
             inputs.forEach(input => {
                 const value = parseIndonesianNumber(input.value);
                 if (!isNaN(value) && value >= 0 && value <= 100) {
@@ -375,13 +381,13 @@
                     return false;
                 }
             } catch (error) {
-                console.error('Error:', error);
-                showNotification('Error!', 'Gagal menyimpan nilai: ' + error.message, 'error');
+                console.error('Kesalahan:', error);
+                showNotification('Kesalahan!', 'Gagal menyimpan nilai: ' + error.message, 'error');
                 return false;
             }
         }
 
-        // Hitung ranking (menyimpan nilai terlebih dahulu, lalu menghitung)
+        // Fungsi: Hitung ranking dengan metode SAW
         async function calculateRanking() {
             const classRoomId = document.getElementById('class_room_id').value;
 
@@ -405,15 +411,13 @@
             }
 
             try {
-                // Step 1: Simpan nilai terlebih dahulu
+                // Langkah 1: Simpan nilai dulu
                 showNotification('Menyimpan...', 'Menyimpan nilai mahasiswa...', 'info');
                 const saved = await saveScores();
                 
-                if (!saved) {
-                    return; // Jika gagal simpan, stop
-                }
+                if (!saved) return;
 
-                // Step 2: Hitung ranking setelah nilai tersimpan
+                // Langkah 2: Hitung ranking
                 const response = await fetch('/scores/student-input/calculate', {
                     method: 'POST',
                     headers: {
@@ -425,7 +429,7 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`Kesalahan HTTP! status: ${response.status}`);
                 }
 
                 const data = await response.json();
@@ -433,21 +437,18 @@
                 if (data.success) {
                     renderRankingTable(data.rankings);
                     document.getElementById('ranking-result').classList.remove('hidden');
-                    
-                    // Scroll to result
                     document.getElementById('ranking-result').scrollIntoView({ behavior: 'smooth' });
-                    
                     showNotification('Berhasil!', 'Ranking berhasil dihitung', 'success');
                 } else {
                     showNotification('Gagal!', data.message || 'Gagal menghitung ranking', 'error');
                 }
             } catch (error) {
-                console.error('Error:', error);
-                showNotification('Error!', 'Gagal menghitung ranking: ' + error.message, 'error');
+                console.error('Kesalahan:', error);
+                showNotification('Kesalahan!', 'Gagal menghitung ranking: ' + error.message, 'error');
             }
         }
 
-        // Render tabel ranking
+        // Fungsi: Render tabel hasil ranking
         function renderRankingTable(rankings) {
             const tbody = document.getElementById('ranking-table-body');
             tbody.innerHTML = '';
@@ -456,6 +457,7 @@
                 const row = document.createElement('tr');
                 row.className = `hover:bg-gray-50 transition-colors ${index < 3 ? 'bg-yellow-50' : ''}`;
                 
+                // Ikon medali untuk peringkat 1-3
                 let medalIcon = '';
                 if (index === 0) medalIcon = '🥇';
                 else if (index === 1) medalIcon = '🥈';
@@ -472,6 +474,7 @@
                     <td class="px-4 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${ranking.student_name}</td>
                 `;
 
+                // Nilai per kriteria
                 ranking.criteria_scores.forEach(cs => {
                     html += `
                         <td class="px-4 py-4 whitespace-nowrap text-center">
@@ -481,6 +484,7 @@
                     `;
                 });
 
+                // Total skor
                 html += `
                     <td class="px-4 py-4 whitespace-nowrap text-center bg-indigo-50">
                         <div class="text-lg font-black text-indigo-700">${formatNumber(ranking.total_score, 4)}</div>
@@ -493,14 +497,13 @@
             });
         }
 
-        // Format angka dengan koma sebagai pemisah desimal
+        // Fungsi: Format angka dengan koma sebagai pemisah desimal
         function formatNumber(number, decimals = 2) {
             return number.toFixed(decimals).replace('.', ',');
         }
 
-        // Show notification
+        // Fungsi: Tampilkan notifikasi
         function showNotification(title, message, type = 'info') {
-            // Tentukan warna dan icon berdasarkan tipe
             let bgColor, icon;
             
             switch(type) {
@@ -525,9 +528,7 @@
             notification.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 z-50 animate-slide-in max-w-md`;
             notification.innerHTML = `
                 <div class="flex-shrink-0">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        ${icon}
-                    </svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">${icon}</svg>
                 </div>
                 <div class="flex-1">
                     <div class="font-bold text-lg">${title}</div>
@@ -548,22 +549,14 @@
             }, 4000);
         }
 
-        // CSS Animation
+        // Animasi CSS untuk notifikasi
         const style = document.createElement('style');
         style.textContent = `
             @keyframes slide-in {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
             }
-            .animate-slide-in {
-                animation: slide-in 0.3s ease-out;
-            }
+            .animate-slide-in { animation: slide-in 0.3s ease-out; }
         `;
         document.head.appendChild(style);
     </script>
