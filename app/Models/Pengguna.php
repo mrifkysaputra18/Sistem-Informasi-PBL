@@ -203,4 +203,38 @@ class Pengguna extends Authenticatable
         $initial = strtoupper(substr($this->name, 0, 1));
         return "https://ui-avatars.com/api/?name=" . urlencode($this->name) . "&color=0056b3&background=e6f0ff&size=200&bold=true";
     }
+
+    /**
+     * Get kelas dimana user adalah Dosen PBL
+     */
+    public function kelasPbl()
+    {
+        return $this->belongsToMany(RuangKelas::class, 'dosen_pbl_kelas', 'dosen_id', 'class_room_id')
+            ->withPivot('periode', 'is_active')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get kelas dimana user adalah Dosen PBL yang aktif
+     */
+    public function kelasPblAktif()
+    {
+        return $this->kelasPbl()->wherePivot('is_active', true);
+    }
+
+    /**
+     * Cek apakah user adalah Dosen PBL di kelas tertentu
+     */
+    public function isDosenPblDi(int $classRoomId): bool
+    {
+        return $this->kelasPblAktif()->where('ruang_kelas.id', $classRoomId)->exists();
+    }
+
+    /**
+     * Cek apakah user adalah Dosen PBL di minimal 1 kelas
+     */
+    public function isDosenPbl(): bool
+    {
+        return $this->isDosen() && $this->kelasPblAktif()->exists();
+    }
 }

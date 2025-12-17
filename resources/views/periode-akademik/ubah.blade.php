@@ -104,7 +104,7 @@
                         </div>
 
                         <!-- Status Aktif -->
-                        <div class="mb-6">
+                        <div class="mb-4">
                             <label class="flex items-center">
                                 <input type="checkbox" 
                                        name="is_active" 
@@ -114,6 +114,50 @@
                                 <span class="ml-2 text-sm text-gray-700">Set sebagai periode aktif</span>
                             </label>
                         </div>
+
+                        <!-- Status Ujian -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Status Periode Ujian
+                            </label>
+                            <div class="flex flex-wrap gap-3">
+                                <label class="flex items-center px-4 py-2 border rounded-lg cursor-pointer transition-all
+                                    {{ old('current_exam_period', $academicPeriod->current_exam_period ?? 'none') === 'none' ? 'bg-gray-100 border-gray-400 ring-2 ring-gray-400' : 'bg-white border-gray-200 hover:bg-gray-50' }}">
+                                    <input type="radio" 
+                                           name="current_exam_period" 
+                                           value="none"
+                                           {{ old('current_exam_period', $academicPeriod->current_exam_period ?? 'none') === 'none' ? 'checked' : '' }}
+                                           class="sr-only">
+                                    <i class="fas fa-pause-circle text-gray-500 mr-2"></i>
+                                    <span class="text-sm font-medium text-gray-700">Tidak Ada Ujian</span>
+                                </label>
+                                <label class="flex items-center px-4 py-2 border rounded-lg cursor-pointer transition-all
+                                    {{ old('current_exam_period', $academicPeriod->current_exam_period) === 'uts' ? 'bg-blue-100 border-blue-400 ring-2 ring-blue-400' : 'bg-white border-gray-200 hover:bg-blue-50' }}">
+                                    <input type="radio" 
+                                           name="current_exam_period" 
+                                           value="uts"
+                                           {{ old('current_exam_period', $academicPeriod->current_exam_period) === 'uts' ? 'checked' : '' }}
+                                           class="sr-only">
+                                    <i class="fas fa-file-alt text-blue-500 mr-2"></i>
+                                    <span class="text-sm font-medium text-blue-700">Periode UTS</span>
+                                </label>
+                                <label class="flex items-center px-4 py-2 border rounded-lg cursor-pointer transition-all
+                                    {{ old('current_exam_period', $academicPeriod->current_exam_period) === 'uas' ? 'bg-orange-100 border-orange-400 ring-2 ring-orange-400' : 'bg-white border-gray-200 hover:bg-orange-50' }}">
+                                    <input type="radio" 
+                                           name="current_exam_period" 
+                                           value="uas"
+                                           {{ old('current_exam_period', $academicPeriod->current_exam_period) === 'uas' ? 'checked' : '' }}
+                                           class="sr-only">
+                                    <i class="fas fa-file-signature text-orange-500 mr-2"></i>
+                                    <span class="text-sm font-medium text-orange-700">Periode UAS</span>
+                                </label>
+                            </div>
+                            <p class="mt-2 text-xs text-gray-500">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Status ini menentukan dosen mana yang bisa input nilai rubrik.
+                            </p>
+                        </div>
+
 
                         <!-- Buttons -->
                         <div class="flex items-center justify-end gap-3 pt-4 border-t">

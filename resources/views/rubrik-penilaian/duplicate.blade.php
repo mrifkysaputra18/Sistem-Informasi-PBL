@@ -47,30 +47,17 @@
                                    required>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Periode Akademik -->
-                            <div>
-                                <label for="periode_akademik_id" class="block text-sm font-bold text-gray-700 mb-2">Periode Akademik <span class="text-red-500">*</span></label>
-                                <select name="periode_akademik_id" id="periode_akademik_id" 
-                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium" required>
-                                    @foreach($periodeAkademiks as $periode)
-                                        <option value="{{ $periode->id }}" {{ old('periode_akademik_id') == $periode->id ? 'selected' : '' }}>
-                                            {{ $periode->name }} ({{ $periode->academic_year }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <!-- Semester -->
-                            <div>
-                                <label for="semester" class="block text-sm font-bold text-gray-700 mb-2">Semester <span class="text-red-500">*</span></label>
-                                <select name="semester" id="semester" 
-                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium" required>
-                                    @for($i = 1; $i <= 8; $i++)
-                                        <option value="{{ $i }}" {{ old('semester', $rubrikPenilaian->semester) == $i ? 'selected' : '' }}>Semester {{ $i }}</option>
-                                    @endfor
-                                </select>
-                            </div>
+                        <!-- Periode Akademik -->
+                        <div>
+                            <label for="periode_akademik_id" class="block text-sm font-bold text-gray-700 mb-2">Periode Akademik <span class="text-red-500">*</span></label>
+                            <select name="periode_akademik_id" id="periode_akademik_id" 
+                                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium" required>
+                                @foreach($periodeAkademiks as $periode)
+                                    <option value="{{ $periode->id }}" {{ old('periode_akademik_id') == $periode->id ? 'selected' : '' }}>
+                                        {{ $periode->name }} ({{ $periode->academic_year }})
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
 

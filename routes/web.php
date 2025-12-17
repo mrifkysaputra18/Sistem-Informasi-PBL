@@ -278,9 +278,9 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ========================================
-    // MATA KULIAH & RUBRIK PENILAIAN
+    // MATA KULIAH & RUBRIK PENILAIAN (Dosen & Admin only)
     // ========================================
-    Route::middleware(['role:dosen,koordinator,admin'])->group(function () {
+    Route::middleware(['role:dosen,admin'])->group(function () {
         // Mata Kuliah
         Route::resource('mata-kuliah', MataKuliahController::class)->parameters(['mata-kuliah' => 'mataKuliah']);
         
@@ -311,6 +311,36 @@ Route::middleware(['auth'])->group(function () {
         Route::post('ahp/apply', [\App\Http\Controllers\AhpController::class, 'applyWeights'])->name('ahp.apply');
         Route::post('ahp/reset', [\App\Http\Controllers\AhpController::class, 'reset'])->name('ahp.reset');
         Route::get('ahp/help', [\App\Http\Controllers\AhpController::class, 'help'])->name('ahp.help');
+
+        // Kelas - Mata Kuliah (Admin only)
+        Route::get('penugasan-dosen-matkul', [\App\Http\Controllers\KelasMataKuliahController::class, 'indexAll'])->name('penugasan-dosen-matkul.index');
+        Route::get('classrooms/{classRoom}/mata-kuliah', [\App\Http\Controllers\KelasMataKuliahController::class, 'index'])->name('classrooms.mata-kuliah.index');
+        Route::post('classrooms/{classRoom}/mata-kuliah', [\App\Http\Controllers\KelasMataKuliahController::class, 'store'])->name('classrooms.mata-kuliah.store');
+        Route::post('kelas-mata-kuliah/{kelasMataKuliah}/select-rubrik', [\App\Http\Controllers\KelasMataKuliahController::class, 'selectRubrik'])->name('kelas-mata-kuliah.select-rubrik');
+        Route::patch('kelas-mata-kuliah/{kelasMataKuliah}/update-dosen', [\App\Http\Controllers\KelasMataKuliahController::class, 'updateDosen'])->name('kelas-mata-kuliah.update-dosen');
+        Route::delete('kelas-mata-kuliah/{kelasMataKuliah}', [\App\Http\Controllers\KelasMataKuliahController::class, 'destroy'])->name('kelas-mata-kuliah.destroy');
+        Route::get('kelas-mata-kuliah/{kelasMataKuliah}/rubriks', [\App\Http\Controllers\KelasMataKuliahController::class, 'getRubriks'])->name('kelas-mata-kuliah.rubriks');
+
+        // Dosen PBL per Kelas (Admin only) - legacy, akan dihapus
+        Route::get('classrooms/{classRoom}/dosen-pbl', [\App\Http\Controllers\DosenPblController::class, 'index'])->name('classrooms.dosen-pbl.index');
+        Route::post('classrooms/{classRoom}/dosen-pbl', [\App\Http\Controllers\DosenPblController::class, 'store'])->name('classrooms.dosen-pbl.store');
+        Route::delete('dosen-pbl/{dosenPblKelas}', [\App\Http\Controllers\DosenPblController::class, 'destroy'])->name('dosen-pbl.destroy');
+        Route::patch('dosen-pbl/{dosenPblKelas}/toggle', [\App\Http\Controllers\DosenPblController::class, 'toggleStatus'])->name('dosen-pbl.toggle');
+
+        // Penugasan Dosen PBL (Admin only)
+        Route::get('penugasan-dosen', [\App\Http\Controllers\PenugasanDosenController::class, 'index'])->name('penugasan-dosen.index');
+        Route::post('penugasan-dosen/pbl', [\App\Http\Controllers\PenugasanDosenController::class, 'storePbl'])->name('penugasan-dosen.pbl.store');
+        Route::delete('penugasan-dosen/pbl/{dosenPblKelas}', [\App\Http\Controllers\PenugasanDosenController::class, 'destroyPbl'])->name('penugasan-dosen.pbl.destroy');
+    });
+
+    // ========================================
+    // DOSEN + ADMIN - NILAI RUBRIK
+    // ========================================
+    Route::middleware(['role:dosen,admin'])->group(function () {
+        Route::get('nilai-rubrik', [\App\Http\Controllers\NilaiRubrikController::class, 'index'])->name('nilai-rubrik.index');
+        Route::get('nilai-rubrik/{kelasMataKuliah}/input', [\App\Http\Controllers\NilaiRubrikController::class, 'input'])->name('nilai-rubrik.input');
+        Route::post('nilai-rubrik/{kelasMataKuliah}', [\App\Http\Controllers\NilaiRubrikController::class, 'store'])->name('nilai-rubrik.store');
+        Route::get('nilai-rubrik/{kelasMataKuliah}/rekap', [\App\Http\Controllers\NilaiRubrikController::class, 'rekap'])->name('nilai-rubrik.rekap');
     });
 
     // ========================================

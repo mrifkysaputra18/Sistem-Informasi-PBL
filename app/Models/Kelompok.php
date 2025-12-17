@@ -85,14 +85,6 @@ class Kelompok extends Model
     }
 
     /**
-     * Get weekly progress
-     */
-    public function weeklyProgress(): HasMany
-    {
-        return $this->hasMany(KemajuanMingguan::class, 'group_id');
-    }
-
-    /**
      * Get weekly targets
      */
     public function weeklyTargets(): HasMany

@@ -36,6 +36,7 @@ class TargetMingguanController extends Controller
 
     /**
      * Show the form for creating a new target
+     * Dosen hanya bisa lihat kelas yang ditugaskan sebagai Dosen PBL
      */
     public function create(Request $request)
     {
@@ -45,8 +46,19 @@ class TargetMingguanController extends Controller
         $classRoomId = $request->get('class_room_id');
         $groupId = $request->get('group_id');
         
-        // Get semua kelas untuk dropdown (dosen bisa akses semua kelas)
-        $classRooms = RuangKelas::with('groups')->orderBy('name')->get();
+        // Base query - kelas dari periode akademik aktif
+        $query = RuangKelas::with('groups')
+            ->whereHas('academicPeriod', function($q) {
+                $q->where('is_active', true);
+            });
+
+        // Jika dosen (bukan admin), filter hanya kelas yang ditugaskan sebagai Dosen PBL
+        if ($user->isDosen() && !$user->isAdmin()) {
+            $assignedClassIds = $user->kelasPblAktif()->pluck('ruang_kelas.id');
+            $query->whereIn('id', $assignedClassIds);
+        }
+
+        $classRooms = $query->orderBy('name')->get();
         
         $groups = null;
         if ($classRoomId) {

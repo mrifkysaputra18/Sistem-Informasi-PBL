@@ -109,6 +109,7 @@ class PeriodeAkademikController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
             'description' => 'nullable|string',
+            'current_exam_period' => 'nullable|in:none,uts,uas',
         ]);
 
         // Generate name and code
@@ -142,6 +143,7 @@ class PeriodeAkademikController extends Controller
             'end_date' => $request->end_date,
             'is_active' => $request->has('is_active'),
             'description' => $request->description,
+            'current_exam_period' => $request->current_exam_period ?? 'none',
         ]);
 
         return redirect()

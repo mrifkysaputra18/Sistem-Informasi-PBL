@@ -12,15 +12,26 @@ use Illuminate\Support\Facades\Log;
 class TargetMingguanService
 {
     /**
-     * Ambil daftar kelas (semua user bisa akses semua kelas)
+     * Ambil daftar kelas dari periode akademik aktif
+     * Jika dosen, filter hanya kelas yang ditugaskan sebagai Dosen PBL
      * 
      * @param Pengguna $user
      * @return Collection
      */
     public function getAssignedClassRoomIds(Pengguna $user): Collection
     {
-        // Semua role (admin, koordinator, dosen) bisa akses semua kelas
-        return RuangKelas::pluck('id');
+        // Base query - kelas dari periode akademik aktif
+        $query = RuangKelas::whereHas('academicPeriod', function($q) {
+            $q->where('is_active', true);
+        });
+
+        // Jika dosen (bukan admin), filter hanya kelas yang ditugaskan sebagai Dosen PBL
+        if ($user->isDosen() && !$user->isAdmin()) {
+            $assignedClassIds = $user->kelasPblAktif()->pluck('ruang_kelas.id');
+            $query->whereIn('id', $assignedClassIds);
+        }
+
+        return $query->pluck('id');
     }
 
     /**
@@ -71,8 +82,19 @@ class TargetMingguanService
         $allTargets = $query->orderBy('week_number')->orderBy('deadline')->get();
         $targetsByWeek = $this->groupTargetsByWeek($allTargets);
 
-        // Get class rooms untuk filter dropdown (semua kelas)
-        $classRooms = RuangKelas::with('groups')->orderBy('name')->get();
+        // Get class rooms untuk filter dropdown berdasarkan akses user
+        $classRoomQuery = RuangKelas::with('groups')
+            ->whereHas('academicPeriod', function($query) {
+                $query->where('is_active', true);
+            });
+
+        // Jika dosen (bukan admin), filter kelas sesuai penugasan
+        if ($user->isDosen() && !$user->isAdmin()) {
+            $assignedClassIds = $user->kelasPblAktif()->pluck('ruang_kelas.id');
+            $classRoomQuery->whereIn('id', $assignedClassIds);
+        }
+
+        $classRooms = $classRoomQuery->orderBy('name')->get();
 
         return compact('targetsByWeek', 'classRooms', 'stats');
     }
@@ -319,21 +341,36 @@ class TargetMingguanService
     }
 
     /**
-     * Validasi akses ke kelas (tidak ada pembatasan untuk dosen)
+     * Validasi akses ke kelas
+     * Admin bisa akses semua, Dosen hanya bisa akses kelas yang ditugaskan
      */
     private function authorizeClassRoomAccess(int $classRoomId, Pengguna $user): void
     {
-        // Dosen bisa akses semua kelas, hanya validasi kelas exists
-        RuangKelas::findOrFail($classRoomId);
+        $classRoom = RuangKelas::findOrFail($classRoomId);
+
+        // Admin bisa akses semua
+        if ($user->isAdmin()) {
+            return;
+        }
+
+        // Dosen hanya bisa akses kelas yang ditugaskan sebagai Dosen PBL
+        if ($user->isDosen() && !$user->isDosenPblDi($classRoomId)) {
+            throw new \Illuminate\Auth\Access\AuthorizationException(
+                'Anda tidak memiliki akses ke kelas ini. Anda hanya bisa mengelola kelas yang ditugaskan.'
+            );
+        }
     }
 
     /**
-     * Validasi akses ke kelompok (tidak ada pembatasan untuk dosen)
+     * Validasi akses ke kelompok
+     * Admin bisa akses semua, Dosen hanya bisa akses kelompok dari kelas yang ditugaskan
      */
     private function authorizeGroupAccess(int $groupId, Pengguna $user): void
     {
-        // Dosen bisa akses semua kelompok, hanya validasi kelompok exists
-        Kelompok::findOrFail($groupId);
+        $group = Kelompok::findOrFail($groupId);
+
+        // Validasi akses ke kelas tempat kelompok berada
+        $this->authorizeClassRoomAccess($group->class_room_id, $user);
     }
 
     /**

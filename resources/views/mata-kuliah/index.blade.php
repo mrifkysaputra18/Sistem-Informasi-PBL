@@ -55,7 +55,7 @@
                                     <th class="px-6 py-5 text-left text-xs font-bold text-white uppercase tracking-wider">Kode</th>
                                     <th class="px-6 py-5 text-left text-xs font-bold text-white uppercase tracking-wider">Nama Mata Kuliah</th>
                                     <th class="px-6 py-5 text-left text-xs font-bold text-white uppercase tracking-wider">SKS</th>
-                                    <th class="px-6 py-5 text-left text-xs font-bold text-white uppercase tracking-wider">Dosen</th>
+                                    <th class="px-6 py-5 text-center text-xs font-bold text-white uppercase tracking-wider">Status</th>
                                     <th class="px-6 py-5 text-left text-xs font-bold text-white uppercase tracking-wider">Rubrik</th>
                                     <th class="px-6 py-5 text-center text-xs font-bold text-white uppercase tracking-wider w-64 border-l border-gray-800">Aksi</th>
                                 </tr>
@@ -63,48 +63,31 @@
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach($mataKuliahs as $index => $mk)
                                 <tr class="hover:bg-indigo-50 transition-colors group">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-bold">{{ ($mataKuliahs->currentPage() - 1) * $mataKuliahs->perPage() + $index + 1 }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-bold text-center">{{ ($mataKuliahs->currentPage() - 1) * $mataKuliahs->perPage() + $index + 1 }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded text-xs font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
+                                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
                                             {{ $mk->kode }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <div class="text-sm font-black text-gray-900 group-hover:text-indigo-700">{{ $mk->nama }}</div>
+                                        <div class="text-sm font-bold text-gray-900 group-hover:text-indigo-700">{{ $mk->nama }}</div>
                                         @if($mk->deskripsi)
-                                            <div class="text-xs text-gray-500 mt-1 truncate max-w-xs">{{ Str::limit($mk->deskripsi, 50) }}</div>
+                                            <div class="text-xs text-gray-500 mt-1 truncate max-w-sm">{{ Str::limit($mk->deskripsi, 60) }}</div>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="text-lg font-black text-indigo-600">{{ $mk->sks }}</span>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <span class="text-xl font-black text-indigo-600">{{ $mk->sks }}</span>
                                     </td>
-                                    <td class="px-6 py-4">
-                                        @php
-                                            $dosenSebelumUts = $mk->dosens->where('pivot.periode', 'sebelum_uts')->first();
-                                            $dosenSesudahUts = $mk->dosens->where('pivot.periode', 'sesudah_uts')->first();
-                                        @endphp
-                                        <div class="space-y-1">
-                                            <div class="flex items-center text-xs">
-                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 font-semibold mr-2" title="Minggu 1-8">
-                                                    <i class="fas fa-calendar-alt mr-1"></i>1-8
-                                                </span>
-                                                @if($dosenSebelumUts)
-                                                    <span class="text-gray-700 font-medium">{{ $dosenSebelumUts->name }}</span>
-                                                @else
-                                                    <span class="text-gray-400 italic">-</span>
-                                                @endif
-                                            </div>
-                                            <div class="flex items-center text-xs">
-                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-green-100 text-green-700 font-semibold mr-2" title="Minggu 9-16">
-                                                    <i class="fas fa-calendar-alt mr-1"></i>9-16
-                                                </span>
-                                                @if($dosenSesudahUts)
-                                                    <span class="text-gray-700 font-medium">{{ $dosenSesudahUts->name }}</span>
-                                                @else
-                                                    <span class="text-gray-400 italic">-</span>
-                                                @endif
-                                            </div>
-                                        </div>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        @if($mk->is_active)
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                                                <i class="fa-solid fa-check-circle mr-1"></i> Aktif
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600">
+                                                <i class="fa-solid fa-times-circle mr-1"></i> Nonaktif
+                                            </span>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @php $activeRubrik = $mk->rubrikPenilaians->where('is_active', true)->first(); @endphp

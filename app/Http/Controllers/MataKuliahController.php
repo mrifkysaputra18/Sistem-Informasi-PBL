@@ -23,8 +23,7 @@ class MataKuliahController extends Controller
 
     public function create()
     {
-        $dosens = Pengguna::where('role', 'dosen')->where('is_active', true)->get();
-        return view('mata-kuliah.create', compact('dosens'));
+        return view('mata-kuliah.create');
     }
 
     public function store(Request $request)
@@ -34,37 +33,32 @@ class MataKuliahController extends Controller
             'nama' => 'required|string|max:100',
             'deskripsi' => 'nullable|string',
             'sks' => 'required|integer|min:1|max:6',
-            'dosen_sebelum_uts_id' => 'nullable|exists:pengguna,id',
-            'dosen_sesudah_uts_id' => 'nullable|exists:pengguna,id',
+        ], [
+            'kode.unique' => 'Kode mata kuliah sudah digunakan.',
+            'kode.required' => 'Kode mata kuliah wajib diisi.',
+            'nama.required' => 'Nama mata kuliah wajib diisi.',
+            'sks.required' => 'SKS wajib diisi.',
         ]);
 
-        $mataKuliah = MataKuliah::create([
+        MataKuliah::create([
             'kode' => $validated['kode'],
             'nama' => $validated['nama'],
             'deskripsi' => $validated['deskripsi'] ?? null,
             'sks' => $validated['sks'],
         ]);
 
-        // Sync dosen per periode
-        $mataKuliah->syncDosens(
-            $validated['dosen_sebelum_uts_id'] ?? null,
-            $validated['dosen_sesudah_uts_id'] ?? null
-        );
-
         return redirect()->route('mata-kuliah.index')->with('success', 'Mata kuliah berhasil ditambahkan.');
     }
 
     public function show(MataKuliah $mataKuliah)
     {
-        $mataKuliah->load(['dosens', 'rubrikPenilaians.items', 'rubrikPenilaians.periodeAkademik', 'rubrikPenilaians.creator']);
+        $mataKuliah->load(['rubrikPenilaians.items', 'rubrikPenilaians.periodeAkademik', 'rubrikPenilaians.creator']);
         return view('mata-kuliah.show', compact('mataKuliah'));
     }
 
     public function edit(MataKuliah $mataKuliah)
     {
-        $dosens = Pengguna::where('role', 'dosen')->where('is_active', true)->get();
-        $mataKuliah->load('dosens');
-        return view('mata-kuliah.edit', compact('mataKuliah', 'dosens'));
+        return view('mata-kuliah.edit', compact('mataKuliah'));
     }
 
     public function update(Request $request, MataKuliah $mataKuliah)
@@ -75,8 +69,11 @@ class MataKuliahController extends Controller
             'deskripsi' => 'nullable|string',
             'sks' => 'required|integer|min:1|max:6',
             'is_active' => 'boolean',
-            'dosen_sebelum_uts_id' => 'nullable|exists:pengguna,id',
-            'dosen_sesudah_uts_id' => 'nullable|exists:pengguna,id',
+        ], [
+            'kode.unique' => 'Kode mata kuliah sudah digunakan.',
+            'kode.required' => 'Kode mata kuliah wajib diisi.',
+            'nama.required' => 'Nama mata kuliah wajib diisi.',
+            'sks.required' => 'SKS wajib diisi.',
         ]);
 
         $mataKuliah->update([
@@ -86,12 +83,6 @@ class MataKuliahController extends Controller
             'sks' => $validated['sks'],
             'is_active' => $request->has('is_active'),
         ]);
-
-        // Sync dosen per periode
-        $mataKuliah->syncDosens(
-            $validated['dosen_sebelum_uts_id'] ?? null,
-            $validated['dosen_sesudah_uts_id'] ?? null
-        );
 
         return redirect()->route('mata-kuliah.index')->with('success', 'Mata kuliah berhasil diupdate.');
     }

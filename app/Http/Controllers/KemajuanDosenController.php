@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{RuangKelas, Kelompok, TargetMingguan, KemajuanMingguan};
+use App\Models\{RuangKelas, Kelompok, TargetMingguan};
 use App\Services\GoogleDriveService;
 use Illuminate\Http\Request;
 
@@ -15,18 +15,30 @@ class KemajuanDosenController extends Controller
         $this->googleDriveService = $googleDriveService;
     }
     /**
-     * Tampilkan semua kelas (dosen bisa akses semua kelas)
+     * Tampilkan kelas yang ditugaskan untuk Dosen PBL
+     * Admin bisa melihat semua kelas
      */
     public function index()
     {
         $user = auth()->user();
         
-        // Dosen bisa melihat semua kelas aktif
-        $classRooms = RuangKelas::with(['groups', 'academicPeriod'])
+        // Base query - kelas dari periode akademik aktif
+        $query = RuangKelas::with(['groups', 'academicPeriod'])
             ->where('is_active', true)
-            ->withCount(['groups', 'groups as group_members_count' => function($query) {
-                $query->join('anggota_kelompok', 'kelompok.id', 'anggota_kelompok.group_id')
-                      ->count();
+            ->whereHas('academicPeriod', function($q) {
+                $q->where('is_active', true);
+            });
+
+        // Jika bukan admin, filter hanya kelas yang ditugaskan sebagai Dosen PBL
+        if (!$user->isAdmin()) {
+            $assignedClassIds = $user->kelasPblAktif()->pluck('ruang_kelas.id');
+            $query->whereIn('id', $assignedClassIds);
+        }
+
+        $classRooms = $query
+            ->withCount(['groups', 'groups as group_members_count' => function($q) {
+                $q->join('anggota_kelompok', 'kelompok.id', 'anggota_kelompok.group_id')
+                  ->count();
             }])
             ->get();
 
@@ -35,7 +47,7 @@ class KemajuanDosenController extends Controller
             'totalClassRooms' => $classRooms->count(),
             'totalGroups' => $classRooms->sum->groups_count,
             'totalStudents' => $classRooms->sum->group_members_count,
-            'pendingReviews' => KemajuanMingguan::whereIn('submission_status', ['submitted', 'revision'])->count(),
+            'pendingReviews' => TargetMingguan::whereIn('submission_status', ['submitted', 'revision'])->count(),
         ];
 
         return view('dosen.kemajuan.daftar', compact('classRooms', 'stats'));
@@ -96,10 +108,6 @@ class KemajuanDosenController extends Controller
                 $query->with(['creator', 'completedByUser', 'reviewer', 'review'])
                       ->orderBy('week_number');
             },
-            'weeklyProgress' => function($query) {
-                $query->with(['review'])
-                      ->orderBy('week_number');
-            }
         ]);
 
         // Stats untuk kelompok ini

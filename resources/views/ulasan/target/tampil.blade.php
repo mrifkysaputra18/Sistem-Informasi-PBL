@@ -2,16 +2,18 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div class="flex items-center">
-                <a href="{{ route('target-reviews.index') }}" 
-                   class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
-                    <i class="fas fa-arrow-left text-xl"></i>
+                <a href="{{ route('targets.index') }}" 
+                   class="mr-4 bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-lg flex items-center gap-2 transition">
+                    <i class="fas fa-arrow-left"></i>
+                    <span class="text-sm font-medium">Target Mingguan</span>
                 </a>
                 <h2 class="font-semibold text-xl text-white leading-tight">
                     {{ __('Detail Review Target') }}
                 </h2>
             </div>
             <a href="{{ route('target-reviews.edit', $target) }}" 
-               class="bg-primary-500 hover:bg-primary-600 text-white text-sm px-4 py-2 rounded">
+               class="text-white text-sm px-4 py-2 rounded hover:opacity-90 transition"
+               style="background-color: #800000;">
                 <i class="fas fa-edit mr-1"></i>Edit Review
             </a>
         </div>

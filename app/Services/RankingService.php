@@ -78,6 +78,7 @@ class RankingService
     
     /**
      * Hitung ranking mahasiswa menggunakan metode SAW
+     * Terintegrasi dengan nilai rubrik dari mata kuliah terkait PBL
      * 
      * @param int|null $classRoomId Filter berdasarkan kelas (opsional)
      * @return array
@@ -117,10 +118,21 @@ class RankingService
         foreach ($criteria as $criterion) {
             $values = [];
             
+            // Cek apakah kriteria ini adalah "Nilai Mata Kuliah" atau terkait rubrik
+            $isRubrikCriteria = stripos($criterion->nama, 'mata kuliah') !== false 
+                || stripos($criterion->nama, 'rubrik') !== false
+                || stripos($criterion->nama, 'nilai matkul') !== false;
+            
             // Kumpulkan nilai untuk kriteria ini dari semua mahasiswa
             foreach ($students as $student) {
-                $score = $student->studentScores->where('criterion_id', $criterion->id)->first();
-                $values[$student->id] = $score ? (float)$score->skor : 0;
+                if ($isRubrikCriteria) {
+                    // Gunakan rata-rata nilai rubrik dari semua mata kuliah
+                    $values[$student->id] = $this->getRataRataNilaiRubrik($student->id, $classRoomId);
+                } else {
+                    // Gunakan nilai normal dari database
+                    $score = $student->studentScores->where('criterion_id', $criterion->id)->first();
+                    $values[$student->id] = $score ? (float)$score->skor : 0;
+                }
             }
             
             // Hitung normalisasi menggunakan metode SAW
@@ -142,6 +154,45 @@ class RankingService
         }
         
         return $totals;
+    }
+    
+    /**
+     * Get rata-rata nilai rubrik mahasiswa dari semua mata kuliah terkait
+     * 
+     * @param int $userId
+     * @param int|null $classRoomId
+     * @return float
+     */
+    private function getRataRataNilaiRubrik(int $userId, ?int $classRoomId = null): float
+    {
+        $query = \App\Models\KelasMataKuliah::query();
+        
+        // Filter berdasarkan kelas jika ada
+        if ($classRoomId) {
+            $query->where('class_room_id', $classRoomId);
+        }
+        
+        // Get semua kelas-mata kuliah yang mahasiswa terdaftar
+        $kelasMataKuliahs = $query->whereHas('classRoom.students', function ($q) use ($userId) {
+            $q->where('pengguna.id', $userId);
+        })->get();
+        
+        if ($kelasMataKuliahs->isEmpty()) {
+            return 0;
+        }
+        
+        $totalNilai = 0;
+        $count = 0;
+        
+        foreach ($kelasMataKuliahs as $km) {
+            $nilai = \App\Models\NilaiRubrik::hitungTotalNilai($userId, $km->id);
+            if ($nilai > 0) {
+                $totalNilai += $nilai;
+                $count++;
+            }
+        }
+        
+        return $count > 0 ? round($totalNilai / $count, 2) : 0;
     }
     
     /**

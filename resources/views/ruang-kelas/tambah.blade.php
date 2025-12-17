@@ -68,7 +68,7 @@
                                 Program Studi <span class="text-red-500">*</span>
                             </label>
                             <input type="text" name="program_studi" id="program_studi" required
-                                value="{{ old('program_studi', 'Teknik Informatika') }}"
+                                value="{{ old('program_studi') }}"
                                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('program_studi') border-red-500 @enderror">
                             @error('program_studi')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

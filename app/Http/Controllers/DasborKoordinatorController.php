@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{RuangKelas, Kelompok, KemajuanMingguan};
+use App\Models\{RuangKelas, Kelompok, TargetMingguan};
 
 class DasborKoordinatorController extends Controller
 {
@@ -12,8 +12,8 @@ class DasborKoordinatorController extends Controller
             'totalClassRooms' => RuangKelas::count(),
             'totalGroups' => Kelompok::count(),
             'activeGroups' => Kelompok::whereHas('members')->count(),
-            'totalProgress' => KemajuanMingguan::count(),
-            'pendingReviews' => KemajuanMingguan::where('status', 'submitted')->count(),
+            'totalProgress' => TargetMingguan::count(),
+            'pendingReviews' => TargetMingguan::whereIn('submission_status', ['submitted', 'revision'])->count(),
         ];
 
         // Groups that need attention (no members, incomplete progress, etc.)
@@ -25,9 +25,9 @@ class DasborKoordinatorController extends Controller
             ->get();
 
         // Recent progress submissions
-        $recentProgress = KemajuanMingguan::with(['group'])
-            ->where('status', 'submitted')
-            ->latest('submitted_at')
+        $recentProgress = TargetMingguan::with(['group'])
+            ->whereIn('submission_status', ['submitted', 'revision'])
+            ->latest('completed_at')
             ->take(5)
             ->get();
 

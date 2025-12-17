@@ -23,7 +23,11 @@
                        class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-bold rounded-lg shadow transition-all">
                         <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
                     </a>
-                    @if(auth()->user()->isDosen() || auth()->user()->isAdmin() || auth()->user()->isKoordinator())
+                    @php
+                        $canManageRubrik = auth()->user()->isAdmin() || 
+                            (auth()->user()->isDosen() && $mataKuliah->isDosenAssigned(auth()->id()));
+                    @endphp
+                    @if($canManageRubrik)
                     <a href="{{ route('rubrik-penilaian.create', $mataKuliah) }}" 
                        class="inline-flex items-center px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 border-2 border-emerald-800 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">
                         <i class="fa-solid fa-plus mr-2 text-lg"></i>
@@ -53,28 +57,6 @@
                 </div>
             @endif
 
-            <!-- Dosen Section -->
-            <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
-                <h3 class="text-lg font-bold text-gray-900 mb-4">
-                    <i class="fa-solid fa-chalkboard-user mr-2 text-indigo-600"></i> Dosen Pengampu
-                </h3>
-                @if($mataKuliah->dosens->count() > 0)
-                    <div class="flex flex-wrap gap-3">
-                        @foreach($mataKuliah->dosens as $dosen)
-                            <div class="flex items-center gap-3 px-4 py-2 bg-gray-50 rounded-lg border border-gray-200">
-                                <img src="{{ $dosen->profile_photo_url }}" alt="{{ $dosen->name }}" class="w-10 h-10 rounded-full">
-                                <div>
-                                    <p class="font-bold text-gray-800">{{ $dosen->name }}</p>
-                                    <p class="text-xs text-gray-500">{{ $dosen->email }}</p>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <p class="text-gray-500">Belum ada dosen yang ditugaskan.</p>
-                @endif
-            </div>
-
             <!-- Rubrik Penilaian Section -->
             <div class="bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden">
                 <div class="bg-gray-900 px-6 py-4">
@@ -87,7 +69,7 @@
                     <div class="divide-y divide-gray-200">
                         @foreach($mataKuliah->rubrikPenilaians as $rubrik)
                             <div class="p-6 hover:bg-gray-50 transition-colors {{ $rubrik->is_active ? 'bg-emerald-50 border-l-4 border-emerald-500' : '' }}">
-                                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                                <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
                                     <div class="flex-1">
                                         <div class="flex items-center gap-3 mb-2">
                                             <h4 class="text-lg font-bold text-gray-900">{{ $rubrik->nama }}</h4>
@@ -97,55 +79,89 @@
                                                 </span>
                                             @endif
                                         </div>
-                                        <div class="flex flex-wrap gap-4 text-sm text-gray-600">
+                                        <div class="flex flex-wrap gap-4 text-sm text-gray-600 mb-3">
                                             <span><i class="fa-solid fa-calendar mr-1"></i> {{ $rubrik->periodeAkademik->name ?? '-' }}</span>
                                             <span><i class="fa-solid fa-graduation-cap mr-1"></i> Semester {{ $rubrik->semester }}</span>
                                             <span><i class="fa-solid fa-user mr-1"></i> {{ $rubrik->creator->name ?? '-' }}</span>
-                                            <span class="{{ $rubrik->isComplete() ? 'text-emerald-600' : 'text-red-600' }} font-bold">
-                                                <i class="fa-solid fa-percent mr-1"></i> Total: {{ $rubrik->total_persentase }}%
+                                        </div>
+                                        
+                                        <!-- Bobot UTS/UAS -->
+                                        <div class="flex flex-wrap gap-2 mb-3">
+                                            <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                                                <i class="fa-solid fa-scale-balanced mr-1"></i> UTS: {{ number_format($rubrik->bobot_uts, 0) }}%
+                                            </span>
+                                            <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-orange-100 text-orange-800 border border-orange-200">
+                                                <i class="fa-solid fa-scale-balanced mr-1"></i> UAS: {{ number_format($rubrik->bobot_uas, 0) }}%
+                                            </span>
+                                            <span class="{{ $rubrik->isComplete() ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-red-100 text-red-800 border-red-200' }} inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold border">
+                                                @if($rubrik->isComplete())
+                                                    <i class="fa-solid fa-check-circle mr-1"></i> Valid
+                                                @else
+                                                    <i class="fa-solid fa-exclamation-circle mr-1"></i> Belum Lengkap
+                                                @endif
                                             </span>
                                         </div>
                                         
-                                        <!-- Rubrik Items Preview -->
+                                        <!-- Rubrik Items Preview - Grouped by Periode -->
                                         @if($rubrik->items->count() > 0)
-                                            <div class="mt-4 flex flex-wrap gap-2">
-                                                @foreach($rubrik->items as $item)
-                                                    <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
-                                                        {{ $item->nama }}: {{ number_format($item->persentase, 0) }}%
-                                                    </span>
-                                                @endforeach
+                                            <div class="space-y-2">
+                                                <!-- Item UTS -->
+                                                @if($rubrik->items->where('periode_ujian', 'uts')->count() > 0)
+                                                <div class="flex flex-wrap gap-1 items-center">
+                                                    <span class="text-xs font-bold text-blue-700 mr-1">UTS:</span>
+                                                    @foreach($rubrik->items->where('periode_ujian', 'uts') as $item)
+                                                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                                                            {{ $item->nama }}: {{ number_format($item->persentase, 0) }}%
+                                                        </span>
+                                                    @endforeach
+                                                </div>
+                                                @endif
+                                                
+                                                <!-- Item UAS -->
+                                                @if($rubrik->items->where('periode_ujian', 'uas')->count() > 0)
+                                                <div class="flex flex-wrap gap-1 items-center">
+                                                    <span class="text-xs font-bold text-orange-700 mr-1">UAS:</span>
+                                                    @foreach($rubrik->items->where('periode_ujian', 'uas') as $item)
+                                                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-orange-50 text-orange-700 border border-orange-200">
+                                                            {{ $item->nama }}: {{ number_format($item->persentase, 0) }}%
+                                                        </span>
+                                                    @endforeach
+                                                </div>
+                                                @endif
                                             </div>
                                         @endif
                                     </div>
                                     
-                                    <div class="flex flex-wrap gap-2">
+                                    @if($canManageRubrik)
+                                    <div class="flex flex-wrap gap-2 items-start shrink-0">
                                         @if(!$rubrik->is_active && $rubrik->isComplete())
                                             <form action="{{ route('rubrik-penilaian.activate', [$mataKuliah, $rubrik]) }}" method="POST" class="inline">
                                                 @csrf
                                                 <button type="submit" 
-                                                        class="inline-flex items-center px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded shadow transition-all">
+                                                        class="inline-flex items-center px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded shadow transition-all whitespace-nowrap">
                                                     <i class="fa-solid fa-check mr-1.5"></i> Gunakan
                                                 </button>
                                             </form>
                                         @endif
                                         <a href="{{ route('rubrik-penilaian.edit', [$mataKuliah, $rubrik]) }}" 
-                                           class="inline-flex items-center px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded shadow transition-all">
+                                           class="inline-flex items-center px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded shadow transition-all whitespace-nowrap">
                                             <i class="fa-solid fa-edit mr-1.5"></i> Edit
                                         </a>
                                         <a href="{{ route('rubrik-penilaian.duplicate', [$mataKuliah, $rubrik]) }}" 
-                                           class="inline-flex items-center px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold rounded shadow transition-all">
+                                           class="inline-flex items-center px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold rounded shadow transition-all whitespace-nowrap">
                                             <i class="fa-solid fa-copy mr-1.5"></i> Duplikat
                                         </a>
                                         <form action="{{ route('rubrik-penilaian.destroy', [$mataKuliah, $rubrik]) }}" method="POST" class="inline delete-rubrik-form">
                                             @csrf
                                             @method('DELETE')
                                             <button type="button" 
-                                                    class="delete-rubrik-btn inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded shadow transition-all"
+                                                    class="delete-rubrik-btn inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded shadow transition-all whitespace-nowrap"
                                                     data-name="{{ $rubrik->nama }}">
                                                 <i class="fa-solid fa-trash mr-1.5"></i> Hapus
                                             </button>
                                         </form>
                                     </div>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach

@@ -31,11 +31,6 @@
                     </x-nav-link>
 
                     @if(auth()->user()->isAdmin())
-                        <!-- Admin Only - Periode Akademik (Gabungan: Mata Kuliah + Tahun Ajaran + Semester) -->
-                        <x-nav-link :href="route('academic-periods.index')" :active="request()->routeIs('academic-periods.*') || request()->routeIs('projects.*')">
-                            {{ __('Periode Akademik') }}
-                        </x-nav-link>
-                        
                         <!-- Admin Only - User Management -->
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                             {{ __('Kelola User') }}
@@ -57,10 +52,6 @@
                         <x-nav-link :href="route('criteria.index')" :active="request()->routeIs('criteria.*')">
                             {{ __('Kriteria') }}
                         </x-nav-link>
-                        <!-- Admin Only - Google Drive Settings -->
-                        <x-nav-link :href="route('settings.google-drive.index')" :active="request()->routeIs('settings.google-drive.*')">
-                            {{ __('Google Drive') }}
-                        </x-nav-link>
                     @endif
 
                     @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
@@ -69,10 +60,41 @@
                             {{ __('Target Mingguan') }}
                         </x-nav-link>
                         
-                        <!-- Mata Kuliah & Rubrik -->
-                        <x-nav-link :href="route('mata-kuliah.index')" :active="request()->routeIs('mata-kuliah.*') || request()->routeIs('rubrik-penilaian.*')">
-                            {{ __('Mata Kuliah') }}
-                        </x-nav-link>
+                        <!-- Dropdown Menu Akademik (Mata Kuliah & Dosen) -->
+                        <x-dropdown align="top" width="48">
+                            <x-slot name="trigger">
+                                <button class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white hover:text-white/80 focus:outline-none transition ease-in-out duration-150 {{ request()->routeIs('mata-kuliah.*') || request()->routeIs('rubrik-penilaian.*') || request()->routeIs('penugasan-dosen.*') || request()->routeIs('academic-periods.*') ? 'border-b-2 border-white' : '' }}">
+                                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                    </svg>
+                                    Akademik
+                                    <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </x-slot>
+
+                            <x-slot name="content">
+                                @if(auth()->user()->isAdmin())
+                                    <x-dropdown-link :href="route('academic-periods.index')">
+                                        {{ __('Periode Akademik') }}
+                                    </x-dropdown-link>
+                                @endif
+                                
+                                <x-dropdown-link :href="route('mata-kuliah.index')">
+                                    {{ __('Mata Kuliah') }}
+                                </x-dropdown-link>
+                                
+                                @if(auth()->user()->isAdmin())
+                                    <x-dropdown-link :href="route('penugasan-dosen.index')">
+                                        {{ __('Dosen PBL') }}
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('penugasan-dosen-matkul.index')">
+                                        {{ __('Dosen Matkul') }}
+                                    </x-dropdown-link>
+                                @endif
+                            </x-slot>
+                        </x-dropdown>
                     @endif
 
                     @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
@@ -106,6 +128,13 @@
                                 </x-dropdown-link>
                             </x-slot>
                         </x-dropdown>
+                    @endif
+
+                    @if(auth()->user()->isAdmin())
+                        <!-- Admin Only - Google Drive Settings (ujung kanan) -->
+                        <x-nav-link :href="route('settings.google-drive.index')" :active="request()->routeIs('settings.google-drive.*')">
+                            {{ __('Google Drive') }}
+                        </x-nav-link>
                     @endif
 
                     @if(auth()->user()->isMahasiswa())
@@ -178,11 +207,6 @@
             </x-responsive-nav-link>
 
             @if(auth()->user()->isAdmin())
-                <!-- Admin Menu - Periode Akademik -->
-                <x-responsive-nav-link :href="route('academic-periods.index')" :active="request()->routeIs('academic-periods.*') || request()->routeIs('projects.*')">
-                    {{ __('Periode Akademik') }}
-                </x-responsive-nav-link>
-                
                 <!-- Admin Menu - User Management -->
                 <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                     {{ __('Kelola User') }}
@@ -215,11 +239,31 @@
                 <x-responsive-nav-link :href="route('targets.index')" :active="request()->routeIs('targets.*') || request()->routeIs('target-reviews.*')">
                     {{ __('Target Mingguan') }}
                 </x-responsive-nav-link>
-                
-                <!-- Mata Kuliah & Rubrik -->
-                <x-responsive-nav-link :href="route('mata-kuliah.index')" :active="request()->routeIs('mata-kuliah.*') || request()->routeIs('rubrik-penilaian.*')">
-                    {{ __('Mata Kuliah') }}
-                </x-responsive-nav-link>
+                <!-- Menu Akademik (Grouped) -->
+                <div class="pl-4 border-l-2 border-gray-200/30 ml-4 space-y-1">
+                    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 py-2">
+                        📚 Akademik
+                    </div>
+                    
+                    @if(auth()->user()->isAdmin())
+                        <x-responsive-nav-link :href="route('academic-periods.index')" :active="request()->routeIs('academic-periods.*')">
+                            {{ __('Periode Akademik') }}
+                        </x-responsive-nav-link>
+                    @endif
+                    
+                    <x-responsive-nav-link :href="route('mata-kuliah.index')" :active="request()->routeIs('mata-kuliah.*') || request()->routeIs('rubrik-penilaian.*')">
+                        {{ __('Mata Kuliah') }}
+                    </x-responsive-nav-link>
+                    
+                    @if(auth()->user()->isAdmin())
+                        <x-responsive-nav-link :href="route('penugasan-dosen.index')" :active="request()->routeIs('penugasan-dosen.*')">
+                            {{ __('Dosen PBL') }}
+                        </x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('penugasan-dosen-matkul.index')" :active="request()->routeIs('penugasan-dosen-matkul.*')">
+                            {{ __('Dosen Matkul') }}
+                        </x-responsive-nav-link>
+                    @endif
+                </div>
                 
                 <!-- Menu Penilaian (Grouped) -->
                 <div class="pl-4 border-l-2 border-gray-200/30 ml-4 space-y-1">

@@ -110,4 +110,36 @@ class MataKuliah extends Model
     {
         return $query->where('is_active', true);
     }
+
+    /**
+     * Get kelas yang menggunakan mata kuliah ini untuk proyek PBL
+     */
+    public function classRooms()
+    {
+        return $this->belongsToMany(RuangKelas::class, 'kelas_mata_kuliah', 'mata_kuliah_id', 'class_room_id')
+            ->withPivot('rubrik_penilaian_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get relasi kelas-mata kuliah
+     */
+    public function kelasMataKuliahs()
+    {
+        return $this->hasMany(KelasMataKuliah::class, 'mata_kuliah_id');
+    }
+
+    /**
+     * Cek apakah dosen tertentu ditugaskan ke mata kuliah ini
+     * Dosen dianggap ditugaskan jika ada di kelas_mata_kuliah sebagai dosen sebelum/sesudah UTS
+     */
+    public function isDosenAssigned(int $dosenId): bool
+    {
+        return $this->kelasMataKuliahs()
+            ->where(function ($query) use ($dosenId) {
+                $query->where('dosen_sebelum_uts_id', $dosenId)
+                      ->orWhere('dosen_sesudah_uts_id', $dosenId);
+            })
+            ->exists();
+    }
 }

@@ -253,13 +253,18 @@ class StudentRankingService
     }
 
     /**
-     * Calculate ranking for all active classes
+     * Calculate ranking for all active classes in active academic period
      * 
      * @return void
      */
     public function calculateAllClassRankings(): void
     {
-        $classes = RuangKelas::where('is_active', true)->pluck('id');
+        // Filter kelas dari periode akademik aktif saja
+        $classes = RuangKelas::where('is_active', true)
+            ->whereHas('academicPeriod', function($query) {
+                $query->where('is_active', true);
+            })
+            ->pluck('id');
 
         foreach ($classes as $classId) {
             $this->calculateClassRankings($classId);

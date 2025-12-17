@@ -20,6 +20,7 @@ class PeriodeAkademik extends Model
         'start_date',
         'end_date',
         'is_active',
+        'current_exam_period',
         'description',
     ];
 
@@ -72,12 +73,12 @@ class PeriodeAkademik extends Model
     }
 
     /**
-     * Get all weekly progress in this period
+     * Get all weekly targets in this period
      */
-    public function weeklyProgress()
+    public function weeklyTargets()
     {
         return $this->hasManyThrough(
-            KemajuanMingguan::class,
+            TargetMingguan::class,
             Kelompok::class,
             'class_room_id',
             'group_id'
@@ -157,5 +158,62 @@ class PeriodeAkademik extends Model
     public function getDisplayNameAttribute()
     {
         return "{$this->name} (Semester {$this->semester_number})";
+    }
+
+    /**
+     * Cek apakah periode UTS sedang aktif
+     */
+    public function isUtsActive(): bool
+    {
+        return $this->is_active && $this->current_exam_period === 'uts';
+    }
+
+    /**
+     * Cek apakah periode UAS sedang aktif
+     */
+    public function isUasActive(): bool
+    {
+        return $this->is_active && $this->current_exam_period === 'uas';
+    }
+
+    /**
+     * Cek apakah TIDAK ada periode ujian aktif
+     */
+    public function isExamPeriodNone(): bool
+    {
+        return $this->current_exam_period === 'none' || $this->current_exam_period === null;
+    }
+
+    /**
+     * Get label untuk periode ujian dalam Bahasa Indonesia
+     */
+    public function getExamPeriodLabelAttribute(): string
+    {
+        return match($this->current_exam_period) {
+            'uts' => 'Periode UTS',
+            'uas' => 'Periode UAS',
+            default => 'Tidak Ada Ujian Aktif',
+        };
+    }
+
+    /**
+     * Set status periode ujian
+     */
+    public function setExamPeriod(string $period): bool
+    {
+        if (!in_array($period, ['none', 'uts', 'uas'])) {
+            return false;
+        }
+        
+        $this->current_exam_period = $period;
+        return $this->save();
+    }
+
+    /**
+     * Get periode akademik aktif dengan status ujian
+     */
+    public static function getActiveWithExamPeriod(): ?self
+    {
+        return static::where('is_active', true)->first();
     }
 }

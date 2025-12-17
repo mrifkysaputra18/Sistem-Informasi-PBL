@@ -181,7 +181,7 @@
                                                 <i class="fas fa-eye mr-1.5"></i> Detail
                                             </a>
                                             
-                                            @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
+                                            @if(auth()->user()->isAdmin())
                                             <a href="{{ url('/classrooms/' . $classRoom->id . '/edit') }}" 
                                                class="inline-flex items-center justify-center px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold rounded shadow-sm hover:shadow transition-all uppercase tracking-wide">
                                                 <i class="fas fa-edit mr-1.5"></i> Edit

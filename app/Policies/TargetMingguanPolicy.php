@@ -43,20 +43,37 @@ class TargetMingguanPolicy
 
     /**
      * Determine apakah user bisa membuat target
-     * Hanya admin dan dosen
+     * Hanya admin dan Dosen PBL (bukan dosen mata kuliah biasa)
      */
     public function create(Pengguna $user): bool
     {
-        return in_array($user->role, ['admin', 'dosen']);
+        // Admin selalu bisa
+        if ($user->isAdmin()) {
+            return true;
+        }
+        
+        // Dosen harus jadi Dosen PBL di minimal 1 kelas
+        return $user->isDosenPbl();
     }
 
     /**
      * Determine apakah user bisa membuat target untuk kelas tertentu
+     * Dosen harus jadi Dosen PBL di kelas tersebut
      */
     public function createForClassRoom(Pengguna $user, int $classRoomId): bool
     {
-        // Admin dan dosen bisa buat target untuk kelas manapun
-        return in_array($user->role, ['admin', 'dosen']);
+        // Admin bisa buat target untuk kelas manapun
+        if ($user->isAdmin()) {
+            return true;
+        }
+        
+        // Dosen harus jadi Dosen PBL di kelas tersebut
+        if ($user->isDosen()) {
+            $kelas = RuangKelas::find($classRoomId);
+            return $kelas && $kelas->isDosenPbl($user->id);
+        }
+        
+        return false;
     }
 
     /**

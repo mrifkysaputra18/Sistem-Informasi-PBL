@@ -136,7 +136,7 @@
                             {{-- Left: Week & Info --}}
                             <div class="flex items-start gap-4 flex-1">
                                 {{-- Week Badge --}}
-                                <div class="w-14 h-14 rounded-lg bg-slate-800 text-white flex flex-col items-center justify-center flex-shrink-0">
+                                <div class="w-14 h-14 rounded-lg bg-blue-600 text-white flex flex-col items-center justify-center flex-shrink-0">
                                     <span class="text-[10px] font-medium uppercase">Minggu</span>
                                     <span class="text-xl font-bold leading-none">{{ $target->week_number }}</span>
                                 </div>

@@ -104,7 +104,7 @@ class GroupsImport implements ToCollection, WithHeadingRow, SkipsOnFailure
                 ]);
 
                 // Add leader as member
-                GroupMember::create([
+                AnggotaKelompok::create([
                     'group_id' => $group->id,
                     'user_id' => $leader->id,
                     'is_leader' => true,
@@ -153,7 +153,7 @@ class GroupsImport implements ToCollection, WithHeadingRow, SkipsOnFailure
                     }
 
                     // Check if member already added to this group (duplicate in Excel)
-                    $alreadyInGroup = GroupMember::where('group_id', $group->id)
+                    $alreadyInGroup = AnggotaKelompok::where('group_id', $group->id)
                         ->where('user_id', $member->id)
                         ->exists();
                     
@@ -161,7 +161,7 @@ class GroupsImport implements ToCollection, WithHeadingRow, SkipsOnFailure
                         continue;
                     }
 
-                    GroupMember::create([
+                    AnggotaKelompok::create([
                         'group_id' => $group->id,
                         'user_id' => $member->id,
                         'is_leader' => false,
@@ -222,7 +222,7 @@ class GroupsImport implements ToCollection, WithHeadingRow, SkipsOnFailure
      */
     private function hasGroupInClass($userId, $classRoomId)
     {
-        return GroupMember::whereHas('group', function($query) use ($classRoomId) {
+        return AnggotaKelompok::whereHas('group', function($query) use ($classRoomId) {
             $query->where('class_room_id', $classRoomId);
         })->where('user_id', $userId)->exists();
     }

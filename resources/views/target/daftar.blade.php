@@ -8,32 +8,34 @@
                     <h2 class="text-3xl font-black text-gray-900 tracking-tight">TARGET MINGGUAN</h2>
                     <p class="text-sm font-medium text-gray-500 mt-1">Monitoring dan kelola target mingguan kelompok.</p>
                 </div>
-                <!-- Action Buttons - Hanya untuk admin dan dosen (koordinator hanya monitoring) -->
-                @if(in_array(auth()->user()->role, ['dosen', 'admin']))
+                <!-- Action Buttons -->
                 <div class="flex flex-wrap gap-3">
-                    {{-- Export Laporan --}}
+                    {{-- Export Laporan - Hanya Admin --}}
+                    @if(auth()->user()->role === 'admin')
                     <a href="{{ route('targets.export-pdf', ['class_room_id' => request('class_room_id'), 'week_number' => request('week_number')]) }}" 
                        class="inline-flex items-center px-5 py-2.5 bg-green-600 hover:bg-green-700 border-2 border-green-800 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">
                         <i class="fa-solid fa-file-excel mr-2 text-lg"></i>
                         <span>Export Laporan</span>
                     </a>
                     
-                    {{-- Sync Kriteria --}}
+                    {{-- Sync Kriteria - Hanya Admin --}}
                     <a href="{{ route('sync-kriteria.index') }}" 
                        style="background-color: #800000 !important; border-color: #600000 !important;"
                        class="inline-flex items-center px-5 py-2.5 bg-red-900 hover:bg-red-800 border-2 border-red-950 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">
                         <i class="fa-solid fa-arrows-rotate mr-2 text-lg"></i>
                         <span>Sync Kriteria</span>
                     </a>
+                    @endif
                     
-                    {{-- Buat Target --}}
+                    {{-- Buat Target - Dosen PBL dan Admin --}}
+                    @if(in_array(auth()->user()->role, ['dosen', 'admin']))
                     <a href="{{ route('targets.create') }}" 
                        class="inline-flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 border-2 border-indigo-800 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">
                         <i class="fa-solid fa-plus mr-2 text-lg"></i>
                         <span>Buat Target</span>
                     </a>
+                    @endif
                 </div>
-                @endif
             </div>
 
             <!-- Alert Messages -->
@@ -58,7 +60,7 @@
             @endif
 
             <!-- 2. STATS CARDS -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 <!-- Total Target - Purple -->
                 <div class="bg-white rounded-xl p-5 shadow-sm" style="border: 1px solid #e2e8f0; border-bottom: 4px solid #7c3aed;">
                     <div class="flex items-center justify-between">
@@ -94,19 +96,6 @@
                         </div>
                         <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: #d1fae5;">
                             <i class="fa-solid fa-check-double text-lg" style="color: #10b981;"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Perlu Revisi - Orange -->
-                <div class="bg-white rounded-xl p-5 shadow-sm" style="border: 1px solid #e2e8f0; border-bottom: 4px solid #f97316;">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">PERLU REVISI</p>
-                            <p class="text-3xl font-bold text-gray-800">{{ $stats['revision'] }}</p>
-                        </div>
-                        <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: #ffedd5;">
-                            <i class="fa-solid fa-rotate-right text-lg" style="color: #f97316;"></i>
                         </div>
                     </div>
                 </div>
@@ -177,7 +166,6 @@
                             <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>Sudah Submit</option>
                             <option value="late" {{ request('status') == 'late' ? 'selected' : '' }}>Terlambat</option>
                             <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
-                            <option value="revision" {{ request('status') == 'revision' ? 'selected' : '' }}>Perlu Revisi</option>
                         </select>
                     </div>
 
