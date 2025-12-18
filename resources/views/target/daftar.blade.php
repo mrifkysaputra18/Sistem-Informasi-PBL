@@ -23,7 +23,7 @@
                        style="background-color: #800000 !important; border-color: #600000 !important;"
                        class="inline-flex items-center px-5 py-2.5 bg-red-900 hover:bg-red-800 border-2 border-red-950 rounded-lg font-bold text-white text-sm shadow-lg transform hover:-translate-y-1 transition-all">
                         <i class="fa-solid fa-arrows-rotate mr-2 text-lg"></i>
-                        <span>Sync Kriteria</span>
+                        <span>Sinkronkan Kriteria</span>
                     </a>
                     @endif
                     

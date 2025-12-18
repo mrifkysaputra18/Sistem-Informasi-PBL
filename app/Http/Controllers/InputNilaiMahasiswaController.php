@@ -53,12 +53,17 @@ class InputNilaiMahasiswaController extends Controller
             'scores' => 'required|array',
             'scores.*.user_id' => 'required|exists:pengguna,id',
             'scores.*.criterion_id' => 'required|exists:kriteria,id',
-            'scores.*.skor' => 'required|numeric|min:0|max:100',
+            'scores.*.skor' => 'nullable|numeric|min:0|max:100',
         ]);
         
         DB::beginTransaction();
         try {
             foreach ($request->scores as $scoreData) {
+                // Skip jika skor tidak diisi (null)
+                if (!isset($scoreData['skor']) || $scoreData['skor'] === null || $scoreData['skor'] === '') {
+                    continue;
+                }
+                
                 NilaiMahasiswa::updateOrCreate(
                     [
                         'user_id' => $scoreData['user_id'],
