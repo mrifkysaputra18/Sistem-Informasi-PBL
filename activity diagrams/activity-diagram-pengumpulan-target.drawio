@@ -1,0 +1,124 @@
+<mxfile host="65bd71144e">
+    <diagram id="pengumpulan-target" name="Pengumpulan Target Mahasiswa">
+        <mxGraphModel dx="640" dy="947" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="#FFFFFF" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="title" value="Pengumpulan Target Mahasiswa" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="250" y="20" width="300" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="header-user" value="Mahasiswa" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="120" y="60" width="160" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="header-system" value="Sistem" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="520" y="60" width="160" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="divider1" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;fontColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="40" y="85" width="720" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="divider2" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;direction=south;fontColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="400" y="85" width="10" height="850" as="geometry"/>
+                </mxCell>
+                <mxCell id="start" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=#000000;fontColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="185" y="110" width="30" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="access-targets" value="Akses halaman target" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="115" y="170" width="170" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="select-target" value="Pilih target yang dikerjakan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="100" y="260" width="200" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="view-detail" value="Lihat detail target" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="125" y="340" width="150" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="check-todo" value="Centang todo list selesai" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="60" y="420" width="150" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="click-submit" value="Klik submit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="230" y="420" width="120" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="fill-submission" value="Isi catatan dan upload file" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="200" y="500" width="180" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="submit-form" value="Submit pengumpulan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="210" y="580" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="show-targets" value="Tampilkan daftar target" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="520" y="170" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="show-detail" value="Tampilkan detail target" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="520" y="340" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="update-todo" value="Update status todo item" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="520" y="420" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="calc-progress" value="Hitung progress percentage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="520" y="500" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="validate-sub" value="Validasi pengumpulan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="520" y="580" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="upload-drive" value="Upload file ke Google Drive" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="520" y="660" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="save-submission" value="Simpan data pengumpulan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="520" y="740" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="show-success" value="Tampilkan notifikasi sukses" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="520" y="820" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="end" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=#ff0000;strokeWidth=3;fontColor=#000000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="585" y="890" width="30" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="a1" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontStyle=1" parent="1" source="start" target="access-targets" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a2" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontStyle=1" parent="1" source="access-targets" target="show-targets" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a3" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontStyle=1" parent="1" source="access-targets" target="select-target" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a4" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontStyle=1" parent="1" source="select-target" target="view-detail" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a5" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontStyle=1" parent="1" source="view-detail" target="show-detail" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a6" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontStyle=1" parent="1" source="view-detail" target="check-todo" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a7" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontStyle=1" parent="1" source="view-detail" target="click-submit" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a8" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontStyle=1" parent="1" source="check-todo" target="update-todo" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a9" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontStyle=1" parent="1" source="update-todo" target="calc-progress" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a10" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontStyle=1" parent="1" source="click-submit" target="fill-submission" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a11" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontStyle=1" parent="1" source="fill-submission" target="submit-form" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a12" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontStyle=1" parent="1" source="submit-form" target="validate-sub" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a13" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontStyle=1" parent="1" source="validate-sub" target="upload-drive" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a14" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontStyle=1" parent="1" source="upload-drive" target="save-submission" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a15" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontStyle=1" parent="1" source="save-submission" target="show-success" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a16" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontStyle=1" parent="1" source="show-success" target="end" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

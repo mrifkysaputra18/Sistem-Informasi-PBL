@@ -120,37 +120,81 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Status Periode Ujian
                             </label>
-                            <div class="flex flex-wrap gap-3">
-                                <label class="flex items-center px-4 py-2 border rounded-lg cursor-pointer transition-all
-                                    {{ old('current_exam_period', $academicPeriod->current_exam_period ?? 'none') === 'none' ? 'bg-gray-100 border-gray-400 ring-2 ring-gray-400' : 'bg-white border-gray-200 hover:bg-gray-50' }}">
+                            <div class="flex flex-wrap gap-3" id="exam-period-container">
+                                <!-- Option: Tidak Ada Ujian -->
+                                <label class="exam-period-option flex items-center px-4 py-2 border rounded-lg cursor-pointer transition-all {{ old('current_exam_period', $academicPeriod->current_exam_period ?? 'none') === 'none' ? 'bg-gray-100 border-gray-400 ring-2 ring-gray-400' : 'bg-white border-gray-200 hover:bg-gray-50' }}"
+                                       data-value="none"
+                                       data-active-class="bg-gray-100 border-gray-400 ring-2 ring-gray-400"
+                                       data-inactive-class="bg-white border-gray-200 hover:bg-gray-50">
                                     <input type="radio" 
                                            name="current_exam_period" 
                                            value="none"
                                            {{ old('current_exam_period', $academicPeriod->current_exam_period ?? 'none') === 'none' ? 'checked' : '' }}
-                                           class="sr-only">
-                                    <i class="fas fa-pause-circle text-gray-500 mr-2"></i>
-                                    <span class="text-sm font-medium text-gray-700">Tidak Ada Ujian</span>
+                                           class="sr-only"
+                                           onchange="updateExamPeriodStyles(this)">
+                                    <i class="fas fa-pause-circle {{ old('current_exam_period', $academicPeriod->current_exam_period ?? 'none') === 'none' ? 'text-gray-700' : 'text-gray-500' }} icon mr-2"></i>
+                                    <span class="text-sm font-medium {{ old('current_exam_period', $academicPeriod->current_exam_period ?? 'none') === 'none' ? 'text-gray-900' : 'text-gray-700' }} text">Tidak Ada Ujian</span>
                                 </label>
-                                <label class="flex items-center px-4 py-2 border rounded-lg cursor-pointer transition-all
-                                    {{ old('current_exam_period', $academicPeriod->current_exam_period) === 'uts' ? 'bg-blue-100 border-blue-400 ring-2 ring-blue-400' : 'bg-white border-gray-200 hover:bg-blue-50' }}">
+
+                                <!-- Option: Periode UTS -->
+                                <label class="exam-period-option flex items-center px-4 py-2 border rounded-lg cursor-pointer transition-all {{ old('current_exam_period', $academicPeriod->current_exam_period) === 'uts' ? 'bg-blue-100 border-blue-400 ring-2 ring-blue-400' : 'bg-white border-gray-200 hover:bg-blue-50' }}"
+                                       data-value="uts"
+                                       data-active-class="bg-blue-100 border-blue-400 ring-2 ring-blue-400"
+                                       data-inactive-class="bg-white border-gray-200 hover:bg-blue-50">
                                     <input type="radio" 
                                            name="current_exam_period" 
                                            value="uts"
                                            {{ old('current_exam_period', $academicPeriod->current_exam_period) === 'uts' ? 'checked' : '' }}
-                                           class="sr-only">
-                                    <i class="fas fa-file-alt text-blue-500 mr-2"></i>
-                                    <span class="text-sm font-medium text-blue-700">Periode UTS</span>
+                                           class="sr-only"
+                                           onchange="updateExamPeriodStyles(this)">
+                                    <i class="fas fa-file-alt {{ old('current_exam_period', $academicPeriod->current_exam_period) === 'uts' ? 'text-blue-700' : 'text-blue-500' }} icon mr-2"></i>
+                                    <span class="text-sm font-medium {{ old('current_exam_period', $academicPeriod->current_exam_period) === 'uts' ? 'text-blue-900' : 'text-blue-700' }} text">Periode UTS</span>
                                 </label>
-                                <label class="flex items-center px-4 py-2 border rounded-lg cursor-pointer transition-all
-                                    {{ old('current_exam_period', $academicPeriod->current_exam_period) === 'uas' ? 'bg-orange-100 border-orange-400 ring-2 ring-orange-400' : 'bg-white border-gray-200 hover:bg-orange-50' }}">
+
+                                <!-- Option: Periode UAS -->
+                                <label class="exam-period-option flex items-center px-4 py-2 border rounded-lg cursor-pointer transition-all {{ old('current_exam_period', $academicPeriod->current_exam_period) === 'uas' ? 'bg-orange-100 border-orange-400 ring-2 ring-orange-400' : 'bg-white border-gray-200 hover:bg-orange-50' }}"
+                                       data-value="uas"
+                                       data-active-class="bg-orange-100 border-orange-400 ring-2 ring-orange-400"
+                                       data-inactive-class="bg-white border-gray-200 hover:bg-orange-50">
                                     <input type="radio" 
                                            name="current_exam_period" 
                                            value="uas"
                                            {{ old('current_exam_period', $academicPeriod->current_exam_period) === 'uas' ? 'checked' : '' }}
-                                           class="sr-only">
-                                    <i class="fas fa-file-signature text-orange-500 mr-2"></i>
-                                    <span class="text-sm font-medium text-orange-700">Periode UAS</span>
+                                           class="sr-only"
+                                           onchange="updateExamPeriodStyles(this)">
+                                    <i class="fas fa-file-signature {{ old('current_exam_period', $academicPeriod->current_exam_period) === 'uas' ? 'text-orange-700' : 'text-orange-500' }} icon mr-2"></i>
+                                    <span class="text-sm font-medium {{ old('current_exam_period', $academicPeriod->current_exam_period) === 'uas' ? 'text-orange-900' : 'text-orange-700' }} text">Periode UAS</span>
                                 </label>
+
+                                <script>
+                                    function updateExamPeriodStyles(radio) {
+                                        // Reset all labels
+                                        document.querySelectorAll('.exam-period-option').forEach(label => {
+                                            const activeClass = label.dataset.activeClass;
+                                            const inactiveClass = label.dataset.inactiveClass;
+                                            
+                                            // Remove active classes, add inactive classes
+                                            label.classList.remove(...activeClass.split(' '));
+                                            label.classList.add(...inactiveClass.split(' '));
+                                            
+                                            // Reset text/icon colors to default (muted)
+                                            /* Note: We keep simple generic logic or re-render based on specific logic. 
+                                               To keep it simple, we just toggle the container classes defined in data attrs.
+                                               For distinct text colors, we can handle them if needed, but the bg change is the most important.
+                                            */
+                                        });
+
+                                        // Set active label
+                                        if (radio.checked) {
+                                            const activeLabel = radio.closest('label');
+                                            const activeClass = activeLabel.dataset.activeClass;
+                                            const inactiveClass = activeLabel.dataset.inactiveClass;
+                                            
+                                            activeLabel.classList.remove(...inactiveClass.split(' '));
+                                            activeLabel.classList.add(...activeClass.split(' '));
+                                        }
+                                    }
+                                </script>
                             </div>
                             <p class="mt-2 text-xs text-gray-500">
                                 <i class="fas fa-info-circle mr-1"></i>

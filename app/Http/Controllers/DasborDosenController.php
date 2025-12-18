@@ -16,9 +16,11 @@ class DasborDosenController extends Controller
             ->where('dosen_id', $user->id)
             ->pluck('mata_kuliah_id');
 
-        // Untuk sementara, dosen bisa melihat semua kelas aktif
-        // karena relasi langsung dosen-kelas sudah dihapus
-        $myClassRoomIds = RuangKelas::where('is_active', true)->pluck('id');
+        // Cari kelas yang ditugaskan ke dosen ini (sebagai Dosen PBL)
+        $myClassRooms = $user->kelasPblAktif; 
+        $myClassRoomIds = $myClassRooms->pluck('id');
+        
+        // Groups under my assigned classes
         $myGroupIds = Kelompok::whereIn('class_room_id', $myClassRoomIds)->pluck('id');
 
         // Get weekly targets data
@@ -29,8 +31,8 @@ class DasborDosenController extends Controller
 
         // Stats untuk dosen
         $stats = [
-            'totalClassRooms' => RuangKelas::where('is_active', true)->count(),
-            'totalGroups' => Kelompok::whereIn('class_room_id', $myClassRoomIds)->count(),
+            'totalClassRooms' => $myClassRoomIds->count(),
+            'totalGroups' => $myGroupIds->count(),
             'totalScores' => NilaiKelompok::whereIn('group_id', $myGroupIds)->count(),
             'pendingReviews' => TargetMingguan::whereIn('group_id', $myGroupIds)
                 ->whereIn('submission_status', ['submitted', 'revision'])->count(),
@@ -41,17 +43,19 @@ class DasborDosenController extends Controller
             'mataKuliahDiampu' => $mataKuliahIds->count(),
         ];
 
-        // All active classes (dosen dapat melihat semua kelas aktif)
+        // Only active classes assigned to this lecturer
         $classRooms = RuangKelas::with(['groups.members.user', 'academicPeriod'])
+            ->whereIn('id', $myClassRoomIds)
             ->where('is_active', true)
             ->withCount('groups')
             ->latest()
             ->get();
 
-        // Progress yang perlu direview
+        // Progress yang perlu direview (only from my assigned classes)
         $progressToReview = TargetMingguan::with(['group.classRoom', 'completedByUser'])
             ->whereIn('group_id', $myGroupIds)
-            ->whereIn('submission_status', ['submitted', 'revision'])
+            ->whereIn('submission_status', ['submitted', 'late']) // Changed to match logic in UlasanController
+            ->where('is_reviewed', false)
             ->latest('completed_at')
             ->take(10)
             ->get();

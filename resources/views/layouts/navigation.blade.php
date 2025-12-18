@@ -115,7 +115,11 @@
                             <x-slot name="content">
                                 @if(auth()->user()->isDosen() || auth()->user()->isAdmin())
                                     <x-dropdown-link :href="route('scores.student-input')">
-                                        {{ __('Input Nilai') }}
+                                        {{ __('Input Nilai Mahasiswa') }}
+                                    </x-dropdown-link>
+                                    
+                                    <x-dropdown-link :href="route('nilai-rubrik.index')">
+                                        {{ __('Nilai Mata Kuliah') }}
                                     </x-dropdown-link>
                                 @endif
                                 

@@ -1,0 +1,118 @@
+<mxfile host="65bd71144e">
+    <diagram id="konfigurasi-ahp" name="Konfigurasi AHP">
+        <mxGraphModel dx="265" dy="392" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="900" background="#FFFFFF" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="title" value="Konfigurasi AHP" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="300" y="20" width="200" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="header-user" value="Admin" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="120" y="60" width="160" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="header-system" value="Sistem" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="520" y="60" width="160" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="divider1" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="85" width="720" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="divider2" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;direction=south;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="400" y="85" width="10" height="700" as="geometry"/>
+                </mxCell>
+                <mxCell id="start" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=#000000;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="185" y="110" width="30" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="access-menu" value="Akses menu konfigurasi AHP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="100" y="170" width="200" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="view-matrix" value="Lihat matriks perbandingan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="100" y="250" width="200" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="choice-action" value="Pilih aksi" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=10;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="140" y="330" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="edit-comparison" value="Edit nilai perbandingan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="430" width="150" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="calculate-weight" value="Klik hitung bobot" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="430" width="140" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="save-comparison" value="Simpan perbandingan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="510" width="150" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="apply-weight" value="Terapkan bobot" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="590" width="140" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="show-matrix" value="Tampilkan matriks kriteria" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="520" y="170" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="validate-matrix" value="Validasi matriks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="530" y="430" width="140" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="save-db" value="Simpan ke database" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="530" y="510" width="140" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="calc-ahp" value="Hitung AHP dan Consistency Ratio" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="500" y="580" width="200" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="check-cr" value="CR ≤ 0.1?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=10;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="545" y="650" width="110" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="apply-db" value="Terapkan bobot ke kriteria" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="520" y="730" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="show-cr-error" value="Error: tidak konsisten" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="707" y="655" width="100" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="end" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=#ff0000;strokeWidth=3;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="585" y="800" width="30" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="a1" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontStyle=1;fontColor=#000000;" parent="1" source="start" target="access-menu" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a2" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontStyle=1;fontColor=#000000;" parent="1" source="access-menu" target="show-matrix" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a3" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontStyle=1;fontColor=#000000;" parent="1" source="access-menu" target="view-matrix" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a4" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontStyle=1;fontColor=#000000;" parent="1" source="view-matrix" target="choice-action" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a5" value="Edit" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontSize=9;fontStyle=1;fontColor=#000000;" parent="1" source="choice-action" target="edit-comparison" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a6" value="Hitung" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontSize=9;fontStyle=1;fontColor=#000000;" parent="1" source="choice-action" target="calculate-weight" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a7" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontStyle=1;fontColor=#000000;" parent="1" source="edit-comparison" target="validate-matrix" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a8" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontStyle=1;fontColor=#000000;" parent="1" source="edit-comparison" target="save-comparison" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a9" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontStyle=1;fontColor=#000000;" parent="1" source="save-comparison" target="save-db" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a10" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontStyle=1;fontColor=#000000;" parent="1" source="calculate-weight" target="calc-ahp" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a11" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontStyle=1;fontColor=#000000;" parent="1" source="calc-ahp" target="check-cr" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a12" value="Ya" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontSize=9;fontStyle=1;fontColor=#000000;" parent="1" source="check-cr" target="apply-db" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a13" value="Tidak" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontSize=9;fontStyle=1;fontColor=#000000;" parent="1" source="check-cr" target="show-cr-error" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a14" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontStyle=1;fontColor=#000000;" parent="1" source="calculate-weight" target="apply-weight" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a15" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontStyle=1;fontColor=#000000;" parent="1" source="apply-db" target="end" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

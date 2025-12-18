@@ -100,14 +100,18 @@ class NilaiMahasiswaController extends Controller
             abort(403, 'Unauthorized action. Hanya admin dan dosen yang dapat menginput nilai mahasiswa.');
         }
 
-        $students = Pengguna::where('role', 'mahasiswa')
-            ->with(['classRoom', 'groups'])
-            ->orderBy('name')
-            ->get();
-        
-        $criteria = Kriteria::where('segment', 'student')->get();
-        
-        return view('nilai-mahasiswa.tambah', compact('students', 'criteria'));
+        $query = Pengguna::where('role', 'mahasiswa')->with(['classRoom'])->orderBy('name');
+
+        // Dosen hanya bisa lihat mahasiswa dari kelas yg ditugaskan
+        if (auth()->user()->isDosen()) {
+            $assignedClassIds = auth()->user()->kelasPblAktif()->pluck('id');
+            $query->whereIn('class_room_id', $assignedClassIds);
+        }
+
+        return view('nilai-mahasiswa.tambah', [
+            'students' => $query->get(),
+            'criteria' => Kriteria::where('segment', 'student')->orderBy('id')->get(),
+        ]);
     }
 
     /**
@@ -118,6 +122,14 @@ class NilaiMahasiswaController extends Controller
         // Only admin and dosen can store scores
         if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
             abort(403, 'Unauthorized action. Hanya admin dan dosen yang dapat menginput nilai mahasiswa.');
+        }
+
+        // Dosen hanya bisa input nilai untuk mahasiswa yang ditugaskan
+        if (auth()->user()->isDosen()) {
+            $student = Pengguna::findOrFail($request->user_id);
+            if (!auth()->user()->isDosenPblDi($student->class_room_id)) {
+                abort(403, 'Unauthorized action. Anda tidak ditugaskan di kelas mahasiswa ini.');
+            }
         }
 
         $validator = Validator::make($request->all(), [

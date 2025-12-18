@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\Auth;
 
 class UlasanTargetMingguanController extends Controller
 {
+    protected $targetService;
+
+    public function __construct(\App\Services\TargetMingguanService $targetService)
+    {
+        $this->targetService = $targetService;
+    }
+
     /**
      * Display a listing of targets that need review
      */
@@ -20,6 +27,14 @@ class UlasanTargetMingguanController extends Controller
         $query = TargetMingguan::with(['group.classRoom', 'group.members', 'completedByUser'])
             ->whereIn('submission_status', ['submitted', 'late'])  // Hanya yang sudah submit
             ->where('is_reviewed', false);  // Belum direview
+
+        // Restriction for Dosen PBL
+        if ($user->isDosen()) {
+            $assignedClassIds = $user->kelasPblAktif()->pluck('id');
+            $query->whereHas('group', function($q) use ($assignedClassIds) {
+                $q->whereIn('class_room_id', $assignedClassIds);
+            });
+        }
         
         $pendingTargets = $query->orderBy('completed_at', 'desc')->paginate(20);
 
@@ -38,6 +53,12 @@ class UlasanTargetMingguanController extends Controller
     public function show(TargetMingguan $weeklyTarget)
     {
         $user = Auth::user();
+
+        // Check Access
+        if ($user->isDosen() && !$user->isDosenPblDi($weeklyTarget->group->class_room_id)) {
+            abort(403, 'Unauthorized. Anda tidak ditugaskan di kelas ini.');
+        }
+
         $target = $weeklyTarget->load(['group.members', 'group.classRoom', 'completedByUser', 'review']);
         
         // Check if already reviewed
@@ -56,6 +77,11 @@ class UlasanTargetMingguanController extends Controller
         $user = Auth::user();
         $target = $weeklyTarget;
         
+        // Check Access
+        if ($user->isDosen() && !$user->isDosenPblDi($target->group->class_room_id)) {
+            abort(403, 'Unauthorized. Anda tidak ditugaskan di kelas ini.');
+        }
+
         // Check if already reviewed
         if ($target->isReviewed()) {
             return redirect()
@@ -158,6 +184,12 @@ class UlasanTargetMingguanController extends Controller
     public function edit(TargetMingguan $weeklyTarget)
     {
         $user = Auth::user();
+
+        // Check Access
+        if ($user->isDosen() && !$user->isDosenPblDi($weeklyTarget->group->class_room_id)) {
+            abort(403, 'Unauthorized. Anda tidak ditugaskan di kelas ini.');
+        }
+
         $target = $weeklyTarget->load(['group.members', 'group.classRoom', 'review']);
         
         if (!$target->isReviewed()) {
@@ -176,6 +208,12 @@ class UlasanTargetMingguanController extends Controller
     {
         $user = Auth::user();
         $target = $weeklyTarget;
+
+        // Check Access
+        if ($user->isDosen() && !$user->isDosenPblDi($target->group->class_room_id)) {
+            abort(403, 'Unauthorized. Anda tidak ditugaskan di kelas ini.');
+        }
+
         $review = $target->review;
 
         if (!$review) {

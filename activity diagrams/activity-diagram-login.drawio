@@ -1,0 +1,109 @@
+<mxfile host="65bd71144e">
+    <diagram id="login-flow" name="Login Sistem">
+        <mxGraphModel dx="720" dy="598" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="#FFFFFF" math="0" shadow="1">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="title" value="Login Sistem" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1;fontColor=#000000;labelBackgroundColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="300" y="20" width="200" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="header-user" value="User" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#000000;labelBackgroundColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="120" y="60" width="160" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="header-system" value="Sistem" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#000000;labelBackgroundColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="520" y="60" width="160" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="divider1" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="40" y="85" width="720" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="divider2" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;direction=south;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="400" y="85" width="10" height="700" as="geometry"/>
+                </mxCell>
+                <mxCell id="start" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="185" y="110" width="30" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="access-login" value="Mengakses halaman login" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="120" y="170" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="choice-login" value="Pilih metode login" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=10;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="140" y="240" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="input-manual" value="Mengisi email dan password" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="60" y="340" width="130" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="click-google" value="Klik login Google" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="210" y="340" width="130" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="submit-login" value="Submit form login" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="60" y="420" width="130" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="validate-cred" value="Validasi kredensial user" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="520" y="420" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="redirect-google" value="Redirect ke Google OAuth" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="520" y="340" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="check-valid" value="Valid?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=10;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="545" y="490" width="110" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="create-session" value="Buat session dan simpan token" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="520" y="580" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="check-role" value="Cek role pengguna" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="520" y="660" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="redirect-dash" value="Redirect ke dashboard sesuai role" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="520" y="740" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="show-error" value="Tampilkan pesan error" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#000000;fontSize=11;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="704" y="495" width="100" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="end" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=#ff0000;strokeWidth=3;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="585" y="810" width="30" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="a1" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" edge="1" parent="1" source="start" target="access-login">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a2" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" edge="1" parent="1" source="access-login" target="choice-login">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a3" value="Manual" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontSize=9;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" edge="1" parent="1" source="choice-login" target="input-manual">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a4" value="Google" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontSize=9;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" edge="1" parent="1" source="choice-login" target="click-google">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a5" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" edge="1" parent="1" source="input-manual" target="submit-login">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a6" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" edge="1" parent="1" source="submit-login" target="validate-cred">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a7" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" edge="1" parent="1" source="click-google" target="redirect-google">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a8" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" edge="1" parent="1" source="redirect-google" target="validate-cred">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a9" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" edge="1" parent="1" source="validate-cred" target="check-valid">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a10" value="Ya" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontSize=9;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" edge="1" parent="1" source="check-valid" target="create-session">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a11" value="Tidak" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontSize=9;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" edge="1" parent="1" source="check-valid" target="show-error">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a12" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" edge="1" parent="1" source="create-session" target="check-role">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a13" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" edge="1" parent="1" source="check-role" target="redirect-dash">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="a14" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontColor=#000000;labelBackgroundColor=none;fontStyle=1" edge="1" parent="1" source="redirect-dash" target="end">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

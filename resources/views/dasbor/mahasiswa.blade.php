@@ -100,13 +100,25 @@
                                             </div>
                                             
                                             {{-- Countdown Timer Badge --}}
-                                            @if($target->deadline && $target->submission_status == 'pending' && !$target->isClosed())
+                                            @php
+                                                $deadline = $target->deadline;
+                                                $sudahLewat = $deadline && now()->gt($deadline);
+                                            @endphp
+                                            
+                                            @if($deadline)
                                                 <div class="mt-3">
-                                                    <span class="countdown-timer inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200" 
+                                                    @if(!$sudahLewat && $target->submission_status == 'pending')
+                                                    <span class="countdown-timer px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-xs font-semibold" 
                                                           data-deadline="{{ $target->deadline->timestamp }}">
-                                                        <i class="fas fa-hourglass-half text-blue-500"></i>
-                                                        <span class="timer-text font-mono">Memuat...</span>
+                                                        <i class="fas fa-hourglass-half mr-1"></i>
+                                                        <span class="timer-text">Memuat...</span>
                                                     </span>
+                                                    @elseif($sudahLewat && $target->submission_status == 'pending')
+                                                    <span class="px-2 py-0.5 rounded bg-rose-500 text-white text-xs font-semibold animate-pulse">
+                                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                                        Terlambat
+                                                    </span>
+                                                    @endif
                                                 </div>
                                             @endif
                                         </div>
@@ -267,8 +279,6 @@
     {{-- Script for Countdown Timer --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const URGENT_THRESHOLD = 172800; // 48 jam dalam detik (2 hari)
-            
             function updateCountdowns() {
                 const now = Math.floor(Date.now() / 1000);
                 
@@ -276,26 +286,9 @@
                     const deadline = parseInt(timer.getAttribute('data-deadline'));
                     const diff = deadline - now;
                     const textElement = timer.querySelector('.timer-text');
-                    const iconElement = timer.querySelector('i');
                     
                     if (diff <= 0) {
-                        // Hide the target card when expired
-                        const targetCard = timer.closest('a');
-                        if (targetCard) {
-                            targetCard.style.transition = 'opacity 0.5s ease-out';
-                            targetCard.style.opacity = '0';
-                            setTimeout(() => {
-                                targetCard.style.display = 'none';
-                                // Update counter badge
-                                const counterBadge = document.querySelector('.bg-red-500.text-white.text-xs.font-bold.px-2');
-                                if (counterBadge) {
-                                    const currentCount = parseInt(counterBadge.textContent) || 0;
-                                    if (currentCount > 0) {
-                                        counterBadge.textContent = currentCount - 1;
-                                    }
-                                }
-                            }, 500);
-                        }
+                        location.reload();
                         return;
                     }
                     
@@ -311,13 +304,9 @@
                     
                     textElement.textContent = text;
                     
-                    // Jika sisa waktu <= 48 jam, ubah ke merah/urgent
-                    if (diff <= URGENT_THRESHOLD) {
-                        timer.className = 'countdown-timer countdown-urgent inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500 text-white text-xs font-bold border-2 border-red-600 shadow-lg';
-                        if (iconElement) iconElement.className = 'fas fa-bell text-yellow-300';
-                    } else {
-                        timer.className = 'countdown-timer inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200';
-                        if (iconElement) iconElement.className = 'fas fa-hourglass-half text-blue-500';
+                    // Urgent styling if less than 48 hours
+                    if (diff <= 172800) {
+                        timer.className = 'countdown-timer px-2 py-0.5 rounded bg-rose-500 text-white text-xs font-semibold animate-pulse';
                     }
                 });
             }
@@ -327,20 +316,5 @@
         });
     </script>
     
-    {{-- CSS Animation for Urgent Countdown --}}
-    <style>
-        @keyframes pulse-scale {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        
-        .countdown-urgent {
-            animation: pulse-scale 1s ease-in-out infinite, pulse-glow 1.5s ease-in-out infinite;
-        }
-        
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 5px 0 rgba(239, 68, 68, 0.4); }
-            50% { box-shadow: 0 0 15px 5px rgba(239, 68, 68, 0.6); }
-        }
-    </style>
+
 </x-app-layout>

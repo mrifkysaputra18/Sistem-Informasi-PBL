@@ -81,8 +81,16 @@ class NilaiKelompokController extends Controller
             abort(403, 'Unauthorized action. Hanya admin dan dosen yang dapat menginput nilai kelompok.');
         }
 
+        $query = Kelompok::with(['classRoom'])->orderBy('name');
+
+        // Dosen hanya bisa lihat kelompok dari kelas yg ditugaskan
+        if (auth()->user()->isDosen()) {
+            $assignedClassIds = auth()->user()->kelasPblAktif()->pluck('id');
+            $query->whereIn('class_room_id', $assignedClassIds);
+        }
+
         return view('nilai.tambah', [
-            'groups' => Kelompok::with(['classRoom'])->orderBy('name')->get(),
+            'groups' => $query->get(),
             'criteria' => Kriteria::where('segment', 'group')->orderBy('id')->get(),
         ]);
     }
@@ -95,6 +103,14 @@ class NilaiKelompokController extends Controller
         // Only admin and dosen can store scores
         if (!auth()->user()->isAdmin() && !auth()->user()->isDosen()) {
             abort(403, 'Unauthorized action. Hanya admin dan dosen yang dapat menginput nilai kelompok.');
+        }
+
+        // Dosen hanya bisa input nilai untuk kelompok yang ditugaskan
+        if (auth()->user()->isDosen()) {
+            $group = Kelompok::findOrFail($request->group_id);
+            if (!auth()->user()->isDosenPblDi($group->class_room_id)) {
+                abort(403, 'Unauthorized action. Anda tidak ditugaskan di kelas ini.');
+            }
         }
 
         NilaiKelompok::updateOrCreate(
