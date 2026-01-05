@@ -23,14 +23,22 @@
                     <p><strong>{{ $rubrikPenilaian->nama }}</strong></p>
                     <p>{{ $rubrikPenilaian->periodeAkademik->name ?? '-' }} - Semester {{ $rubrikPenilaian->semester }}</p>
                 </div>
-                <div class="mt-3 flex flex-wrap gap-2">
-                    @foreach($rubrikPenilaian->items as $item)
-                        <span class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold bg-orange-100 text-orange-800 border border-orange-200">
-                            {{ $item->nama }}: {{ number_format($item->persentase, 0) }}%
-                        </span>
+                <div class="mt-3 space-y-2">
+                    @foreach($rubrikPenilaian->kategoris as $kategori)
+                        <div class="flex flex-wrap gap-2 items-center">
+                            <span class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold bg-orange-200 text-orange-800 border border-orange-300">
+                                {{ $kategori->nama }}: {{ number_format($kategori->bobot, 0) }}%
+                            </span>
+                            @foreach($kategori->items as $item)
+                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200">
+                                    {{ $item->nama }}: {{ number_format($item->persentase, 0) }}%
+                                </span>
+                            @endforeach
+                        </div>
                     @endforeach
                 </div>
             </div>
+
 
             <!-- Form -->
             <div class="bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden">

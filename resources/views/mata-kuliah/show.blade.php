@@ -85,14 +85,22 @@
                                             <span><i class="fa-solid fa-user mr-1"></i> {{ $rubrik->creator->name ?? '-' }}</span>
                                         </div>
                                         
-                                        <!-- Bobot UTS/UAS -->
+                                        <!-- Kategori Bobot -->
                                         <div class="flex flex-wrap gap-2 mb-3">
-                                            <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
-                                                <i class="fa-solid fa-scale-balanced mr-1"></i> UTS: {{ number_format($rubrik->bobot_uts, 0) }}%
-                                            </span>
-                                            <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-orange-100 text-orange-800 border border-orange-200">
-                                                <i class="fa-solid fa-scale-balanced mr-1"></i> UAS: {{ number_format($rubrik->bobot_uas, 0) }}%
-                                            </span>
+                                            @php
+                                                $kategoriColors = [
+                                                    ['bg' => 'bg-blue-100', 'text' => 'text-blue-800', 'border' => 'border-blue-200'],
+                                                    ['bg' => 'bg-orange-100', 'text' => 'text-orange-800', 'border' => 'border-orange-200'],
+                                                    ['bg' => 'bg-purple-100', 'text' => 'text-purple-800', 'border' => 'border-purple-200'],
+                                                    ['bg' => 'bg-teal-100', 'text' => 'text-teal-800', 'border' => 'border-teal-200'],
+                                                ];
+                                            @endphp
+                                            @foreach($rubrik->kategoris as $kIndex => $kategori)
+                                                @php $color = $kategoriColors[$kIndex % count($kategoriColors)]; @endphp
+                                                <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold {{ $color['bg'] }} {{ $color['text'] }} {{ $color['border'] }} border">
+                                                    <i class="fa-solid fa-scale-balanced mr-1"></i> {{ $kategori->nama }}: {{ number_format($kategori->bobot, 0) }}%
+                                                </span>
+                                            @endforeach
                                             <span class="{{ $rubrik->isComplete() ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-red-100 text-red-800 border-red-200' }} inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold border">
                                                 @if($rubrik->isComplete())
                                                     <i class="fa-solid fa-check-circle mr-1"></i> Valid
@@ -102,34 +110,25 @@
                                             </span>
                                         </div>
                                         
-                                        <!-- Rubrik Items Preview - Grouped by Periode -->
-                                        @if($rubrik->items->count() > 0)
+                                        <!-- Rubrik Items Preview - Grouped by Kategori -->
+                                        @if($rubrik->kategoris->count() > 0)
                                             <div class="space-y-2">
-                                                <!-- Item UTS -->
-                                                @if($rubrik->items->where('periode_ujian', 'uts')->count() > 0)
-                                                <div class="flex flex-wrap gap-1 items-center">
-                                                    <span class="text-xs font-bold text-blue-700 mr-1">UTS:</span>
-                                                    @foreach($rubrik->items->where('periode_ujian', 'uts') as $item)
-                                                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                                                            {{ $item->nama }}: {{ number_format($item->persentase, 0) }}%
-                                                        </span>
-                                                    @endforeach
-                                                </div>
-                                                @endif
-                                                
-                                                <!-- Item UAS -->
-                                                @if($rubrik->items->where('periode_ujian', 'uas')->count() > 0)
-                                                <div class="flex flex-wrap gap-1 items-center">
-                                                    <span class="text-xs font-bold text-orange-700 mr-1">UAS:</span>
-                                                    @foreach($rubrik->items->where('periode_ujian', 'uas') as $item)
-                                                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-orange-50 text-orange-700 border border-orange-200">
-                                                            {{ $item->nama }}: {{ number_format($item->persentase, 0) }}%
-                                                        </span>
-                                                    @endforeach
-                                                </div>
-                                                @endif
+                                                @foreach($rubrik->kategoris as $kIndex => $kategori)
+                                                    @php $color = $kategoriColors[$kIndex % count($kategoriColors)]; @endphp
+                                                    @if($kategori->items->count() > 0)
+                                                    <div class="flex flex-wrap gap-1 items-center">
+                                                        <span class="text-xs font-bold {{ $color['text'] }} mr-1">{{ $kategori->nama }}:</span>
+                                                        @foreach($kategori->items as $item)
+                                                            <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium {{ str_replace('100', '50', $color['bg']) }} {{ $color['text'] }} {{ $color['border'] }} border">
+                                                                {{ $item->nama }}: {{ number_format($item->persentase, 0) }}%
+                                                            </span>
+                                                        @endforeach
+                                                    </div>
+                                                    @endif
+                                                @endforeach
                                             </div>
                                         @endif
+
                                     </div>
                                     
                                     @if($canManageRubrik)

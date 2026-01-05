@@ -16,8 +16,6 @@ class RubrikPenilaian extends Model
         'deskripsi',
         'periode_akademik_id',
         'semester',
-        'bobot_uts',
-        'bobot_uas',
         'created_by',
         'is_active',
     ];
@@ -25,8 +23,6 @@ class RubrikPenilaian extends Model
     protected $casts = [
         'is_active' => 'boolean',
         'semester' => 'integer',
-        'bobot_uts' => 'decimal:2',
-        'bobot_uas' => 'decimal:2',
     ];
 
     public function mataKuliah(): BelongsTo
@@ -44,60 +40,58 @@ class RubrikPenilaian extends Model
         return $this->belongsTo(Pengguna::class, 'created_by');
     }
 
+    /**
+     * Relasi ke semua items (flat)
+     */
     public function items(): HasMany
     {
         return $this->hasMany(RubrikItem::class, 'rubrik_penilaian_id')->orderBy('urutan');
     }
 
     /**
-     * Get items untuk periode UTS
+     * Relasi ke kategori penilaian
      */
-    public function itemsUts(): HasMany
+    public function kategoris(): HasMany
     {
-        return $this->hasMany(RubrikItem::class, 'rubrik_penilaian_id')
-            ->where('periode_ujian', 'uts')
-            ->orderBy('urutan');
+        return $this->hasMany(RubrikKategori::class, 'rubrik_penilaian_id')->orderBy('urutan');
     }
 
     /**
-     * Get items untuk periode UAS
+     * Get kategori dengan items (eager loaded)
      */
-    public function itemsUas(): HasMany
+    public function kategorisWithItems(): HasMany
     {
-        return $this->hasMany(RubrikItem::class, 'rubrik_penilaian_id')
-            ->where('periode_ujian', 'uas')
-            ->orderBy('urutan');
+        return $this->kategoris()->with('itemsWithSubItems');
     }
 
     /**
-     * Hitung total persentase item UTS (harus 100%)
+     * Hitung total bobot semua kategori (harus 100%)
      */
-    public function getTotalPersentaseUtsAttribute(): float
+    public function getTotalBobotKategoriAttribute(): float
     {
-        return $this->itemsUts()->sum('persentase');
-    }
-
-    /**
-     * Hitung total persentase item UAS (harus 100%)
-     */
-    public function getTotalPersentaseUasAttribute(): float
-    {
-        return $this->itemsUas()->sum('persentase');
+        return $this->kategoris()->sum('bobot');
     }
 
     /**
      * Cek apakah rubrik lengkap:
-     * - Bobot UTS + UAS = 100%
-     * - Total item UTS = 100%
-     * - Total item UAS = 100%
+     * - Total bobot kategori = 100%
+     * - Setiap kategori memiliki total item = 100%
      */
     public function isComplete(): bool
     {
-        $bobotValid = ($this->bobot_uts + $this->bobot_uas) == 100;
-        $utsValid = $this->total_persentase_uts == 100;
-        $uasValid = $this->total_persentase_uas == 100;
-        
-        return $bobotValid && $utsValid && $uasValid;
+        // Total bobot kategori harus 100%
+        if ($this->total_bobot_kategori != 100) {
+            return false;
+        }
+
+        // Setiap kategori harus lengkap
+        foreach ($this->kategoris as $kategori) {
+            if (!$kategori->isComplete()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -105,13 +99,20 @@ class RubrikPenilaian extends Model
      */
     public function getValidationStatus(): array
     {
+        $kategoriStatus = [];
+        foreach ($this->kategoris as $kategori) {
+            $kategoriStatus[] = [
+                'nama' => $kategori->nama,
+                'bobot' => $kategori->bobot,
+                'total_items' => $kategori->total_persentase_items,
+                'valid' => $kategori->isComplete(),
+            ];
+        }
+
         return [
-            'bobot_valid' => ($this->bobot_uts + $this->bobot_uas) == 100,
-            'uts_valid' => $this->total_persentase_uts == 100,
-            'uas_valid' => $this->total_persentase_uas == 100,
-            'total_bobot' => $this->bobot_uts + $this->bobot_uas,
-            'total_uts' => $this->total_persentase_uts,
-            'total_uas' => $this->total_persentase_uas,
+            'bobot_valid' => $this->total_bobot_kategori == 100,
+            'total_bobot' => $this->total_bobot_kategori,
+            'kategoris' => $kategoriStatus,
         ];
     }
 
@@ -130,12 +131,102 @@ class RubrikPenilaian extends Model
         $this->update(['is_active' => true]);
     }
 
-    // Legacy support - untuk kompatibilitas dengan kode lama
+    // =====================================
+    // Legacy Support - Backward Compatibility
+    // =====================================
+
+    /**
+     * Get kategori UTS (backward compatibility)
+     */
+    public function kategoriUts()
+    {
+        return $this->kategoris()->where('kode', 'uts')->first();
+    }
+
+    /**
+     * Get kategori UAS (backward compatibility)
+     */
+    public function kategoriUas()
+    {
+        return $this->kategoris()->where('kode', 'uas')->first();
+    }
+
+    /**
+     * Get root items untuk kategori UTS (backward compatibility)
+     */
+    public function itemsUts(): HasMany
+    {
+        $kategoriUts = $this->kategoriUts();
+        if (!$kategoriUts) {
+            return $this->hasMany(RubrikItem::class, 'rubrik_penilaian_id')->whereRaw('1=0');
+        }
+        return $this->hasMany(RubrikItem::class, 'rubrik_penilaian_id')
+            ->where('rubrik_kategori_id', $kategoriUts->id)
+            ->whereNull('parent_id')
+            ->orderBy('urutan');
+    }
+
+    /**
+     * Get root items untuk kategori UAS (backward compatibility)
+     */
+    public function itemsUas(): HasMany
+    {
+        $kategoriUas = $this->kategoriUas();
+        if (!$kategoriUas) {
+            return $this->hasMany(RubrikItem::class, 'rubrik_penilaian_id')->whereRaw('1=0');
+        }
+        return $this->hasMany(RubrikItem::class, 'rubrik_penilaian_id')
+            ->where('rubrik_kategori_id', $kategoriUas->id)
+            ->whereNull('parent_id')
+            ->orderBy('urutan');
+    }
+
+    /**
+     * Get bobot UTS (backward compatibility)
+     */
+    public function getBobotUtsAttribute(): float
+    {
+        return $this->kategoriUts()?->bobot ?? 0;
+    }
+
+    /**
+     * Get bobot UAS (backward compatibility)
+     */
+    public function getBobotUasAttribute(): float
+    {
+        return $this->kategoriUas()?->bobot ?? 0;
+    }
+
+    /**
+     * Hitung total persentase UTS (backward compatibility)
+     */
+    public function getTotalPersentaseUtsAttribute(): float
+    {
+        return $this->kategoriUts()?->total_persentase_items ?? 0;
+    }
+
+    /**
+     * Hitung total persentase UAS (backward compatibility)
+     */
+    public function getTotalPersentaseUasAttribute(): float
+    {
+        return $this->kategoriUas()?->total_persentase_items ?? 0;
+    }
+
+    /**
+     * Legacy support - total persentase rata-rata
+     */
     public function getTotalPersentaseAttribute(): float
     {
-        // Return rata-rata status validasi item
-        $utsTotal = $this->total_persentase_uts;
-        $uasTotal = $this->total_persentase_uas;
-        return ($utsTotal + $uasTotal) / 2;
+        $kategoris = $this->kategoris;
+        if ($kategoris->isEmpty()) {
+            return 0;
+        }
+        
+        $total = 0;
+        foreach ($kategoris as $kategori) {
+            $total += $kategori->total_persentase_items;
+        }
+        return $total / $kategoris->count();
     }
 }

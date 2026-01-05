@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MataKuliah;
 use App\Models\PeriodeAkademik;
 use App\Models\RubrikPenilaian;
+use App\Models\RubrikKategori;
 use App\Models\RubrikItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,10 +24,46 @@ class RubrikPenilaianController extends Controller
         }
     }
 
+    /**
+     * Simpan items secara rekursif (termasuk sub-items)
+     */
+    private function saveItemsRecursive(
+        array $items, 
+        int $rubrikId, 
+        int $kategoriId, 
+        ?int $parentId = null, 
+        int $level = 0
+    ): void {
+        foreach ($items as $index => $item) {
+            $rubrikItem = RubrikItem::create([
+                'rubrik_penilaian_id' => $rubrikId,
+                'rubrik_kategori_id' => $kategoriId,
+                'parent_id' => $parentId,
+                'level' => $level,
+                'nama' => $item['nama'],
+                'persentase' => $item['persentase'],
+                'deskripsi' => $item['deskripsi'] ?? null,
+                'urutan' => $index + 1,
+            ]);
+
+            // Rekursif simpan sub-items jika ada
+            if (!empty($item['sub_items']) && $level < RubrikItem::MAX_LEVEL) {
+                $this->saveItemsRecursive(
+                    $item['sub_items'], 
+                    $rubrikId, 
+                    $kategoriId, 
+                    $rubrikItem->id, 
+                    $level + 1
+                );
+            }
+        }
+    }
+
+
     public function index(MataKuliah $mataKuliah)
     {
         $rubrikPenilaians = $mataKuliah->rubrikPenilaians()
-            ->with(['periodeAkademik', 'creator', 'items'])
+            ->with(['periodeAkademik', 'creator', 'kategoris.items'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
             
@@ -38,7 +75,7 @@ class RubrikPenilaianController extends Controller
         $this->checkDosenAccess($mataKuliah);
         
         $periodeAkademiks = PeriodeAkademik::orderBy('academic_year', 'desc')->get();
-        $existingRubriks = $mataKuliah->rubrikPenilaians()->with('items')->get();
+        $existingRubriks = $mataKuliah->rubrikPenilaians()->with('kategoris.items')->get();
         
         return view('rubrik-penilaian.create', compact('mataKuliah', 'periodeAkademiks', 'existingRubriks'));
     }
@@ -51,38 +88,67 @@ class RubrikPenilaianController extends Controller
             'nama' => 'required|string|max:100',
             'deskripsi' => 'nullable|string',
             'periode_akademik_id' => 'required|exists:periode_akademik,id',
-            'bobot_uts' => 'required|numeric|min:0|max:100',
-            'bobot_uas' => 'required|numeric|min:0|max:100',
-            'items_uts' => 'required|array|min:1',
-            'items_uts.*.nama' => 'required|string|max:100',
-            'items_uts.*.persentase' => 'required|numeric|min:0|max:100',
-            'items_uts.*.deskripsi' => 'nullable|string',
-            'items_uas' => 'required|array|min:1',
-            'items_uas.*.nama' => 'required|string|max:100',
-            'items_uas.*.persentase' => 'required|numeric|min:0|max:100',
-            'items_uas.*.deskripsi' => 'nullable|string',
+            // Kategori penilaian
+            'kategoris' => 'required|array|min:1',
+            'kategoris.*.nama' => 'required|string|max:100',
+            'kategoris.*.bobot' => 'required|numeric|min:0|max:100',
+            'kategoris.*.deskripsi' => 'nullable|string',
+            'kategoris.*.kode' => 'nullable|string|max:20',
+            // Items dalam kategori
+            'kategoris.*.items' => 'required|array|min:1',
+            'kategoris.*.items.*.nama' => 'required|string|max:100',
+            'kategoris.*.items.*.persentase' => 'required|numeric|min:0|max:100',
+            'kategoris.*.items.*.deskripsi' => 'nullable|string',
+            // Sub-items (level 1)
+            'kategoris.*.items.*.sub_items' => 'nullable|array',
+            'kategoris.*.items.*.sub_items.*.nama' => 'required_with:kategoris.*.items.*.sub_items|string|max:100',
+            'kategoris.*.items.*.sub_items.*.persentase' => 'required_with:kategoris.*.items.*.sub_items|numeric|min:0|max:100',
+            'kategoris.*.items.*.sub_items.*.deskripsi' => 'nullable|string',
+            // Sub-sub-items (level 2)
+            'kategoris.*.items.*.sub_items.*.sub_items' => 'nullable|array',
+            'kategoris.*.items.*.sub_items.*.sub_items.*.nama' => 'required_with:kategoris.*.items.*.sub_items.*.sub_items|string|max:100',
+            'kategoris.*.items.*.sub_items.*.sub_items.*.persentase' => 'required_with:kategoris.*.items.*.sub_items.*.sub_items|numeric|min:0|max:100',
+            'kategoris.*.items.*.sub_items.*.sub_items.*.deskripsi' => 'nullable|string',
         ]);
 
         // Ambil semester dari periode akademik
-        $periodeAkademik = \App\Models\PeriodeAkademik::find($validated['periode_akademik_id']);
+        $periodeAkademik = PeriodeAkademik::find($validated['periode_akademik_id']);
         $semester = $periodeAkademik->semester_number ?? 1;
 
-        // Validasi bobot UTS + UAS = 100%
-        if (($validated['bobot_uts'] + $validated['bobot_uas']) != 100) {
-            return back()->withErrors(['bobot' => 'Total bobot UTS + UAS harus 100%. Saat ini: ' . ($validated['bobot_uts'] + $validated['bobot_uas']) . '%'])->withInput();
+        // Validasi total bobot kategori = 100%
+        $totalBobot = collect($validated['kategoris'])->sum('bobot');
+        if ($totalBobot != 100) {
+            return back()->withErrors(['kategoris' => 'Total bobot semua kategori harus 100%. Saat ini: ' . $totalBobot . '%'])->withInput();
         }
 
-        // Validasi total persentase item UTS = 100%
-        $totalUts = collect($validated['items_uts'])->sum('persentase');
-        if ($totalUts != 100) {
-            return back()->withErrors(['items_uts' => 'Total persentase item UTS harus 100%. Saat ini: ' . $totalUts . '%'])->withInput();
+        // Validasi total persentase item dalam setiap kategori = 100%
+        foreach ($validated['kategoris'] as $index => $kategori) {
+            $totalItems = collect($kategori['items'])->sum('persentase');
+            if ($totalItems != 100) {
+                return back()->withErrors(['kategoris' => "Total persentase item dalam kategori '{$kategori['nama']}' harus 100%. Saat ini: {$totalItems}%"])->withInput();
+            }
+
+            // Validasi sub-items (jika ada, total harus 100%)
+            foreach ($kategori['items'] as $itemIndex => $item) {
+                if (!empty($item['sub_items'])) {
+                    $totalSubItems = collect($item['sub_items'])->sum('persentase');
+                    if ($totalSubItems != 100) {
+                        return back()->withErrors(['kategoris' => "Total persentase sub-item pada item '{$item['nama']}' harus 100%. Saat ini: {$totalSubItems}%"])->withInput();
+                    }
+
+                    // Validasi sub-sub-items (jika ada, total harus 100%)
+                    foreach ($item['sub_items'] as $subItemIndex => $subItem) {
+                        if (!empty($subItem['sub_items'])) {
+                            $totalSubSubItems = collect($subItem['sub_items'])->sum('persentase');
+                            if ($totalSubSubItems != 100) {
+                                return back()->withErrors(['kategoris' => "Total persentase sub-sub-item pada '{$subItem['nama']}' harus 100%. Saat ini: {$totalSubSubItems}%"])->withInput();
+                            }
+                        }
+                    }
+                }
+            }
         }
 
-        // Validasi total persentase item UAS = 100%
-        $totalUas = collect($validated['items_uas'])->sum('persentase');
-        if ($totalUas != 100) {
-            return back()->withErrors(['items_uas' => 'Total persentase item UAS harus 100%. Saat ini: ' . $totalUas . '%'])->withInput();
-        }
 
         DB::transaction(function () use ($validated, $mataKuliah, $semester) {
             $rubrik = RubrikPenilaian::create([
@@ -91,43 +157,33 @@ class RubrikPenilaianController extends Controller
                 'deskripsi' => $validated['deskripsi'] ?? null,
                 'periode_akademik_id' => $validated['periode_akademik_id'],
                 'semester' => $semester,
-                'bobot_uts' => $validated['bobot_uts'],
-                'bobot_uas' => $validated['bobot_uas'],
                 'created_by' => auth()->id(),
                 'is_active' => false,
             ]);
 
-            // Simpan item UTS
-            foreach ($validated['items_uts'] as $index => $item) {
-                RubrikItem::create([
+            // Simpan kategori dan items
+            foreach ($validated['kategoris'] as $kategoriIndex => $kategoriData) {
+                $kategori = RubrikKategori::create([
                     'rubrik_penilaian_id' => $rubrik->id,
-                    'periode_ujian' => 'uts',
-                    'nama' => $item['nama'],
-                    'persentase' => $item['persentase'],
-                    'deskripsi' => $item['deskripsi'] ?? null,
-                    'urutan' => $index + 1,
+                    'nama' => $kategoriData['nama'],
+                    'bobot' => $kategoriData['bobot'],
+                    'urutan' => $kategoriIndex + 1,
+                    'deskripsi' => $kategoriData['deskripsi'] ?? null,
+                    'kode' => $kategoriData['kode'] ?? strtolower(str_replace(' ', '_', $kategoriData['nama'])),
                 ]);
-            }
 
-            // Simpan item UAS
-            foreach ($validated['items_uas'] as $index => $item) {
-                RubrikItem::create([
-                    'rubrik_penilaian_id' => $rubrik->id,
-                    'periode_ujian' => 'uas',
-                    'nama' => $item['nama'],
-                    'persentase' => $item['persentase'],
-                    'deskripsi' => $item['deskripsi'] ?? null,
-                    'urutan' => $index + 1,
-                ]);
+                // Simpan items untuk kategori ini
+                $this->saveItemsRecursive($kategoriData['items'], $rubrik->id, $kategori->id);
             }
         });
 
         return redirect()->route('mata-kuliah.show', $mataKuliah)->with('success', 'Rubrik penilaian berhasil dibuat.');
     }
 
+
     public function show(MataKuliah $mataKuliah, RubrikPenilaian $rubrikPenilaian)
     {
-        $rubrikPenilaian->load(['items', 'periodeAkademik', 'creator']);
+        $rubrikPenilaian->load(['kategoris.items.subItems', 'periodeAkademik', 'creator']);
         return view('rubrik-penilaian.show', compact('mataKuliah', 'rubrikPenilaian'));
     }
 
@@ -136,7 +192,7 @@ class RubrikPenilaianController extends Controller
         $this->checkDosenAccess($mataKuliah);
         
         $periodeAkademiks = PeriodeAkademik::orderBy('academic_year', 'desc')->get();
-        $rubrikPenilaian->load('items');
+        $rubrikPenilaian->load(['kategoris.items.subItems']);
         
         return view('rubrik-penilaian.edit', compact('mataKuliah', 'rubrikPenilaian', 'periodeAkademiks'));
     }
@@ -149,40 +205,69 @@ class RubrikPenilaianController extends Controller
             'nama' => 'required|string|max:100',
             'deskripsi' => 'nullable|string',
             'periode_akademik_id' => 'required|exists:periode_akademik,id',
-            'bobot_uts' => 'required|numeric|min:0|max:100',
-            'bobot_uas' => 'required|numeric|min:0|max:100',
-            'items_uts' => 'required|array|min:1',
-            'items_uts.*.id' => 'nullable|exists:rubrik_item,id',
-            'items_uts.*.nama' => 'required|string|max:100',
-            'items_uts.*.persentase' => 'required|numeric|min:0|max:100',
-            'items_uts.*.deskripsi' => 'nullable|string',
-            'items_uas' => 'required|array|min:1',
-            'items_uas.*.id' => 'nullable|exists:rubrik_item,id',
-            'items_uas.*.nama' => 'required|string|max:100',
-            'items_uas.*.persentase' => 'required|numeric|min:0|max:100',
-            'items_uas.*.deskripsi' => 'nullable|string',
+            // Kategori penilaian
+            'kategoris' => 'required|array|min:1',
+            'kategoris.*.id' => 'nullable|exists:rubrik_kategori,id',
+            'kategoris.*.nama' => 'required|string|max:100',
+            'kategoris.*.bobot' => 'required|numeric|min:0|max:100',
+            'kategoris.*.deskripsi' => 'nullable|string',
+            'kategoris.*.kode' => 'nullable|string|max:20',
+            // Items dalam kategori
+            'kategoris.*.items' => 'required|array|min:1',
+            'kategoris.*.items.*.id' => 'nullable|exists:rubrik_item,id',
+            'kategoris.*.items.*.nama' => 'required|string|max:100',
+            'kategoris.*.items.*.persentase' => 'required|numeric|min:0|max:100',
+            'kategoris.*.items.*.deskripsi' => 'nullable|string',
+            // Sub-items (level 1)
+            'kategoris.*.items.*.sub_items' => 'nullable|array',
+            'kategoris.*.items.*.sub_items.*.nama' => 'required_with:kategoris.*.items.*.sub_items|string|max:100',
+            'kategoris.*.items.*.sub_items.*.persentase' => 'required_with:kategoris.*.items.*.sub_items|numeric|min:0|max:100',
+            'kategoris.*.items.*.sub_items.*.deskripsi' => 'nullable|string',
+            // Sub-sub-items (level 2)
+            'kategoris.*.items.*.sub_items.*.sub_items' => 'nullable|array',
+            'kategoris.*.items.*.sub_items.*.sub_items.*.nama' => 'required_with:kategoris.*.items.*.sub_items.*.sub_items|string|max:100',
+            'kategoris.*.items.*.sub_items.*.sub_items.*.persentase' => 'required_with:kategoris.*.items.*.sub_items.*.sub_items|numeric|min:0|max:100',
+            'kategoris.*.items.*.sub_items.*.sub_items.*.deskripsi' => 'nullable|string',
         ]);
 
         // Ambil semester dari periode akademik
-        $periodeAkademik = \App\Models\PeriodeAkademik::find($validated['periode_akademik_id']);
+        $periodeAkademik = PeriodeAkademik::find($validated['periode_akademik_id']);
         $semester = $periodeAkademik->semester_number ?? 1;
 
-        // Validasi bobot UTS + UAS = 100%
-        if (($validated['bobot_uts'] + $validated['bobot_uas']) != 100) {
-            return back()->withErrors(['bobot' => 'Total bobot UTS + UAS harus 100%. Saat ini: ' . ($validated['bobot_uts'] + $validated['bobot_uas']) . '%'])->withInput();
+        // Validasi total bobot kategori = 100%
+        $totalBobot = collect($validated['kategoris'])->sum('bobot');
+        if ($totalBobot != 100) {
+            return back()->withErrors(['kategoris' => 'Total bobot semua kategori harus 100%. Saat ini: ' . $totalBobot . '%'])->withInput();
         }
 
-        // Validasi total persentase item UTS = 100%
-        $totalUts = collect($validated['items_uts'])->sum('persentase');
-        if ($totalUts != 100) {
-            return back()->withErrors(['items_uts' => 'Total persentase item UTS harus 100%. Saat ini: ' . $totalUts . '%'])->withInput();
+        // Validasi total persentase item dalam setiap kategori = 100%
+        foreach ($validated['kategoris'] as $index => $kategori) {
+            $totalItems = collect($kategori['items'])->sum('persentase');
+            if ($totalItems != 100) {
+                return back()->withErrors(['kategoris' => "Total persentase item dalam kategori '{$kategori['nama']}' harus 100%. Saat ini: {$totalItems}%"])->withInput();
+            }
+
+            // Validasi sub-items (jika ada, total harus 100%)
+            foreach ($kategori['items'] as $itemIndex => $item) {
+                if (!empty($item['sub_items'])) {
+                    $totalSubItems = collect($item['sub_items'])->sum('persentase');
+                    if ($totalSubItems != 100) {
+                        return back()->withErrors(['kategoris' => "Total persentase sub-item pada item '{$item['nama']}' harus 100%. Saat ini: {$totalSubItems}%"])->withInput();
+                    }
+
+                    // Validasi sub-sub-items (jika ada, total harus 100%)
+                    foreach ($item['sub_items'] as $subItemIndex => $subItem) {
+                        if (!empty($subItem['sub_items'])) {
+                            $totalSubSubItems = collect($subItem['sub_items'])->sum('persentase');
+                            if ($totalSubSubItems != 100) {
+                                return back()->withErrors(['kategoris' => "Total persentase sub-sub-item pada '{$subItem['nama']}' harus 100%. Saat ini: {$totalSubSubItems}%"])->withInput();
+                            }
+                        }
+                    }
+                }
+            }
         }
 
-        // Validasi total persentase item UAS = 100%
-        $totalUas = collect($validated['items_uas'])->sum('persentase');
-        if ($totalUas != 100) {
-            return back()->withErrors(['items_uas' => 'Total persentase item UAS harus 100%. Saat ini: ' . $totalUas . '%'])->withInput();
-        }
 
         DB::transaction(function () use ($validated, $rubrikPenilaian, $semester) {
             $rubrikPenilaian->update([
@@ -190,40 +275,30 @@ class RubrikPenilaianController extends Controller
                 'deskripsi' => $validated['deskripsi'] ?? null,
                 'periode_akademik_id' => $validated['periode_akademik_id'],
                 'semester' => $semester,
-                'bobot_uts' => $validated['bobot_uts'],
-                'bobot_uas' => $validated['bobot_uas'],
             ]);
 
-            // Hapus semua item lama
-            $rubrikPenilaian->items()->delete();
+            // Hapus semua kategori dan items lama (cascade akan hapus items juga)
+            $rubrikPenilaian->kategoris()->delete();
 
-            // Simpan item UTS baru
-            foreach ($validated['items_uts'] as $index => $item) {
-                RubrikItem::create([
+            // Simpan kategori dan items baru
+            foreach ($validated['kategoris'] as $kategoriIndex => $kategoriData) {
+                $kategori = RubrikKategori::create([
                     'rubrik_penilaian_id' => $rubrikPenilaian->id,
-                    'periode_ujian' => 'uts',
-                    'nama' => $item['nama'],
-                    'persentase' => $item['persentase'],
-                    'deskripsi' => $item['deskripsi'] ?? null,
-                    'urutan' => $index + 1,
+                    'nama' => $kategoriData['nama'],
+                    'bobot' => $kategoriData['bobot'],
+                    'urutan' => $kategoriIndex + 1,
+                    'deskripsi' => $kategoriData['deskripsi'] ?? null,
+                    'kode' => $kategoriData['kode'] ?? strtolower(str_replace(' ', '_', $kategoriData['nama'])),
                 ]);
-            }
 
-            // Simpan item UAS baru
-            foreach ($validated['items_uas'] as $index => $item) {
-                RubrikItem::create([
-                    'rubrik_penilaian_id' => $rubrikPenilaian->id,
-                    'periode_ujian' => 'uas',
-                    'nama' => $item['nama'],
-                    'persentase' => $item['persentase'],
-                    'deskripsi' => $item['deskripsi'] ?? null,
-                    'urutan' => $index + 1,
-                ]);
+                // Simpan items untuk kategori ini
+                $this->saveItemsRecursive($kategoriData['items'], $rubrikPenilaian->id, $kategori->id);
             }
         });
 
         return redirect()->route('mata-kuliah.show', $mataKuliah)->with('success', 'Rubrik penilaian berhasil diupdate.');
     }
+
 
     public function destroy(MataKuliah $mataKuliah, RubrikPenilaian $rubrikPenilaian)
     {
@@ -236,7 +311,7 @@ class RubrikPenilaianController extends Controller
     public function activate(MataKuliah $mataKuliah, RubrikPenilaian $rubrikPenilaian)
     {
         if (!$rubrikPenilaian->isComplete()) {
-            return back()->withErrors(['error' => 'Rubrik harus memiliki total persentase 100% sebelum diaktifkan.']);
+            return back()->withErrors(['error' => 'Rubrik harus lengkap (total bobot kategori 100% dan setiap kategori 100%) sebelum diaktifkan.']);
         }
 
         $rubrikPenilaian->activate();
@@ -248,7 +323,7 @@ class RubrikPenilaianController extends Controller
         $this->checkDosenAccess($mataKuliah);
         
         $periodeAkademiks = PeriodeAkademik::orderBy('academic_year', 'desc')->get();
-        $rubrikPenilaian->load('items');
+        $rubrikPenilaian->load(['kategoris.items.subItems']);
         
         return view('rubrik-penilaian.duplicate', compact('mataKuliah', 'rubrikPenilaian', 'periodeAkademiks'));
     }
@@ -263,7 +338,7 @@ class RubrikPenilaianController extends Controller
         ]);
 
         // Ambil semester dari periode akademik
-        $periodeAkademik = \App\Models\PeriodeAkademik::find($validated['periode_akademik_id']);
+        $periodeAkademik = PeriodeAkademik::find($validated['periode_akademik_id']);
         $semester = $periodeAkademik->semester_number ?? 1;
 
         DB::transaction(function () use ($validated, $mataKuliah, $rubrikPenilaian, $semester) {
@@ -273,23 +348,50 @@ class RubrikPenilaianController extends Controller
                 'deskripsi' => $rubrikPenilaian->deskripsi,
                 'periode_akademik_id' => $validated['periode_akademik_id'],
                 'semester' => $semester,
-                'bobot_uts' => $rubrikPenilaian->bobot_uts,
-                'bobot_uas' => $rubrikPenilaian->bobot_uas,
                 'created_by' => auth()->id(),
                 'is_active' => false,
             ]);
 
-            foreach ($rubrikPenilaian->items as $item) {
-                RubrikItem::create([
+            // Duplikasi kategori dan items
+            foreach ($rubrikPenilaian->kategoris as $kategori) {
+                $newKategori = RubrikKategori::create([
                     'rubrik_penilaian_id' => $newRubrik->id,
-                    'nama' => $item->nama,
-                    'persentase' => $item->persentase,
-                    'deskripsi' => $item->deskripsi,
-                    'urutan' => $item->urutan,
+                    'nama' => $kategori->nama,
+                    'bobot' => $kategori->bobot,
+                    'urutan' => $kategori->urutan,
+                    'deskripsi' => $kategori->deskripsi,
+                    'kode' => $kategori->kode,
                 ]);
+
+                // Duplikasi items (root items)
+                foreach ($kategori->items as $item) {
+                    $this->duplicateItem($item, $newRubrik->id, $newKategori->id, null);
+                }
             }
         });
 
         return redirect()->route('mata-kuliah.show', $mataKuliah)->with('success', 'Rubrik penilaian berhasil diduplikasi.');
+    }
+
+    /**
+     * Helper untuk duplikasi item secara rekursif
+     */
+    private function duplicateItem(RubrikItem $item, int $rubrikId, int $kategoriId, ?int $parentId): void
+    {
+        $newItem = RubrikItem::create([
+            'rubrik_penilaian_id' => $rubrikId,
+            'rubrik_kategori_id' => $kategoriId,
+            'parent_id' => $parentId,
+            'level' => $item->level,
+            'nama' => $item->nama,
+            'persentase' => $item->persentase,
+            'deskripsi' => $item->deskripsi,
+            'urutan' => $item->urutan,
+        ]);
+
+        // Duplikasi sub-items
+        foreach ($item->subItems as $subItem) {
+            $this->duplicateItem($subItem, $rubrikId, $kategoriId, $newItem->id);
+        }
     }
 }

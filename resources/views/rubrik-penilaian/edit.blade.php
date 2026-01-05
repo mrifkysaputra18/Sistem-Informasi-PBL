@@ -31,7 +31,48 @@
             @endif
 
             <!-- Form -->
-            <div class="bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden" x-data="rubrikForm()">
+            @php
+                // Transform existing data for Alpine.js
+                $kategorisData = $rubrikPenilaian->kategoris->map(function($kategori) {
+                    return [
+                        'id' => $kategori->id,
+                        'nama' => $kategori->nama,
+                        'bobot' => $kategori->bobot,
+                        'deskripsi' => $kategori->deskripsi,
+                        'kode' => $kategori->kode,
+                        'expanded' => true,
+                        'items' => $kategori->items->map(function($item) {
+                            return [
+                                'id' => $item->id,
+                                'nama' => $item->nama,
+                                'persentase' => $item->persentase,
+                                'deskripsi' => $item->deskripsi,
+                                'expanded' => true,
+                                'subItems' => $item->children->map(function($subItem) {
+                                    return [
+                                        'id' => $subItem->id,
+                                        'nama' => $subItem->nama,
+                                        'persentase' => $subItem->persentase,
+                                        'deskripsi' => $subItem->deskripsi,
+                                        'expanded' => true,
+                                        'subItems' => $subItem->children->map(function($ssItem) {
+                                            return [
+                                                'id' => $ssItem->id,
+                                                'nama' => $ssItem->nama,
+                                                'persentase' => $ssItem->persentase,
+                                                'deskripsi' => $ssItem->deskripsi,
+                                            ];
+                                        })->values()->toArray(),
+                                    ];
+                                })->values()->toArray(),
+                            ];
+                        })->values()->toArray(),
+                    ];
+                })->values()->toArray();
+            @endphp
+
+            <div class="bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden" 
+                 x-data="rubrikForm({{ json_encode($kategorisData) }})">
                 <form action="{{ route('rubrik-penilaian.update', [$mataKuliah, $rubrikPenilaian]) }}" method="POST" class="p-8">
                     @csrf
                     @method('PUT')
@@ -67,154 +108,243 @@
                                       placeholder="Deskripsi rubrik (opsional)">{{ old('deskripsi', $rubrikPenilaian->deskripsi) }}</textarea>
                         </div>
 
-                        <!-- Bobot UTS dan UAS -->
-                        <div class="border-t-2 border-gray-200 pt-6">
-                            <h3 class="text-lg font-bold text-gray-900 mb-4">
-                                <i class="fa-solid fa-scale-balanced mr-2 text-indigo-600"></i> Bobot Penilaian
-                            </h3>
-                            <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                                    <div>
-                                        <label class="block text-sm font-bold text-indigo-800 mb-2">Bobot UTS <span class="text-red-500">*</span></label>
-                                        <div class="relative">
-                                            <input type="number" name="bobot_uts" x-model.number="bobotUts"
-                                                   class="w-full px-4 py-3 border-2 border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-bold text-lg"
-                                                   min="0" max="100" step="1" required>
-                                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-indigo-600 font-bold">%</span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-bold text-indigo-800 mb-2">Bobot UAS <span class="text-red-500">*</span></label>
-                                        <div class="relative">
-                                            <input type="number" name="bobot_uas" x-model.number="bobotUas"
-                                                   class="w-full px-4 py-3 border-2 border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-bold text-lg"
-                                                   min="0" max="100" step="1" required>
-                                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-indigo-600 font-bold">%</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center justify-center">
-                                        <div class="text-center px-6 py-4 rounded-lg" 
-                                             :class="(bobotUts + bobotUas) == 100 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'">
-                                            <span class="block text-xs font-semibold uppercase">Total Bobot</span>
-                                            <span class="text-2xl font-black" x-text="bobotUts + bobotUas"></span>%
-                                            <span x-show="(bobotUts + bobotUas) == 100" class="ml-1"><i class="fa-solid fa-check-circle"></i></span>
-                                            <span x-show="(bobotUts + bobotUas) != 100" class="ml-1"><i class="fa-solid fa-exclamation-circle"></i></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Item UTS -->
+                        <!-- Total Bobot Kategori -->
                         <div class="border-t-2 border-gray-200 pt-6">
                             <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-lg font-bold text-blue-900">
-                                    <i class="fa-solid fa-file-lines mr-2 text-blue-600"></i> Item Penilaian UTS
-                                    <span class="ml-2 text-sm font-normal text-blue-600">(Minggu 1-8)</span>
+                                <h3 class="text-lg font-bold text-gray-900">
+                                    <i class="fa-solid fa-layer-group mr-2 text-indigo-600"></i> Kategori Penilaian
                                 </h3>
                                 <div class="flex items-center gap-4">
-                                    <span class="text-sm font-bold" :class="totalUts == 100 ? 'text-emerald-600' : 'text-red-600'">
-                                        Total: <span x-text="totalUts"></span>%
-                                        <span x-show="totalUts == 100" class="ml-1"><i class="fa-solid fa-check-circle"></i></span>
-                                        <span x-show="totalUts != 100" class="ml-1"><i class="fa-solid fa-exclamation-circle"></i></span>
-                                    </span>
+                                    <div class="text-center px-4 py-2 rounded-lg" 
+                                         :class="totalBobotKategori == 100 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'">
+                                        <span class="text-xs font-semibold uppercase">Total Bobot</span>
+                                        <span class="ml-1 text-lg font-black" x-text="totalBobotKategori"></span>%
+                                        <span x-show="totalBobotKategori == 100" class="ml-1"><i class="fa-solid fa-check-circle"></i></span>
+                                        <span x-show="totalBobotKategori != 100" class="ml-1"><i class="fa-solid fa-exclamation-circle"></i></span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="space-y-3 bg-blue-50 p-4 rounded-lg border border-blue-200">
-                                <template x-for="(item, index) in itemsUts" :key="'uts-' + index">
-                                    <div class="flex gap-3 items-start p-4 bg-white rounded-lg border border-blue-300">
-                                        <div class="flex-1 grid grid-cols-1 md:grid-cols-12 gap-3">
-                                            <input type="hidden" :name="'items_uts[' + index + '][id]'" :value="item.id">
-                                            <div class="md:col-span-5">
-                                                <input type="text" :name="'items_uts[' + index + '][nama]'" x-model="item.nama"
-                                                       class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-medium"
-                                                       placeholder="Nama (Pemahaman Konsep, dll)" required>
-                                            </div>
-                                            <div class="md:col-span-2">
-                                                <div class="relative">
-                                                    <input type="number" :name="'items_uts[' + index + '][persentase]'" x-model.number="item.persentase"
-                                                           class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-medium"
-                                                           placeholder="%" min="0" max="100" step="0.01" required>
-                                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-bold">%</span>
+                            <p class="text-sm text-gray-500 mb-4">
+                                <i class="fa-solid fa-info-circle mr-1"></i>
+                                Edit kategori penilaian. Total bobot = 100%, total item per kategori = 100%. Mendukung 3 level: Item → Sub-Item → Sub-Sub-Item.
+                            </p>
+
+                            <!-- Daftar Kategori -->
+                            <div class="space-y-4">
+                                <template x-for="(kategori, kIndex) in kategoris" :key="'kat-' + kIndex">
+                                    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border-2 border-indigo-200 overflow-hidden">
+                                        <!-- Header Kategori -->
+                                        <div class="bg-indigo-100 px-4 py-3 flex items-center justify-between">
+                                            <div class="flex items-center gap-3 flex-1">
+                                                <button type="button" @click="kategori.expanded = !kategori.expanded" 
+                                                        class="p-1 text-indigo-600 hover:bg-indigo-200 rounded transition-colors">
+                                                    <i class="fa-solid" :class="kategori.expanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                                                </button>
+                                                <input type="hidden" :name="'kategoris[' + kIndex + '][id]'" :value="kategori.id">
+                                                <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-3">
+                                                    <div class="md:col-span-2">
+                                                        <input type="text" :name="'kategoris[' + kIndex + '][nama]'" x-model="kategori.nama"
+                                                               class="w-full px-3 py-2 border-2 border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm font-bold"
+                                                               placeholder="Nama Kategori" required>
+                                                    </div>
+                                                    <div>
+                                                        <div class="relative">
+                                                            <input type="number" :name="'kategoris[' + kIndex + '][bobot]'" x-model.number="kategori.bobot"
+                                                                   class="w-full px-3 py-2 border-2 border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm font-bold"
+                                                                   placeholder="Bobot" min="0" max="100" step="1" required>
+                                                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-indigo-600 font-bold">%</span>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <input type="text" :name="'kategoris[' + kIndex + '][deskripsi]'" x-model="kategori.deskripsi"
+                                                               class="w-full px-3 py-2 border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                                                               placeholder="Deskripsi (opsional)">
+                                                        <input type="hidden" :name="'kategoris[' + kIndex + '][kode]'" :value="kategori.kode">
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="md:col-span-4">
-                                                <input type="text" :name="'items_uts[' + index + '][deskripsi]'" x-model="item.deskripsi"
-                                                       class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                                                       placeholder="Deskripsi (opsional)">
+                                            <button type="button" @click="removeKategori(kIndex)" 
+                                                    class="ml-2 p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                                                    x-show="kategoris.length > 1">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </div>
+
+                                        <!-- Items dalam Kategori -->
+                                        <div x-show="kategori.expanded" x-collapse class="p-4">
+                                            <div class="flex items-center justify-between mb-3">
+                                                <span class="text-sm font-bold text-indigo-700">
+                                                    <i class="fa-solid fa-list-check mr-1"></i> Item Penilaian
+                                                </span>
+                                                <span class="text-sm font-bold" 
+                                                      :class="getItemsTotal(kategori.items) == 100 ? 'text-emerald-600' : 'text-red-600'">
+                                                    Total: <span x-text="getItemsTotal(kategori.items).toFixed(2)"></span>%
+                                                </span>
                                             </div>
-                                            <div class="md:col-span-1 flex items-center justify-center">
-                                                <button type="button" @click="removeItemUts(index)" 
-                                                        class="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
-                                                        x-show="itemsUts.length > 1">
-                                                    <i class="fa-solid fa-trash"></i>
+
+                                            <div class="space-y-3">
+                                                <!-- Level 0: Items -->
+                                                <template x-for="(item, iIndex) in kategori.items" :key="'item-' + kIndex + '-' + iIndex">
+                                                    <div class="bg-white rounded-lg border border-indigo-200 overflow-hidden">
+                                                        <div class="flex gap-3 items-start p-4">
+                                                            <input type="hidden" :name="'kategoris[' + kIndex + '][items][' + iIndex + '][id]'" :value="item.id">
+                                                            <div class="flex-1 grid grid-cols-1 md:grid-cols-12 gap-3">
+                                                                <div class="md:col-span-5">
+                                                                    <input type="text" :name="'kategoris[' + kIndex + '][items][' + iIndex + '][nama]'" x-model="item.nama"
+                                                                           class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm font-medium"
+                                                                           placeholder="Nama Item" required>
+                                                                </div>
+                                                                <div class="md:col-span-2">
+                                                                    <div class="relative">
+                                                                        <input type="number" :name="'kategoris[' + kIndex + '][items][' + iIndex + '][persentase]'" x-model.number="item.persentase"
+                                                                               class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm font-medium"
+                                                                               placeholder="%" min="0" max="100" step="0.01" required>
+                                                                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-bold">%</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="md:col-span-3">
+                                                                    <input type="text" :name="'kategoris[' + kIndex + '][items][' + iIndex + '][deskripsi]'" x-model="item.deskripsi"
+                                                                           class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm"
+                                                                           placeholder="Deskripsi">
+                                                                </div>
+                                                                <div class="md:col-span-2 flex items-center justify-center gap-1">
+                                                                    <button type="button" @click="item.expanded = !item.expanded" 
+                                                                            class="p-2 text-indigo-600 hover:bg-indigo-100 rounded-lg transition-colors">
+                                                                        <i class="fa-solid" :class="item.subItems?.length > 0 ? (item.expanded ? 'fa-chevron-up' : 'fa-chevron-down') : 'fa-plus'"></i>
+                                                                    </button>
+                                                                    <button type="button" @click="addSubItem(kIndex, iIndex)" 
+                                                                            class="p-2 text-emerald-600 hover:bg-emerald-100 rounded-lg transition-colors" title="Tambah Sub-Item">
+                                                                        <i class="fa-solid fa-layer-group"></i>
+                                                                    </button>
+                                                                    <button type="button" @click="removeItem(kIndex, iIndex)" 
+                                                                            class="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors" x-show="kategori.items.length > 1">
+                                                                        <i class="fa-solid fa-trash"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <!-- Level 1: Sub-Items -->
+                                                        <template x-if="item.subItems && item.subItems.length > 0">
+                                                            <div x-show="item.expanded" x-collapse class="border-t border-indigo-200 bg-blue-50/50 p-4">
+                                                                <div class="flex items-center justify-between mb-3">
+                                                                    <span class="text-xs font-bold text-blue-700 uppercase"><i class="fa-solid fa-layer-group mr-1"></i> Sub-Items</span>
+                                                                    <span class="text-xs font-bold" :class="getSubItemsTotal(item.subItems) == 100 ? 'text-emerald-600' : 'text-red-600'">
+                                                                        Total: <span x-text="getSubItemsTotal(item.subItems).toFixed(2)"></span>%
+                                                                    </span>
+                                                                </div>
+                                                                <div class="space-y-2 ml-4 border-l-4 border-blue-300 pl-4">
+                                                                    <template x-for="(subItem, sIndex) in item.subItems" :key="'sub-' + kIndex + '-' + iIndex + '-' + sIndex">
+                                                                        <div class="bg-white rounded-lg border border-blue-200 overflow-hidden">
+                                                                            <div class="flex gap-2 items-center p-3">
+                                                                                <div class="flex-1 grid grid-cols-1 md:grid-cols-12 gap-2">
+                                                                                    <div class="md:col-span-4">
+                                                                                        <input type="text" :name="'kategoris[' + kIndex + '][items][' + iIndex + '][sub_items][' + sIndex + '][nama]'" 
+                                                                                               x-model="subItem.nama"
+                                                                                               class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs" placeholder="Nama sub-item" required>
+                                                                                    </div>
+                                                                                    <div class="md:col-span-2">
+                                                                                        <div class="relative">
+                                                                                            <input type="number" :name="'kategoris[' + kIndex + '][items][' + iIndex + '][sub_items][' + sIndex + '][persentase]'" 
+                                                                                                   x-model.number="subItem.persentase"
+                                                                                                   class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs" placeholder="%" min="0" max="100" step="0.01" required>
+                                                                                            <span class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">%</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="md:col-span-3">
+                                                                                        <input type="text" :name="'kategoris[' + kIndex + '][items][' + iIndex + '][sub_items][' + sIndex + '][deskripsi]'" 
+                                                                                               x-model="subItem.deskripsi"
+                                                                                               class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs" placeholder="Deskripsi">
+                                                                                    </div>
+                                                                                    <div class="md:col-span-3 flex items-center justify-center gap-1">
+                                                                                        <button type="button" @click="subItem.expanded = !subItem.expanded" 
+                                                                                                class="p-1 text-purple-600 hover:bg-purple-100 rounded transition-colors">
+                                                                                            <i class="fa-solid text-xs" :class="subItem.subItems?.length > 0 ? (subItem.expanded ? 'fa-chevron-up' : 'fa-chevron-down') : 'fa-plus'"></i>
+                                                                                        </button>
+                                                                                        <button type="button" @click="addSubSubItem(kIndex, iIndex, sIndex)" 
+                                                                                                class="p-1 text-purple-600 hover:bg-purple-100 rounded transition-colors" title="Tambah Sub-Sub-Item">
+                                                                                            <i class="fa-solid fa-sitemap text-xs"></i>
+                                                                                        </button>
+                                                                                        <button type="button" @click="removeSubItem(kIndex, iIndex, sIndex)" 
+                                                                                                class="p-1 text-red-500 hover:bg-red-100 rounded transition-colors">
+                                                                                            <i class="fa-solid fa-times text-xs"></i>
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            
+                                                                            <!-- Level 2: Sub-Sub-Items -->
+                                                                            <template x-if="subItem.subItems && subItem.subItems.length > 0">
+                                                                                <div x-show="subItem.expanded" x-collapse class="border-t border-purple-200 bg-purple-50/50 p-3">
+                                                                                    <div class="flex items-center justify-between mb-2">
+                                                                                        <span class="text-xs font-bold text-purple-700 uppercase"><i class="fa-solid fa-sitemap mr-1"></i> Sub-Sub-Items</span>
+                                                                                        <span class="text-xs font-bold" :class="getSubItemsTotal(subItem.subItems) == 100 ? 'text-emerald-600' : 'text-red-600'">
+                                                                                            Total: <span x-text="getSubItemsTotal(subItem.subItems).toFixed(2)"></span>%
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    <div class="space-y-1 ml-3 border-l-4 border-purple-300 pl-3">
+                                                                                        <template x-for="(ssItem, ssIndex) in subItem.subItems" :key="'subsub-' + kIndex + '-' + iIndex + '-' + sIndex + '-' + ssIndex">
+                                                                                            <div class="flex gap-2 items-center p-2 bg-white rounded border border-purple-200">
+                                                                                                <div class="flex-1 grid grid-cols-1 md:grid-cols-12 gap-2">
+                                                                                                    <div class="md:col-span-5">
+                                                                                                        <input type="text" :name="'kategoris[' + kIndex + '][items][' + iIndex + '][sub_items][' + sIndex + '][sub_items][' + ssIndex + '][nama]'" 
+                                                                                                               x-model="ssItem.nama"
+                                                                                                               class="w-full px-2 py-1 border border-gray-300 rounded text-xs" placeholder="Nama" required>
+                                                                                                    </div>
+                                                                                                    <div class="md:col-span-2">
+                                                                                                        <div class="relative">
+                                                                                                            <input type="number" :name="'kategoris[' + kIndex + '][items][' + iIndex + '][sub_items][' + sIndex + '][sub_items][' + ssIndex + '][persentase]'" 
+                                                                                                                   x-model.number="ssItem.persentase"
+                                                                                                                   class="w-full px-2 py-1 border border-gray-300 rounded text-xs" placeholder="%" min="0" max="100" step="0.01" required>
+                                                                                                            <span class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">%</span>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <div class="md:col-span-4">
+                                                                                                        <input type="text" :name="'kategoris[' + kIndex + '][items][' + iIndex + '][sub_items][' + sIndex + '][sub_items][' + ssIndex + '][deskripsi]'" 
+                                                                                                               x-model="ssItem.deskripsi"
+                                                                                                               class="w-full px-2 py-1 border border-gray-300 rounded text-xs" placeholder="Deskripsi">
+                                                                                                    </div>
+                                                                                                    <div class="md:col-span-1 flex items-center justify-center">
+                                                                                                        <button type="button" @click="removeSubSubItem(kIndex, iIndex, sIndex, ssIndex)" 
+                                                                                                                class="p-1 text-red-500 hover:bg-red-100 rounded transition-colors">
+                                                                                                            <i class="fa-solid fa-times text-xs"></i>
+                                                                                                        </button>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </template>
+                                                                                        <button type="button" @click="addSubSubItem(kIndex, iIndex, sIndex)" 
+                                                                                                class="inline-flex items-center px-2 py-1 bg-purple-100 hover:bg-purple-200 text-purple-700 text-xs font-bold rounded transition-all">
+                                                                                            <i class="fa-solid fa-plus mr-1"></i> Tambah Sub-Sub-Item
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </template>
+                                                                        </div>
+                                                                    </template>
+                                                                    <button type="button" @click="addSubItem(kIndex, iIndex)" 
+                                                                            class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-bold rounded transition-all">
+                                                                        <i class="fa-solid fa-plus mr-1"></i> Tambah Sub-Item
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                </template>
+
+                                                <button type="button" @click="addItem(kIndex)" 
+                                                        class="inline-flex items-center px-4 py-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-bold rounded-lg transition-all">
+                                                    <i class="fa-solid fa-plus mr-2"></i> Tambah Item
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
                                 </template>
 
-                                <button type="button" @click="addItemUts()" 
-                                        class="inline-flex items-center px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold rounded-lg transition-all">
-                                    <i class="fa-solid fa-plus mr-2"></i> Tambah Item UTS
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Item UAS -->
-                        <div class="border-t-2 border-gray-200 pt-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-lg font-bold text-orange-900">
-                                    <i class="fa-solid fa-file-lines mr-2 text-orange-600"></i> Item Penilaian UAS
-                                    <span class="ml-2 text-sm font-normal text-orange-600">(Minggu 9-16)</span>
-                                </h3>
-                                <div class="flex items-center gap-4">
-                                    <span class="text-sm font-bold" :class="totalUas == 100 ? 'text-emerald-600' : 'text-red-600'">
-                                        Total: <span x-text="totalUas"></span>%
-                                        <span x-show="totalUas == 100" class="ml-1"><i class="fa-solid fa-check-circle"></i></span>
-                                        <span x-show="totalUas != 100" class="ml-1"><i class="fa-solid fa-exclamation-circle"></i></span>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="space-y-3 bg-orange-50 p-4 rounded-lg border border-orange-200">
-                                <template x-for="(item, index) in itemsUas" :key="'uas-' + index">
-                                    <div class="flex gap-3 items-start p-4 bg-white rounded-lg border border-orange-300">
-                                        <div class="flex-1 grid grid-cols-1 md:grid-cols-12 gap-3">
-                                            <input type="hidden" :name="'items_uas[' + index + '][id]'" :value="item.id">
-                                            <div class="md:col-span-5">
-                                                <input type="text" :name="'items_uas[' + index + '][nama]'" x-model="item.nama"
-                                                       class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm font-medium"
-                                                       placeholder="Nama (Implementasi, dll)" required>
-                                            </div>
-                                            <div class="md:col-span-2">
-                                                <div class="relative">
-                                                    <input type="number" :name="'items_uas[' + index + '][persentase]'" x-model.number="item.persentase"
-                                                           class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm font-medium"
-                                                           placeholder="%" min="0" max="100" step="0.01" required>
-                                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-bold">%</span>
-                                                </div>
-                                            </div>
-                                            <div class="md:col-span-4">
-                                                <input type="text" :name="'items_uas[' + index + '][deskripsi]'" x-model="item.deskripsi"
-                                                       class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-                                                       placeholder="Deskripsi (opsional)">
-                                            </div>
-                                            <div class="md:col-span-1 flex items-center justify-center">
-                                                <button type="button" @click="removeItemUas(index)" 
-                                                        class="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
-                                                        x-show="itemsUas.length > 1">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </template>
-
-                                <button type="button" @click="addItemUas()" 
-                                        class="inline-flex items-center px-4 py-2 bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold rounded-lg transition-all">
-                                    <i class="fa-solid fa-plus mr-2"></i> Tambah Item UAS
+                                <button type="button" @click="addKategori()" 
+                                        class="w-full py-4 border-2 border-dashed border-indigo-300 rounded-xl text-indigo-600 font-bold hover:bg-indigo-50 transition-colors">
+                                    <i class="fa-solid fa-plus mr-2"></i> Tambah Kategori Penilaian
                                 </button>
                             </div>
                         </div>
@@ -238,69 +368,94 @@
         </div>
     </div>
 
-    @php
-        // Prepare items data for JavaScript
-        $itemsUtsData = $rubrikPenilaian->items->where('periode_ujian', 'uts')->values()->map(function($i) {
-            return [
-                'id' => $i->id,
-                'nama' => $i->nama,
-                'persentase' => floatval($i->persentase),
-                'deskripsi' => $i->deskripsi ?? ''
-            ];
-        })->toArray();
-        
-        $itemsUasData = $rubrikPenilaian->items->where('periode_ujian', 'uas')->values()->map(function($i) {
-            return [
-                'id' => $i->id,
-                'nama' => $i->nama,
-                'persentase' => floatval($i->persentase),
-                'deskripsi' => $i->deskripsi ?? ''
-            ];
-        })->toArray();
-        
-        // Ensure at least one empty item if no items exist
-        if (empty($itemsUtsData)) {
-            $itemsUtsData = [['id' => null, 'nama' => '', 'persentase' => '', 'deskripsi' => '']];
-        }
-        if (empty($itemsUasData)) {
-            $itemsUasData = [['id' => null, 'nama' => '', 'persentase' => '', 'deskripsi' => '']];
-        }
-    @endphp
-
     @push('scripts')
     <script>
-        function rubrikForm() {
+        function rubrikForm(existingData) {
             return {
-                bobotUts: {{ old('bobot_uts', $rubrikPenilaian->bobot_uts ?? 50) }},
-                bobotUas: {{ old('bobot_uas', $rubrikPenilaian->bobot_uas ?? 50) }},
-                itemsUts: @json($itemsUtsData),
-                itemsUas: @json($itemsUasData),
-                get totalUts() {
-                    return this.itemsUts.reduce((sum, item) => sum + (parseFloat(item.persentase) || 0), 0);
+                kategoris: existingData.length > 0 ? existingData : [
+                    { 
+                        nama: '', bobot: '', deskripsi: '', kode: '', expanded: true, 
+                        items: [{ nama: '', persentase: '', deskripsi: '', expanded: true, subItems: [] }] 
+                    }
+                ],
+                
+                get totalBobotKategori() {
+                    return this.kategoris.reduce((sum, k) => sum + (parseFloat(k.bobot) || 0), 0);
                 },
-                get totalUas() {
-                    return this.itemsUas.reduce((sum, item) => sum + (parseFloat(item.persentase) || 0), 0);
+                
+                getItemsTotal(items) {
+                    if (!items || items.length === 0) return 0;
+                    return items.reduce((sum, item) => sum + (parseFloat(item.persentase) || 0), 0);
                 },
+                
+                getSubItemsTotal(subItems) {
+                    if (!subItems || subItems.length === 0) return 0;
+                    return subItems.reduce((sum, item) => sum + (parseFloat(item.persentase) || 0), 0);
+                },
+                
+                areAllItemsValid() {
+                    for (let kategori of this.kategoris) {
+                        if (this.getItemsTotal(kategori.items) !== 100) return false;
+                        for (let item of kategori.items) {
+                            if (item.subItems && item.subItems.length > 0) {
+                                if (this.getSubItemsTotal(item.subItems) !== 100) return false;
+                                for (let subItem of item.subItems) {
+                                    if (subItem.subItems && subItem.subItems.length > 0) {
+                                        if (this.getSubItemsTotal(subItem.subItems) !== 100) return false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return true;
+                },
+                
                 get isFormValid() {
-                    return (this.bobotUts + this.bobotUas) == 100 && 
-                           this.totalUts == 100 && 
-                           this.totalUas == 100;
+                    return this.totalBobotKategori == 100 && this.areAllItemsValid();
                 },
-                addItemUts() {
-                    this.itemsUts.push({ id: null, nama: '', persentase: '', deskripsi: '' });
+                
+                addKategori() {
+                    this.kategoris.push({ nama: '', bobot: '', deskripsi: '', kode: '', expanded: true, 
+                        items: [{ nama: '', persentase: '', deskripsi: '', expanded: true, subItems: [] }] 
+                    });
                 },
-                removeItemUts(index) {
-                    if (this.itemsUts.length > 1) {
-                        this.itemsUts.splice(index, 1);
+                
+                removeKategori(index) {
+                    if (this.kategoris.length > 1) this.kategoris.splice(index, 1);
+                },
+                
+                addItem(kategoriIndex) {
+                    this.kategoris[kategoriIndex].items.push({ nama: '', persentase: '', deskripsi: '', expanded: true, subItems: [] });
+                },
+                
+                removeItem(kategoriIndex, itemIndex) {
+                    if (this.kategoris[kategoriIndex].items.length > 1) {
+                        this.kategoris[kategoriIndex].items.splice(itemIndex, 1);
                     }
                 },
-                addItemUas() {
-                    this.itemsUas.push({ id: null, nama: '', persentase: '', deskripsi: '' });
-                },
-                removeItemUas(index) {
-                    if (this.itemsUas.length > 1) {
-                        this.itemsUas.splice(index, 1);
+                
+                addSubItem(kategoriIndex, itemIndex) {
+                    if (!this.kategoris[kategoriIndex].items[itemIndex].subItems) {
+                        this.kategoris[kategoriIndex].items[itemIndex].subItems = [];
                     }
+                    this.kategoris[kategoriIndex].items[itemIndex].subItems.push({ nama: '', persentase: '', deskripsi: '', expanded: true, subItems: [] });
+                    this.kategoris[kategoriIndex].items[itemIndex].expanded = true;
+                },
+                
+                removeSubItem(kategoriIndex, itemIndex, subIndex) {
+                    this.kategoris[kategoriIndex].items[itemIndex].subItems.splice(subIndex, 1);
+                },
+                
+                addSubSubItem(kategoriIndex, itemIndex, subIndex) {
+                    if (!this.kategoris[kategoriIndex].items[itemIndex].subItems[subIndex].subItems) {
+                        this.kategoris[kategoriIndex].items[itemIndex].subItems[subIndex].subItems = [];
+                    }
+                    this.kategoris[kategoriIndex].items[itemIndex].subItems[subIndex].subItems.push({ nama: '', persentase: '', deskripsi: '' });
+                    this.kategoris[kategoriIndex].items[itemIndex].subItems[subIndex].expanded = true;
+                },
+                
+                removeSubSubItem(kategoriIndex, itemIndex, subIndex, ssIndex) {
+                    this.kategoris[kategoriIndex].items[itemIndex].subItems[subIndex].subItems.splice(ssIndex, 1);
                 }
             }
         }
