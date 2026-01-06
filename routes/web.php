@@ -390,4 +390,26 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/debug', fn() => view('debug'))->name('debug');
 });
 
+
+// ========================================
+// FORGOT PASSWORD WITH OTP (Guest only)
+// ========================================
+Route::middleware('guest')->group(function () {
+    Route::get('lupa-password', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'showRequestForm'])
+        ->name('password.otp.request');
+    Route::post('lupa-password', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendOtp'])
+        ->name('password.otp.send');
+    
+    Route::get('lupa-password/verify', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'showVerifyForm'])
+        ->name('password.otp.verify');
+    Route::post('lupa-password/verify', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'verifyOtp'])
+        ->name('password.otp.verify.submit');
+    
+    Route::get('lupa-password/reset', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'showResetForm'])
+        ->name('password.otp.reset');
+    Route::post('lupa-password/reset', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'resetPassword'])
+        ->name('password.otp.update');
+});
+
 require __DIR__ . '/auth.php';
+

@@ -245,12 +245,11 @@
                             <label for="password" class="block text-sm font-semibold text-gray-700">
                                 Password
                             </label>
-                            @if (Route::has('password.request'))
-                            <a href="{{ route('password.sso.verify') }}" 
-                               class="text-xs text-primary-600 hover:text-primary-800 font-medium transition-colors duration-200">
+                            <a href="/lupa-password" 
+                               class="text-xs text-blue-600 hover:text-blue-800 underline font-medium transition-colors duration-200"
+                               style="display: inline-block;">
                                 Lupa password?
                             </a>
-                            @endif
                         </div>
                         <div class="input-group relative">
                             <input 

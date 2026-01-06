@@ -43,9 +43,6 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        // Auto-register untuk email Politala
-        $this->autoRegisterPolitalaUser();
-
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
@@ -55,120 +52,6 @@ class LoginRequest extends FormRequest
         }
 
         RateLimiter::clear($this->throttleKey());
-    }
-    
-    /**
-     * Auto-register user jika menggunakan email Politala
-     */
-    protected function autoRegisterPolitalaUser(): void
-    {
-        try {
-            $email = $this->input('email');
-            
-            // Log untuk debugging
-            \Log::info('Auto-register attempt', ['email' => $email]);
-            
-            // Cek apakah email Politala
-            if (!$this->isPolitalaEmail($email)) {
-                \Log::info('Not a Politala email');
-                return;
-            }
-            
-            // Cek apakah user sudah ada
-            if (Pengguna::where('email', $email)->exists()) {
-                \Log::info('User already exists');
-                return;
-            }
-            
-            // Auto-register user baru
-            $role = $this->determineRole($email);
-            $name = $this->extractNameFromEmail($email);
-            $politalaId = $this->generatePolitalaId($email, $role);
-            
-            \Log::info('Creating new user', [
-                'email' => $email,
-                'name' => $name,
-                'role' => $role,
-                'politala_id' => $politalaId,
-            ]);
-            
-            $user = Pengguna::create([
-                'politala_id' => $politalaId,
-                'name' => $name,
-                'email' => $email,
-                'password' => Hash::make($this->input('password')),
-                'role' => $role,
-                'program_studi' => 'Sistem Informasi',
-                'is_active' => true,
-            ]);
-            
-            \Log::info('User created successfully', ['user_id' => $user->id]);
-        } catch (\Exception $e) {
-            \Log::error('Auto-register failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-        }
-    }
-    
-    /**
-     * Check jika email adalah email Politala
-     */
-    protected function isPolitalaEmail(string $email): bool
-    {
-        return Str::endsWith($email, ['@politala.ac.id', '@mhs.politala.ac.id']);
-    }
-    
-    /**
-     * Tentukan role berdasarkan email
-     */
-    protected function determineRole(string $email): string
-    {
-        if (Str::endsWith($email, '@mhs.politala.ac.id')) {
-            return 'mahasiswa';
-        }
-        
-        // Check untuk email khusus admin
-        if ($email === 'admin@politala.ac.id') {
-            return 'admin';
-        }
-        
-        // Check untuk email khusus koordinator
-        if ($email === 'koordinator@politala.ac.id') {
-            return 'koordinator';
-        }
-        
-        // Default untuk @politala.ac.id lainnya
-        return 'dosen';
-    }
-    
-    /**
-     * Extract nama dari email
-     */
-    protected function extractNameFromEmail(string $email): string
-    {
-        $username = Str::before($email, '@');
-        $name = Str::replace(['.', '_', '-'], ' ', $username);
-        return Str::title($name);
-    }
-    
-    /**
-     * Generate Politala ID
-     */
-    protected function generatePolitalaId(string $email, string $role): string
-    {
-        $prefix = match($role) {
-            'mahasiswa' => 'MHS',
-            'dosen' => 'DSN',
-            'koordinator' => 'KOORD',
-            'admin' => 'ADMIN',
-            default => 'USR',
-        };
-        
-        $username = Str::before($email, '@');
-        $randomNumber = rand(100, 999);
-        
-        return strtoupper($prefix . '_' . Str::slug($username) . '_' . $randomNumber);
     }
 
     /**
