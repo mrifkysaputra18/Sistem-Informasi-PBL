@@ -62,11 +62,12 @@
                                 <label for="start_date" class="block text-sm font-medium text-gray-700 mb-1">
                                     Tanggal Mulai <span class="text-red-500">*</span>
                                 </label>
-                                <input type="date" 
+                                <input type="text" 
                                        name="start_date" 
                                        id="start_date" 
                                        value="{{ old('start_date') }}"
                                        required
+                                       placeholder="dd/mm/yyyy"
                                        class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('start_date') border-red-500 @enderror">
                                 @error('start_date')
                                 <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
@@ -78,11 +79,12 @@
                                 <label for="end_date" class="block text-sm font-medium text-gray-700 mb-1">
                                     Tanggal Selesai <span class="text-red-500">*</span>
                                 </label>
-                                <input type="date" 
+                                <input type="text" 
                                        name="end_date" 
                                        id="end_date" 
                                        value="{{ old('end_date') }}"
                                        required
+                                       placeholder="dd/mm/yyyy"
                                        class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('end_date') border-red-500 @enderror">
                                 @error('end_date')
                                 <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
@@ -131,4 +133,36 @@
             </div>
         </div>
     </div>
+
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inisialisasi Flatpickr untuk Tanggal Mulai
+            flatpickr("#start_date", {
+                dateFormat: "Y-m-d",          // Format untuk database (YYYY-MM-DD)
+                altInput: true,               // Gunakan input alternatif untuk display
+                altFormat: "d/m/Y",           // Format tampilan (DD/MM/YYYY)
+                locale: {
+                    firstDayOfWeek: 1         // Senin sebagai hari pertama
+                },
+                allowInput: true              // Allow manual input
+            });
+
+            // Inisialisasi Flatpickr untuk Tanggal Selesai
+            flatpickr("#end_date", {
+                dateFormat: "Y-m-d",          // Format untuk database (YYYY-MM-DD)
+                altInput: true,               // Gunakan input alternatif untuk display
+                altFormat: "d/m/Y",           // Format tampilan (DD/MM/YYYY)
+                locale: {
+                    firstDayOfWeek: 1         // Senin sebagai hari pertama
+                },
+                allowInput: true              // Allow manual input
+            });
+        });
+    </script>
 </x-app-layout>

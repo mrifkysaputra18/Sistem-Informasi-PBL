@@ -102,50 +102,24 @@ class RuangKelas extends Model
     }
 
     /**
-     * Get Dosen PBL yang aktif (all periods)
+     * Get Dosen PBL yang aktif untuk kelas ini
+     * UPDATE: Dosen PBL sekarang untuk full semester (tidak ada periode)
      */
     public function dosenPbls()
     {
         return $this->belongsToMany(Pengguna::class, 'dosen_pbl_kelas', 'class_room_id', 'dosen_id')
-            ->withPivot('periode', 'is_active')
+            ->withPivot('is_active')
+            ->wherePivot('is_active', true)
             ->withTimestamps();
     }
 
     /**
-     * Get Dosen PBL sebelum UTS
-     */
-    public function dosenPblSebelumUts()
-    {
-        return $this->dosenPbls()->wherePivot('periode', 'sebelum_uts')->wherePivot('is_active', true);
-    }
-
-    /**
-     * Get Dosen PBL sesudah UTS
-     */
-    public function dosenPblSesudahUts()
-    {
-        return $this->dosenPbls()->wherePivot('periode', 'sesudah_uts')->wherePivot('is_active', true);
-    }
-
-    /**
-     * Cek apakah user adalah Dosen PBL di kelas ini (any active period)
+     * Cek apakah user adalah Dosen PBL di kelas ini
      */
     public function isDosenPbl(int $userId): bool
     {
         return $this->dosenPblKelas()
             ->where('dosen_id', $userId)
-            ->where('is_active', true)
-            ->exists();
-    }
-
-    /**
-     * Cek apakah user adalah Dosen PBL di periode tertentu
-     */
-    public function isDosenPblPeriode(int $userId, string $periode): bool
-    {
-        return $this->dosenPblKelas()
-            ->where('dosen_id', $userId)
-            ->where('periode', $periode)
             ->where('is_active', true)
             ->exists();
     }

@@ -246,7 +246,7 @@
                                 Password
                             </label>
                             @if (Route::has('password.request'))
-                            <a href="{{ route('password.request') }}" 
+                            <a href="{{ route('password.sso.verify') }}" 
                                class="text-xs text-primary-600 hover:text-primary-800 font-medium transition-colors duration-200">
                                 Lupa password?
                             </a>

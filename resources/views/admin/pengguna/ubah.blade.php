@@ -95,8 +95,14 @@
                                 <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
                                     Password Baru
                                 </label>
-                                <input type="password" name="password" id="password"
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('password') border-red-500 @enderror">
+                                <div class="relative">
+                                    <input type="password" name="password" id="password"
+                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 @error('password') border-red-500 @enderror pr-10">
+                                    <button type="button" onclick="togglePassword('password', 'togglePasswordIcon')"
+                                            class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                        <i id="togglePasswordIcon" class="fas fa-eye text-gray-400 hover:text-gray-600"></i>
+                                    </button>
+                                </div>
                                 @error('password')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -108,8 +114,14 @@
                                 <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">
                                     Konfirmasi Password
                                 </label>
-                                <input type="password" name="password_confirmation" id="password_confirmation"
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500">
+                                <div class="relative">
+                                    <input type="password" name="password_confirmation" id="password_confirmation"
+                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-blue-500 pr-10">
+                                    <button type="button" onclick="togglePassword('password_confirmation', 'toggleConfirmPasswordIcon')"
+                                            class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                        <i id="toggleConfirmPasswordIcon" class="fas fa-eye text-gray-400 hover:text-gray-600"></i>
+                                    </button>
+                                </div>
                             </div>
 
                             <!-- Role -->
@@ -220,6 +232,22 @@
 
     @push('scripts')
     <script>
+        // Toggle password visibility
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
         // Show/hide NIM field based on role
         document.getElementById('role').addEventListener('change', function() {
             const nimField = document.getElementById('nim-field');

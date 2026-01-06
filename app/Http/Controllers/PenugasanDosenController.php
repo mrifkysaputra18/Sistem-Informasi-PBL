@@ -11,8 +11,8 @@ use Illuminate\Http\Request;
 /**
  * Controller untuk mengelola penugasan Dosen PBL per Kelas
  * 
- * Catatan: Dosen Mata Kuliah dikelola via KelasMataKuliahController
- * (per kelas, per matkul - lebih dinamis)
+ * UPDATE: 1 Dosen PBL untuk full semester (tidak ada rolling sebelum/sesudah UTS)
+ * Dosen Mata Kuliah tetap bisa rolling via KelasMataKuliahController
  */
 class PenugasanDosenController extends Controller
 {
@@ -26,13 +26,14 @@ class PenugasanDosenController extends Controller
         $allPeriodes = PeriodeAkademik::orderBy('start_date', 'desc')->get();
         $selectedPeriodeId = $request->get('periode_id', $periodeAktif?->id);
         
-        // Data untuk Dosen PBL
+        // Data untuk Dosen PBL (grouped by class)
         $dosenPblList = DosenPblKelas::with(['dosen', 'classRoom.academicPeriod'])
             ->when($selectedPeriodeId, function ($q) use ($selectedPeriodeId) {
                 return $q->whereHas('classRoom', function ($q2) use ($selectedPeriodeId) {
                     $q2->where('academic_period_id', $selectedPeriodeId);
                 });
             })
+            ->where('is_active', true)
             ->orderBy('class_room_id')
             ->get()
             ->groupBy('class_room_id');
@@ -61,7 +62,6 @@ class PenugasanDosenController extends Controller
         $validated = $request->validate([
             'class_room_id' => 'required|exists:ruang_kelas,id',
             'dosen_id' => 'required|exists:pengguna,id',
-            'periode' => 'required|in:sebelum_uts,sesudah_uts',
         ], [
             'class_room_id.required' => 'Pilih kelas terlebih dahulu.',
             'dosen_id.required' => 'Pilih dosen terlebih dahulu.',
@@ -69,26 +69,24 @@ class PenugasanDosenController extends Controller
 
         $kelas = RuangKelas::find($validated['class_room_id']);
         
-        // Cek duplikat
+        // Cek duplikat (1 dosen hanya bisa sekali per kelas)
         $exists = DosenPblKelas::where('dosen_id', $validated['dosen_id'])
             ->where('class_room_id', $validated['class_room_id'])
-            ->where('periode', $validated['periode'])
             ->exists();
 
         if ($exists) {
-            return redirect()->back()->with('error', 'Dosen sudah ditugaskan untuk periode ini.');
+            return redirect()->back()->with('error', 'Dosen sudah ditugaskan sebagai Dosen PBL di kelas ini.');
         }
 
         DosenPblKelas::create([
             'dosen_id' => $validated['dosen_id'],
             'class_room_id' => $validated['class_room_id'],
-            'periode' => $validated['periode'],
             'is_active' => true,
             'academic_period_id' => $kelas->academic_period_id,
         ]);
 
         return redirect()->route('penugasan-dosen.index')
-            ->with('ok', 'Dosen PBL berhasil ditugaskan.');
+            ->with('ok', 'Dosen PBL berhasil ditugaskan untuk full semester.');
     }
 
     /**

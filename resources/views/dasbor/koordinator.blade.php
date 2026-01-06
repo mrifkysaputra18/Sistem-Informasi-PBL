@@ -15,8 +15,7 @@
                         <span>Kelas</span>
                     </a>
                     <a href="{{ route('groups.index') }}" 
-                       class="inline-flex items-center px-5 py-2.5 rounded-lg font-bold text-white text-sm shadow-lg transition-all hover:opacity-90"
-                       style="background-color: #059669; border: 2px solid #047857;">
+                       class="inline-flex items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 border-2 border-blue-800 rounded-lg font-bold text-white text-sm shadow-lg transition-all">
                         <i class="fa-solid fa-users mr-2"></i>
                         <span>Kelompok</span>
                     </a>

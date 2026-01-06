@@ -135,10 +135,27 @@
                     @endif
 
                     @if(auth()->user()->isAdmin())
-                        <!-- Admin Only - Google Drive Settings (ujung kanan) -->
-                        <x-nav-link :href="route('settings.google-drive.index')" :active="request()->routeIs('settings.google-drive.*')">
-                            {{ __('Google Drive') }}
-                        </x-nav-link>
+                        <!-- Admin Only - Pengaturan Dropdown -->
+                        <x-dropdown align="right" width="48">
+                            <x-slot name="trigger">
+                                <button class="inline-flex items-center px-2.5 py-1.5 text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200 ease-in-out whitespace-nowrap">
+                                    <span>{{ __('Pengaturan') }}</span>
+                                    <svg class="ml-1.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </x-slot>
+
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('settings.google-drive.index')">
+                                    {{ __('Google Drive') }}
+                                </x-dropdown-link>
+                                
+                                <x-dropdown-link :href="route('settings.email.index')">
+                                    {{ __('Pengaturan Email') }}
+                                </x-dropdown-link>
+                            </x-slot>
+                        </x-dropdown>
                     @endif
 
                     @if(auth()->user()->isMahasiswa())
@@ -235,6 +252,10 @@
                 <!-- Admin Only - Google Drive Settings -->
                 <x-responsive-nav-link :href="route('settings.google-drive.index')" :active="request()->routeIs('settings.google-drive.*')">
                     {{ __('Google Drive') }}
+                </x-responsive-nav-link>
+                <!-- Admin Only - Email Settings -->
+                <x-responsive-nav-link :href="route('settings.email.index')" :active="request()->routeIs('settings.email.*')">
+                    {{ __('Pengaturan Email') }}
                 </x-responsive-nav-link>
             @endif
 

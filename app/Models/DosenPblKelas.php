@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * 
  * Dosen PBL adalah dosen yang bertanggung jawab untuk proyek PBL di kelas tertentu
  * dan bisa membuat target mingguan untuk kelompok di kelas tersebut.
+ * 
+ * UPDATE: 1 Dosen PBL untuk full semester (tidak ada rolling sebelum/sesudah UTS)
  */
 class DosenPblKelas extends Model
 {
@@ -18,7 +20,7 @@ class DosenPblKelas extends Model
     protected $fillable = [
         'dosen_id',
         'class_room_id',
-        'periode',
+        'academic_period_id',
         'is_active',
     ];
 
@@ -43,16 +45,11 @@ class DosenPblKelas extends Model
     }
 
     /**
-     * Scope untuk filter berdasarkan periode
+     * Get periode akademik
      */
-    public function scopeSebelumUts($query)
+    public function academicPeriod(): BelongsTo
     {
-        return $query->where('periode', 'sebelum_uts');
-    }
-
-    public function scopeSesudahUts($query)
-    {
-        return $query->where('periode', 'sesudah_uts');
+        return $this->belongsTo(PeriodeAkademik::class, 'academic_period_id');
     }
 
     /**
@@ -61,17 +58,5 @@ class DosenPblKelas extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
-    }
-
-    /**
-     * Get label periode dalam Bahasa Indonesia
-     */
-    public function getPeriodeLabelAttribute(): string
-    {
-        return match($this->periode) {
-            'sebelum_uts' => 'Sebelum UTS',
-            'sesudah_uts' => 'Sesudah UTS',
-            default => $this->periode,
-        };
     }
 }

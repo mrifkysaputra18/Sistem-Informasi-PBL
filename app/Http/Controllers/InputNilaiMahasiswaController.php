@@ -36,6 +36,18 @@ class InputNilaiMahasiswaController extends Controller
     // Simpan nilai massal (POST /scores/student-input/store)
     public function store(Request $request)
     {
+        $dosen = auth()->user();
+        
+        // Validate: HANYA Dosen PBL yang bisa input nilai mahasiswa
+        if ($request->filled('class_room_id') && $dosen->isDosen()) {
+            if (!$dosen->isDosenPblFor($request->class_room_id)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Fitur ini hanya untuk Dosen PBL.'
+                ], 403);
+            }
+        }
+        
         $request->validate([
             'scores' => 'required|array',
             'scores.*.user_id' => 'required|exists:pengguna,id',

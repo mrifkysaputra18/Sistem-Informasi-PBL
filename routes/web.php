@@ -25,11 +25,24 @@ use App\Http\Controllers\{
     SinkronKriteriaController
 };
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\Auth\SsoPasswordResetController;
 use Illuminate\Support\Facades\Route;
 
 // Google OAuth Routes
 Route::get('/auth/google', [GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+
+// SSO-Verified Password Reset Routes
+Route::middleware('guest')->group(function () {
+    Route::get('/reset-password-sso', [SsoPasswordResetController::class, 'showVerifyPage'])
+        ->name('password.sso.verify');
+    Route::get('/auth/password-reset/google', [SsoPasswordResetController::class, 'redirectToGoogle'])
+        ->name('password.sso.redirect');
+    Route::get('/auth/password-reset/callback', [SsoPasswordResetController::class, 'handleCallback'])
+        ->name('password.sso.callback');
+    Route::post('/reset-password-sso', [SsoPasswordResetController::class, 'updatePassword'])
+        ->name('password.sso.update');
+});
 
 // API Routes (untuk AJAX)
 Route::middleware(['auth'])->group(function () {
@@ -94,12 +107,24 @@ Route::middleware(['auth'])->group(function () {
         Route::get('settings/google-drive/connect', [\App\Http\Controllers\GoogleDriveOAuthController::class, 'redirect'])->name('settings.google-drive.connect');
         Route::get('settings/google-drive/callback', [\App\Http\Controllers\GoogleDriveOAuthController::class, 'callback'])->name('settings.google-drive.callback');
         Route::post('settings/google-drive/disconnect', [\App\Http\Controllers\GoogleDriveOAuthController::class, 'disconnect'])->name('settings.google-drive.disconnect');
+
+
+        // Email Settings (Admin only)
+        Route::get('settings/email', [\App\Http\Controllers\EmailSettingsController::class, 'index'])->name('settings.email.index');
+        Route::put('settings/email', [\App\Http\Controllers\EmailSettingsController::class, 'update'])->name('settings.email.update');
+        Route::post('settings/email/test', [\App\Http\Controllers\EmailSettingsController::class, 'testConnection'])->name('settings.email.test');
+
+        // Gmail OAuth
+        Route::get('settings/gmail/connect', [\App\Http\Controllers\GmailOAuthController::class, 'redirect'])->name('settings.gmail.connect');
+        Route::get('settings/gmail/callback', [\App\Http\Controllers\GmailOAuthController::class, 'callback'])->name('settings.gmail.callback');
+        Route::post('settings/gmail/disconnect', [\App\Http\Controllers\GmailOAuthController::class, 'disconnect'])->name('settings.gmail.disconnect');
+        Route::post('settings/gmail/test', [\App\Http\Controllers\EmailSettingsController::class, 'testGmailConnection'])->name('settings.gmail.test');
     });
 
     // ========================================
-    // KOORDINATOR + ADMIN ROUTES
+    // KOORDINATOR + ADMIN ROUTES (Koordinator = READ-ONLY)
     // ========================================
-    Route::middleware(['role:koordinator,admin'])->group(function () {
+    Route::middleware(['role:koordinator,admin', 'koordinator.readonly'])->group(function () {
         // Manage Group Members
         Route::post('groups/{group}/members', [KelompokController::class, 'addMember'])->name('groups.add-member');
         Route::delete('groups/{group}/members/{member}', [KelompokController::class, 'removeMember'])->name('groups.remove-member');
@@ -232,7 +257,7 @@ Route::middleware(['auth'])->group(function () {
     // ========================================
     // KOORDINATOR + ADMIN ROUTES (Kelola Kelompok)
     // ========================================
-    Route::middleware(['role:koordinator,admin'])->group(function () {
+    Route::middleware(['role:koordinator,admin', 'koordinator.readonly'])->group(function () {
         // Class Rooms
         Route::resource('classrooms', RuangKelasController::class);
         
@@ -248,12 +273,12 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ========================================
-    // DOSEN + KOORDINATOR + ADMIN ROUTES (Input Nilai)
+    // DOSEN + KOORDINATOR + ADMIN ROUTES - Koordinator READ-ONLY
     // ========================================
-    Route::middleware(['role:dosen,koordinator,admin'])->group(function () {
+    Route::middleware(['role:dosen,koordinator,admin', 'koordinator.readonly'])->group(function () {
         // Group Scores (Input Nilai Kelompok)
         Route::get('scores/create', [NilaiKelompokController::class, 'create'])->name('scores.create');
-        Route::post('scores', [NilaiKelompokController::class, 'store'])->name('scores.store');
+        Route::post('scores', [NilaiKelompokController::class, 'store'])->name('scores store');
         
         // Weekly Target Reviews
         Route::get('target-reviews', [UlasanTargetMingguanController::class, 'index'])->name('target-reviews.index');
@@ -266,9 +291,9 @@ Route::middleware(['auth'])->group(function () {
     });
     
     // ========================================
-    // DOSEN + KOORDINATOR + ADMIN ROUTES (Lihat Ranking)
+    // KOORDINATOR + ADMIN ONLY (Ranking - Dosen tidak bisa lihat)
     // ========================================
-    Route::middleware(['role:dosen,koordinator,admin'])->group(function () {
+    Route::middleware(['role:koordinator,admin'])->group(function () {
         // Group Rankings (View only)
         Route::get('scores', [NilaiKelompokController::class, 'index'])->name('scores.index');
         
@@ -334,9 +359,9 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ========================================
-    // DOSEN + ADMIN - NILAI RUBRIK
+    // DOSEN + KOORDINATOR + ADMIN - NILAI RUBRIK
     // ========================================
-    Route::middleware(['role:dosen,admin'])->group(function () {
+    Route::middleware(['role:dosen,koordinator,admin'])->group(function () {
         Route::get('nilai-rubrik', [\App\Http\Controllers\NilaiRubrikController::class, 'index'])->name('nilai-rubrik.index');
         Route::get('nilai-rubrik/{kelasMataKuliah}/input', [\App\Http\Controllers\NilaiRubrikController::class, 'input'])->name('nilai-rubrik.input');
         Route::post('nilai-rubrik/{kelasMataKuliah}', [\App\Http\Controllers\NilaiRubrikController::class, 'store'])->name('nilai-rubrik.store');
@@ -356,6 +381,10 @@ Route::middleware(['auth'])->group(function () {
     // SHARED ROUTES (All authenticated users)
     // ========================================
     // Weekly Progress routes are defined per role above
+    
+    // Profile photo routes
+    Route::post('profile/photo', [\App\Http\Controllers\ProfilePhotoController::class, 'update'])->name('profile.photo.update');
+    Route::delete('profile/photo', [\App\Http\Controllers\ProfilePhotoController::class, 'destroy'])->name('profile.photo.delete');
     
     // debug route
     Route::get('/debug', fn() => view('debug'))->name('debug');

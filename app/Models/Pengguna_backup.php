@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Models;
 
@@ -210,7 +210,7 @@ class Pengguna extends Authenticatable
     public function kelasPbl()
     {
         return $this->belongsToMany(RuangKelas::class, 'dosen_pbl_kelas', 'dosen_id', 'class_room_id')
-            ->withPivot('is_active')
+            ->withPivot('periode', 'is_active')
             ->withTimestamps();
     }
 
@@ -238,8 +238,15 @@ class Pengguna extends Authenticatable
         return $this->isDosen() && $this->kelasPblAktif()->exists();
     }
 
+    // ========================================
+    // AUTHORIZATION HELPER METHODS  
+    // ========================================
+
     /**
      * Get all class IDs where this dosen is assigned (PBL or Mata Kuliah)
+     * Used for filtering classes in dropdowns and authorization checks
+     * 
+     * @return \Illuminate\Support\Collection
      */
     public function getAssignedClassRoomIds()
     {
@@ -247,8 +254,10 @@ class Pengguna extends Authenticatable
             return collect([]);
         }
 
+        // Get from Dosen PBL
         $pblClassIds = $this->kelasPblAktif->pluck('id');
         
+        // Get from Dosen Mata Kuliah
         $matkulClassIds = \Illuminate\Support\Facades\DB::table('kelas_mata_kuliah')
             ->where('dosen_sebelum_uts_id', $this->id)
             ->orWhere('dosen_sesudah_uts_id', $this->id)
@@ -260,11 +269,15 @@ class Pengguna extends Authenticatable
 
     /**
      * Check if dosen can access a specific class
+     * Returns true if user is assigned as Dosen PBL or Dosen Mata Kuliah for the class
+     * 
+     * @param int $classRoomId
+     * @return bool
      */
     public function canAccessClassRoom(int $classRoomId): bool
     {
         if ($this->isAdmin()) {
-            return true;
+            return true; // Admin can access all classes
         }
 
         if (!$this->isDosen()) {
@@ -276,6 +289,9 @@ class Pengguna extends Authenticatable
 
     /**
      * Check if dosen is Dosen PBL for a specific class
+     * 
+     * @param int $classRoomId
+     * @return bool
      */
     public function isDosenPblFor(int $classRoomId): bool
     {
@@ -287,25 +303,14 @@ class Pengguna extends Authenticatable
     }
 
     /**
-     * Check if dosen can input nilai for a specific class
+     * Check if dosen can input nilai (grades) for a specific class
+     * Based on Dosen PBL or Dosen Mata Kuliah assignment
+     * 
+     * @param int $classRoomId
+     * @return bool
      */
     public function canInputNilaiFor(int $classRoomId): bool
     {
         return $this->canAccessClassRoom($classRoomId);
-    }
-
-    /**
-     * Check if user can modify/edit data (create, update, delete)
-     * Koordinator is READ-ONLY, only Admin and Dosen can modify
-     */
-    public function canModify(): bool
-    {
-        // Koordinator TIDAK BISA modify - hanya monitoring
-        if ($this->isKoordinator() && !$this->isAdmin()) {
-            return false;
-        }
-        
-        // Admin dan Dosen bisa modify
-        return $this->isAdmin() || $this->isDosen();
     }
 }

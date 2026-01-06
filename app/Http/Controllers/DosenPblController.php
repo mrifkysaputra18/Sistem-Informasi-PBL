@@ -11,24 +11,24 @@ class DosenPblController extends Controller
 {
     /**
      * Tampilkan daftar Dosen PBL untuk kelas tertentu
+     * UPDATE: Dosen PBL sekarang untuk full semester (tidak ada split sebelum/sesudah UTS)
      */
     public function index(RuangKelas $classRoom)
     {
-        // Ambil dosen PBL per periode
-        $dosenSebelumUts = $classRoom->dosenPblSebelumUts()->get();
-        $dosenSesudahUts = $classRoom->dosenPblSesudahUts()->get();
+        // Ambil dosen PBL untuk kelas ini
+        $dosenPbls = $classRoom->dosenPblKelas()->with('dosen')->get();
         
-        // Ambil daftar dosen yang bisa di-assign (belum jadi dosen PBL di kelas ini)
-        $existingDosenIds = $classRoom->dosenPbls()->pluck('pengguna.id')->toArray();
+        // Ambil daftar dosen yang bisa di-assign
+        $existingDosenIds = $dosenPbls->pluck('dosen_id')->toArray();
         $availableDosens = Pengguna::where('role', 'dosen')
             ->where('is_active', true)
+            ->whereNotIn('id', $existingDosenIds)
             ->orderBy('name')
             ->get();
         
         return view('ruang-kelas.dosen-pbl', compact(
             'classRoom',
-            'dosenSebelumUts',
-            'dosenSesudahUts',
+            'dosenPbls',
             'availableDosens'
         ));
     }
@@ -40,33 +40,29 @@ class DosenPblController extends Controller
     {
         $validated = $request->validate([
             'dosen_id' => 'required|exists:pengguna,id',
-            'periode' => 'required|in:sebelum_uts,sesudah_uts',
         ], [
             'dosen_id.required' => 'Pilih dosen terlebih dahulu.',
-            'periode.required' => 'Pilih periode terlebih dahulu.',
         ]);
 
-        // Cek apakah dosen sudah di-assign untuk periode ini
+        // Cek apakah dosen sudah di-assign
         $exists = DosenPblKelas::where('dosen_id', $validated['dosen_id'])
             ->where('class_room_id', $classRoom->id)
-            ->where('periode', $validated['periode'])
             ->exists();
 
         if ($exists) {
-            return redirect()->back()->with('error', 'Dosen sudah menjadi Dosen PBL di periode ini.');
+            return redirect()->back()->with('error', 'Dosen sudah menjadi Dosen PBL di kelas ini.');
         }
 
         DosenPblKelas::create([
             'dosen_id' => $validated['dosen_id'],
             'class_room_id' => $classRoom->id,
-            'periode' => $validated['periode'],
             'is_active' => true,
+            'academic_period_id' => $classRoom->academic_period_id,
         ]);
 
         $dosen = Pengguna::find($validated['dosen_id']);
-        $periodeLabel = $validated['periode'] === 'sebelum_uts' ? 'Sebelum UTS' : 'Sesudah UTS';
         
-        return redirect()->back()->with('ok', "{$dosen->name} berhasil ditambahkan sebagai Dosen PBL ({$periodeLabel}).");
+        return redirect()->back()->with('ok', "{$dosen->name} berhasil ditambahkan sebagai Dosen PBL (Full Semester).");
     }
 
     /**
