@@ -199,11 +199,39 @@ class UserController extends Controller
             return back()->with('error', 'Tidak dapat menghapus akun sendiri!');
         }
         
-        $user->delete();
+        \DB::beginTransaction();
         
-        return redirect()
-            ->route('admin.users.index')
-            ->with('success', 'User berhasil dihapus!');
+        try {
+            // If user is a group leader, set leader to NULL
+            \App\Models\Kelompok::where('leader_id', $user->id)
+                ->update(['leader_id' => null]);
+            
+            // Remove user from all groups
+            \App\Models\AnggotaKelompok::where('user_id', $user->id)->delete();
+            
+            // Set completed_by to NULL in target_mingguan
+            \App\Models\TargetMingguan::where('completed_by', $user->id)
+                ->update(['completed_by' => null]);
+            
+            // If dosen, remove from mata kuliah assignments
+            if ($user->role === 'dosen') {
+                \DB::table('dosen_mata_kuliah')->where('dosen_id', $user->id)->delete();
+            }
+            
+            // Delete the user
+            $user->delete();
+            
+            \DB::commit();
+            
+            return redirect()
+                ->route('admin.users.index')
+                ->with('success', 'User berhasil dihapus! (Relasi kelompok & target sudah dibersihkan)');
+                
+        } catch (\Exception $e) {
+            \DB::rollback();
+            
+            return back()->with('error', 'Gagal menghapus user: ' . $e->getMessage());
+        }
     }
 
     /**
