@@ -209,12 +209,13 @@
                                                                            placeholder="Deskripsi">
                                                                 </div>
                                                                 <div class="md:col-span-2 flex items-center justify-center gap-1">
-                                                                    <button type="button" @click="item.expanded = !item.expanded" 
-                                                                            class="p-2 text-indigo-600 hover:bg-indigo-100 rounded-lg transition-colors">
-                                                                        <i class="fa-solid" :class="item.subItems?.length > 0 ? (item.expanded ? 'fa-chevron-up' : 'fa-chevron-down') : 'fa-plus'"></i>
-                                                                    </button>
                                                                     <button type="button" @click="addSubItem(kIndex, iIndex)" 
-                                                                            class="p-2 text-emerald-600 hover:bg-emerald-100 rounded-lg transition-colors" title="Tambah Sub-Item">
+                                                                            class="p-2 text-indigo-600 hover:bg-indigo-100 rounded-lg transition-colors" title="Tambah Sub-Item">
+                                                                        <i class="fa-solid fa-plus"></i>
+                                                                    </button>
+                                                                    <button type="button" @click="item.expanded = !item.expanded" 
+                                                                            class="p-2 text-emerald-600 hover:bg-emerald-100 rounded-lg transition-colors" title="Toggle Sub-Item"
+                                                                            x-show="item.subItems?.length > 0">
                                                                         <i class="fa-solid fa-layer-group"></i>
                                                                     </button>
                                                                     <button type="button" @click="removeItem(kIndex, iIndex)" 
@@ -258,12 +259,13 @@
                                                                                                class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs" placeholder="Deskripsi">
                                                                                     </div>
                                                                                     <div class="md:col-span-3 flex items-center justify-center gap-1">
-                                                                                        <button type="button" @click="subItem.expanded = !subItem.expanded" 
-                                                                                                class="p-1 text-purple-600 hover:bg-purple-100 rounded transition-colors">
-                                                                                            <i class="fa-solid text-xs" :class="subItem.subItems?.length > 0 ? (subItem.expanded ? 'fa-chevron-up' : 'fa-chevron-down') : 'fa-plus'"></i>
-                                                                                        </button>
                                                                                         <button type="button" @click="addSubSubItem(kIndex, iIndex, sIndex)" 
                                                                                                 class="p-1 text-purple-600 hover:bg-purple-100 rounded transition-colors" title="Tambah Sub-Sub-Item">
+                                                                                            <i class="fa-solid fa-plus text-xs"></i>
+                                                                                        </button>
+                                                                                        <button type="button" @click="subItem.expanded = !subItem.expanded" 
+                                                                                                class="p-1 text-purple-600 hover:bg-purple-100 rounded transition-colors" title="Toggle Sub-Sub-Item"
+                                                                                                x-show="subItem.subItems?.length > 0">
                                                                                             <i class="fa-solid fa-sitemap text-xs"></i>
                                                                                         </button>
                                                                                         <button type="button" @click="removeSubItem(kIndex, iIndex, sIndex)" 
