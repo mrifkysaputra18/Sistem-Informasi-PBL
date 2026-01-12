@@ -1,8 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center">
-            <a href="{{ route('groups.index') }}" class="mr-4 text-gray-600 hover:text-gray-800">
-                <i class="fas fa-arrow-left text-xl"></i>
+            <a href="{{ route('groups.index') }}" class="back-btn mr-4"><i class="fas fa-arrow-left"></i>
             </a>
             <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Buat Kelompok Baru') }}

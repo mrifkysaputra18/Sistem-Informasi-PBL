@@ -1,6 +1,6 @@
 {{-- View: Peringkat Kelompok | Controller: NilaiKelompokController@recalc --}}
 <x-app-layout>
-  <x-slot name="header"><h2 class="font-semibold text-xl">Ranking Kelompok</h2></x-slot>
+  <x-slot name="header"><h2 class="font-semibold text-xl text-white">Ranking Kelompok</h2></x-slot>
   <div class="py-6">
     {{-- Tabel hasil ranking kelompok --}}
     <table class="min-w-full bg-white shadow rounded">

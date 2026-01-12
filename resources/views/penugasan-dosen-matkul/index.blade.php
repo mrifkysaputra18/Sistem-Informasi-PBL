@@ -5,13 +5,26 @@
             <!-- Header -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                 <div>
-                    <nav class="text-sm mb-2">
-                        <span class="text-indigo-600 font-medium">Akademik</span>
-                        <span class="text-gray-400 mx-2">/</span>
-                        <span class="text-gray-500 font-semibold">Dosen Matkul</span>
+                    <nav class="flex items-center flex-wrap gap-2 text-sm bg-white/80 backdrop-blur-sm px-4 py-2.5 rounded-xl shadow-sm border border-gray-100 mb-3">
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-gray-100 text-gray-700 font-medium">
+                            <i class="fa-solid fa-graduation-cap mr-2 text-gray-500"></i>
+                            Akademik
+                        </span>
+                        <span class="text-gray-300">
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </span>
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-semibold shadow-sm">
+                            <i class="fa-solid fa-chalkboard-user mr-2"></i>
+                            Dosen Matkul
+                        </span>
                         @if($selectedClassRoom)
-                            <span class="text-gray-400 mx-2">/</span>
-                            <span class="text-gray-500 font-semibold">{{ $selectedClassRoom->name }}</span>
+                            <span class="text-gray-300">
+                                <i class="fa-solid fa-chevron-right text-xs"></i>
+                            </span>
+                            <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-purple-100 text-purple-700 font-semibold">
+                                <i class="fa-solid fa-school mr-2"></i>
+                                {{ $selectedClassRoom->name }}
+                            </span>
                         @endif
                     </nav>
                     <h2 class="text-3xl font-black text-gray-900 tracking-tight">DOSEN MATA KULIAH</h2>

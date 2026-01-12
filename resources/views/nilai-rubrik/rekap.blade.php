@@ -5,10 +5,18 @@
             <!-- HEADER -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                 <div>
-                    <nav class="text-sm mb-2">
-                        <a href="{{ route('nilai-rubrik.index') }}" class="text-indigo-600 hover:text-indigo-800 font-medium">Nilai Rubrik</a>
-                        <span class="text-gray-400 mx-2">/</span>
-                        <span class="text-gray-500 font-semibold">Rekap Nilai</span>
+                    <nav class="flex items-center space-x-2 text-sm bg-white/80 backdrop-blur-sm px-4 py-2.5 rounded-xl shadow-sm border border-gray-100 mb-3">
+                        <a href="{{ route('nilai-rubrik.index') }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 font-semibold transition-all duration-200 group">
+                            <i class="fa-solid fa-clipboard-list mr-2 text-indigo-500 group-hover:scale-110 transition-transform"></i>
+                            Nilai Rubrik
+                        </a>
+                        <span class="text-gray-300">
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </span>
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold shadow-sm">
+                            <i class="fa-solid fa-chart-bar mr-2"></i>
+                            Rekap Nilai
+                        </span>
                     </nav>
                     <h2 class="text-3xl font-black text-gray-900 tracking-tight">REKAP NILAI</h2>
                     <p class="text-sm font-medium text-gray-500 mt-1">

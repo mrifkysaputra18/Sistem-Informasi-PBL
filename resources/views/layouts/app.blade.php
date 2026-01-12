@@ -22,11 +22,11 @@
             /* Alpine.js cloak - hide elements until Alpine loads */
             [x-cloak] { display: none !important; }
             
-            /* Emergency Navigation Fallback */
-            nav { background: #003366 !important; min-height: 64px !important; }
-            nav * { color: white !important; }
-            nav a { color: white !important; text-decoration: none !important; padding: 8px 16px !important; display: inline-flex !important; align-items: center !important; }
-            nav a:hover { background: rgba(255,255,255,0.1) !important; }
+            /* Emergency Navigation Fallback - ONLY for main navbar, not breadcrumbs */
+            nav.modern-navbar { background: #003366 !important; min-height: 64px !important; }
+            nav.modern-navbar * { color: white !important; }
+            nav.modern-navbar a { color: white !important; text-decoration: none !important; padding: 8px 16px !important; display: inline-flex !important; align-items: center !important; }
+            nav.modern-navbar a:hover { background: rgba(255,255,255,0.1) !important; }
             .fas, .fa, [class*="fa-"] { font-family: "Font Awesome 6 Free", "Font Awesome 6 Pro", FontAwesome !important; font-weight: 900 !important; }
             button { display: inline-flex !important; align-items: center !important; cursor: pointer !important; }
             

@@ -1,8 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center">
-            <a href="{{ route('academic-periods.index') }}" class="mr-4 text-white hover:text-gray-200">
-                <i class="fas fa-arrow-left text-xl"></i>
+            <a href="{{ route('academic-periods.index') }}" class="back-btn mr-4"><i class="fas fa-arrow-left"></i>
             </a>
             <h2 class="font-semibold text-xl text-white leading-tight">
                 Tambah Periode Akademik

@@ -2,8 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center">
             <a href="{{ route('classrooms.index') }}" 
-               class="mr-4 text-gray-600 hover:text-gray-800 transition duration-200">
-                <i class="fas fa-arrow-left text-xl"></i>
+               class="back-btn mr-4"><i class="fas fa-arrow-left"></i>
             </a>
             <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ __('Edit Kelas') }}

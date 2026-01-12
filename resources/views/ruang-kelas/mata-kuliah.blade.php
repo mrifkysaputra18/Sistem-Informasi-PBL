@@ -5,18 +5,37 @@
             <!-- HEADER -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                 <div>
-                    <nav class="text-sm mb-2">
+                    <nav class="flex items-center flex-wrap gap-2 text-sm bg-white/80 backdrop-blur-sm px-4 py-2.5 rounded-xl shadow-sm border border-gray-100 mb-3">
                         @if(request('from') === 'akademik')
-                            <a href="{{ route('penugasan-dosen-matkul.index') }}" class="text-indigo-600 hover:text-indigo-800 font-medium">Akademik</a>
-                            <span class="text-gray-400 mx-2">/</span>
-                            <a href="{{ route('penugasan-dosen-matkul.index') }}" class="text-indigo-600 hover:text-indigo-800 font-medium">Dosen Matkul</a>
+                            <a href="{{ route('penugasan-dosen-matkul.index') }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 font-semibold transition-all duration-200 group">
+                                <i class="fa-solid fa-graduation-cap mr-2 text-indigo-500 group-hover:scale-110 transition-transform"></i>
+                                Akademik
+                            </a>
+                            <span class="text-gray-300">
+                                <i class="fa-solid fa-chevron-right text-xs"></i>
+                            </span>
+                            <a href="{{ route('penugasan-dosen-matkul.index') }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 font-semibold transition-all duration-200">
+                                Dosen Matkul
+                            </a>
                         @else
-                            <a href="{{ route('classrooms.index') }}" class="text-indigo-600 hover:text-indigo-800 font-medium">Kelas</a>
+                            <a href="{{ route('classrooms.index') }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 font-semibold transition-all duration-200 group">
+                                <i class="fa-solid fa-school mr-2 text-indigo-500 group-hover:scale-110 transition-transform"></i>
+                                Kelas
+                            </a>
                         @endif
-                        <span class="text-gray-400 mx-2">/</span>
-                        <span class="text-gray-500">{{ $classRoom->name }}</span>
-                        <span class="text-gray-400 mx-2">/</span>
-                        <span class="text-gray-500 font-semibold">Mata Kuliah Terkait</span>
+                        <span class="text-gray-300">
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </span>
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-gray-100 text-gray-700 font-medium">
+                            {{ $classRoom->name }}
+                        </span>
+                        <span class="text-gray-300">
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </span>
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold shadow-sm">
+                            <i class="fa-solid fa-book-open mr-2"></i>
+                            Mata Kuliah Terkait
+                        </span>
                     </nav>
                     <h2 class="text-3xl font-black text-gray-900 tracking-tight">MATA KULIAH TERKAIT PBL</h2>
                     <p class="text-sm font-medium text-gray-500 mt-1">

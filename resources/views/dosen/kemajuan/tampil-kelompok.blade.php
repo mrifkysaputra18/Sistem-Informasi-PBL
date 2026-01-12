@@ -2,8 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center">
             <a href="{{ route('dosen.progress.show-class', $classRoom) }}" 
-               class="mr-4 text-white hover:text-gray-200 transition duration-200">
-                <i class="fas fa-arrow-left text-xl"></i>
+               class="back-btn mr-4"><i class="fas fa-arrow-left"></i>
             </a>
             <h2 class="font-semibold text-xl text-white leading-tight">
                 {{ $classRoom->name }} - {{ $group->name }}
