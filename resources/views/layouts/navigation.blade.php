@@ -60,7 +60,8 @@
                             {{ __('Target Mingguan') }}
                         </x-nav-link>
                         
-                        <!-- Dropdown Menu Akademik (Mata Kuliah & Dosen) -->
+                        <!-- Dropdown Menu Akademik (Mata Kuliah & Dosen) - Hanya Admin dan Dosen -->
+                        @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
                         <x-dropdown align="top" width="48">
                             <x-slot name="trigger">
                                 <button class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white hover:text-white/80 focus:outline-none transition ease-in-out duration-150 {{ request()->routeIs('mata-kuliah.*') || request()->routeIs('rubrik-penilaian.*') || request()->routeIs('penugasan-dosen.*') || request()->routeIs('academic-periods.*') ? 'border-b-2 border-white' : '' }}">
@@ -95,6 +96,7 @@
                                 @endif
                             </x-slot>
                         </x-dropdown>
+                        @endif
                     @endif
 
                     @if(auth()->user()->isDosen() || auth()->user()->isKoordinator() || auth()->user()->isAdmin())
@@ -119,17 +121,19 @@
                                     </x-dropdown-link>
                                     
                                     <x-dropdown-link :href="route('nilai-rubrik.index')">
-                                        {{ __('Nilai Mata Kuliah') }}
+                                        {{ __('Input Nilai Mata Kuliah') }}
                                     </x-dropdown-link>
                                 @endif
                                 
-                                <x-dropdown-link :href="route('scores.index')">
-                                    {{ __('Ranking Kelompok') }}
-                                </x-dropdown-link>
-                                
-                                <x-dropdown-link :href="route('student-scores.index')">
-                                    {{ __('Ranking Mahasiswa') }}
-                                </x-dropdown-link>
+                                @if(auth()->user()->isKoordinator() || auth()->user()->isAdmin())
+                                    <x-dropdown-link :href="route('scores.index')">
+                                        {{ __('Ranking Kelompok') }}
+                                    </x-dropdown-link>
+                                    
+                                    <x-dropdown-link :href="route('student-scores.index')">
+                                        {{ __('Ranking Mahasiswa') }}
+                                    </x-dropdown-link>
+                                @endif
                             </x-slot>
                         </x-dropdown>
                     @endif
@@ -264,7 +268,8 @@
                 <x-responsive-nav-link :href="route('targets.index')" :active="request()->routeIs('targets.*') || request()->routeIs('target-reviews.*')">
                     {{ __('Target Mingguan') }}
                 </x-responsive-nav-link>
-                <!-- Menu Akademik (Grouped) -->
+                <!-- Menu Akademik (Grouped) - Hanya Admin dan Dosen -->
+                @if(auth()->user()->isAdmin() || auth()->user()->isDosen())
                 <div class="pl-4 border-l-2 border-gray-200/30 ml-4 space-y-1">
                     <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 py-2">
                         📚 Akademik
@@ -289,6 +294,7 @@
                         </x-responsive-nav-link>
                     @endif
                 </div>
+                @endif
                 
                 <!-- Menu Penilaian (Grouped) -->
                 <div class="pl-4 border-l-2 border-gray-200/30 ml-4 space-y-1">
@@ -308,13 +314,15 @@
                         </x-responsive-nav-link>
                     @endif
                     
-                    <x-responsive-nav-link :href="route('scores.index')" :active="request()->routeIs('scores.index') || request()->routeIs('scores.show') || request()->routeIs('scores.create') || request()->routeIs('scores.edit')">
-                        {{ __('Ranking Kelompok') }}
-                    </x-responsive-nav-link>
-                    
-                    <x-responsive-nav-link :href="route('student-scores.index')" :active="request()->routeIs('student-scores.*')">
-                        {{ __('Ranking Mahasiswa') }}
-                    </x-responsive-nav-link>
+                    @if(auth()->user()->isKoordinator() || auth()->user()->isAdmin())
+                        <x-responsive-nav-link :href="route('scores.index')" :active="request()->routeIs('scores.index') || request()->routeIs('scores.show') || request()->routeIs('scores.create') || request()->routeIs('scores.edit')">
+                            {{ __('Ranking Kelompok') }}
+                        </x-responsive-nav-link>
+                        
+                        <x-responsive-nav-link :href="route('student-scores.index')" :active="request()->routeIs('student-scores.*')">
+                            {{ __('Ranking Mahasiswa') }}
+                        </x-responsive-nav-link>
+                    @endif
                 </div>
             @endif
 

@@ -41,7 +41,7 @@ class RubrikPenilaian extends Model
     }
 
     /**
-     * Relasi ke semua items (flat)
+     * Relasi ke semua items (flat) - untuk backward compatibility
      */
     public function items(): HasMany
     {
@@ -70,6 +70,14 @@ class RubrikPenilaian extends Model
     public function getTotalBobotKategoriAttribute(): float
     {
         return $this->kategoris()->sum('bobot');
+    }
+
+    /**
+     * Hitung total persentase semua items (flat) - backward compatibility
+     */
+    public function getTotalPersentaseAttribute(): float
+    {
+        return $this->items()->sum('persentase');
     }
 
     /**
@@ -129,104 +137,5 @@ class RubrikPenilaian extends Model
             ->update(['is_active' => false]);
         
         $this->update(['is_active' => true]);
-    }
-
-    // =====================================
-    // Legacy Support - Backward Compatibility
-    // =====================================
-
-    /**
-     * Get kategori UTS (backward compatibility)
-     */
-    public function kategoriUts()
-    {
-        return $this->kategoris()->where('kode', 'uts')->first();
-    }
-
-    /**
-     * Get kategori UAS (backward compatibility)
-     */
-    public function kategoriUas()
-    {
-        return $this->kategoris()->where('kode', 'uas')->first();
-    }
-
-    /**
-     * Get root items untuk kategori UTS (backward compatibility)
-     */
-    public function itemsUts(): HasMany
-    {
-        $kategoriUts = $this->kategoriUts();
-        if (!$kategoriUts) {
-            return $this->hasMany(RubrikItem::class, 'rubrik_penilaian_id')->whereRaw('1=0');
-        }
-        return $this->hasMany(RubrikItem::class, 'rubrik_penilaian_id')
-            ->where('rubrik_kategori_id', $kategoriUts->id)
-            ->whereNull('parent_id')
-            ->orderBy('urutan');
-    }
-
-    /**
-     * Get root items untuk kategori UAS (backward compatibility)
-     */
-    public function itemsUas(): HasMany
-    {
-        $kategoriUas = $this->kategoriUas();
-        if (!$kategoriUas) {
-            return $this->hasMany(RubrikItem::class, 'rubrik_penilaian_id')->whereRaw('1=0');
-        }
-        return $this->hasMany(RubrikItem::class, 'rubrik_penilaian_id')
-            ->where('rubrik_kategori_id', $kategoriUas->id)
-            ->whereNull('parent_id')
-            ->orderBy('urutan');
-    }
-
-    /**
-     * Get bobot UTS (backward compatibility)
-     */
-    public function getBobotUtsAttribute(): float
-    {
-        return $this->kategoriUts()?->bobot ?? 0;
-    }
-
-    /**
-     * Get bobot UAS (backward compatibility)
-     */
-    public function getBobotUasAttribute(): float
-    {
-        return $this->kategoriUas()?->bobot ?? 0;
-    }
-
-    /**
-     * Hitung total persentase UTS (backward compatibility)
-     */
-    public function getTotalPersentaseUtsAttribute(): float
-    {
-        return $this->kategoriUts()?->total_persentase_items ?? 0;
-    }
-
-    /**
-     * Hitung total persentase UAS (backward compatibility)
-     */
-    public function getTotalPersentaseUasAttribute(): float
-    {
-        return $this->kategoriUas()?->total_persentase_items ?? 0;
-    }
-
-    /**
-     * Legacy support - total persentase rata-rata
-     */
-    public function getTotalPersentaseAttribute(): float
-    {
-        $kategoris = $this->kategoris;
-        if ($kategoris->isEmpty()) {
-            return 0;
-        }
-        
-        $total = 0;
-        foreach ($kategoris as $kategori) {
-            $total += $kategori->total_persentase_items;
-        }
-        return $total / $kategoris->count();
     }
 }

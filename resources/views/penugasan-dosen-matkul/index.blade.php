@@ -137,6 +137,45 @@
                                                             <p class="font-semibold text-green-800">{{ $km->dosenSesudahUts?->name ?? '-' }}</p>
                                                         </div>
                                                     </div>
+                                                    
+                                                    <!-- Rubrik Info -->
+                                                    <div class="mt-3" x-data="{ showRubrik: false }">
+                                                        @if($km->rubrikPenilaian)
+                                                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                                                                <div class="flex items-center justify-between">
+                                                                    <div>
+                                                                        <p class="text-xs font-bold text-gray-600 uppercase">Rubrik Aktif</p>
+                                                                        <p class="font-bold text-gray-800">{{ $km->rubrikPenilaian->nama }}</p>
+                                                                        <p class="text-xs text-gray-500">
+                                                                            {{ $km->rubrikPenilaian->items->count() }} item · 
+                                                                            Total {{ $km->rubrikPenilaian->total_persentase }}%
+                                                                        </p>
+                                                                    </div>
+                                                                    <button @click="showRubrik = !showRubrik" 
+                                                                            class="text-gray-600 hover:text-gray-800 text-sm font-bold">
+                                                                        <i class="fa-solid" :class="showRubrik ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                                                                    </button>
+                                                                </div>
+                                                                
+                                                                <!-- Detail Rubrik Items -->
+                                                                <div x-show="showRubrik" x-collapse class="mt-3 pt-3 border-t border-gray-200">
+                                                                    @foreach($km->rubrikPenilaian->items as $item)
+                                                                        <div class="flex justify-between text-sm py-1">
+                                                                            <span class="text-gray-700">{{ $item->nama }}</span>
+                                                                            <span class="font-bold text-gray-700">{{ $item->persentase }}%</span>
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        @else
+                                                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                                                <p class="text-sm text-yellow-700 font-medium">
+                                                                    <i class="fa-solid fa-exclamation-triangle mr-1"></i>
+                                                                    Belum ada rubrik dipilih
+                                                                </p>
+                                                            </div>
+                                                        @endif
+                                                    </div>
                                                 </div>
                                                 
                                                 <!-- Action Buttons -->
@@ -146,11 +185,19 @@
                                                             class="inline-flex items-center px-3 py-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 text-xs font-bold rounded-lg transition-all">
                                                         <i class="fa-solid fa-user-edit mr-1"></i> Edit Dosen
                                                     </button>
-                                                    <form action="{{ route('kelas-mata-kuliah.destroy', $km) }}" method="POST" onsubmit="return confirm('Hapus mata kuliah ini?')">
+                                                    <button type="button" 
+                                                            onclick="openRubrikModal({{ $km->id }}, '{{ addslashes($km->mataKuliah->nama) }}')"
+                                                            class="inline-flex items-center px-3 py-2 bg-purple-100 hover:bg-purple-200 text-purple-700 text-xs font-bold rounded-lg transition-all">
+                                                        <i class="fa-solid fa-list-check mr-1"></i> Pilih Rubrik
+                                                    </button>
+                                                    <form action="{{ route('kelas-mata-kuliah.destroy', $km) }}" method="POST" 
+                                                          id="delete-km-{{ $km->id }}">
                                                         @csrf
                                                         @method('DELETE')
                                                         <input type="hidden" name="redirect_to" value="{{ route('penugasan-dosen-matkul.index', ['kelas' => $selectedClassRoom->id]) }}">
-                                                        <button type="submit" class="inline-flex items-center px-3 py-2 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold rounded-lg transition-all w-full">
+                                                        <button type="button" 
+                                                                onclick="confirmDelete('Hapus Mata Kuliah?', 'Mata kuliah ini akan dihapus dari kelas.<br><small class=\'text-gray-500\'>Tindakan ini tidak dapat dibatalkan.</small>', document.getElementById('delete-km-{{ $km->id }}'))"
+                                                                class="inline-flex items-center px-3 py-2 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold rounded-lg transition-all w-full">
                                                             <i class="fa-solid fa-trash mr-1"></i> Hapus
                                                         </button>
                                                     </form>
@@ -371,6 +418,108 @@
         function closeDosenModal() {
             document.getElementById('dosenModal').classList.add('hidden');
         }
+
+        let currentKelasMataKuliahId = null;
+
+        function openRubrikModal(kelasMataKuliahId, matkulNama) {
+            currentKelasMataKuliahId = kelasMataKuliahId;
+            document.getElementById('rubrik-modal-matkul-nama').textContent = matkulNama;
+            document.getElementById('rubrikModal').classList.remove('hidden');
+            document.getElementById('btn-simpan-rubrik').disabled = true;
+            
+            // Set form action
+            document.getElementById('select-rubrik-form').action = `/kelas-mata-kuliah/${kelasMataKuliahId}/select-rubrik`;
+            
+            // Load rubriks
+            const container = document.getElementById('rubrik-list');
+            container.innerHTML = `
+                <div class="text-center py-8 text-gray-500">
+                    <i class="fa-solid fa-spinner fa-spin text-2xl"></i>
+                    <p class="mt-2">Memuat rubrik...</p>
+                </div>
+            `;
+
+            fetch(`/kelas-mata-kuliah/${kelasMataKuliahId}/rubriks`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.rubriks.length === 0) {
+                        container.innerHTML = `
+                            <div class="text-center py-8 text-gray-500">
+                                <i class="fa-solid fa-exclamation-circle text-3xl mb-2"></i>
+                                <p>Belum ada rubrik untuk mata kuliah ini.</p>
+                                <p class="text-xs mt-1">Buat rubrik terlebih dahulu di menu Mata Kuliah.</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    container.innerHTML = data.rubriks.map(rubrik => `
+                        <label class="flex items-start p-4 border-2 rounded-lg cursor-pointer hover:border-purple-400 transition-colors ${rubrik.is_complete ? 'border-gray-200' : 'border-yellow-300 bg-yellow-50'}">
+                            <input type="radio" name="rubrik_penilaian_id" value="${rubrik.id}" 
+                                   class="mt-1 text-purple-600" ${!rubrik.is_complete ? 'disabled' : ''}
+                                   onchange="document.getElementById('btn-simpan-rubrik').disabled = false">
+                            <div class="ml-3 flex-1">
+                                <p class="font-bold text-gray-900">${rubrik.nama}</p>
+                                <p class="text-xs text-gray-500">Semester ${rubrik.semester} · ${rubrik.periode}</p>
+                                <p class="text-xs ${rubrik.is_complete ? 'text-emerald-600' : 'text-yellow-700'} mt-1">
+                                    ${rubrik.items.length} item · Total ${rubrik.total_persentase}%
+                                    ${!rubrik.is_complete ? '(Belum lengkap)' : ''}
+                                </p>
+                            </div>
+                        </label>
+                    `).join('');
+                })
+                .catch(err => {
+                    container.innerHTML = `
+                        <div class="text-center py-8 text-red-500">
+                            <i class="fa-solid fa-times-circle text-3xl mb-2"></i>
+                            <p>Gagal memuat rubrik.</p>
+                        </div>
+                    `;
+                });
+        }
+        
+        function closeRubrikModal() {
+            document.getElementById('rubrikModal').classList.add('hidden');
+        }
     </script>
+
+    <!-- Modal Pilih Rubrik -->
+    <div id="rubrikModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 py-6">
+            <div class="fixed inset-0 bg-black/60 transition-opacity" onclick="closeRubrikModal()"></div>
+            <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-md z-10">
+                <div class="bg-purple-600 px-5 py-3 rounded-t-xl flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-white">
+                            <i class="fa-solid fa-list-check mr-2"></i> Pilih Rubrik
+                        </h3>
+                        <p class="text-xs text-purple-200 mt-0.5" id="rubrik-modal-matkul-nama"></p>
+                    </div>
+                    <button type="button" onclick="closeRubrikModal()" class="text-white/80 hover:text-white">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+                <form id="select-rubrik-form" method="POST" class="p-4">
+                    @csrf
+                    <div id="rubrik-list" class="space-y-2 max-h-64 overflow-y-auto">
+                        <!-- Diisi oleh JavaScript -->
+                    </div>
+                    
+                    <div class="mt-4 flex gap-2">
+                        <button type="button" onclick="closeRubrikModal()" 
+                                class="flex-1 py-2 px-4 bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-semibold rounded-lg transition-all">
+                            Batal
+                        </button>
+                        <button type="submit" id="btn-simpan-rubrik"
+                                class="flex-1 py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fa-solid fa-save mr-1"></i> Simpan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     @endif
 </x-app-layout>
+

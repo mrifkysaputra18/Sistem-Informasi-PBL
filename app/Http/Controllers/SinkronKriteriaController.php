@@ -232,6 +232,29 @@ class SinkronKriteriaController extends Controller
     }
 
     /**
+     * Hapus riwayat sinkronisasi secara permanen
+     */
+    public function destroy($syncLogId)
+    {
+        $syncLog = SyncKriteriaLog::findOrFail($syncLogId);
+
+        try {
+            $syncLog->delete();
+
+            \Log::info('Sync history deleted', [
+                'sync_log_id' => $syncLogId,
+                'deleted_by' => Auth::id(),
+            ]);
+
+            return back()->with('success', 'Riwayat sinkronisasi berhasil dihapus.');
+
+        } catch (\Exception $e) {
+            \Log::error('Sync history deletion failed', ['error' => $e->getMessage()]);
+            return back()->with('error', 'Gagal menghapus riwayat: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Calculate criteria value based on criteria name/type
      */
     private function calculateCriteriaValue($criterion, $reviewedTargets, $group)

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MataKuliah;
+use App\Models\KelasMataKuliah;
 use App\Models\Pengguna;
 use Illuminate\Http\Request;
 
@@ -13,7 +14,16 @@ class MataKuliahController extends Controller
         $user = auth()->user();
         
         if ($user->isDosen()) {
-            $mataKuliahs = $user->mataKuliahs()->with('rubrikPenilaians')->paginate(20);
+            // Dosen: Ambil mata kuliah dari tabel kelas_mata_kuliah
+            // dimana dosen ini ditugaskan (baik sebelum UTS atau sesudah UTS)
+            $mataKuliahIds = KelasMataKuliah::where('dosen_sebelum_uts_id', $user->id)
+                ->orWhere('dosen_sesudah_uts_id', $user->id)
+                ->pluck('mata_kuliah_id')
+                ->unique();
+            
+            $mataKuliahs = MataKuliah::with('rubrikPenilaians')
+                ->whereIn('id', $mataKuliahIds)
+                ->paginate(20);
         } else {
             $mataKuliahs = MataKuliah::with(['dosens', 'rubrikPenilaians'])->paginate(20);
         }

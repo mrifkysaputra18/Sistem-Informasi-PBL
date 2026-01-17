@@ -167,6 +167,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('sync-kriteria/preview', [SinkronKriteriaController::class, 'preview'])->name('sync-kriteria.preview');
         Route::post('sync-kriteria', [SinkronKriteriaController::class, 'sync'])->name('sync-kriteria.sync');
         Route::delete('sync-kriteria/{syncLog}', [SinkronKriteriaController::class, 'unsync'])->name('sync-kriteria.unsync');
+        Route::delete('sync-kriteria/{syncLog}/delete', [SinkronKriteriaController::class, 'destroy'])->name('sync-kriteria.destroy');
     });
     
     // Admin Only - Force Delete
@@ -338,8 +339,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('ahp/help', [\App\Http\Controllers\AhpController::class, 'help'])->name('ahp.help');
 
         // Kelas - Mata Kuliah (Admin only)
+        // Route utama: penugasan-dosen-matkul (halaman mata-kuliah per kelas sudah digabung di sini)
         Route::get('penugasan-dosen-matkul', [\App\Http\Controllers\KelasMataKuliahController::class, 'indexAll'])->name('penugasan-dosen-matkul.index');
-        Route::get('classrooms/{classRoom}/mata-kuliah', [\App\Http\Controllers\KelasMataKuliahController::class, 'index'])->name('classrooms.mata-kuliah.index');
         Route::post('classrooms/{classRoom}/mata-kuliah', [\App\Http\Controllers\KelasMataKuliahController::class, 'store'])->name('classrooms.mata-kuliah.store');
         Route::post('kelas-mata-kuliah/{kelasMataKuliah}/select-rubrik', [\App\Http\Controllers\KelasMataKuliahController::class, 'selectRubrik'])->name('kelas-mata-kuliah.select-rubrik');
         Route::patch('kelas-mata-kuliah/{kelasMataKuliah}/update-dosen', [\App\Http\Controllers\KelasMataKuliahController::class, 'updateDosen'])->name('kelas-mata-kuliah.update-dosen');

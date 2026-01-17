@@ -50,7 +50,7 @@
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Akun Gmail</label>
                             <input type="email" name="username" value="{{ old('username', $username) }}" required
                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                   placeholder="admin@politala.ac.id atau email@gmail.com">
+                                   placeholder="">
                             @error('username')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror

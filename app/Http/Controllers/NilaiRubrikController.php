@@ -27,10 +27,12 @@ class NilaiRubrikController extends Controller
             'rubrikPenilaian.items'
         ])->whereNotNull('rubrik_penilaian_id'); // Hanya yang sudah ada rubrik
 
-        // Jika dosen, filter berdasarkan mata kuliah yang diampu
+        // Jika dosen, filter berdasarkan penugasan di kelas_mata_kuliah
         if ($user->isDosen()) {
-            $mataKuliahIds = $user->mataKuliahs()->pluck('mata_kuliah.id');
-            $query->whereIn('mata_kuliah_id', $mataKuliahIds);
+            $query->where(function($q) use ($user) {
+                $q->where('dosen_sebelum_uts_id', $user->id)
+                  ->orWhere('dosen_sesudah_uts_id', $user->id);
+            });
         }
 
         // Filter by kelas

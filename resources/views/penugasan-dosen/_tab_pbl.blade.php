@@ -29,20 +29,20 @@
                             </div>
                             
                             @if($assignedDosens->count() > 0)
-                                <div class="grid grid-cols-2 gap-2">
+                                <div class="space-y-2">
                                     @foreach($assignedDosens as $assignment)
                                         <div class="flex items-center justify-between bg-gray-50 rounded-lg p-2">
                                             <div>
                                                 <p class="text-sm font-semibold text-gray-800">{{ $assignment->dosen->name }}</p>
-                                                <p class="text-xs text-gray-500">
-                                                    {{ $assignment->periode === 'sebelum_uts' ? 'Sebelum UTS' : 'Sesudah UTS' }}
-                                                </p>
+                                                <p class="text-xs text-gray-500">Dosen PBL</p>
                                             </div>
                                             <form action="{{ route('penugasan-dosen.pbl.destroy', $assignment) }}" method="POST"
-                                                  onsubmit="return confirm('Hapus penugasan ini?')">
+                                                  id="delete-pbl-{{ $assignment->id }}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-red-500 hover:text-red-700 p-1">
+                                                <button type="button" 
+                                                        onclick="confirmDelete('Hapus Penugasan?', 'Dosen PBL ini akan dihapus dari kelas.<br><small class=\'text-gray-500\'>Tindakan ini tidak dapat dibatalkan.</small>', document.getElementById('delete-pbl-{{ $assignment->id }}'))"
+                                                        class="text-red-500 hover:text-red-700 p-1">
                                                     <i class="fa-solid fa-times"></i>
                                                 </button>
                                             </form>
@@ -96,19 +96,8 @@
                     </select>
                 </div>
                 
-                <div class="mb-4">
-                    <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Periode</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <label class="flex items-center justify-center p-3 border-2 bg-white rounded-lg cursor-pointer hover:border-blue-400 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50">
-                            <input type="radio" name="periode" value="sebelum_uts" class="text-blue-600 mr-2" required>
-                            <span class="text-sm font-semibold">Sebelum UTS</span>
-                        </label>
-                        <label class="flex items-center justify-center p-3 border-2 bg-white rounded-lg cursor-pointer hover:border-emerald-400 has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50">
-                            <input type="radio" name="periode" value="sesudah_uts" class="text-emerald-600 mr-2">
-                            <span class="text-sm font-semibold">Sesudah UTS</span>
-                        </label>
-                    </div>
-                </div>
+                <!-- Dosen PBL tidak memiliki pembagian periode UTS seperti Dosen Matkul -->
+                <!-- Dosen PBL tetap sama sepanjang semester -->
                 
                 <button type="submit" 
                         class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg shadow transition-all">

@@ -176,6 +176,12 @@ class KelasMataKuliahController extends Controller
             'rubrik_penilaian_id' => $request->rubrik_penilaian_id,
         ]);
 
+        // Redirect ke halaman sebelumnya dengan pesan sukses
+        $redirectTo = $request->input('redirect_to');
+        if ($redirectTo) {
+            return redirect($redirectTo)->with('ok', 'Rubrik berhasil dipilih untuk mata kuliah ini.');
+        }
+        
         return redirect()->back()
             ->with('ok', 'Rubrik berhasil dipilih untuk mata kuliah ini.');
     }

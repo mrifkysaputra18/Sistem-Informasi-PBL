@@ -104,7 +104,7 @@
                         </div>
 
                         <!-- Status Aktif -->
-                        <div class="mb-6">
+                        <div class="mb-4">
                             <label class="flex items-center">
                                 <input type="checkbox" 
                                        name="is_active" 
@@ -113,6 +113,45 @@
                                        class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500">
                                 <span class="ml-2 text-sm text-gray-700">Set sebagai periode aktif</span>
                             </label>
+                        </div>
+
+                        <!-- Status Periode Ujian -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Status Periode Ujian
+                            </label>
+                            <div class="flex flex-wrap gap-2">
+                                <label class="inline-flex items-center px-4 py-2 rounded-lg border-2 cursor-pointer transition-all
+                                    {{ old('exam_status', 'none') == 'none' ? 'border-gray-500 bg-gray-100 text-gray-700' : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300' }}">
+                                    <input type="radio" name="exam_status" value="none" 
+                                           {{ old('exam_status', 'none') == 'none' ? 'checked' : '' }}
+                                           class="hidden exam-status-radio">
+                                    <i class="fa-solid fa-ban mr-2"></i>
+                                    <span class="font-semibold text-sm">Tidak Ada Ujian</span>
+                                </label>
+                                
+                                <label class="inline-flex items-center px-4 py-2 rounded-lg border-2 cursor-pointer transition-all
+                                    {{ old('exam_status') == 'uts' ? 'border-blue-500 bg-blue-100 text-blue-700' : 'border-gray-200 bg-white text-gray-500 hover:border-blue-300' }}">
+                                    <input type="radio" name="exam_status" value="uts" 
+                                           {{ old('exam_status') == 'uts' ? 'checked' : '' }}
+                                           class="hidden exam-status-radio">
+                                    <i class="fa-solid fa-file-alt mr-2"></i>
+                                    <span class="font-semibold text-sm">Periode UTS</span>
+                                </label>
+                                
+                                <label class="inline-flex items-center px-4 py-2 rounded-lg border-2 cursor-pointer transition-all
+                                    {{ old('exam_status') == 'uas' ? 'border-orange-500 bg-orange-100 text-orange-700' : 'border-gray-200 bg-white text-gray-500 hover:border-orange-300' }}">
+                                    <input type="radio" name="exam_status" value="uas" 
+                                           {{ old('exam_status') == 'uas' ? 'checked' : '' }}
+                                           class="hidden exam-status-radio">
+                                    <i class="fa-solid fa-graduation-cap mr-2"></i>
+                                    <span class="font-semibold text-sm">Periode UAS</span>
+                                </label>
+                            </div>
+                            <p class="mt-2 text-xs text-gray-500">
+                                <i class="fa-solid fa-info-circle mr-1"></i>
+                                Status ini menentukan dosen mana yang bisa input nilai rubrik.
+                            </p>
                         </div>
 
                         <!-- Buttons -->
@@ -161,6 +200,33 @@
                     firstDayOfWeek: 1         // Senin sebagai hari pertama
                 },
                 allowInput: true              // Allow manual input
+            });
+
+            // Exam status radio buttons styling
+            const examRadios = document.querySelectorAll('.exam-status-radio');
+            examRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // Reset semua label ke style default
+                    document.querySelectorAll('.exam-status-radio').forEach(r => {
+                        const label = r.closest('label');
+                        label.classList.remove('border-gray-500', 'bg-gray-100', 'text-gray-700');
+                        label.classList.remove('border-blue-500', 'bg-blue-100', 'text-blue-700');
+                        label.classList.remove('border-orange-500', 'bg-orange-100', 'text-orange-700');
+                        label.classList.add('border-gray-200', 'bg-white', 'text-gray-500');
+                    });
+                    
+                    // Style label yang dipilih
+                    const selectedLabel = this.closest('label');
+                    selectedLabel.classList.remove('border-gray-200', 'bg-white', 'text-gray-500');
+                    
+                    if (this.value === 'none') {
+                        selectedLabel.classList.add('border-gray-500', 'bg-gray-100', 'text-gray-700');
+                    } else if (this.value === 'uts') {
+                        selectedLabel.classList.add('border-blue-500', 'bg-blue-100', 'text-blue-700');
+                    } else if (this.value === 'uas') {
+                        selectedLabel.classList.add('border-orange-500', 'bg-orange-100', 'text-orange-700');
+                    }
+                });
             });
         });
     </script>

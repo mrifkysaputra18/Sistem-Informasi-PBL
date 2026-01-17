@@ -133,7 +133,7 @@
                 
                 <!-- Title (Clear Hierarchy) -->
                 <h1 class="text-xl font-bold text-gray-900 mb-1">
-                    Sistem Informasi PBL
+                    SMART PBL
                 </h1>
                 <p class="text-xs text-gray-600">
                     Politeknik Negeri Tanah Laut
@@ -230,7 +230,7 @@
                                 required 
                                 autofocus 
                                 autocomplete="username"
-                                placeholder="admin@politala.ac.id"
+                                placeholder=""
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 placeholder-gray-400"
                             />
                         </div>

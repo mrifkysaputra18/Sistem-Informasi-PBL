@@ -254,6 +254,9 @@
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(229, 231, 235, 0.5);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Scroll Effect - Make navbar more opaque when scrolled */
@@ -383,16 +386,20 @@ button {
     }
 }
 
-.mobile-menu a {
+.mobile-menu a,
+nav.modern-navbar .mobile-menu a {
     color: #1f2937 !important;
     display: block !important;
     padding: 12px 16px !important;
     border-left: 4px solid transparent !important;
+    background: transparent !important;
 }
 
-.mobile-menu a:hover {
+.mobile-menu a:hover,
+nav.modern-navbar .mobile-menu a:hover {
     background: #f3f4f6 !important;
     border-left-color: #004080 !important;
+    color: #004080 !important;
 }
 
 /* ========================================

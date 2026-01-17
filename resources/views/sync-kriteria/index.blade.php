@@ -123,19 +123,35 @@
                                     <span class="font-medium text-sm text-gray-900">
                                         {{ $log->classRoom->name ?? 'Semua Kelas' }}
                                     </span>
-                                    @if($log->is_reverted)
-                                    <span class="text-xs px-2 py-1 rounded bg-gray-200 text-gray-600">Dibatalkan</span>
-                                    @else
-                                    <form action="{{ route('sync-kriteria.unsync', $log->id) }}" method="POST" 
-                                          onsubmit="return confirm('Yakin ingin membatalkan sinkronisasi ini? Nilai akan dikembalikan ke sebelumnya.')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" 
-                                                class="text-xs px-2 py-1 rounded bg-red-100 text-red-600 hover:bg-red-200 transition-colors">
-                                            <i class="fa-solid fa-undo mr-1"></i>Batalkan
-                                        </button>
-                                    </form>
-                                    @endif
+                                    <div class="flex items-center gap-2">
+                                        @if($log->is_reverted)
+                                        <span class="text-xs px-2 py-1 rounded bg-gray-200 text-gray-600">Dibatalkan</span>
+                                        @else
+                                        <form action="{{ route('sync-kriteria.unsync', $log->id) }}" method="POST" 
+                                              id="unsync-form-{{ $log->id }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" 
+                                                    onclick="confirmAction('Batalkan Sinkronisasi?', 'Nilai akan dikembalikan ke sebelumnya.\u003cbr\u003e\u003csmall class=\'text-gray-500\'\u003eTindakan ini akan mengembalikan data ke status sebelum sinkronisasi.\u003c/small\u003e', '\u003ci class=\'fas fa-undo mr-2\'\u003e\u003c/i\u003eYa, Batalkan!', '#f59e0b').then(result => { if (result.isConfirmed) document.getElementById('unsync-form-{{ $log->id }}').submit(); })"
+                                                    class="text-xs px-2 py-1 rounded bg-red-100 text-red-600 hover:bg-red-200 transition-colors">
+                                                <i class="fa-solid fa-undo mr-1"></i>Batalkan
+                                            </button>
+                                        </form>
+                                        @endif
+                                        
+                                        <!-- Tombol Hapus Permanen -->
+                                        <form action="{{ route('sync-kriteria.destroy', $log->id) }}" method="POST" 
+                                              id="delete-form-{{ $log->id }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" 
+                                                    onclick="confirmDelete('Hapus Riwayat?', 'Riwayat sinkronisasi ini akan dihapus secara permanen.\u003cbr\u003e\u003csmall class=\'text-gray-500\'\u003eTindakan ini tidak dapat dibatalkan.\u003c/small\u003e', document.getElementById('delete-form-{{ $log->id }}'))"
+                                                    class="text-xs px-2 py-1 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors"
+                                                    title="Hapus riwayat">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                                 <div class="text-xs text-gray-500">
                                     <div><i class="fa-solid fa-user mr-1"></i>{{ $log->syncedByUser->name ?? 'Unknown' }}</div>

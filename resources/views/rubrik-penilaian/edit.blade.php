@@ -48,14 +48,14 @@
                                 'persentase' => $item->persentase,
                                 'deskripsi' => $item->deskripsi,
                                 'expanded' => true,
-                                'subItems' => $item->children->map(function($subItem) {
+                                'subItems' => $item->subItems->map(function($subItem) {
                                     return [
                                         'id' => $subItem->id,
                                         'nama' => $subItem->nama,
                                         'persentase' => $subItem->persentase,
                                         'deskripsi' => $subItem->deskripsi,
                                         'expanded' => true,
-                                        'subItems' => $subItem->children->map(function($ssItem) {
+                                        'subItems' => $subItem->subItems->map(function($ssItem) {
                                             return [
                                                 'id' => $ssItem->id,
                                                 'nama' => $ssItem->nama,
